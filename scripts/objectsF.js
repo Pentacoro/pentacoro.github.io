@@ -1,12 +1,22 @@
-//folder behavior------------------------------------------------------------------------------------------------------|
-function dragIcon(elmnt) {
+//icon behavior------------------------------------------------------------------------------------------------------|
+
+var dragging = false;
+
+function highlight(hIcon) {
+    hIcon.style.border = '3px dotted rgb(255,255,255,0.16)';
+} 
+function lowlight(hIcon) {
+    hIcon.style.border = '';
+} 
+
+function dragIcon(elmnt, _this) {
 	var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
 	
 	elmnt.onmousedown = dragMouseDown;	
 
 	function dragMouseDown(e) {
 		e = e || window.event;
-		e.preventDefault();
+        e.preventDefault();
 		
 		//get initial cursor position:
 		pos3 = e.clientX;
@@ -17,32 +27,36 @@ function dragIcon(elmnt) {
 			//managing selected folders
 			for (var i = 0; i < classActive.length; i++) {
 				//light up all hover border onmousedown:------------------------|
-				classActive[i].style.border = '3px dotted rgb(255,255,255,0.16)';
+				highlight(classActive[i]);
 				//--------------------------------------------------------------|
 			}
 		} else {
 			//light up 1 hover border onmousedown:
-			elmnt.style.border = '3px dotted rgb(255,255,255,0.16)';
+			highlight(elmnt);
 			elmnt.style.backgroundColor = 'rgb(0,0,0,0)';
 			
 			//when mousedown on unselected folder
-			if(keyPressCtrl == false && $dragging == false) {
-				$(".active").removeClass("active")
-				
-				elmnt.className += " active";
+			if(keyPressCtrl == false && dragging == false) {
+				for (i = iconArray.length - 1; i >= 0; i--){
+                    iconArray[i].stat = 0;
+                    iconArray[i].statNode();
+                }
+                _this.stat = 1;
+                highlight(elmnt);
 			} else if(keyPressCtrl == true) {
-				elmnt.className += " active";
+                _this.stat = 1;
+                highlight(elmnt);
 			}
 		}
 		
-		document.onmouseup = closeDragIcon;
+        document.onmouseup = closeDragIcon;
 		document.onmousemove = iconDrag;
 		iframeAntiHover (true);
 	}								 
 
 	function iconDrag(e) {
 		e = e || window.event;
-		e.preventDefault();
+        e.preventDefault();
 		
 		//calculate new cursor position:
 		pos1 = pos3 - e.clientX;
@@ -50,70 +64,90 @@ function dragIcon(elmnt) {
 		pos3 = e.clientX;
 		pos4 = e.clientY;
 		
-		$dragging = true;
+        dragging = true;
 		
 		//managing selected folders
-		for (var i = 0; i < classActive.length; i++) {
-			//set position for selected folders:---------------------------------|
-			classActive[i].style.top = (classActive[i].offsetTop - pos2) + "px";
-			classActive[i].style.left = (classActive[i].offsetLeft - pos1) + "px";
-			//-------------------------------------------------------------------|
-			
-			//make folders transparent while moving------------------------------|
-			classActive[i].style.opacity = '0.5';
-			classActive[i].style.zIndex = '0';
-			classActive[i].style.border = '3px solid rgb(0,0,0,0.0)';
-			classActive[i].style.backgroundColor = 'rgb(0,0,0,0)';
-			//-------------------------------------------------------------------|
+		for (i = iconArray.length - 1; i >= 0; i--){
+            if (iconArray[i].stat == 1 || iconArray[i].stat == 2) {
+                //set position for selected folders:----------|
+                iconArray[i].posY = (iconArray[i].posY - pos2);
+                iconArray[i].posX = (iconArray[i].posX - pos1);
+                //--------------------------------------------|
+                
+                iconArray[i].stat = 2;
+                iconArray[i].poseNode();
+                iconArray[i].statNode();
+            }
 		}
-		//unselect other folders when dragging
-		//$(".active").removeClass("active");
 	}
 
 	function closeDragIcon() {	
 		//stop moving when mouse button is released:
 		document.onmouseup = null;
 		document.onmousemove = null;
-		iframeAntiHover (false);
+        iframeAntiHover (false);
 		
-		if (classActive.length > 0) {
 		//managing selected folders
-			for (var i = 0; i < classActive.length; i++) {
-				//set position grid for selected folders:----------------------------|
-				if (iconGrid == true) {
-					classActive[i].style.top = (Math.round((classActive[i].offsetTop - pos1)/120)*120 + 10) + "px";
-					classActive[i].style.left = (Math.round((classActive[i].offsetLeft - pos1)/120)*120 + 10) + "px";
-				}	
-				//-------------------------------------------------------------------|
+		for (i = iconArray.length - 1; i >= 0; i--){
+            if (iconGrid == true && iconArray[i].stat == 2) {
+			    //set position grid for selected folders:--------------------------------|
+				iconArray[i].posY = (Math.round((iconArray[i].posY - pos1)/120)*120 + 10);
+				iconArray[i].posX = (Math.round((iconArray[i].posX - pos1)/120)*120 + 10);
+                //-----------------------------------------------------------------------|
 
-				//make folders solid when stopped------------------------------------|
-				classActive[i].style.opacity = '1';
-				classActive[i].style.zIndex = '1';
-				classActive[i].style.border = '';
-				classActive[i].style.backgroundColor = '';
-				//-------------------------------------------------------------------|
-			}
-		}else{
-			elmnt.style.top = (Math.round((elmnt.offsetTop - pos1)/120)*120 + 10) + "px";
-			elmnt.style.left = (Math.round((elmnt.offsetLeft - pos1)/120)*120 + 10) + "px";
-			
-			elmnt.style.opacity = '1';
-			elmnt.style.zIndex = '1';
-			elmnt.style.border = '';
-			elmnt.style.backgroundColor = '';
+                iconArray[i].stat = 1;
+                iconArray[i].poseNode();
+                iconArray[i].statNode();
+            }
 		}
 		
 		//unselect other folders on mouseup W/O drag UNLESS ctrl
-		if(keyPressCtrl == false && $dragging == false) {
-			$(".active").removeClass("active")
-		}
-		
-		//become active on mouseup without moving
-		if (elmnt.classList.contains('active') == false) {
-			elmnt.className += " active";
-		}
-		
-		$dragging = false;
+		if(keyPressCtrl == false && dragging == false) {
+			for (i = iconArray.length - 1; i >= 0; i--){
+                iconArray[i].stat = 0;
+                iconArray[i].statNode();
+            }
+            _this.stat = 1;
+            _this.statNode();
+        } else {
+            for (i = iconArray.length - 1; i >= 0; i--){
+                lowlight(document.getElementById(iconArray[i].text));
+            }
+
+            _this.stat = 1;
+            _this.statNode();
+        }
+        
+		dragging = false;
 	}
 }
-//------------------------------------------------------------------------------------------------------folder behavior|
+
+function statIconNode(elmnt, _this) {
+    //0 => unselected | 1 => selected | 2 => moving
+    switch(_this.stat){
+        case 0:
+            elmnt.classList.remove("active");
+            elmnt.style.border = '';
+            break;
+        case 1:
+            elmnt.className += " active";
+            elmnt.style.opacity = '1';
+			elmnt.style.zIndex = '1';
+			elmnt.style.border = '';
+			elmnt.style.backgroundColor = '';
+            break;
+        case 2: 
+            elmnt.style.opacity = '0.5';
+            elmnt.style.zIndex = '0';
+            elmnt.style.border = '3px solid rgb(0,0,0,0.0)';
+            elmnt.style.backgroundColor = 'rgb(0,0,0,0)';
+            break;
+        default: 
+    }
+}
+
+function poseIconNode(elmnt, _this) {
+    elmnt.style.top = _this.posY + "px";
+    elmnt.style.left = _this.posX + "px";
+}
+//------------------------------------------------------------------------------------------------------icon behavior|

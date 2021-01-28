@@ -4,40 +4,28 @@ class Icon {
         this.text = name;
         this.exec = program;
         
-        this.slct = state
+        this.stat = state;
         this.posX = x;
         this.posY = y;
     }
-    dragging(){
-        dragIcon(document.getElementById(this.name));
+    statNode(){
+        statIconNode(document.getElementById(this.text), this);
     }
-    open(){
-        openIcon(this);
+    poseNode(){
+        poseIconNode(document.getElementById(this.text), this);
     }
-    delete(){
-        suprIcon(this);
+    drag(){
+        dragIcon(document.getElementById(this.text), this);
     }
 }
 
 var iconArray = []
 
-iconArray.push(new Icon ("sumn", "Settings", "settingsExe", false, 1000, 400));
+iconArray.push(new Icon ("sumn", "Folder", "explorerExe", 1, 10, 10));
+iconArray.push(new Icon ("sumn", "Folder Test 2", "explorerExe", 1, 10, 130));
+iconArray.push(new Icon ("sumn", "Folder Test 3", "explorerExe", 1, 10, 250));
+iconArray.push(new Icon ("sumn", "Settings", "settingsExe", 1, 10, 370));
 
-console.log(iconArray);
-
-
-
-
-
-
-
-
-
-
-
-
-var gear = document.getElementById("settings");
-gear.object = iconArray[0];
-gear.onlcick = function() {
-    yay(this.object);
+for (i = iconArray.length - 1; i >= 0; i--){
+    iconArray[i].drag();
 }
