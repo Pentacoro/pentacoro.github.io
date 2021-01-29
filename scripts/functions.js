@@ -1,20 +1,3 @@
-//-----------------------------------------------------------------|
-function areRectanglesOverlap(div1, div2) {
-	var x1 = div1.offsetLeft;
-	var y1 = div1.offsetTop;
-	var h1 = y1 + div1.offsetHeight;
-	var w1 = x1 + div1.offsetWidth;
-
-	var x2 = div2.offsetLeft;
-	var y2 = div2.offsetTop;
-	var h2 = y2 + div2.offsetHeight;
-	var w2 = x2 + div2.offsetWidth;
-
-	if (h1 < y2 || y1 > h2 || w1 < x2 || x1 > w2) return false;
-	return true;
-  }
-//-----------------------------------------------------------------|
-
 function iframeAntiHover (coin) {
 	var tagIframe = document.getElementsByTagName("iframe");
 
@@ -66,13 +49,11 @@ function iframeAntiHover (coin) {
 
 //-----------------------------------------------Boolean key checks|
 
-var $dragging = false;
-
 //HTML element references------------------------------------|
 
 var idSelectBox = document.getElementById('selectBox');
 
-var classFolder = document.getElementsByClassName("folder");
+var classIcon   =   document.getElementsByClassName("icon");
 
 var classActive = document.getElementsByClassName("active");
 
@@ -82,35 +63,49 @@ var classWindow = document.getElementsByClassName("window");
 
 var iconGrid = true;
 
-//unselect all folders when desktop click:--|
-$(document).mousedown(function(event) { 
-	var $target = $(event.target);
-	if(
-		!$target.closest(".folder").length && 
-		$(".folder").hasClass('active') && 
-		keyPressCtrl == 0
-	) {
-		$(".folder").removeClass('active');
-		$(".folder").css("border" , '');
-	}        
-});
-//------------------------------------------|
+//unselect all folders when desktop click:------------------------------|
+	//when desktop click------------------------------------------------|
+	document.onmousedown = function(event) {
+		let target = event.target;
+		//if not clicking folder or window------------------------------|
+		if(
+			target.classList.contains("icon")==false &&
+			target.parentElement.classList.contains("icon")==false &&
+			target.classList.contains("window")==false &&
+			target.parentElement.classList.contains("window")==false &&
+			target.parentElement.id !== "windowBorder" &&
+			keyPressCtrl == false
+		) {
+			for (i = iconArray.length - 1; i >= 0; i--){
+				iconArray[i].stat = 0;
+				iconArray[i].statNode();
+			}
+		} 
+	}
+//----------------------------------------------------------------------|
 
-//selectBox behavior---------------------------------------------------------------------------------------------------|
+function highlight(hIcon) {
+    hIcon.style.border = '3px dotted rgb(255,255,255,0.16)';
+} 
+function lowlight(hIcon) {
+    hIcon.style.border = '';
+} 
+
+//selectBox behavior-------------------------------------------------------------------------------|
 selectBox();
 function selectBox() {
-	var pos1 = 0, pos2 = 0, posxIn = 0, posyIn = 0;
+	let pos1 = 0, pos2 = 0, posxIn = 0, posyIn = 0;
 	
 	//when desktop click------------------------------------------------|
 	document.getElementById('background').onmousedown = function(event) {
-		var $target = event.target;
+		let target = event.target;
 		//if not clicking folder or window------------------------------|
 		if(
-			$target.classList.contains("folder")==false &&
-			$target.parentElement.classList.contains("folder")==false &&
-			$target.classList.contains("window")==false &&
-			$target.parentElement.classList.contains("window")==false &&
-			$target.parentElement.id !== "windowBorder"
+			target.classList.contains("icon")==false &&
+			target.parentElement.classList.contains("icon")==false &&
+			target.classList.contains("window")==false &&
+			target.parentElement.classList.contains("window")==false &&
+			target.parentElement.id !== "windowBorder"
 		) {
 			pos1 = 0;
 			pos2 = 0; 
@@ -126,6 +121,8 @@ function selectBox() {
 		//get click position:
 		posxIn = e.clientX;
 		posyIn = e.clientY;
+
+		wasCtrl = (keyPressCtrl == true);
 		
 		idSelectBox.style.top = posyIn + "px";
 		idSelectBox.style.left = posxIn + "px";
@@ -165,21 +162,13 @@ function selectBox() {
 		}
 		
 		//iconReaction--------------------------------------------------|
-		for (var i = 0; i < classFolder.length; i++) {
-			isUnderSBox(classFolder[i],idSelectBox);
-		}
-		function isUnderSBox(icon,sBox) {
-			//console.log('hello');
-			
-			if (areRectanglesOverlap(icon,sBox)) {
-				//light up colliding folder hover border:
-				icon.className += " active";
-				icon.style.backgroundColor = 'rgb(0,155,255,0)';
-				icon.style.border = '3px dotted rgb(255,255,255,0.16)';
-			} else if (keyPressCtrl == false) {
-				//unlight non-colliding folder hover border UNLESS ctrl
-				icon.classList.remove('active');
-				icon.style.border = '';
+		for (i = iconArray.length - 1; i >= 0; i--){
+			if (areRectanglesOverlap(document.getElementById(iconArray[i].text),idSelectBox)) {
+				//light up colliding icon hover border:
+				highlight(document.getElementById(iconArray[i].text));
+			} else {
+				//unlight non-colliding icon hover border:
+				lowlight(document.getElementById(iconArray[i].text));
 			}
 		};
 		//--------------------------------------------------iconReaction|
@@ -191,33 +180,38 @@ function selectBox() {
 		iframeAntiHover (false);
 		document.onmouseup = null;
 		document.onmousemove = null;
-		
+
+		//iconReaction--------------------------------------------------|
+		for (i = iconArray.length - 1; i >= 0; i--){
+			if (areRectanglesOverlap(document.getElementById(iconArray[i].text), idSelectBox)) {
+				//activate colliding icon hover border:
+				iconArray[i].stat = 1;
+				iconArray[i].statNode();
+			} else if (wasCtrl == false) {
+				//deactivate non-colliding icon hover border UNLESS ctrl:
+				iconArray[i].stat = 0;
+				iconArray[i].statNode();
+			}
+		}
+		//--------------------------------------------------iconReaction|
+	
 		idSelectBox.style.opacity = '';
 		idSelectBox.style.height = '';
 		idSelectBox.style.width = '';
 		idSelectBox.style.top = '0';
 		idSelectBox.style.left = '0';
 
-		//iconReaction--------------------------------------------------|
-		for (var i = 0; i < classActive.length; i++) {
-			//make icons look selected onmouseup------------------------|
-			classActive[i].style.border = '';
-			classActive[i].style.backgroundColor = '';
-			//----------------------------------------------------------|
-		}
-		//--------------------------------------------------iconReaction|
-
 		//console.log("selectBoxRelease");
 	}
 }
-//---------------------------------------------------------------------------------------------------selectBox behavior|
+//-------------------------------------------------------------------------------selectBox behavior|
 
-//window behavior------------------------------------------------------------------------------------------------------|
+//window behavior----------------------------------------------------------------------------------|
 
 //all .window divs act like windows------|
 for (i = 0; i < classWindow.length; i++) {
 	dragWindow(classWindow[i]);
-	sizeWindow(classWindow[i])
+	sizeWindow(classWindow[i]);
 }
 //---------------------------------------|
 
@@ -346,4 +340,21 @@ for (i = 0; i < classWindow.length; i++) {
 	}
 //------------------------------------------------------------------window resizing|
 
-//------------------------------------------------------------------------------------------------------window behavior|
+//----------------------------------------------------------------------------------window behavior|
+
+//-----------------------------------------------------------------|
+function areRectanglesOverlap(div1, div2) {
+	var x1 = div1.offsetLeft;
+	var y1 = div1.offsetTop;
+	var h1 = y1 + div1.offsetHeight;
+	var w1 = x1 + div1.offsetWidth;
+
+	var x2 = div2.offsetLeft;
+	var y2 = div2.offsetTop;
+	var h2 = y2 + div2.offsetHeight;
+	var w2 = x2 + div2.offsetWidth;
+
+	if (h1 < y2 || y1 > h2 || w1 < x2 || x1 > w2) return false;
+	return true;
+}
+//-----------------------------------------------------------------|

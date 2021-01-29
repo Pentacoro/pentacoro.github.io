@@ -1,13 +1,6 @@
-//icon behavior------------------------------------------------------------------------------------------------------|
+//icon behavior------------------------------------------------------------------------|
 
 var dragging = false;
-
-function highlight(hIcon) {
-    hIcon.style.border = '3px dotted rgb(255,255,255,0.16)';
-} 
-function lowlight(hIcon) {
-    hIcon.style.border = '';
-} 
 
 function dragIcon(elmnt, _this) {
 	var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
@@ -26,9 +19,9 @@ function dragIcon(elmnt, _this) {
 		if (classActive.length > 0 && elmnt.classList.contains('active')) {
 			//managing selected folders
 			for (var i = 0; i < classActive.length; i++) {
-				//light up all hover border onmousedown:------------------------|
+				//light up all hover border onmousedown:-|
 				highlight(classActive[i]);
-				//--------------------------------------------------------------|
+				//---------------------------------------|
 			}
 		} else {
 			//light up 1 hover border onmousedown:
@@ -150,4 +143,4 @@ function poseIconNode(elmnt, _this) {
     elmnt.style.top = _this.posY + "px";
     elmnt.style.left = _this.posX + "px";
 }
-//------------------------------------------------------------------------------------------------------icon behavior|
+//------------------------------------------------------------------------icon behavior|

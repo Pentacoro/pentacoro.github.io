@@ -8,6 +8,9 @@ class Icon {
         this.posX = x;
         this.posY = y;
     }
+    createNode(){
+        createIconNode(this)
+    }
     statNode(){
         statIconNode(document.getElementById(this.text), this);
     }
