@@ -57,17 +57,30 @@ body {
 /*WINDOW SETTINGS------------------------------*/
 .window {
 	position: absolute;
+
 	width: 500px;
 	height: 300px;
+
 	top: 300px;
 	left: 700px;
-	display: grid;
-	grid-template-rows: 40px auto 0px;
-	background-color: #00A2E8;
-	padding: 4px;
+
+	background-color: rgba(255,255,255,0);
+	padding: 2px;
 	z-index: 10;
+
 	min-height: 250px;
 	min-width: 170px;
+}
+
+.windowInner {
+	width: 100%;
+	height: 100%;
+
+	display: grid;
+	grid-template-rows: 40px auto 0px;
+
+	background-color: #00A2E8;
+	padding: 4px;
 }
 
 /*WINDOW BORDER RESIZERS--------*/
@@ -146,7 +159,7 @@ body {
 }
 /*--------WINDOW BORDER RESIZERS*/
 
-.window>.header {
+.windowInner>.header {
 	position: sticky;
 	top: 0%;
 	background-color: #00A2E8;
@@ -159,7 +172,7 @@ body {
 	user-select: none;
 }
 
-.window>.content {
+.windowInner>.content {
 	display: block;
 	background-color: #FFFFFF;
 	height: 100%;
@@ -188,7 +201,6 @@ body {
 	width:108px;
 	height: 108px;
 	background-color: rgb(0,155,255,0);
-	padding: 7px;
 	border: 3px solid rgb(0,0,0,0.0);
 	border-radius: 8px;
 	z-index: 1;
@@ -203,20 +215,21 @@ body {
 .iconImage{
 	width: 46px;
 	height: 46px;
-	margin-left: auto;
-	margin-right: auto;
+	margin: 7px auto;
 	background-image: url("../assets/svg/desktopIcons/folderPlaceholder.svg");
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center;
 }
 .icon>h3 {
 	position: relative;
-	max-height: 2.6em;
+	max-height: 2.5em;
 	width: 100%;
 	color: white;
 	text-align: center;
 	text-shadow: 0px 1px 4px rgb(0,0,0,1);
 	/*font-size: 1em;*/
 	font-weight: 1;
-	padding: .3em;
 	cursor: default;
 	user-select: none;
 

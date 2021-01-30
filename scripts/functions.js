@@ -51,13 +51,13 @@ function iframeAntiHover (coin) {
 
 //HTML element references------------------------------------|
 
-var idSelectBox = document.getElementById('selectBox');
+const idSelectBox = document.getElementById('selectBox');
 
-var classIcon   =   document.getElementsByClassName("icon");
+const classIcon   =   document.getElementsByClassName("icon");
 
-var classActive = document.getElementsByClassName("active");
+const classActive = document.getElementsByClassName("active");
 
-var classWindow = document.getElementsByClassName("window");
+const classWindow = document.getElementsByClassName("window");
 
 //------------------------------------HTML element references|
 
@@ -73,6 +73,8 @@ var iconGrid = true;
 			target.parentElement.classList.contains("icon")==false &&
 			target.classList.contains("window")==false &&
 			target.parentElement.classList.contains("window")==false &&
+			target.classList.contains("windowInner")==false &&
+			target.parentElement.classList.contains("windowInner")==false &&
 			target.parentElement.id !== "windowBorder" &&
 			keyPressCtrl == false
 		) {
@@ -105,6 +107,8 @@ function selectBox() {
 			target.parentElement.classList.contains("icon")==false &&
 			target.classList.contains("window")==false &&
 			target.parentElement.classList.contains("window")==false &&
+			target.classList.contains("windowInner")==false &&
+			target.parentElement.classList.contains("windowInner")==false &&
 			target.parentElement.id !== "windowBorder"
 		) {
 			pos1 = 0;

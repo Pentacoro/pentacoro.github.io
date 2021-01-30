@@ -16,7 +16,7 @@ function dragIcon(elmnt, _this) {
 		pos4 = e.clientY;
 		
 		//when mousedown on selected folder
-		if (classActive.length > 0 && elmnt.classList.contains('active')) {
+		if (_this.stat == 1) {
 			//managing selected folders
 			for (var i = 0; i < classActive.length; i++) {
 				//light up all hover border onmousedown:-|
@@ -143,4 +143,44 @@ function poseIconNode(elmnt, _this) {
     elmnt.style.top = _this.posY + "px";
     elmnt.style.left = _this.posX + "px";
 }
+
+function crteIconNode(_this) {
+    let newIcon = document.createElement("div");
+    newIcon.setAttribute("class", "icon");
+    newIcon.setAttribute("id", _this.text);
+    newIcon.setAttribute("style", "left:"+_this.posX+"px;top:"+_this.posY+"px;");
+
+    let newIconImage = document.createElement("div");
+    newIconImage.setAttribute("class", "iconImage");
+    newIconImage.setAttribute("style", _this.imag);
+    newIcon.appendChild(newIconImage);
+
+    let newIconText = document.createElement("h3");
+    let newIconTextNode = document.createTextNode(_this.text);
+    newIconText.appendChild(newIconTextNode);
+    newIcon.appendChild(newIconText);
+
+    document.getElementById("desktop").appendChild(newIcon);
+    _this.statNode();
+    _this.poseNode();
+    _this.drag();
+}
+
+function dlteIconNode(_this) {
+    let delIcon = document.getElementById(_this.text);
+    delIcon.parentNode.removeChild(delIcon);
+    for (i = iconArray.length - 1; i >= 0; i--){
+        if (iconArray[i].text == _this.text) {
+            iconArray.splice(i, 1);
+        }
+    }
+}
+
 //------------------------------------------------------------------------icon behavior|
+
+/*
+<div class="icon" id="Folder 1" style="left: 10px;top: 10px;">
+	<div class="iconImage" style="background-image: url('assets/svg/desktopIcons/folderPlaceholder.svg');"></div>
+	<h3>Folder 1</h3>
+</div>
+*/
