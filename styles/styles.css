@@ -58,11 +58,11 @@ body {
 .window {
 	position: absolute;
 
-	width: 500px;
-	height: 300px;
+	width: 600px;
+	height: 600px;
 
-	top: 300px;
-	left: 700px;
+	top: 200px;
+	left: 400px;
 
 	background-color: rgba(255,255,255,0);
 	padding: 2px;

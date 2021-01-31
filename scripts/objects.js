@@ -36,8 +36,9 @@ iconArray.push(new Icon ("background-image: url('assets/svg/desktopIcons/folderP
 iconArray.push(new Icon ("background-image: url('assets/svg/desktopIcons/folderPlaceholder.svg');", "Folder 3", "explorerExe", 0, 10, 250));
 iconArray.push(new Icon ("background-image: url('assets/svg/desktopIcons/settingsPlaceholder.svg');", "Settings", "settingsExe", 0, 10, 370));
 //iconArray.push(new Icon ("background-image: url('assets/svg/desktopIcons/filePlaceholder.svg');", "File 1", "", 0, 10, 490));
-//iconArray[4].crteIconNode;
+//iconArray[4].createNode();
 
 for (i = iconArray.length - 1; i >= 0; i--){
     iconArray[i].drag();
+    iconArray[i].menu();
 }

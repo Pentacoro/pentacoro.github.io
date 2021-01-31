@@ -2,12 +2,71 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<title>Document</title>
+	<title>dump</title>
+	<style>
+		*{
+			box-sizing: content-box;
+		}
+		body{
+			background-color: #000;
+		}
+		#contextMenu {
+			width: 220px;
+			height: 256px;
+
+			background-color: #eeeeee;
+
+			display: grid;
+			grid-template-rows: auto auto auto;
+		}
+		.contextMenu{
+			border: #a1a1a1;
+			border-width: 1px;
+			border-style: solid;
+			border-bottom: 0;
+		}
+		.contextMenu>div{
+			display: grid;
+			grid-template-columns: auto ;
+			padding: 5px;
+		}
+		.contextMenu>div>span{
+			font-family: Arial, Helvetica, sans-serif;
+			color: #2c2c2c;
+			padding-left: 1.5em;
+			margin: 0em;
+			cursor: default;
+			user-select: none;
+		}
+		.contextMenu>div:hover{
+			background-color: #9ecbdf;
+		}
+	</style>
 </head>
 <body>
 	
-	<div id="desktop">
-		<h1 class="w1 w2 w3">Hello</h1>
+	<div id="contextMenu">
+
+		<div class="contextMenu">
+			<div><span>Open</span></div>
+			<div><span>Open maximized</span></div>
+			<div><span>Open in new tab</span></div>
+		</div>
+
+		<div class="contextMenu">
+			<div><span>Cut</span></div>
+			<div><span>Copy</span></div>
+			<div><span>Paste</span></div>
+		</div>
+
+		<div class="contextMenu">
+			<div><span>Delete</span></div>
+			<div><span>Rename</span></div>
+			<div><span>Properties</span></div>
+		</div>
+
+		<div class="contextMenu"></div>
+
     </div>
 	
 </body>

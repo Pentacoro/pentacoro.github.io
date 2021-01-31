@@ -115,6 +115,16 @@ function dragIcon(elmnt, _this) {
 	}
 }
 
+function menuIcon(elmnt, _this) {
+    elmnt.oncontextmenu = contextMenu;
+
+    function contextMenu(e) {
+        e.preventDefault();
+        
+        return false;
+    }
+}
+
 function statIconNode(elmnt, _this) {
     //0 => unselected | 1 => selected | 2 => moving
     switch(_this.stat){
@@ -160,7 +170,7 @@ function crteIconNode(_this) {
     newIconText.appendChild(newIconTextNode);
     newIcon.appendChild(newIconText);
 
-    document.getElementById("desktop").appendChild(newIcon);
+    document.getElementById("iconLayer").appendChild(newIcon);
     _this.statNode();
     _this.poseNode();
     _this.drag();
