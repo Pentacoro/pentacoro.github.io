@@ -53,6 +53,8 @@ function iframeAntiHover (coin) {
 
 const idSelectBox = document.getElementById('selectBox');
 
+const idCtextMenu = document.getElementById("contextMenu");
+
 const classIcon   =   document.getElementsByClassName("icon");
 
 const classActive = document.getElementsByClassName("active");
@@ -69,13 +71,7 @@ var iconGrid = true;
 		let target = event.target;
 		//if not clicking folder or window------------------------------|
 		if(
-			target.classList.contains("icon")==false &&
-			target.parentElement.classList.contains("icon")==false &&
-			target.classList.contains("window")==false &&
-			target.parentElement.classList.contains("window")==false &&
-			target.classList.contains("windowInner")==false &&
-			target.parentElement.classList.contains("windowInner")==false &&
-			target.parentElement.id !== "windowBorder" &&
+			target.id == "background" &&
 			keyPressCtrl == false
 		) {
 			for (i = iconArray.length - 1; i >= 0; i--){
@@ -99,23 +95,17 @@ function selectBox() {
 	let pos1 = 0, pos2 = 0, posxIn = 0, posyIn = 0;
 	
 	//when desktop click------------------------------------------------|
-	document.getElementById('background').onmousedown = function(event) {
+	document.getElementById('background').addEventListener("mousedown", function(event) {
 		let target = event.target;
 		//if not clicking folder or window------------------------------|
 		if(
-			target.classList.contains("icon")==false &&
-			target.parentElement.classList.contains("icon")==false &&
-			target.classList.contains("window")==false &&
-			target.parentElement.classList.contains("window")==false &&
-			target.classList.contains("windowInner")==false &&
-			target.parentElement.classList.contains("windowInner")==false &&
-			target.parentElement.id !== "windowBorder"
+			target.id == "background"
 		) {
 			pos1 = 0;
 			pos2 = 0; 
 			selectBoxPosition();
 		} 
-	}
+	});
 	
 	//get initial mouse position-----------|
 	function selectBoxPosition(e) {

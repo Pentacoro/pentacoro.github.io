@@ -10,6 +10,8 @@ function dragIcon(elmnt, _this) {
 	function dragMouseDown(e) {
 		e = e || window.event;
         e.preventDefault();
+
+        if(e.button == 0) 
 		
 		//get initial cursor position:
 		pos3 = e.clientX;
@@ -43,7 +45,7 @@ function dragIcon(elmnt, _this) {
 		}
 		
         document.onmouseup = closeDragIcon;
-		document.onmousemove = iconDrag;
+		if(e.button == 0) {document.onmousemove = iconDrag}
 		iframeAntiHover (true);
 	}								 
 
@@ -74,7 +76,7 @@ function dragIcon(elmnt, _this) {
 		}
 	}
 
-	function closeDragIcon() {	
+	function closeDragIcon(e) {	
 		//stop moving when mouse button is released:
 		document.onmouseup = null;
 		document.onmousemove = null;
@@ -95,7 +97,7 @@ function dragIcon(elmnt, _this) {
 		}
 		
 		//unselect other folders on mouseup W/O drag UNLESS ctrl
-		if(keyPressCtrl == false && dragging == false) {
+		if(keyPressCtrl == false && dragging == false && e.button == 0) {
 			for (i = iconArray.length - 1; i >= 0; i--){
                 iconArray[i].stat = 0;
                 iconArray[i].statNode();
@@ -116,12 +118,30 @@ function dragIcon(elmnt, _this) {
 }
 
 function menuIcon(elmnt, _this) {
+
     elmnt.oncontextmenu = contextMenu;
 
     function contextMenu(e) {
         e.preventDefault();
-        
+
+        idCtextMenu.style.display = "grid";
+        idCtextMenu.style.top = e.clientY + "px";
+        idCtextMenu.style.left = e.clientX + "px";
+
         return false;
+    }
+
+    document.getElementById("background").addEventListener("mousedown", closeContextMenu);
+
+    function closeContextMenu(e) {
+        let target = e.target
+
+        if(
+            target.parentElement.classList.contains("contextMenu") == false &&
+            target.parentElement.parentElement.classList.contains("contextMenu") == false
+        ) {
+            idCtextMenu.style.display = "";
+        }
     }
 }
 

@@ -3,14 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="styles/styles.css">
+	<link rel="stylesheet" href="styles/styles.css">
+	<link rel="stylesheet" href="styles/contextMenu.css">
     <title>Norrum Plexus</title>
 </head>
 <body>
 
 	<div id="background">
 		<div id="desktop">
+
 			<div id="selectBox"></div>
+
+			<div id="contextMenu">
+
+				<div class="contextMenu cmenu">
+					<div>
+						<div style="background-image: url('assets/svg/contextMenu/open.svg');"></div>
+						<span>Open</span><input type="radio" name="openCheck" class="cmcheck" id="openCheck">
+					</div>
+					<div>
+						<div style="background-image: url('assets/svg/contextMenu/maximize.svg');"></div>
+						<span>Open maximized</span><input type="radio" name="openCheck" class="cmcheck" id="maxiCheck">
+					</div>
+					<div>
+						<div style="background-image: url('assets/svg/contextMenu/newtab.svg');"></div>
+						<span>Open in new tab</span><input type="radio" name="openCheck" class="cmcheck" id="newtCheck">
+					</div>
+				</div>
+		
+				<div class="contextMenu">
+					<div><div style="background-image: url('assets/svg/contextMenu/cut.svg');"></div><span>Cut</span></div>
+					<div><div style="background-image: url('assets/svg/contextMenu/copy.svg');"></div><span>Copy</span></div>
+					<div><div style="background-image: url('assets/svg/contextMenu/paste.svg');"></div><span>Paste</span></div>
+				</div>
+		
+				<div class="contextMenu">
+					<div><div style="background-image: url('assets/svg/contextMenu/delete.svg');"></div><span>Delete</span></div>
+					<div><div style="background-image: url('assets/svg/contextMenu/rename.svg');"></div><span>Rename</span></div>
+					<div><div style="background-image: url('assets/svg/contextMenu/properties.svg');"></div><span>Properties</span></div>
+				</div>
+		
+				<div class="contextMenu" id="contestMenuBottomBorder"></div>
+		
+			</div>
 			
 			<div id="windowSettings" class="window">
 				<div class="windowInner">
