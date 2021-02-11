@@ -122,34 +122,27 @@ function dragIcon(elmnt, _this) {
 
 function menuIcon(elmnt, _this) {
 
-    elmnt.oncontextmenu = contextMenu;
+    elmnt.oncontextmenu = iconMenu;
 
-    function contextMenu(e) {
+    function iconMenu(e) {
         e.preventDefault();
 
-        idCtextMenu.style.display = "grid";
-        idCtextMenu.style.top = e.clientY + "px";
-        idCtextMenu.style.left = e.clientX + "px";
+        if(
+            e.target.classList.contains("icon") ||
+            e.target.parentNode.classList.contains("icon")
+        ) {
+            closeMenu();
 
-        iconMenuOpen(elmnt, _this);
+            idCtextMenu.style.display = "grid";
+            idCtextMenu.style.top = e.clientY + "px";
+            idCtextMenu.style.left = e.clientX + "px";
 
-        idBackground.onclick = closeContextMenu;
+            iconMenuOpen(elmnt, _this);
 
-        return false;
-    }
-}
+            idBackground.onclick = closeMenu;
 
-function closeContextMenu(e) {
-    let target = e.target
-
-    if(
-        target.classList.contains("cmcheck") == false
-    ) {
-        idCtextMenu.style.display = "";
-
-        iconMenuClose();
-
-        idBackground.removeEventListener("click", closeContextMenu);
+            return false;
+        }
     }
 }
 
@@ -202,6 +195,7 @@ function crteIconNode(_this) {
     _this.statNode();
     _this.poseNode();
     _this.drag();
+    _this.menu();
 }
 
 function dlteIconNode(_this) {
@@ -212,30 +206,6 @@ function dlteIconNode(_this) {
             iconArray.splice(i, 1);
         }
     }
-}
-
-function iconMenuOpen(elmnt, _this) {
-    document.getElementById("iconCM1").onclick = (e) => {iconOpen(e, elmnt, _this)}
-    document.getElementById("iconCM2").onclick = (e) => {iconMaximize(e, elmnt, _this)}
-    document.getElementById("iconCM3").onclick = (e) => {iconNewtab(e, elmnt, _this)}
-    document.getElementById("iconCM4").onclick = (e) => {iconCut(e, elmnt, _this)}
-    document.getElementById("iconCM5").onclick = (e) => {iconCopy(e, elmnt, _this)}
-    document.getElementById("iconCM6").onclick = (e) => {iconPaste(e, elmnt, _this)}
-    document.getElementById("iconCM7").onclick = (e) => {iconDelete(e, elmnt, _this)}
-    document.getElementById("iconCM8").onclick = (e) => {iconRename(e, elmnt, _this)}
-    document.getElementById("iconCM9").onclick = (e) => {iconProperties(e, elmnt, _this)}
-}
-
-function iconMenuClose(){
-    document.getElementById("iconCM1").onclick = null;
-    document.getElementById("iconCM2").onclick = null;
-    document.getElementById("iconCM3").onclick = null;
-    document.getElementById("iconCM4").onclick = null;
-    document.getElementById("iconCM5").onclick = null;
-    document.getElementById("iconCM6").onclick = null;
-    document.getElementById("iconCM7").onclick = null;
-    document.getElementById("iconCM8").onclick = null;
-    document.getElementById("iconCM9").onclick = null;
 }
 
 //------------------------------------------------------------------------icon behavior|

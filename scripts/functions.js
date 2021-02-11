@@ -69,13 +69,14 @@ const classWindow = document.getElementsByClassName("window");
 
 var iconGrid = true;
 
+//background behavior------------------------------------------------------------------------------|
+
 //unselect all folders when desktop click:------------------------------|
-	//when desktop click------------------------------------------------|
-	document.onmousedown = function(event) {
-		let target = event.target;
-		//if not clicking folder or window------------------------------|
+	//when desktop click-------------------|
+	document.onmousedown = function(e) {
+		//if not clicking folder or window--------------|
 		if(
-			target.id == "background" &&
+			e.target.id == "background" &&
 			keyPressCtrl == false
 		) {
 			for (i = iconArray.length - 1; i >= 0; i--){
@@ -85,6 +86,36 @@ var iconGrid = true;
 		} 
 	}
 //----------------------------------------------------------------------|
+
+idBackground.oncontextmenu = deskMenu;
+
+function deskMenu(e) {
+	e.preventDefault();
+	if(
+		e.target.id == "background"
+	) {
+		closeMenu();
+		idDesktMenu.style.display = "grid";
+		idDesktMenu.style.top = e.clientY + "px";
+		idDesktMenu.style.left = e.clientX + "px";
+
+		deskMenuOpen();
+	
+		idBackground.onclick = closeMenu;
+	}
+	return false; 
+}
+function closeMenu() {
+    idDesktMenu.style.display = "";
+	idCtextMenu.style.display = "";
+
+	iconMenuClose();
+	deskMenuClose();
+
+	idBackground.onclick = null;
+}
+
+//------------------------------------------------------------------------------background behavior|
 
 function highlight(hIcon) {
     hIcon.style.border = '3px dotted rgb(255,255,255,0.16)';

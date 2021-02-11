@@ -39,6 +39,5 @@ iconArray.push(new Icon ("background-image: url('assets/svg/desktopIcons/setting
 //iconArray[4].createNode();
 
 for (i = iconArray.length - 1; i >= 0; i--){
-    iconArray[i].drag();
-    iconArray[i].menu();
+    iconArray[i].createNode();
 }
