@@ -1,4 +1,5 @@
 //icon behavior------------------------------------------------------------------------|
+var shouldSelect = true;
 
 var dragging = false;
 
@@ -26,22 +27,24 @@ function dragIcon(elmnt, _this) {
 				//---------------------------------------|
 			}
 		} else {
-			//light up 1 hover border onmousedown:
-			highlight(elmnt);
-			elmnt.style.backgroundColor = 'rgb(0,0,0,0)';
-			
-			//when mousedown on unselected folder
-			if(keyPressCtrl == false && dragging == false) {
-				for (i = iconArray.length - 1; i >= 0; i--){
-                    iconArray[i].stat = 0;
-                    iconArray[i].statNode();
+            if (shouldSelect == true) {
+                //light up 1 hover border onmousedown:
+                highlight(elmnt);
+                elmnt.style.backgroundColor = 'rgb(0,0,0,0)';
+                
+                //when mousedown on unselected folder
+                if(keyPressCtrl == false && dragging == false) {
+                    for (i = iconArray.length - 1; i >= 0; i--){
+                        iconArray[i].stat = 0;
+                        iconArray[i].statNode();
+                    }
+                    _this.stat = 1;
+                    highlight(elmnt);
+                } else if(keyPressCtrl == true) {
+                    _this.stat = 1;
+                    highlight(elmnt);
                 }
-                _this.stat = 1;
-                highlight(elmnt);
-			} else if(keyPressCtrl == true) {
-                _this.stat = 1;
-                highlight(elmnt);
-			}
+            }
 		}
 		
         document.onmouseup = closeDragIcon;
@@ -128,20 +131,25 @@ function menuIcon(elmnt, _this) {
         idCtextMenu.style.top = e.clientY + "px";
         idCtextMenu.style.left = e.clientX + "px";
 
+        iconMenuOpen(elmnt, _this);
+
+        idBackground.onclick = closeContextMenu;
+
         return false;
     }
+}
 
-    document.getElementById("background").addEventListener("mousedown", closeContextMenu);
+function closeContextMenu(e) {
+    let target = e.target
 
-    function closeContextMenu(e) {
-        let target = e.target
+    if(
+        target.classList.contains("cmcheck") == false
+    ) {
+        idCtextMenu.style.display = "";
 
-        if(
-            target.parentElement.classList.contains("contextMenu") == false &&
-            target.parentElement.parentElement.classList.contains("contextMenu") == false
-        ) {
-            idCtextMenu.style.display = "";
-        }
+        iconMenuClose();
+
+        idBackground.removeEventListener("click", closeContextMenu);
     }
 }
 
@@ -204,6 +212,30 @@ function dlteIconNode(_this) {
             iconArray.splice(i, 1);
         }
     }
+}
+
+function iconMenuOpen(elmnt, _this) {
+    document.getElementById("iconCM1").onclick = (e) => {iconOpen(e, elmnt, _this)}
+    document.getElementById("iconCM2").onclick = (e) => {iconMaximize(e, elmnt, _this)}
+    document.getElementById("iconCM3").onclick = (e) => {iconNewtab(e, elmnt, _this)}
+    document.getElementById("iconCM4").onclick = (e) => {iconCut(e, elmnt, _this)}
+    document.getElementById("iconCM5").onclick = (e) => {iconCopy(e, elmnt, _this)}
+    document.getElementById("iconCM6").onclick = (e) => {iconPaste(e, elmnt, _this)}
+    document.getElementById("iconCM7").onclick = (e) => {iconDelete(e, elmnt, _this)}
+    document.getElementById("iconCM8").onclick = (e) => {iconRename(e, elmnt, _this)}
+    document.getElementById("iconCM9").onclick = (e) => {iconProperties(e, elmnt, _this)}
+}
+
+function iconMenuClose(){
+    document.getElementById("iconCM1").onclick = null;
+    document.getElementById("iconCM2").onclick = null;
+    document.getElementById("iconCM3").onclick = null;
+    document.getElementById("iconCM4").onclick = null;
+    document.getElementById("iconCM5").onclick = null;
+    document.getElementById("iconCM6").onclick = null;
+    document.getElementById("iconCM7").onclick = null;
+    document.getElementById("iconCM8").onclick = null;
+    document.getElementById("iconCM9").onclick = null;
 }
 
 //------------------------------------------------------------------------icon behavior|

@@ -51,6 +51,8 @@ function iframeAntiHover (coin) {
 
 //HTML element references------------------------------------|
 
+const idBackground= document.getElementById("background");
+
 const idSelectBox = document.getElementById('selectBox');
 
 const idCtextMenu = document.getElementById("contextMenu");
@@ -95,7 +97,7 @@ function selectBox() {
 	let pos1 = 0, pos2 = 0, posxIn = 0, posyIn = 0;
 	
 	//when desktop click------------------------------------------------|
-	document.getElementById('background').addEventListener("mousedown", function(event) {
+	idBackground.addEventListener("mousedown", function(event) {
 		let target = event.target;
 		//if not clicking folder or window------------------------------|
 		if(

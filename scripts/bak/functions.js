@@ -228,7 +228,7 @@ function selectBox() {
 	var pos1 = 0, pos2 = 0, posxIn = 0, posyIn = 0;
 	
 	//when desktop click------------------------------------------------|
-	document.getElementById('background').onmousedown = function(event) {
+	idBackground.onmousedown = function(event) {
 		var $target = event.target;
 		//if not clicking folder or window------------------------------|
 		if(
