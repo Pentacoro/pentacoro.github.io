@@ -54,6 +54,7 @@ function iconDelete(e, elmnt, _this){
         !(e.target.classList.contains("cmcheck"))
     ) {
         console.log("Delete");
+        deleteSelectedNodes();
     }
 }
 function iconRename(e, elmnt, _this){

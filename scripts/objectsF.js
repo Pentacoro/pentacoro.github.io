@@ -208,6 +208,15 @@ function dlteIconNode(_this) {
     }
 }
 
+function deleteSelectedNodes(){
+    iconsToDelete = iconArray.filter((icon) => {return icon.stat == 1})
+    for(icon of iconsToDelete){
+        if(icon.stat == 1){
+            icon.deleteNode();
+        }
+    }
+}
+
 //------------------------------------------------------------------------icon behavior|
 
 /*
