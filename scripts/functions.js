@@ -55,7 +55,9 @@ const idBackground= document.getElementById("background");
 
 const idSelectBox = document.getElementById('selectBox');
 
-const idCtextMenu = document.getElementById("contextMenu");
+const idCtextMenu = document.getElementById("iconContextMenu");
+
+const idDesktMenu = document.getElementById("deskContextMenu")
 
 const classIcon   =   document.getElementsByClassName("icon");
 

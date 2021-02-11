@@ -62,28 +62,36 @@ function iconRename(e, elmnt, _this){
         !(e.target.classList.contains("cmcheck"))
     ) {
         console.log("Rename");
-        console.log(elmnt.childNodes[3]);
-        elmnt.childNodes[3].setAttribute("contenteditable", "true");
-        elmnt.childNodes[3].setAttribute("spellcheck", "false");
-        elmnt.childNodes[3].focus();
-        window.getSelection().setBaseAndExtent(elmnt.childNodes[3],0,elmnt.childNodes[3],1);
+        let iconText = elmnt.childNodes[3];
+        //make h3 editable --------------------|
+        iconText.setAttribute("contenteditable", "true");
+        iconText.setAttribute("spellcheck", "false");
+        iconText.focus();
+        window.getSelection().setBaseAndExtent(iconText,0,iconText,1);
 
         setTimeout( () => {
             document.body.onmousedown = () => {
                 if(
-                    iconNameExists(elmnt.childNodes[3].textContent, _this) == false &&
-                    elmnt.childNodes[3].textContent != "Name me!" &&
-                    elmnt.childNodes[3].textContent != ""
+                    iconNameExists(iconText.textContent, _this) == false &&
+                    iconText.textContent != "Name me!" &&
+                    iconText.textContent != ""
                 ) {
-                    elmnt.childNodes[3].setAttribute("contenteditable", "false");
-                    elmnt.id = elmnt.childNodes[3].textContent;
-                    _this.text = elmnt.childNodes[3].textContent;
-                    elmnt.childNodes[3].style.backgroundColor = "";
+                    //if the name is allowed --------------------|
                     shouldSelect = true;
+
+                    iconText.setAttribute("contenteditable", "false");
+                    elmnt.id = iconText.textContent;
+                    _this.text = iconText.textContent;
+                    iconText.style.backgroundColor = "";
+
                     document.body.onmousedown = null;
                 } else {
-                    elmnt.childNodes[3].style.backgroundColor = "#c90000";
+                    //if the name not allowed --------------------|
                     shouldSelect = false;
+
+                    iconText.style.backgroundColor = "#c90000";
+
+                    //insist -> keep only edited selected
                     document.body.onclick = () => {
                         for (i = iconArray.length - 1; i >= 0; i--){
                             iconArray[i].stat = 0;
@@ -92,13 +100,19 @@ function iconRename(e, elmnt, _this){
                         _this.stat = 1;
                         _this.statNode();
                         _this.stat = 0;
+
                         document.body.onclick = null;
                     }
+                    //restore -> leave icon unmodified
                     document.body.oncontextmenu = () => {
-                        elmnt.childNodes[3].textContent = _this.text
-                        elmnt.childNodes[3].setAttribute("contenteditable", "false"); 
-                        elmnt.childNodes[3].style.backgroundColor = "";
                         shouldSelect = true;
+                        
+                        _this.statNode();
+
+                        iconText.textContent = _this.text
+                        iconText.setAttribute("contenteditable", "false"); 
+                        iconText.style.backgroundColor = "";
+
                         document.body.oncontextmenu = null;
                         document.body.onmousedown = null;
                         document.body.onclick = null;
@@ -125,3 +139,4 @@ function iconProperties(e, elmnt, _this){
         console.log("Properties");
     }
 }
+

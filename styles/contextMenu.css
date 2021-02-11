@@ -1,4 +1,4 @@
-#contextMenu {
+#deskContextMenu,#iconContextMenu {
     position: absolute;
 
     width: 220px;
