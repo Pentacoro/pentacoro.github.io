@@ -118,7 +118,7 @@ function closeMenu() {
 //------------------------------------------------------------------------------background behavior|
 
 function highlight(hIcon) {
-    hIcon.style.border = '3px dotted rgb(255,255,255,0.16)';
+    hIcon.style.border = '3px dotted rgb(255,255,255,0.24)';
 } 
 function lowlight(hIcon) {
     hIcon.style.border = '';

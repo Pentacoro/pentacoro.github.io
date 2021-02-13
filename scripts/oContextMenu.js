@@ -102,6 +102,9 @@ function iconRename(e, elmnt, _this){
                         _this.statNode();
                         _this.stat = 0;
 
+                        iconText.focus();
+                        window.getSelection().setBaseAndExtent(iconText,0,iconText,1);
+
                         document.body.onclick = null;
                     }
                     //restore -> leave icon unmodified
@@ -166,6 +169,7 @@ function deskNew(e){
 
         let iconPosX = (Math.round((initialX-iconWidth)/120)*120 + 10);
         let iconPosY = (Math.round((initialY-iconHeight)/120)*120 + 10);
+
         iconArray.push(new Icon ("background-image: url('assets/svg/desktopIcons/filePlaceholder.svg');", "Name me!", "explorerExe", 1, iconPosX, iconPosY));
         let createdIcon = iconArray[iconArray.length - 1]
         createdIcon.createNode();
@@ -208,6 +212,9 @@ function deskNew(e){
                         createdIcon.stat = 1;
                         createdIcon.statNode();
                         createdIcon.stat = 0;
+
+                        iconText.focus();
+                        window.getSelection().setBaseAndExtent(iconText,0,iconText,1);
 
                         document.body.onclick = null;
                     }
