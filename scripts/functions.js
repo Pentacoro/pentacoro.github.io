@@ -11,20 +11,23 @@ function iframeAntiHover (coin) {
 	}
 }
 
+window.onmousedown = (e) => {console.log(e.target)};
+window.onkeydown = (e) => {console.log(e.key)};
+
 //Boolean key checks-----------------------------------------------|
 	var keyPressCtrl = false; //17
 	var keyPressC = false; //67
 
 	//C KEY-------------------------------------------------|
 		window.addEventListener('keydown', function(e){
-			if(e.keyCode === 67 && keyPressC === false){
+			if(e.key === "c" && keyPressC === false){
 				keyPressC = true;
 				console.log("c " + keyPressC);
 			}
 		})
 
 		window.addEventListener('keyup', function(e){
-			if(e.keyCode === 67 && keyPressC === true){
+			if(e.key === "c" && keyPressC === true){
 				keyPressC = false;
 				console.log("c " + keyPressC);
 			}
@@ -33,14 +36,14 @@ function iframeAntiHover (coin) {
 
 	//CONTROL-----------------------------------------------|
 		window.addEventListener('keydown', function(e){
-			if(e.keyCode === 17 && keyPressCtrl === false){
+			if(e.key === "Control" && keyPressCtrl === false){
 				keyPressCtrl = true;
 				console.log("ctrl " + keyPressCtrl);
 			}
 		})
 
 		window.addEventListener('keyup', function(e){
-			if(e.keyCode === 17 && keyPressCtrl === true){
+			if(e.key === "Control" && keyPressCtrl === true){
 				keyPressCtrl = false;
 				console.log("ctrl " + keyPressCtrl);
 			}
@@ -51,15 +54,15 @@ function iframeAntiHover (coin) {
 
 //HTML element references------------------------------------|
 
-const idBackground= document.getElementById("background");
+const idBackground= document.getElementById('background');
 
 const idSelectBox = document.getElementById('selectBox');
 
 const idCtextMenu = document.getElementById("iconContextMenu");
 
-const idDesktMenu = document.getElementById("deskContextMenu")
+const idDesktMenu = document.getElementById("deskContextMenu");
 
-const classIcon   =   document.getElementsByClassName("icon");
+const classIcon   = document.getElementsByClassName("icon");
 
 const classActive = document.getElementsByClassName("active");
 
@@ -89,6 +92,8 @@ var iconGrid = true;
 
 idBackground.oncontextmenu = deskMenu;
 
+idBackground.onclick = (e) => {if(e.target.classList.contains("cmcheck") == false){closeMenu()}};
+
 function deskMenu(e) {
 	e.preventDefault();
 	if(
@@ -100,8 +105,6 @@ function deskMenu(e) {
 		idDesktMenu.style.left = e.clientX + "px";
 
 		deskMenuOpen();
-	
-		idBackground.onclick = closeMenu;
 	}
 	return false; 
 }
@@ -111,14 +114,12 @@ function closeMenu() {
 
 	iconMenuClose();
 	deskMenuClose();
-
-	idBackground.onclick = null;
 }
 
 //------------------------------------------------------------------------------background behavior|
 
 function highlight(hIcon) {
-    hIcon.style.border = '3px dotted rgb(255,255,255,0.24)';
+    hIcon.style.border = '3px dotted rgb(255,255,255,0.30)';
 } 
 function lowlight(hIcon) {
     hIcon.style.border = '';
@@ -130,7 +131,7 @@ function selectBox() {
 	let pos1 = 0, pos2 = 0, posxIn = 0, posyIn = 0;
 	
 	//when desktop click------------------------------------------------|
-	idBackground.addEventListener("mousedown", function(event) {
+	document.body.addEventListener("mousedown", function(event) {
 		let target = event.target;
 		//if not clicking folder or window------------------------------|
 		if(
@@ -237,6 +238,18 @@ function selectBox() {
 
 //window behavior----------------------------------------------------------------------------------|
 
+for (i = 0; i < document.getElementsByClassName("windowButton").length; i++){
+	let windowButton = document.getElementsByClassName("windowButton")[i];
+	windowButton.onmousedown = () => {windowButtonClick(windowButton)};
+}
+function windowButtonClick(button){
+	button.classList.add("mousedown");
+	window.onmouseup = () => {
+		button.classList.remove("mousedown");
+		window.onmouseup = null;
+	}
+}
+
 //all .window divs act like windows------|
 for (i = 0; i < classWindow.length; i++) {
 	dragWindow(classWindow[i]);
@@ -259,6 +272,8 @@ for (i = 0; i < classWindow.length; i++) {
 		function dragMouseDown(e) {
 			e = e || window.event;
 			e.preventDefault();
+
+			if (e.target.classList.contains("windowButton") == false) {
 			//get initial cursor position:
 			pos3 = e.clientX;
 			pos4 = e.clientY;
@@ -266,7 +281,9 @@ for (i = 0; i < classWindow.length; i++) {
 			document.onmouseup = closeDragWindow;
 			document.onmousemove = windowDrag;
 			iframeAntiHover (true);
+			}
 		}
+		
 		function windowDrag(e) {
 			e = e || window.event;
 			e.preventDefault();

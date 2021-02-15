@@ -139,8 +139,6 @@ function menuIcon(elmnt, _this) {
 
             iconMenuOpen(elmnt, _this);
 
-            idBackground.onclick = closeMenu;
-
             return false;
         }
     }

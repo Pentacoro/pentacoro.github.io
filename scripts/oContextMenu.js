@@ -70,8 +70,42 @@ function iconRename(e, elmnt, _this){
         iconText.focus();
         window.getSelection().setBaseAndExtent(iconText,0,iconText,1);
 
+        iconText.style.textShadow = "none";
+
+        //restore -> leave icon unmodified
+        document.body.oncontextmenu = iconRenamingRestore;
+        window.onkeydown = (e) => {if(e.key == "Escape"){
+            iconRenamingRestore();
+            return false;
+        }};
+        function iconRenamingRestore(){
+            shouldSelect = true;
+            
+            _this.statNode();
+
+            iconText.textContent = _this.text
+            iconText.setAttribute("contenteditable", "false"); 
+            iconText.style.backgroundColor = "";
+            iconText.style.textShadow = "";
+
+            iconText.blur();
+            clearSelection();
+
+            document.body.oncontextmenu = null;
+            document.body.onmousedown = null;
+            document.body.onclick = null;
+            iconText.onkeydown = null;
+            window.onkeydown = null;
+            window.onkeyup = null;
+        }
+
         setTimeout( () => {
-            document.body.onmousedown = () => {
+            document.body.onmousedown = iconRenaming;
+            iconText.onkeydown = (e) => {if(e.key == "Enter" && e.shiftKey == false){
+                iconRenaming();
+                return false;
+            }};
+            function iconRenaming(){
                 if(
                     iconNameExists(iconText.textContent, _this) == false &&
                     iconText.textContent != "Name me!" &&
@@ -84,16 +118,29 @@ function iconRename(e, elmnt, _this){
                     elmnt.id = iconText.textContent;
                     _this.text = iconText.textContent;
                     iconText.style.backgroundColor = "";
+                    iconText.style.textShadow = "";
 
+                    iconText.blur();
+                    clearSelection();
+
+                    document.body.oncontextmenu = null;
                     document.body.onmousedown = null;
+                    document.body.onclick = null;
+                    iconText.onkeydown = null;
+                    window.onkeydown = null;
+                    window.onkeyup = null;
                 } else {
                     //if the name not allowed --------------------|
                     shouldSelect = false;
-
                     iconText.style.backgroundColor = "#c90000";
 
                     //insist -> keep only edited selected
-                    document.body.onclick = () => {
+                    document.body.onclick = iconRenamingInsist;
+                    window.onkeyup = (e) => {if(e.key == "Enter"){
+                        iconRenamingInsist();
+                        return false;
+                    }};
+                    function iconRenamingInsist(){
                         for (i = iconArray.length - 1; i >= 0; i--){
                             iconArray[i].stat = 0;
                             iconArray[i].statNode();
@@ -101,25 +148,9 @@ function iconRename(e, elmnt, _this){
                         _this.stat = 1;
                         _this.statNode();
                         _this.stat = 0;
-
+        
                         iconText.focus();
                         window.getSelection().setBaseAndExtent(iconText,0,iconText,1);
-
-                        document.body.onclick = null;
-                    }
-                    //restore -> leave icon unmodified
-                    document.body.oncontextmenu = () => {
-                        shouldSelect = true;
-                        
-                        _this.statNode();
-
-                        iconText.textContent = _this.text
-                        iconText.setAttribute("contenteditable", "false"); 
-                        iconText.style.backgroundColor = "";
-
-                        document.body.oncontextmenu = null;
-                        document.body.onmousedown = null;
-                        document.body.onclick = null;
                     }
                 }
             }
@@ -181,8 +212,35 @@ function deskNew(e){
         iconText.focus();
         window.getSelection().setBaseAndExtent(iconText,0,iconText,1);
 
+        iconText.style.textShadow = "none";
+
+        //delete -> cancel icon creation
+        document.body.oncontextmenu = iconNamingDelete;
+        window.onkeydown = (e) => {if(e.key == "Escape"){
+            iconNamingDelete();
+            return false;
+        }};
+        function iconNamingDelete(){
+            shouldSelect = true;
+                
+            createdIcon.deleteNode();
+
+            document.body.oncontextmenu = null;
+            document.body.onmousedown = null;
+            document.body.onclick = null;
+            iconText.onkeydown = null;
+            window.onkeydown = null;
+            window.onkeyup = null;
+        }
+
         setTimeout( () => {
-            document.body.onmousedown = () => {
+            document.body.onmousedown = iconNaming;
+            iconText.onkeydown = (e) => {if(e.key == "Enter" && e.shiftKey == false){
+                iconNaming();
+                return false;
+            }};
+
+            function iconNaming(){
                 if(
                     iconNameExists(iconText.textContent, createdIcon) == false &&
                     iconText.textContent != "Name me!" &&
@@ -190,21 +248,34 @@ function deskNew(e){
                 ) {
                     //if the name is allowed --------------------|
                     shouldSelect = true;
-
+        
                     iconText.setAttribute("contenteditable", "false");
                     document.getElementById(createdIcon.text).id = iconText.textContent;
                     createdIcon.text = iconText.textContent;
                     iconText.style.backgroundColor = "";
-
+                    iconText.style.textShadow = "";
+        
+                    iconText.blur();
+                    clearSelection();
+        
+                    document.body.oncontextmenu = null;
                     document.body.onmousedown = null;
+                    document.body.onclick = null;
+                    iconText.onkeydown = null;
+                    window.onkeydown = null;
+                    window.onkeyup = null;
                 } else {
                     //if the name not allowed --------------------|
                     shouldSelect = false;
-
                     iconText.style.backgroundColor = "#c90000";
-
+        
                     //insist -> keep only edited selected
-                    document.body.onclick = () => {
+                    document.body.onclick = iconNamingInsist;
+                    window.onkeyup = (e) => {if(e.key == "Enter" && e.shiftKey == false){
+                        iconNamingInsist();
+                        return false;
+                    }};
+                    function iconNamingInsist(){
                         for (i = iconArray.length - 1; i >= 0; i--){
                             iconArray[i].stat = 0;
                             iconArray[i].statNode();
@@ -212,36 +283,25 @@ function deskNew(e){
                         createdIcon.stat = 1;
                         createdIcon.statNode();
                         createdIcon.stat = 0;
-
+        
                         iconText.focus();
                         window.getSelection().setBaseAndExtent(iconText,0,iconText,1);
-
-                        document.body.onclick = null;
-                    }
-                    //delete -> cancel icon creation
-                    document.body.oncontextmenu = () => {
-                        shouldSelect = true;
-                        
-                        createdIcon.deleteNode();
-
-                        document.body.oncontextmenu = null;
-                        document.body.onmousedown = null;
-                        document.body.onclick = null;
                     }
                 }
             }
         }, 1);
+    }
 
-        function iconNameExists(name, _this){
-            for (i = iconArray.length - 1; i >= 0; i--){
-                if (iconArray[i].text == name && iconArray[i] != _this) {
-                    return true;
-                }
+    function iconNameExists(name, _this){
+        for (i = iconArray.length - 1; i >= 0; i--){
+            if (iconArray[i].text == name && iconArray[i] != _this) {
+                return true;
             }
-            return false;
         }
+        return false;
     }
 }
+
 function deskPaste(e){
     if(
         (e.target.parentElement.id == "deskCM3" || e.target.id == "deskCM3") &&
@@ -309,3 +369,8 @@ function deskMenuClose() {
     document.getElementById("deskCM5").onclick = null;
 }
 
+function clearSelection()
+{
+ if (window.getSelection) {window.getSelection().removeAllRanges();}
+ else if (document.selection) {document.selection.empty();}
+}

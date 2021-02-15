@@ -1,0 +1,201 @@
+/*WINDOW SETTINGS------------------------------*/
+.window {
+	position: absolute;
+
+	width: 600px;
+	height: 600px;
+
+	top: 200px;
+	left: 400px;
+
+	background-color: rgba(255,255,255,0);
+	padding: 5px;
+	z-index: 10;
+
+	min-height: 250px;
+	min-width: 178px;
+}
+
+.windowInner {
+	width: 100%;
+	height: 100%;
+
+	display: grid;
+	grid-template-rows: 46px auto 0px;
+
+    outline: 1px solid #28373d;
+
+	background-color: #00A2E8;
+	padding: 0px;
+}
+
+/*WINDOW BORDER RESIZERS--------*/
+#windowBorder>#windowEtop {
+	width: 100%;
+	height: 6px;
+	background: transparent;
+	position: absolute;
+	right: 0;
+	top: 0;
+	cursor: n-resize;
+}
+#windowBorder>#windowEbot {
+	width: 100%;
+	height: 6px;
+	background: transparent;
+	position: absolute;
+	right: 0;
+	bottom: 0;
+	cursor: n-resize;
+}
+#windowBorder>#windowElef {
+	width: 6px;
+	height: 100%;
+	background: transparent;
+	position: absolute;
+	left: 0;
+	bottom: 0;
+	cursor: e-resize;
+}
+#windowBorder>#windowErig {
+	width: 6px;
+	height: 100%;
+	background: transparent;
+	position: absolute;
+	right: 0;
+	bottom: 0;
+	cursor: e-resize;
+}
+#windowBorder>#windowCtl {
+	width: 6px;
+	height: 6px;
+	z-index: 10;
+	position: absolute;
+	left: 0;
+	top: 0;
+	cursor: nw-resize;
+}
+#windowBorder>#windowCtr {
+	width: 6px;
+	height: 6px;
+	z-index: 10;
+	position: absolute;
+	right: 0;
+	top: 0;
+	cursor: ne-resize;
+}
+#windowBorder>#windowCbr {
+	width: 6px;
+	height: 6px;
+	z-index: 10;
+	position: absolute;
+	right: 0;
+	bottom: 0;
+	cursor: nw-resize;
+	z-index: 2;
+}
+#windowBorder>#windowCbl {
+	width: 6px;
+	height: 6px;
+	z-index: 10;
+	position: absolute;
+	left: 0;
+	bottom: 0;
+	cursor: ne-resize;
+}
+/*--------WINDOW BORDER RESIZERS*/
+
+.windowInner>.header {
+	position: sticky;
+	top: 0%;
+
+    display: grid;
+    grid-template-columns: auto 36px 36px 36px;
+    grid-column-gap: 0px;
+
+    box-sizing: initial;
+
+    border-top-color: #71D5FF;
+    border-right-color: #71D5FF;
+    border-bottom-color: #0F7B9B;
+    border-left-color: #0F7B9B;
+    border-style: solid;
+    border-width: 3px;
+
+	background-color: #00A2E8;
+
+	cursor: default;
+}
+
+.windowInner>.header>.windowName{
+    color: #FFFFFF;
+	font-size: 20px;
+	font-weight: auto;
+
+    padding: .4em;
+	margin-bottom: 4px;
+
+    min-width: 36;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+
+    user-select: none;
+}
+.windowInner>.header>.windowButton{
+    display: inline-block;
+    margin: 4px 4px 4px 0px;
+
+    background-color: #FFFFFF;
+}
+.windowInner>.header>.X{
+    background-color: #FF5189;
+    background-image: url("../assets/svg/windowUI/headerClose.svg");
+	background-repeat: no-repeat;
+	background-position: center;
+	background-size: 60%;
+
+    border-top-color: #f788ab;
+    border-right-color: #f788ab;
+    border-bottom-color: #f02263;
+    border-left-color: #f02263;
+    border-style: solid;
+    border-width: 2px;
+
+    user-select: auto;
+}
+.windowInner>.header>.X.mousedown:hover{
+    background-color: #f02263;
+
+    border-top-color: #be003c;
+    border-right-color: #be003c;
+    border-bottom-color: #FF5189;
+    border-left-color: #FF5189;
+    border-style: solid;
+    border-width: 2px;
+}
+
+.windowInner>.content {
+	display: block;
+	background-color: #FFFFFF;
+	height: 100%;
+
+	user-select: none;
+	overflow: auto;
+	cursor: default;
+}
+
+/*iframe------------------------*/
+.content>iframe{
+	display: block;
+	width: 100%;
+	height: 100%;
+}
+.antiHover{
+	pointer-events: none;
+}
+/*------------------------iframe*/
+
+
+/*------------------------------WINDOW SETTINGS*/

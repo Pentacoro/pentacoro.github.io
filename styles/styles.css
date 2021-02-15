@@ -6,12 +6,16 @@
 
 body {
 	background-size: cover;
-	background-color: #FFFFFF; 
+	background-color: #444444; 
 	z-index: -999;
 }
 
 #background {
-	position: fixed;
+	background-size: cover;
+	z-index: -999;
+
+	display: block;
+	position: absolute;
 	width: 100%;
 	height: 100%;
 	z-index: -998;
@@ -54,201 +58,6 @@ body {
 	background-image: url("../assets/svg/norrumStartPress.svg");
 }
 /*---------------------------------START BUTTON*/
-
-/*WINDOW SETTINGS------------------------------*/
-.window {
-	position: absolute;
-
-	width: 600px;
-	height: 600px;
-
-	top: 200px;
-	left: 400px;
-
-	background-color: rgba(255,255,255,0);
-	padding: 2px;
-	z-index: 10;
-
-	min-height: 250px;
-	min-width: 170px;
-}
-
-.windowInner {
-	width: 100%;
-	height: 100%;
-
-	display: grid;
-	grid-template-rows: 40px auto 0px;
-
-	background-color: #00A2E8;
-	padding: 4px;
-}
-
-/*WINDOW BORDER RESIZERS--------*/
-#windowBorder>#windowEtop {
-	width: 100%;
-	height: 6px;
-	background: transparent;
-	position: absolute;
-	right: 0;
-	top: 0;
-	cursor: n-resize;
-}
-#windowBorder>#windowEbot {
-	width: 100%;
-	height: 6px;
-	background: transparent;
-	position: absolute;
-	right: 0;
-	bottom: 0;
-	cursor: n-resize;
-}
-#windowBorder>#windowElef {
-	width: 6px;
-	height: 100%;
-	background: transparent;
-	position: absolute;
-	left: 0;
-	bottom: 0;
-	cursor: e-resize;
-}
-#windowBorder>#windowErig {
-	width: 6px;
-	height: 100%;
-	background: transparent;
-	position: absolute;
-	right: 0;
-	bottom: 0;
-	cursor: e-resize;
-}
-#windowBorder>#windowCtl {
-	width: 6px;
-	height: 6px;
-	z-index: 10;
-	position: absolute;
-	left: 0;
-	top: 0;
-	cursor: nw-resize;
-}
-#windowBorder>#windowCtr {
-	width: 6px;
-	height: 6px;
-	z-index: 10;
-	position: absolute;
-	right: 0;
-	top: 0;
-	cursor: ne-resize;
-}
-#windowBorder>#windowCbr {
-	width: 6px;
-	height: 6px;
-	z-index: 10;
-	position: absolute;
-	right: 0;
-	bottom: 0;
-	cursor: nw-resize;
-	z-index: 2;
-}
-#windowBorder>#windowCbl {
-	width: 6px;
-	height: 6px;
-	z-index: 10;
-	position: absolute;
-	left: 0;
-	bottom: 0;
-	cursor: ne-resize;
-}
-/*--------WINDOW BORDER RESIZERS*/
-
-.windowInner>.header {
-	position: sticky;
-	top: 0%;
-	background-color: #00A2E8;
-	padding: .4em;
-	margin-bottom: 4px;
-	color: #FFFFFF;
-	font-size: 20px;
-	font-weight: auto;
-	cursor: default;
-	user-select: none;
-}
-
-.windowInner>.content {
-	display: block;
-	background-color: #FFFFFF;
-	height: 100%;
-	user-select: none;
-	overflow: auto;
-	cursor: default;
-}
-
-/*iframe------------------------*/
-.content>iframe{
-	display: block;
-	width: 100%;
-	height: 100%;
-}
-.antiHover{
-	pointer-events: none;
-}
-/*------------------------iframe*/
-
-
-/*------------------------------WINDOW SETTINGS*/
-
-/*ICON CLASS-----------------------------------*/
-.icon{
-	position: absolute;
-	width:108px;
-	height: 108px;
-	background-color: rgb(0,155,255,0);
-	border: 3px solid rgb(0,0,0,0.0);
-	border-radius: 8px;
-	z-index: 1;
-}
-.icon:hover{
-	border: 3px dotted rgb(255,255,255,0.12);
-}
-.active{
-	background-color: rgba(0, 111, 185, 0.5);
-	border: 3px solid rgb(255,255,255,0.12);
-}
-.iconImage{
-	width: 46px;
-	height: 46px;
-	margin: 7px auto;
-	background-image: url("../assets/svg/desktopIcons/folderPlaceholder.svg");
-	background-size: contain;
-	background-repeat: no-repeat;
-	background-position: center;
-
-	-webkit-filter: drop-shadow(0px 1px 4px rgb(0,0,0,.5));
-	filter: drop-shadow(0px 1px 4px rgb(0,0,0,.5));
-}
-.icon>h3 {
-	position: relative;
-	max-height: 2.5em;
-	width: 100%;
-	color: white;
-	text-align: center;
-	text-shadow: 1px 1px 4px rgb(0,0,0,1);
-	/*font-size: 1em;*/
-	font-weight: 1;
-	cursor: default;
-	user-select: none;
-
-	/*overflow: hidden;
-	text-overflow: ellipsis;
-	display: -webkit-box;
-	-webkit-line-clamp: 2;*/
-
-	hyphens: auto;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	word-wrap: break-word;
-}
-/*-----------------------------------ICON CLASS*/
-
 
 /*PHONE*/
 @media (min-width: 400px){
