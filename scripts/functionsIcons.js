@@ -18,9 +18,9 @@ function dragIcon(elmnt, _this) {
 		pos3 = e.clientX;
 		pos4 = e.clientY;
 		
-		//when mousedown on selected folder
+		//when mousedown on selected icon
 		if (_this.stat == 1) {
-			//managing selected folders
+			//managing selected icons
 			for (var i = 0; i < classActive.length; i++) {
 				//light up all hover border onmousedown:-|
 				highlight(classActive[i]);
@@ -32,7 +32,7 @@ function dragIcon(elmnt, _this) {
                 highlight(elmnt);
                 elmnt.style.backgroundColor = 'rgb(0,0,0,0)';
                 
-                //when mousedown on unselected folder
+                //when mousedown on unselected icon
                 if(keyPressCtrl == false && dragging == false) {
                     for (i = iconArray.length - 1; i >= 0; i--){
                         iconArray[i].stat = 0;
@@ -59,15 +59,16 @@ function dragIcon(elmnt, _this) {
 		//calculate new cursor position:
 		pos1 = pos3 - e.clientX;
 		pos2 = pos4 - e.clientY;
+        
 		pos3 = e.clientX;
 		pos4 = e.clientY;
 		
         dragging = true;
 		
-		//managing selected folders
+		//managing selected icons
 		for (i = iconArray.length - 1; i >= 0; i--){
             if (iconArray[i].stat == 1 || iconArray[i].stat == 2) {
-                //set position for selected folders:----------|
+                //set position for selected icons:------------|
                 iconArray[i].posY = (iconArray[i].posY - pos2);
                 iconArray[i].posX = (iconArray[i].posX - pos1);
                 //--------------------------------------------|
@@ -85,10 +86,10 @@ function dragIcon(elmnt, _this) {
 		document.onmousemove = null;
         iframeAntiHover (false);
 		
-		//managing selected folders
+		//managing selected icons
 		for (i = iconArray.length - 1; i >= 0; i--){
             if (iconGrid == true && iconArray[i].stat == 2) {
-			    //set position grid for selected folders:--------------------------------|
+			    //set position grid for selected icons:----------------------------------|
 				iconArray[i].posY = (Math.round((iconArray[i].posY - pos1)/120)*120 + 10);
 				iconArray[i].posX = (Math.round((iconArray[i].posX - pos1)/120)*120 + 10);
                 //-----------------------------------------------------------------------|
@@ -137,6 +138,10 @@ function menuIcon(elmnt, _this) {
             idCtextMenu.style.top = e.clientY + "px";
             idCtextMenu.style.left = e.clientX + "px";
 
+            idDesktMenu.blur();
+            idCtextMenu.blur();
+            clearSelection();
+            
             iconMenuOpen(elmnt, _this);
 
             return false;
@@ -152,15 +157,15 @@ function statIconNode(elmnt, _this) {
             elmnt.style.border = '';
             break;
         case 1:
-            elmnt.className += " active";
+            if(!elmnt.classList.contains("active")){elmnt.className += " active"};
             elmnt.style.opacity = '1';
-			elmnt.style.zIndex = '1';
+			elmnt.style.zIndex = '-1';
 			elmnt.style.border = '';
 			elmnt.style.backgroundColor = '';
             break;
         case 2: 
             elmnt.style.opacity = '0.5';
-            elmnt.style.zIndex = '0';
+            elmnt.style.zIndex = '1000';
             elmnt.style.border = '3px solid rgb(0,0,0,0.0)';
             elmnt.style.backgroundColor = 'rgb(0,0,0,0)';
             break;
@@ -174,6 +179,7 @@ function poseIconNode(elmnt, _this) {
 }
 
 function crteIconNode(_this) {
+    //Icon HTML structure-----|
     let newIcon = document.createElement("div");
     newIcon.setAttribute("class", "icon");
     newIcon.setAttribute("id", _this.text);
@@ -190,6 +196,8 @@ function crteIconNode(_this) {
     newIcon.appendChild(newIconText);
 
     document.getElementById("iconLayer").appendChild(newIcon);
+    //------------------------|
+
     _this.statNode();
     _this.poseNode();
     _this.drag();
@@ -207,7 +215,7 @@ function dlteIconNode(_this) {
 }
 
 function deleteSelectedNodes(){
-    iconsToDelete = iconArray.filter((icon) => {return icon.stat == 1})
+    let iconsToDelete = iconArray.filter((icon) => {return icon.stat == 1})
     for(icon of iconsToDelete){
         if(icon.stat == 1){
             icon.deleteNode();

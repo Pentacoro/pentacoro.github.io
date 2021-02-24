@@ -1,6 +1,6 @@
 * {
 	box-sizing: border-box;
-	font-family: Gotham, "Helvetica Neue", Helvetica, Arial, "sans-serif";
+	font-family: "Gotham", "Helvetica Neue", Helvetica, Arial, "sans-serif";
 	margin: 0;
 }
 
@@ -11,14 +11,13 @@ body {
 }
 
 #background {
-	background-size: cover;
-	z-index: -999;
-
 	display: block;
 	position: absolute;
 	width: 100%;
 	height: 100%;
 	z-index: -998;
+
+	overflow: hidden;
 }
 
 #navbar {
@@ -26,25 +25,28 @@ body {
 	bottom: 0%;
 	height: 60px;
 	width: 100%;
-	background-image: url("../assets/svg/norrumNavbarBackground.svg");
-	background-size: cover;
+
+	display: grid;
+	grid-template-columns: 60px auto;
+
 	z-index: 999;
 }
+#navbarTaskBar{
+	width: 100%;
 
-/*SELCT BOX------------------------------------*/
-#selectBox {
-	position: absolute;
-	opacity: 0;
-	width: 1px;
-	height: 1px;
-	background-color: rgb(0,185,255,0.2);
-	border: 1px solid rgb(255,255,255,0.1);
-	z-index: 5;
+	border-top-color: #71D5FF;
+    border-right-color: #71D5FF;
+    border-bottom-color: #0F7B9B;
+    border-left-color: #0F7B9B;
+    border-style: solid;
+    border-width: 3px;
+
+	background-color: #00A2E8;
 }
-/*------------------------------------SELCT BOX*/
 
 /*START BUTTON---------------------------------*/
 #navbarNorrumStart {
+	float: left;
 	width: 60px;
 	height: 60px;
 	background-image: url("../assets/svg/norrumStartIdle.svg");
@@ -58,6 +60,18 @@ body {
 	background-image: url("../assets/svg/norrumStartPress.svg");
 }
 /*---------------------------------START BUTTON*/
+
+/*SELCT BOX------------------------------------*/
+#selectBox {
+	position: absolute;
+	opacity: 0;
+	width: 1px;
+	height: 1px;
+	background-color: rgba(5, 125, 168, 0.4);
+	border: 1px solid rgb(71, 100, 110,0.9);
+	z-index: 5;
+}
+/*------------------------------------SELCT BOX*/
 
 /*PHONE*/
 @media (min-width: 400px){

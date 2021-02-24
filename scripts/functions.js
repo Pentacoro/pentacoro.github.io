@@ -11,8 +11,8 @@ function iframeAntiHover (coin) {
 	}
 }
 
-window.onmousedown = (e) => {console.log(e.target)};
-window.onkeydown = (e) => {console.log(e.key)};
+window.addEventListener("mousedown", (e) => {if(keyPressCtrl == true){console.log(e.target)}});
+window.addEventListener("keyup", (e) => {console.log(e.key)});
 
 //Boolean key checks-----------------------------------------------|
 	var keyPressCtrl = false; //17
@@ -90,23 +90,30 @@ var iconGrid = true;
 	}
 //----------------------------------------------------------------------|
 
-idBackground.oncontextmenu = deskMenu;
+idBackground.oncontextmenu = (e) => {if(e.target == idBackground){deskMenu(e)}};
 
-idBackground.onclick = (e) => {if(e.target.classList.contains("cmcheck") == false){closeMenu()}};
+window.addEventListener("mousedown", (e) => {
+	if(
+		e.target.parentElement.classList.contains("contextMenu") == false && 
+		e.target.parentElement.parentElement.classList.contains("contextMenu") == false
+	) {
+		closeMenu()
+	}
+});
 
 function deskMenu(e) {
 	e.preventDefault();
-	if(
-		e.target.id == "background"
-	) {
-		closeMenu();
-		idDesktMenu.style.display = "grid";
-		idDesktMenu.style.top = e.clientY + "px";
-		idDesktMenu.style.left = e.clientX + "px";
 
-		deskMenuOpen();
-	}
-	return false; 
+	closeMenu();
+	idDesktMenu.style.display = "grid";
+	idDesktMenu.style.top = e.clientY + "px";
+	idDesktMenu.style.left = e.clientX + "px";
+
+	idDesktMenu.blur();
+	idCtextMenu.blur();
+	clearSelection();
+
+	deskMenuOpen();
 }
 function closeMenu() {
     idDesktMenu.style.display = "";
@@ -160,8 +167,6 @@ function selectBox() {
 		iframeAntiHover (true);
 		document.onmouseup = selectBoxRelease;
 		document.onmousemove = selectBoxSizing;
-
-		//console.log("selectBoxPosition");
 	}
 	
 	//resizing-----------------------------|
@@ -193,12 +198,14 @@ function selectBox() {
 		
 		//iconReaction--------------------------------------------------|
 		for (i = iconArray.length - 1; i >= 0; i--){
-			if (areRectanglesOverlap(document.getElementById(iconArray[i].text),idSelectBox)) {
-				//light up colliding icon hover border:
-				highlight(document.getElementById(iconArray[i].text));
-			} else {
-				//unlight non-colliding icon hover border:
-				lowlight(document.getElementById(iconArray[i].text));
+			if (document.getElementById(iconArray[i].text) != null) { /*otherwise callback parameter ruins everything*/
+				if (areRectanglesOverlap(document.getElementById(iconArray[i].text),idSelectBox)) {
+					//light up colliding icon hover border:
+					highlight(document.getElementById(iconArray[i].text));
+				} else {
+					//unlight non-colliding icon hover border:
+					lowlight(document.getElementById(iconArray[i].text));
+				}
 			}
 		};
 		//--------------------------------------------------iconReaction|
@@ -212,15 +219,18 @@ function selectBox() {
 		document.onmousemove = null;
 
 		//iconReaction--------------------------------------------------|
+		
 		for (i = iconArray.length - 1; i >= 0; i--){
-			if (areRectanglesOverlap(document.getElementById(iconArray[i].text), idSelectBox)) {
-				//activate colliding icon hover border:
-				iconArray[i].stat = 1;
-				iconArray[i].statNode();
-			} else if (wasCtrl == false) {
-				//deactivate non-colliding icon hover border UNLESS ctrl:
-				iconArray[i].stat = 0;
-				iconArray[i].statNode();
+			if (document.getElementById(iconArray[i].text) != null) { /*otherwise callback parameter ruins everything*/
+				if (areRectanglesOverlap(document.getElementById(iconArray[i].text), idSelectBox)) {
+					//activate colliding icon hover border:
+					iconArray[i].stat = 1;
+					iconArray[i].statNode();
+				} else if (wasCtrl == false) {
+					//deactivate non-colliding icon hover border UNLESS ctrl:
+					iconArray[i].stat = 0;
+					iconArray[i].statNode();
+				}
 			}
 		}
 		//--------------------------------------------------iconReaction|
@@ -236,169 +246,17 @@ function selectBox() {
 }
 //-------------------------------------------------------------------------------selectBox behavior|
 
-//window behavior----------------------------------------------------------------------------------|
-
-for (i = 0; i < document.getElementsByClassName("windowButton").length; i++){
-	let windowButton = document.getElementsByClassName("windowButton")[i];
-	windowButton.onmousedown = () => {windowButtonClick(windowButton)};
-}
-function windowButtonClick(button){
-	button.classList.add("mousedown");
-	window.onmouseup = () => {
-		button.classList.remove("mousedown");
-		window.onmouseup = null;
-	}
-}
-
-//all .window divs act like windows------|
-for (i = 0; i < classWindow.length; i++) {
-	dragWindow(classWindow[i]);
-	sizeWindow(classWindow[i]);
-}
-//---------------------------------------|
-
-//window dragging------------------------------------------------------------------|
-	function dragWindow(wndw) {
-		var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
-		
-		if (wndw.getElementsByClassName("header")[0]) {
-			//if present, the header is where you move the window from:
-			wndw.getElementsByClassName("header")[0].onmousedown = dragMouseDown;
-		} else {
-			//otherwise, move the window from anywhere inside the DIV:
-			wndw.onmousedown = dragMouseDown;
-		}
-
-		function dragMouseDown(e) {
-			e = e || window.event;
-			e.preventDefault();
-
-			if (e.target.classList.contains("windowButton") == false) {
-			//get initial cursor position:
-			pos3 = e.clientX;
-			pos4 = e.clientY;
-
-			document.onmouseup = closeDragWindow;
-			document.onmousemove = windowDrag;
-			iframeAntiHover (true);
-			}
-		}
-		
-		function windowDrag(e) {
-			e = e || window.event;
-			e.preventDefault();
-
-			//calculate new cursor position:
-			pos1 = pos3 - e.clientX;
-			pos2 = pos4 - e.clientY;
-			pos3 = e.clientX;
-			pos4 = e.clientY;
-
-			//set the window's new position:
-			wndw.style.top = (wndw.offsetTop - pos2) + "px";
-			wndw.style.left = (wndw.offsetLeft - pos1) + "px";
-		}
-
-		function closeDragWindow() {
-			//stop moving when mouse button is released:
-			document.onmouseup = null;
-			document.onmousemove = null;
-			iframeAntiHover (false);
-		}
-	}
-//------------------------------------------------------------------window dragging|
-
-//window resizing------------------------------------------------------------------|
-	function sizeWindow(wndw) {
-		var startX, startY, startWidth, startHeight, startLeft, startTop, border;
-
-		var idWindowBorder = document.getElementById("windowBorder");
-
-		for (i = 0; i < idWindowBorder.childNodes.length; i++) {
-			idWindowBorder.childNodes[i].onmousedown = initResize;
-		}
-
-		function initResize(e) {
-			e = e || window.event;
-			e.preventDefault();
-
-			startX = e.clientX;
-			startY = e.clientY;
-
-			startWidth = wndw.offsetWidth;
-			startHeight = wndw.offsetHeight;
-
-			startLeft = wndw.offsetLeft;
-			startTop = wndw.offsetTop;
-			
-			border = e.target.id;
-			
-			document.onmouseup = stopResize;
-			document.onmousemove = doResize;
-			iframeAntiHover (true);
-		}
-		
-		function doResize(e) {
-			e = e || window.event;
-			e.preventDefault();
-
-			//get int for wndw min-height and min-width css values
-			var minHeight = parseInt(window.getComputedStyle(document.getElementById(border).parentElement.parentElement,null).getPropertyValue("min-height"));
-			var minWidth = parseInt(window.getComputedStyle(document.getElementById(border).parentElement.parentElement,null).getPropertyValue("min-width"));
-			
-			//when sizing towards →
-			if (border == "windowErig" || border == "windowCbr" || border == "windowCtr") {
-				wndw.style.width = startWidth + e.clientX - startX + "px";
-			}
-			//when sizing towards ↓
-			if (border == "windowEbot" || border == "windowCbr" || border == "windowCbl") {
-				wndw.style.height = startHeight + e.clientY - startY + "px";
-			}
-			//when sizing towards ← ---------- [accounting for wndw min-width]
-			if (border == "windowElef" || border == "windowCtl" || border == "windowCbl") {
-				if (startLeft + e.clientX - startX < startLeft + (startWidth - minWidth)){
-					wndw.style.left = startLeft + e.clientX - startX + "px";
-					wndw.style.width = startWidth + (e.clientX - startX) * -1 + "px";
-				} else {
-					//stuck in minimum size
-					wndw.style.left = startLeft + (startWidth - minWidth) + "px";
-					wndw.style.width = minWidth + "px";
-				}
-			//when sizing towards ↑ ---------- [accounting for wndw min-height]
-			}
-			if (border == "windowEtop" || border == "windowCtl" || border == "windowCtr") {
-				if (startTop + e.clientY - startY < startTop + (startHeight - minHeight)){
-					wndw.style.top = startTop + e.clientY - startY + "px";
-					wndw.style.height = startHeight + (e.clientY - startY) * -1 + "px";
-				} else {
-					//stuck in minimum size
-					wndw.style.top = startTop + (startHeight - minHeight) + "px";
-					wndw.style.height = minHeight + "px";
-				}
-			}
-		}
-	
-		function stopResize() {
-			document.onmouseup = null;
-			document.onmousemove = null;
-			iframeAntiHover (false);
-		}
-	}
-//------------------------------------------------------------------window resizing|
-
-//----------------------------------------------------------------------------------window behavior|
-
 //-----------------------------------------------------------------|
 function areRectanglesOverlap(div1, div2) {
-	var x1 = div1.offsetLeft;
-	var y1 = div1.offsetTop;
-	var h1 = y1 + div1.offsetHeight;
-	var w1 = x1 + div1.offsetWidth;
+	let x1 = div1.offsetLeft;
+	let y1 = div1.offsetTop;
+	let h1 = y1 + div1.offsetHeight;
+	let w1 = x1 + div1.offsetWidth;
 
-	var x2 = div2.offsetLeft;
-	var y2 = div2.offsetTop;
-	var h2 = y2 + div2.offsetHeight;
-	var w2 = x2 + div2.offsetWidth;
+	let x2 = div2.offsetLeft;
+	let y2 = div2.offsetTop;
+	let h2 = y2 + div2.offsetHeight;
+	let w2 = x2 + div2.offsetWidth;
 
 	if (h1 < y2 || y1 > h2 || w1 < x2 || x1 > w2) return false;
 	return true;

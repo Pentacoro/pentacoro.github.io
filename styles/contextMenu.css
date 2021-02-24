@@ -9,7 +9,7 @@
     display: none;
     grid-template-rows: auto auto auto;
 
-    z-index: 20;
+    z-index: 999;
     overflow: auto;
 
     /*image-rendering: crisp-edges;*/
@@ -25,14 +25,16 @@
     grid-template-columns: 18px auto 18px;
     grid-template-rows: 18px;
     padding: 5px;
+
+    user-select: none;
 }
 .contextMenu>div>span{
     font-family: Arial, Helvetica, sans-serif;
     color: #2c2c2c;
     padding-left: 5px;
     margin: 0em;
+
     cursor: default;
-    user-select: none;
 }
 .contextMenu>div>div{
     background-size: auto;

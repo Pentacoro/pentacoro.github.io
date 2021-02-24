@@ -4,6 +4,10 @@ function iconOpen(e, elmnt, _this){
         !(e.target.classList.contains("cmcheck"))
     ) {
         console.log("Open");
+        closeMenu();
+
+        windowArray.push(new Window ("Settings", _this.exec, true, true, 3, 1, 300, 300, 500, 500));
+        windowArray[windowArray.length -1].createNode();
     }
 }
 function iconMaximize(e, elmnt, _this){
@@ -12,6 +16,7 @@ function iconMaximize(e, elmnt, _this){
         !(e.target.classList.contains("cmcheck"))
     ) {
         console.log("Maximize");
+        closeMenu();
     }
 }
 function iconNewtab(e, elmnt, _this){
@@ -20,6 +25,7 @@ function iconNewtab(e, elmnt, _this){
         !(e.target.classList.contains("cmcheck"))
     ) {
         console.log("Newtab");
+        closeMenu();
     }
 }
 
@@ -29,6 +35,7 @@ function iconCut(e, elmnt, _this){
         !(e.target.classList.contains("cmcheck"))
     ) {
         console.log("Cut");
+        closeMenu();
     }
 }
 function iconCopy(e, elmnt, _this){
@@ -37,6 +44,7 @@ function iconCopy(e, elmnt, _this){
         !(e.target.classList.contains("cmcheck"))
     ) {
         console.log("Copy");
+        closeMenu();
     }
 }
 function iconPaste(e, elmnt, _this){
@@ -45,6 +53,7 @@ function iconPaste(e, elmnt, _this){
         !(e.target.classList.contains("cmcheck"))
     ) {
         console.log("Paste");
+        closeMenu();
     }
 }
 
@@ -54,6 +63,7 @@ function iconDelete(e, elmnt, _this){
         !(e.target.classList.contains("cmcheck"))
     ) {
         console.log("Delete");
+        closeMenu();
         deleteSelectedNodes();
     }
 }
@@ -63,12 +73,18 @@ function iconRename(e, elmnt, _this){
         !(e.target.classList.contains("cmcheck"))
     ) {
         console.log("Rename");
+        closeMenu();
         let iconText = elmnt.childNodes[1];
         //make h3 editable --------------------|
         iconText.setAttribute("contenteditable", "true");
         iconText.setAttribute("spellcheck", "false");
+        
+        //select h3 content --------------------|
         iconText.focus();
-        window.getSelection().setBaseAndExtent(iconText,0,iconText,1);
+        let range = document.createRange();
+        range.setStart(iconText, 0);
+        range.setEnd(iconText, iconText.childNodes.length);
+        window.getSelection().addRange(range);
 
         iconText.style.textShadow = "none";
 
@@ -150,7 +166,9 @@ function iconRename(e, elmnt, _this){
                         _this.stat = 0;
         
                         iconText.focus();
-                        window.getSelection().setBaseAndExtent(iconText,0,iconText,1);
+                        range.setStart(iconText, 0);
+                        range.setEnd(iconText, iconText.childNodes.length);
+                        window.getSelection().addRange(range);
                     }
                 }
             }
@@ -172,6 +190,7 @@ function iconProperties(e, elmnt, _this){
         !(e.target.classList.contains("cmcheck"))
     ) {
         console.log("Properties");
+        closeMenu();
     }
 }
 
@@ -183,6 +202,7 @@ function deskIcon(e){
         !(e.target.classList.contains("cmcheck"))
     ) {
         console.log("Icon");
+        closeMenu();
     }
 }
 function deskNew(e){
@@ -191,15 +211,18 @@ function deskNew(e){
         !(e.target.classList.contains("cmcheck"))
     ) {
         console.log("New");
+        closeMenu();
 
+        //Make sure icon appears at center of initial right click-------|
         let initialX = parseInt(window.getComputedStyle(document.getElementById("deskContextMenu"),null).getPropertyValue("left"));
         let initialY = parseInt(window.getComputedStyle(document.getElementById("deskContextMenu"),null).getPropertyValue("top"));
 
-        let iconWidth = parseInt(window.getComputedStyle(document.getElementsByClassName("icon")[0],null).getPropertyValue("width"))/2;
-        let iconHeight = parseInt(window.getComputedStyle(document.getElementsByClassName("icon")[0],null).getPropertyValue("height"))/2;
+        let iconWidth = parseInt(window.getComputedStyle(document.getElementsByClassName("icon")[0],null).getPropertyValue("width"))/2; //aux half icon width
+        let iconHeight = parseInt(window.getComputedStyle(document.getElementsByClassName("icon")[0],null).getPropertyValue("height"))/2; //aux half icon height
 
         let iconPosX = (Math.round((initialX-iconWidth)/120)*120 + 10);
         let iconPosY = (Math.round((initialY-iconHeight)/120)*120 + 10);
+        //--------------------------------------------------------------|
 
         iconArray.push(new Icon ("background-image: url('assets/svg/desktopIcons/filePlaceholder.svg');", "Name me!", "explorerExe", 1, iconPosX, iconPosY));
         let createdIcon = iconArray[iconArray.length - 1]
@@ -209,8 +232,13 @@ function deskNew(e){
         //make h3 editable --------------------|
         iconText.setAttribute("contenteditable", "true");
         iconText.setAttribute("spellcheck", "false");
+
+        //select h3 content --------------------|
         iconText.focus();
-        window.getSelection().setBaseAndExtent(iconText,0,iconText,1);
+        let range = document.createRange();
+        range.setStart(iconText, 0);
+        range.setEnd(iconText, iconText.childNodes.length);
+        window.getSelection().addRange(range);
 
         iconText.style.textShadow = "none";
 
@@ -285,7 +313,9 @@ function deskNew(e){
                         createdIcon.stat = 0;
         
                         iconText.focus();
-                        window.getSelection().setBaseAndExtent(iconText,0,iconText,1);
+                        range.setStart(iconText, 0);
+                        range.setEnd(iconText, iconText.childNodes.length);
+                        window.getSelection().addRange(range);
                     }
                 }
             }
@@ -308,6 +338,7 @@ function deskPaste(e){
         !(e.target.classList.contains("cmcheck"))
     ) {
         console.log("Paste");
+        closeMenu();
     }
 }
 function deskSettings(e){
@@ -316,6 +347,7 @@ function deskSettings(e){
         !(e.target.classList.contains("cmcheck"))
     ) {
         console.log("Settings");
+        closeMenu();
     }
 }
 function deskInfo(e){
@@ -324,6 +356,7 @@ function deskInfo(e){
         !(e.target.classList.contains("cmcheck"))
     ) {
         console.log("Info");
+        closeMenu();
     }
 }
 

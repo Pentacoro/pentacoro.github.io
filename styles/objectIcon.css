@@ -1,3 +1,11 @@
+#iconLayer{
+	position: absolute;
+	width: 100%;
+	height: 100%;
+
+	pointer-events: none;
+}
+
 /*ICON CLASS-----------------------------------*/
 .icon{
 	position: absolute;
@@ -6,7 +14,9 @@
 	background-color: rgb(0,155,255,0);
 	border: 3px solid rgb(0,0,0,0.0);
 	border-radius: 8px;
-	z-index: 1;
+	z-index: -50;
+
+	pointer-events: all;
 }
 .icon:hover{
 	border: 3px dotted rgb(255,255,255,0.15);
@@ -29,7 +39,7 @@
 }
 .icon>h3 {
 	position: relative;
-	max-height: 2.5em;
+	max-height: 2.35em;
 	width: 100%;
 	color: white;
 	text-align: center;
