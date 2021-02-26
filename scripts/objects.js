@@ -6,7 +6,7 @@ class Icon {
 
         this.imag = image;
         this.text = name;
-        this.exec = program;
+        this.apps = program;
     }
     createNode(){
         crteIconNode(this);
@@ -28,29 +28,18 @@ class Icon {
     }
 }
 
-var iconArray = [];
-
-iconArray.push(new Icon ("background-image: url('assets/svg/desktopIcons/folderPlaceholder.svg');", "Folder 1", "explorerExe", 0, 10, 10));
-iconArray.push(new Icon ("background-image: url('assets/svg/desktopIcons/folderPlaceholder.svg');", "Folder 2", "explorerExe", 0, 10, 130));
-iconArray.push(new Icon ("background-image: url('assets/svg/desktopIcons/folderPlaceholder.svg');", "Folder 3", "explorerExe", 0, 10, 250));
-iconArray.push(new Icon ("background-image: url('assets/svg/desktopIcons/settingsPlaceholder.svg');", "Settings", "settingsExe", 0, 10, 370));
-
-for (i = iconArray.length - 1; i >= 0; i--){
-    iconArray[i].createNode();
-}
-
 class Window {
     constructor(title, program, instances = false, resizable, uiux = 3, state = 1, x, y, width, height){
         this.stat = state;
         this.posX = x;
         this.posY = y;
-
+        
         this.widt = width;
         this.heig = height;
-
+        
         this.name = title;
-
-        this.exec = program; //next 3 depend on this
+        
+        this.apps = program; //next 3 depend on this
         this.inst = instances;
         this.flex = resizable;
         this.uiux = uiux;
@@ -78,13 +67,33 @@ class Window {
     }
 }
 
+var iconArray = [];
+
 var windowArray = [];
 
+/*
+iconArray.push(new Icon ("background-image: url('assets/svg/desktopIcons/folderPlaceholder.svg');", "Folder 1", "explorerExe", 0, 10, 10));
+iconArray.push(new Icon ("background-image: url('assets/svg/desktopIcons/folderPlaceholder.svg');", "Folder 2", "explorerExe", 0, 10, 130));
+iconArray.push(new Icon ("background-image: url('assets/svg/desktopIcons/folderPlaceholder.svg');", "Folder 3", "explorerExe", 0, 10, 250));
+iconArray.push(new Icon ("background-image: url('assets/svg/desktopIcons/settingsPlaceholder.svg');", "Settings", "settingsExe", 0, 10, 370));
+*/
+
+/*
 windowArray.push(new Window ("Settings", "settingsExe", true, true, 3, 1, 300, 300, 500, 500));
-/*windowArray.push(new Window ("Settings", "settingsExe", true, true, 3, 1, 420, 420, 500, 500));
+windowArray.push(new Window ("Settings", "settingsExe", true, true, 3, 1, 420, 420, 500, 500));
 windowArray.push(new Window ("Explorer ONE", "explorerExe", true, true, 3, 1, 420, 420, 500, 500));
-windowArray.push(new Window ("Explorer TWO", "explorerExe", true, true, 3, 1, 420, 420, 500, 500));*/
+windowArray.push(new Window ("Explorer TWO", "explorerExe", true, true, 3, 1, 420, 420, 500, 500));
+*/
+
+for (i = iconArray.length - 1; i >= 0; i--){
+    iconArray[i].createNode();
+}
 
 for (wndw of windowArray){
     wndw.createNode();
+}
+
+//------------------------------------------------------------------------------------------------------------//
+norrumSettings = {
+    theme: "default"
 }

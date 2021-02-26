@@ -6,7 +6,7 @@ function iconOpen(e, elmnt, _this){
         console.log("Open");
         closeMenu();
 
-        windowArray.push(new Window ("Settings", _this.exec, true, true, 3, 1, 300, 300, 500, 500));
+        windowArray.push(new Window ("Settings", _this.apps, true, true, 3, 1, 300, 300, 500, 500));
         windowArray[windowArray.length -1].createNode();
     }
 }
