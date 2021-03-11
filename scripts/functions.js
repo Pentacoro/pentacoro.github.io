@@ -198,7 +198,7 @@ function selectBox() {
 		
 		//iconReaction--------------------------------------------------|
 		for (i = iconArray.length - 1; i >= 0; i--){
-			if (document.getElementById(iconArray[i].text) != null) { /*otherwise callback parameter ruins everything*/
+			if (document.getElementById(iconArray[i].text) != null) { /*otherwise callback argument ruins everything*/
 				if (areRectanglesOverlap(document.getElementById(iconArray[i].text),idSelectBox)) {
 					//light up colliding icon hover border:
 					highlight(document.getElementById(iconArray[i].text));
@@ -221,7 +221,7 @@ function selectBox() {
 		//iconReaction--------------------------------------------------|
 		
 		for (i = iconArray.length - 1; i >= 0; i--){
-			if (document.getElementById(iconArray[i].text) != null) { /*otherwise callback parameter ruins everything*/
+			if (document.getElementById(iconArray[i].text) != null) { /*otherwise callback argument ruins everything*/
 				if (areRectanglesOverlap(document.getElementById(iconArray[i].text), idSelectBox)) {
 					//activate colliding icon hover border:
 					iconArray[i].stat = 1;

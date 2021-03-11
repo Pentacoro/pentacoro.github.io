@@ -1,6 +1,6 @@
-function iconOpen(e, elmnt, _this){
+//-------------------------------------------------------------------------------------|
+function iconOpen(e, _this){
     if(
-        (e.target.parentElement.id == "iconCM1" || e.target.id == "iconCM1") &&
         !(e.target.classList.contains("cmcheck"))
     ) {
         console.log("Open");
@@ -12,7 +12,6 @@ function iconOpen(e, elmnt, _this){
 }
 function iconMaximize(e, elmnt, _this){
     if(
-        (e.target.parentElement.id == "iconCM2" || e.target.id == "iconCM2") &&
         !(e.target.classList.contains("cmcheck"))
     ) {
         console.log("Maximize");
@@ -21,17 +20,14 @@ function iconMaximize(e, elmnt, _this){
 }
 function iconNewtab(e, elmnt, _this){
     if(
-        (e.target.parentElement.id == "iconCM3" || e.target.id == "iconCM3") &&
         !(e.target.classList.contains("cmcheck"))
     ) {
         console.log("Newtab");
         closeMenu();
     }
 }
-
 function iconCut(e, elmnt, _this){
     if(
-        (e.target.parentElement.id == "iconCM4" || e.target.id == "iconCM4") &&
         !(e.target.classList.contains("cmcheck"))
     ) {
         console.log("Cut");
@@ -40,7 +36,6 @@ function iconCut(e, elmnt, _this){
 }
 function iconCopy(e, elmnt, _this){
     if(
-        (e.target.parentElement.id == "iconCM5" || e.target.id == "iconCM5") &&
         !(e.target.classList.contains("cmcheck"))
     ) {
         console.log("Copy");
@@ -49,17 +44,14 @@ function iconCopy(e, elmnt, _this){
 }
 function iconPaste(e, elmnt, _this){
     if(
-        (e.target.parentElement.id == "iconCM6" || e.target.id == "iconCM6") &&
         !(e.target.classList.contains("cmcheck"))
     ) {
         console.log("Paste");
         closeMenu();
     }
 }
-
 function iconDelete(e, elmnt, _this){
     if(
-        (e.target.parentElement.id == "iconCM7" || e.target.id == "iconCM7") &&
         !(e.target.classList.contains("cmcheck"))
     ) {
         console.log("Delete");
@@ -69,7 +61,6 @@ function iconDelete(e, elmnt, _this){
 }
 function iconRename(e, elmnt, _this){
     if(
-        (e.target.parentElement.id == "iconCM8" || e.target.id == "iconCM8") &&
         !(e.target.classList.contains("cmcheck"))
     ) {
         console.log("Rename");
@@ -186,16 +177,13 @@ function iconRename(e, elmnt, _this){
 }
 function iconProperties(e, elmnt, _this){
     if(
-        (e.target.parentElement.id == "iconCM9" || e.target.id == "iconCM9") &&
         !(e.target.classList.contains("cmcheck"))
     ) {
         console.log("Properties");
         closeMenu();
     }
 }
-
 //-------------------------------------------------------------------------------------|
-
 function deskIcon(e){
     if(
         (e.target.parentElement.id == "deskCM1" || e.target.id == "deskCM1") &&
@@ -217,11 +205,13 @@ function deskNew(e){
         let initialX = parseInt(window.getComputedStyle(document.getElementById("deskContextMenu"),null).getPropertyValue("left"));
         let initialY = parseInt(window.getComputedStyle(document.getElementById("deskContextMenu"),null).getPropertyValue("top"));
 
-        let iconWidth = parseInt(window.getComputedStyle(document.getElementsByClassName("icon")[0],null).getPropertyValue("width"))/2; //aux half icon width
-        let iconHeight = parseInt(window.getComputedStyle(document.getElementsByClassName("icon")[0],null).getPropertyValue("height"))/2; //aux half icon height
+        let iconWidth = cfg.deskGrid.width/2;
+        let iconHeight = cfg.deskGrid.height/2;
 
-        let iconPosX = (Math.round((initialX-iconWidth)/120)*120 + 10);
-        let iconPosY = (Math.round((initialY-iconHeight)/120)*120 + 10);
+        let w = cfg.deskGrid.width; let h = cfg.deskGrid.height; let wm = cfg.deskGrid.hMargin; let hm = cfg.deskGrid.vMargin;
+
+        let iconPosX = (Math.round((initialX-iconWidth)/(w + wm))*(w + wm) + wm);
+        let iconPosY = (Math.round((initialY-iconHeight)/(h + hm))*(h + hm) + hm);
         //--------------------------------------------------------------|
 
         iconArray.push(new Icon ("background-image: url('assets/svg/desktopIcons/filePlaceholder.svg');", "Name me!", "explorerExe", 1, iconPosX, iconPosY));
@@ -331,7 +321,6 @@ function deskNew(e){
         return false;
     }
 }
-
 function deskPaste(e){
     if(
         (e.target.parentElement.id == "deskCM3" || e.target.id == "deskCM3") &&
@@ -359,51 +348,90 @@ function deskInfo(e){
         closeMenu();
     }
 }
-
 //-------------------------------------------------------------------------------------|
-
-function iconMenuOpen(elmnt, _this) {
-    document.getElementById("iconCM1").onclick = (e) => {iconOpen(e, elmnt, _this)}
-    document.getElementById("iconCM2").onclick = (e) => {iconMaximize(e, elmnt, _this)}
-    document.getElementById("iconCM3").onclick = (e) => {iconNewtab(e, elmnt, _this)}
-    document.getElementById("iconCM4").onclick = (e) => {iconCut(e, elmnt, _this)}
-    document.getElementById("iconCM5").onclick = (e) => {iconCopy(e, elmnt, _this)}
-    document.getElementById("iconCM6").onclick = (e) => {iconPaste(e, elmnt, _this)}
-    document.getElementById("iconCM7").onclick = (e) => {iconDelete(e, elmnt, _this)}
-    document.getElementById("iconCM8").onclick = (e) => {iconRename(e, elmnt, _this)}
-    document.getElementById("iconCM9").onclick = (e) => {iconProperties(e, elmnt, _this)}
+function iconMenuFunctions(e,elmnt,_this,n){
+    switch(n){
+        case 1:
+            iconOpen(e,_this);
+            break;
+        case 2:
+            iconMaximize(e,elmnt,_this);
+            break;
+        case 3:
+            iconNewtab(e,elmnt,_this);
+            break;
+        case 4:
+            iconCut(e,elmnt,_this);
+            break;
+        case 5:
+            iconCopy(e,elmnt,_this);
+            break;
+        case 6:
+            iconPaste(e,elmnt,_this);
+            break;
+        case 7:
+            iconDelete(e,elmnt,_this);
+            break;
+        case 8:
+            iconRename(e,elmnt,_this);
+            break;
+        case 9:
+            iconProperties(e,elmnt,_this);
+    }
+}
+function deskMenuFunctions(e,n){
+    switch(n){
+        case 1:
+            deskIcon(e);
+            break;
+        case 2:
+            deskNew(e);
+            break;
+        case 3:
+            deskPaste(e);
+            break;
+        case 4:
+            deskSettings(e);
+            break;
+        case 5:
+            deskInfo(e);
+    }
 }
 
-function iconMenuClose(){
-    document.getElementById("iconCM1").onclick = null;
-    document.getElementById("iconCM2").onclick = null;
-    document.getElementById("iconCM3").onclick = null;
-    document.getElementById("iconCM4").onclick = null;
-    document.getElementById("iconCM5").onclick = null;
-    document.getElementById("iconCM6").onclick = null;
-    document.getElementById("iconCM7").onclick = null;
-    document.getElementById("iconCM8").onclick = null;
-    document.getElementById("iconCM9").onclick = null;
+function iconMenuOpen(elmnt, _this) {
+    let iMenuOptions = document.getElementsByClassName("iMenuOption");
+    for (option of iMenuOptions){
+        let n = option.id.match(/(\d+)/)[0];
+        n = parseInt(n);
+        option.onclick = (e) => {iconMenuFunctions(e,elmnt,_this,n)}
+    }
+}
+
+function iconMenuClose() {
+    let iMenuOptions = document.getElementsByClassName("iMenuOption");
+    for (option of iMenuOptions){
+        option.onclick = null;
+    }
 }
 
 function deskMenuOpen() {
-    document.getElementById("deskCM1").onclick = deskIcon;
-    document.getElementById("deskCM2").onclick = deskNew;
-    document.getElementById("deskCM3").onclick = deskPaste;
-    document.getElementById("deskCM4").onclick = deskSettings;
-    document.getElementById("deskCM5").onclick = deskInfo;
+    let dMenuOptions = document.getElementsByClassName("dMenuOption");
+    for (option of dMenuOptions){
+        let n = option.id.match(/(\d+)/)[0];
+        n = parseInt(n);
+        option.onclick = (e) => {deskMenuFunctions(e,n)}
+    }
 }
 
 function deskMenuClose() {
-    document.getElementById("deskCM1").onclick = null;
-    document.getElementById("deskCM2").onclick = null;
-    document.getElementById("deskCM3").onclick = null;
-    document.getElementById("deskCM4").onclick = null;
-    document.getElementById("deskCM5").onclick = null;
+    let dMenuOptions = document.getElementsByClassName("dMenuOption");
+    for (option of dMenuOptions){
+        option.onclick = null;
+    }
 }
+//-------------------------------------------------------------------------------------|
 
-function clearSelection()
-{
+function clearSelection(){
  if (window.getSelection) {window.getSelection().removeAllRanges();}
  else if (document.selection) {document.selection.empty();}
 }

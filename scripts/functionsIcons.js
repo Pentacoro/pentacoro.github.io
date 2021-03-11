@@ -1,3 +1,176 @@
+var iconGridArray = [];
+evaluateIconGrid();
+function evaluateIconGrid(e = null, w = null, h = null, wm = null, hm = null, autowm = null, autohm = null){
+    //take existing config values if null arguments
+    if (w == null) {w = cfg.deskGrid.width };
+    if (h == null) {h = cfg.deskGrid.height};
+    if (wm == null) {wm = cfg.deskGrid.hMargin};
+    if (hm == null) {hm = cfg.deskGrid.vMargin};
+    if (autowm == null) {autowm = cfg.deskGrid.autoHmargin};
+    if (autohm == null) {autohm = cfg.deskGrid.autoVmargin};
+
+    //get some useful booleans
+    let wChanged = cfg.deskGrid.width  == w;
+    let hChanged = cfg.deskGrid.height == h;
+    let wmChanged = cfg.deskGrid.hMargin == wm;
+    let hmChanged = cfg.deskGrid.vMargin == hm;
+
+    //set new values to config
+    cfg.deskGrid.width  = w;
+    cfg.deskGrid.height = h;
+    cfg.deskGrid.hMargin = wm;
+    cfg.deskGrid.vMargin = hm;
+    cfg.deskGrid.autoHmargin = autowm;
+    cfg.deskGrid.autoVmargin = autohm; 
+    
+    let windowW = idBackground.offsetWidth;
+    let windowH = idBackground.offsetHeight - cfg.deskNavB.height;
+    
+    //number of icons that can fit in a row / column
+    let gridHorizontal = Math.round((windowW-(w+wm*2)/2)/(w+wm));
+    let gridVertical = Math.round((windowH-(h+hm*2)/2)/(h+hm));
+
+    //evaluate optimal margin if enabled
+    if (autowm === true){
+        ewm = Math.round(windowW - w * gridHorizontal) / (gridHorizontal+1);
+        cfg.deskGrid.modHmargin = ewm;
+    } else {
+        ewm = wm;
+        cfg.deskGrid.modHmargin = 0
+    }
+    if (autohm === true){
+        ehm = Math.round(windowH - h * gridVertical) / (gridVertical+1);
+        cfg.deskGrid.modVmargin = ehm;
+    } else {
+        ehm = hm
+        cfg.deskGrid.modVmargin = 0
+    }
+
+    //get first array and HTML elements if not made yet
+    if(iconGridArray.length === 0) {
+        iconGridArray = new Array(gridHorizontal);
+        for (var i = 0; i < iconGridArray.length; i++) {
+            iconGridArray[i] = new Array(gridVertical);
+        }
+    
+        //fill each coordinate with an object
+        for (x = 0; x < iconGridArray.length; x++){
+            for(y = 0; y < iconGridArray[x].length; y++){
+                iconGridArray[x][y] = {
+                    posX:(x+1) * ewm + x * w,
+                    posY:(y+1) * ehm + y * h,
+                    widt: w, heig: h, id: "id" + x + "-" + y
+                }
+                createGridNode(iconGridArray[x][y]);
+            }
+        }
+    }
+    //if array lengths change
+    if(gridHorizontal != iconGridArray.length || gridVertical != iconGridArray[0].length) {
+
+        cfg.deskGrid.hLength = gridHorizontal; 
+        cfg.deskGrid.vLength = gridVertical;
+
+        let gridHdiff = gridHorizontal - iconGridArray.length;
+        let gridVdiff = gridVertical - iconGridArray[0].length;
+
+        //if shorter row
+        if (gridHdiff < 0){
+            let delColumns = iconGridArray.splice(gridHorizontal, gridHdiff*-1)
+            delColumns.forEach(column => {
+                column.forEach(object => {
+                    let objectNode = document.getElementById(object.id); 
+                    objectNode.parentElement.removeChild(objectNode);
+                })
+            })
+        }
+        //if longer row
+        if (gridHdiff > 0){
+            for (x = iconGridArray.length; x < gridHorizontal; x++){
+                iconGridArray.push(new Array(gridVertical));
+                for(y = 0; y < iconGridArray[x].length; y++){
+                    iconGridArray[x][y] = {
+                        posX:(x+1) * ewm + x * w,
+                        posY:(y+1) * ehm + y * h,
+                        widt: w, heig: h, id: "id" + x + "-" + y
+                    }
+                    createGridNode(iconGridArray[x][y]);
+                }
+            }
+        }
+        //if shorter column 
+        if (gridVdiff < 0){
+            iconGridArray.forEach(column => {
+                let delRows = column.splice(gridVertical, gridVdiff*-1)
+                delRows.forEach(object =>{
+                    let objectNode = document.getElementById(object.id); 
+                    objectNode.parentElement.removeChild(objectNode);
+                })
+            })
+        }
+        //if longer column
+        if (gridVdiff > 0){
+            for (x = 0; x < iconGridArray.length; x++){
+                for(y = iconGridArray[x].length; y < gridVertical; y++){
+                    iconGridArray[x].push({
+                        posX:(x+1) * ewm + x * w,
+                        posY:(y+1) * ehm + y * h,
+                        widt: w, heig: h, id: "id" + x + "-" + y
+                    })
+                    createGridNode(iconGridArray[x][y]);
+                }
+            }
+        }
+    }
+    //if updating object is necessary
+    if(wChanged || hChanged || wmChanged || hmChanged || autowm === true || autohm === true) {
+        for (x = 0; x < iconGridArray.length; x++){
+            for(y = 0; y < iconGridArray[x].length; y++){
+                iconGridArray[x][y] = {
+                    posX:(x+1) * ewm + x * w,
+                    posY:(y+1) * ehm + y * h,
+                    widt: w, heig: h, id: "id" + x + "-" + y
+                }
+                updateGridNode(iconGridArray[x][y]);
+            }
+        }
+    }
+    //graph array elements on the DOM
+    function createGridNode(object) {
+        let newGrid = document.createElement("div");
+        newGrid.setAttribute("id", object.id);
+        newGrid.setAttribute("class", "gridElement");
+        newGrid.style.left = object.posX + "px";
+        newGrid.style.top = object.posY + "px";
+        newGrid.style.width = object.widt + "px";
+        newGrid.style.height = object.heig + "px";
+
+        newGrid.style.position = "absolute";
+        newGrid.style.zIndex = "-980";
+        newGrid.style.pointerEvents = "none";
+
+        newGrid.style.backgroundColor = "rgba(127,127,127,0.5)";
+        newGrid.style.borderRadius = cfg.deskGrid.borderRadius + "px";
+
+        document.getElementById("gridLayer").appendChild(newGrid);
+    }
+    function updateGridNode(object) {
+        let updGrid = document.getElementById(object.id);
+        updGrid.style.left = object.posX + "px";
+        updGrid.style.top = object.posY + "px";
+        updGrid.style.width = object.widt + "px";
+        updGrid.style.height = object.heig + "px";
+    }
+}
+
+function turnOn_deskGrid_realTimeEvaluation(){
+    evaluateIconGrid();
+    window.onresize = evaluateIconGrid;
+}
+function turnOff_deskGrid_realTimeEvaluation(){
+    window.onresize = null;
+}
+
 //icon behavior------------------------------------------------------------------------|
 var shouldSelect = true;
 
@@ -85,13 +258,15 @@ function dragIcon(elmnt, _this) {
 		document.onmouseup = null;
 		document.onmousemove = null;
         iframeAntiHover (false);
+
+        let w = cfg.deskGrid.width; let h = cfg.deskGrid.height; let wm = cfg.deskGrid.hMargin; let hm = cfg.deskGrid.vMargin;
 		
 		//managing selected icons
 		for (i = iconArray.length - 1; i >= 0; i--){
             if (iconGrid == true && iconArray[i].stat == 2) {
 			    //set position grid for selected icons:----------------------------------|
-				iconArray[i].posY = (Math.round((iconArray[i].posY - pos1)/120)*120 + 10);
-				iconArray[i].posX = (Math.round((iconArray[i].posX - pos1)/120)*120 + 10);
+				iconArray[i].posY = (Math.round((iconArray[i].posY - hm)/(h + hm))*(h + hm) + hm);
+				iconArray[i].posX = (Math.round((iconArray[i].posX - wm)/(w + wm))*(w + wm) + wm);
                 //-----------------------------------------------------------------------|
 
                 iconArray[i].stat = 1;
@@ -155,11 +330,12 @@ function statIconNode(elmnt, _this) {
         case 0:
             elmnt.classList.remove("active");
             elmnt.style.border = '';
+            elmnt.style.zIndex = '';
             break;
         case 1:
             if(!elmnt.classList.contains("active")){elmnt.className += " active"};
             elmnt.style.opacity = '1';
-			elmnt.style.zIndex = '-1';
+			elmnt.style.zIndex = '';
 			elmnt.style.border = '';
 			elmnt.style.backgroundColor = '';
             break;

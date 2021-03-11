@@ -208,7 +208,7 @@ function poseWndwNode(elmnt, _this) {
 function crteWndwNode(_this) {
     let newWindow = document.createElement("div");
     newWindow.setAttribute("class", "window "+_this.apps);
-    newWindow.setAttribute("style", "left:"+_this.posX+"px;top:"+_this.posY+"px;width:"+this.widt+"px;height:"+this.heig+"px;z-index: 0;");
+    newWindow.setAttribute("style", "left:"+_this.posX+"px;top:"+_this.posY+"px;width:"+_this.widt+"px;height:"+_this.heig+"px;z-index: 0;");
 	newWindow.setAttribute("id", "windowNumber" + windowArray.indexOf(_this))
 
     let newWindowInner = document.createElement("div");

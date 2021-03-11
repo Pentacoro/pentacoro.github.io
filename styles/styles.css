@@ -28,7 +28,7 @@ body {
 	display: grid;
 	grid-template-columns: 60px auto;
 
-	z-index: 999;
+	z-index: 100;
 }
 #navbarTaskBar{
 	width: 100%;
@@ -36,7 +36,7 @@ body {
 	border-top-color: #71D5FF;
     border-right-color: #71D5FF;
     border-bottom-color: #0F7B9B;
-    border-left-color: #0F7B9B;
+    border-left-color: #00A2E8;
     border-style: solid;
     border-width: 3px;
 

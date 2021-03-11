@@ -71,12 +71,12 @@ var iconArray = [];
 
 var windowArray = [];
 
-/*
+
 iconArray.push(new Icon ("background-image: url('assets/svg/desktopIcons/folderPlaceholder.svg');", "Folder 1", "explorerExe", 0, 10, 10));
 iconArray.push(new Icon ("background-image: url('assets/svg/desktopIcons/folderPlaceholder.svg');", "Folder 2", "explorerExe", 0, 10, 130));
 iconArray.push(new Icon ("background-image: url('assets/svg/desktopIcons/folderPlaceholder.svg');", "Folder 3", "explorerExe", 0, 10, 250));
 iconArray.push(new Icon ("background-image: url('assets/svg/desktopIcons/settingsPlaceholder.svg');", "Settings", "settingsExe", 0, 10, 370));
-*/
+
 
 /*
 windowArray.push(new Window ("Settings", "settingsExe", true, true, 3, 1, 300, 300, 500, 500));
