@@ -1,19 +1,19 @@
 var iconGridArray = [];
-evaluateIconGrid();
+//evaluateIconGrid();
 function evaluateIconGrid(e = null, w = null, h = null, wm = null, hm = null, autowm = null, autohm = null){
     //take existing config values if null arguments
-    if (w == null) {w = cfg.deskGrid.width };
-    if (h == null) {h = cfg.deskGrid.height};
-    if (wm == null) {wm = cfg.deskGrid.hMargin};
-    if (hm == null) {hm = cfg.deskGrid.vMargin};
-    if (autowm == null) {autowm = cfg.deskGrid.autoHmargin};
-    if (autohm == null) {autohm = cfg.deskGrid.autoVmargin};
+    if (w == null) w = cfg.deskGrid.width ;
+    if (h == null) h = cfg.deskGrid.height;
+    if (wm == null) wm = cfg.deskGrid.hMargin;
+    if (hm == null) hm = cfg.deskGrid.vMargin;
+    if (autowm == null) autowm = cfg.deskGrid.autoHmargin;
+    if (autohm == null) autohm = cfg.deskGrid.autoVmargin;
 
     //get some useful booleans
-    let wChanged = cfg.deskGrid.width  == w;
-    let hChanged = cfg.deskGrid.height == h;
-    let wmChanged = cfg.deskGrid.hMargin == wm;
-    let hmChanged = cfg.deskGrid.vMargin == hm;
+    let wChanged = cfg.deskGrid.width  !== w;
+    let hChanged = cfg.deskGrid.height !== h;
+    let wmChanged = cfg.deskGrid.hMargin !== wm;
+    let hmChanged = cfg.deskGrid.vMargin !== hm;
 
     //set new values to config
     cfg.deskGrid.width  = w;
@@ -59,7 +59,8 @@ function evaluateIconGrid(e = null, w = null, h = null, wm = null, hm = null, au
                 iconGridArray[x][y] = {
                     posX:(x+1) * ewm + x * w,
                     posY:(y+1) * ehm + y * h,
-                    widt: w, heig: h, id: "id" + x + "-" + y
+                    widt: w, heig: h, id: "id" + x + "-" + y,
+                    used: false,
                 }
                 createGridNode(iconGridArray[x][y]);
             }
@@ -92,7 +93,8 @@ function evaluateIconGrid(e = null, w = null, h = null, wm = null, hm = null, au
                     iconGridArray[x][y] = {
                         posX:(x+1) * ewm + x * w,
                         posY:(y+1) * ehm + y * h,
-                        widt: w, heig: h, id: "id" + x + "-" + y
+                        widt: w, heig: h, id: "id" + x + "-" + y,
+                        used: false
                     }
                     createGridNode(iconGridArray[x][y]);
                 }
@@ -115,7 +117,8 @@ function evaluateIconGrid(e = null, w = null, h = null, wm = null, hm = null, au
                     iconGridArray[x].push({
                         posX:(x+1) * ewm + x * w,
                         posY:(y+1) * ehm + y * h,
-                        widt: w, heig: h, id: "id" + x + "-" + y
+                        widt: w, heig: h, id: "id" + x + "-" + y,
+                        used: false
                     })
                     createGridNode(iconGridArray[x][y]);
                 }
@@ -123,7 +126,7 @@ function evaluateIconGrid(e = null, w = null, h = null, wm = null, hm = null, au
         }
     }
     //if updating object is necessary
-    if(wChanged || hChanged || wmChanged || hmChanged || autowm === true || autohm === true) {
+    if(wChanged || hChanged || wmChanged || hmChanged || autowm || autohm) {
         for (x = 0; x < iconGridArray.length; x++){
             for(y = 0; y < iconGridArray[x].length; y++){
                 iconGridArray[x][y] = {
@@ -135,6 +138,7 @@ function evaluateIconGrid(e = null, w = null, h = null, wm = null, hm = null, au
             }
         }
     }
+
     //graph array elements on the DOM
     function createGridNode(object) {
         let newGrid = document.createElement("div");
@@ -149,8 +153,9 @@ function evaluateIconGrid(e = null, w = null, h = null, wm = null, hm = null, au
         newGrid.style.zIndex = "-980";
         newGrid.style.pointerEvents = "none";
 
-        newGrid.style.backgroundColor = "rgba(127,127,127,0.5)";
         newGrid.style.borderRadius = cfg.deskGrid.borderRadius + "px";
+        if (cfg.deskGrid.visibleNodes === true) newGrid.style.backgroundColor = "rgba(127,127,127,0.5)";
+        if (cfg.deskGrid.visibleNodes === false)newGrid.style.backgroundColor = "rgba(127,127,127,0)";
 
         document.getElementById("gridLayer").appendChild(newGrid);
     }
@@ -160,16 +165,47 @@ function evaluateIconGrid(e = null, w = null, h = null, wm = null, hm = null, au
         updGrid.style.top = object.posY + "px";
         updGrid.style.width = object.widt + "px";
         updGrid.style.height = object.heig + "px";
+        if (cfg.deskGrid.visibleNodes === true) updGrid.style.backgroundColor = "rgba(127,127,127,0.5)";
+        if (cfg.deskGrid.visibleNodes === false)updGrid.style.backgroundColor = "rgba(127,127,127,0)";
     }
 }
 
-function turnOn_deskGrid_realTimeEvaluation(){
-    evaluateIconGrid();
-    window.onresize = evaluateIconGrid;
-}
-function turnOff_deskGrid_realTimeEvaluation(){
+function realTimeEvaluation(con){
+    if (con === true){
+        evaluateIconGrid();
+        window.onresize = evaluateIconGrid;
+        return;
+    }
     window.onresize = null;
 }
+
+/*
+function validateIconPosition(tx,ty,px,py,mustFit = false){
+    let w = cfg.deskGrid.width;
+    let h = cfg.deskGrid.height;
+    let wm = cfg.deskGrid.hMargin + cfg.deskGrid.modHmargin;
+    let hm = cfg.deskGrid.vMargin + cfg.deskGrid.modVmargin;
+
+    //fit icon into closest grid
+    ftx = Math.round((tx - wm)/(w + wm))*(w + wm) + wm;
+    fty = Math.round((ty - hm)/(h + hm))*(h + hm) + hm;
+    
+    //get its spot in grid array
+    x = Math.round((ftx - wm)/(w + wm));
+    y = Math.round((fty - hm)/(h + hm));
+
+    //get initial position in grid array
+    a = round((px - wm)/(w + wm));
+    b = round((py - hm)/(h + hm));
+    usedGrid = iconGridArray[a][b];
+
+    //check if that object exists and is not used
+    if(iconGridArray[x][y] && iconGridArray[x][y].used === false) {
+        iconGridArray[x][y].used = true
+        return [iconGridArray[x][y].posX, iconGridArray[x][y].posY];
+    }
+}
+*/
 
 //icon behavior------------------------------------------------------------------------|
 var shouldSelect = true;
@@ -232,7 +268,6 @@ function dragIcon(elmnt, _this) {
 		//calculate new cursor position:
 		pos1 = pos3 - e.clientX;
 		pos2 = pos4 - e.clientY;
-        
 		pos3 = e.clientX;
 		pos4 = e.clientY;
 		
@@ -242,8 +277,8 @@ function dragIcon(elmnt, _this) {
 		for (i = iconArray.length - 1; i >= 0; i--){
             if (iconArray[i].stat == 1 || iconArray[i].stat == 2) {
                 //set position for selected icons:------------|
-                iconArray[i].posY = (iconArray[i].posY - pos2);
-                iconArray[i].posX = (iconArray[i].posX - pos1);
+                iconArray[i].traX = (iconArray[i].traX - pos1);
+                iconArray[i].traY = (iconArray[i].traY - pos2);
                 //--------------------------------------------|
                 
                 iconArray[i].stat = 2;
@@ -265,8 +300,10 @@ function dragIcon(elmnt, _this) {
 		for (i = iconArray.length - 1; i >= 0; i--){
             if (iconGrid == true && iconArray[i].stat == 2) {
 			    //set position grid for selected icons:----------------------------------|
-				iconArray[i].posY = (Math.round((iconArray[i].posY - hm)/(h + hm))*(h + hm) + hm);
-				iconArray[i].posX = (Math.round((iconArray[i].posX - wm)/(w + wm))*(w + wm) + wm);
+				iconArray[i].posX = (Math.round((iconArray[i].traX - wm)/(w + wm))*(w + wm) + wm);
+				iconArray[i].posY = (Math.round((iconArray[i].traY - hm)/(h + hm))*(h + hm) + hm);
+                iconArray[i].traX = iconArray[i].posX;
+                iconArray[i].traY = iconArray[i].posY;
                 //-----------------------------------------------------------------------|
 
                 iconArray[i].stat = 1;
@@ -350,8 +387,8 @@ function statIconNode(elmnt, _this) {
 }
 
 function poseIconNode(elmnt, _this) {
-    elmnt.style.top = _this.posY + "px";
-    elmnt.style.left = _this.posX + "px";
+    elmnt.style.left = _this.traX + "px";
+    elmnt.style.top = _this.traY + "px";
 }
 
 function crteIconNode(_this) {

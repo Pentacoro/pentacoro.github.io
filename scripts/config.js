@@ -10,7 +10,8 @@ var cfg = {
         autoHmargin: false,
         autoVmargin: false,
 
-        borderRadius: 8
+        borderRadius: 8,
+        visibleNodes: false,
     },
     deskBack: {
         image: "url('../assets/norrum/Desktop/fondoB.png')",

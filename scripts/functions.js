@@ -22,14 +22,12 @@ window.addEventListener("keyup", (e) => {console.log(e.key)});
 		window.addEventListener('keydown', function(e){
 			if(e.key === "c" && keyPressC === false){
 				keyPressC = true;
-				console.log("c " + keyPressC);
 			}
 		})
 
 		window.addEventListener('keyup', function(e){
 			if(e.key === "c" && keyPressC === true){
 				keyPressC = false;
-				console.log("c " + keyPressC);
 			}
 		})
 	//-------------------------------------------------C KEY|
@@ -38,14 +36,12 @@ window.addEventListener("keyup", (e) => {console.log(e.key)});
 		window.addEventListener('keydown', function(e){
 			if(e.key === "Control" && keyPressCtrl === false){
 				keyPressCtrl = true;
-				console.log("ctrl " + keyPressCtrl);
 			}
 		})
 
 		window.addEventListener('keyup', function(e){
 			if(e.key === "Control" && keyPressCtrl === true){
 				keyPressCtrl = false;
-				console.log("ctrl " + keyPressCtrl);
 			}
 		})
 	//-----------------------------------------------CONTROL|
