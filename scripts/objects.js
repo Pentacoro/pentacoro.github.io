@@ -1,11 +1,8 @@
 class Icon {
     constructor(image, name, program = null, state = 0, x, y){
         this.stat = state;
-        this.posX = x;
-        this.posY = y;
-
-        this.traX = x;
-        this.traY = y;
+        this.coor = {px: x, py: y, tx: x, ty: y, ax: null, ay: null};
+        this.coor = validateIconPosition(this,true,false);
 
         this.imag = image;
         this.text = name;
@@ -32,19 +29,21 @@ class Icon {
 }
 
 class Window {
-    constructor(title, program, instances = false, resizable, uiux = 3, state = 1, x, y, width, height){
-        this.stat = state;
+    constructor(title, program, instances = false, resizable, uiux = 3, state = 1, x, y, w, h, mw, mh){
+        this.stat = state; // 0 => minimized | 1/2 => open/_&selected | 3/4 => maximized/_&selected
         this.posX = x;
         this.posY = y;
         
-        this.widt = width;
-        this.heig = height;
+        this.widt = w + 12;
+        this.heig = h + 58;
+        this.minW = mw + 12;
+        this.minH = mh + 58;
+        
+        this.apps = program; //next depend on this
         
         this.name = title;
-        
-        this.apps = program; //next 3 depend on this
         this.inst = instances;
-        this.flex = resizable;
+        this.resi = resizable;
         this.uiux = uiux;
     }
     createNode(){
@@ -71,15 +70,12 @@ class Window {
 }
 
 var iconArray = [];
-
 var windowArray = [];
-
 
 iconArray.push(new Icon ("background-image: url('assets/svg/desktopIcons/folderPlaceholder.svg');", "Folder 1", "explorerExe", 0, 12, 12));
 iconArray.push(new Icon ("background-image: url('assets/svg/desktopIcons/folderPlaceholder.svg');", "Folder 2", "explorerExe", 0, 12, 132));
 iconArray.push(new Icon ("background-image: url('assets/svg/desktopIcons/folderPlaceholder.svg');", "Folder 3", "explorerExe", 0, 12, 252));
 iconArray.push(new Icon ("background-image: url('assets/svg/desktopIcons/settingsPlaceholder.svg');", "Settings", "settingsExe", 0, 12, 372));
-
 
 /*
 windowArray.push(new Window ("Settings", "settingsExe", true, true, 3, 1, 300, 300, 500, 500));

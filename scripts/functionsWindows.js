@@ -39,8 +39,8 @@ function dragWndw(wndw, _this) {
 		pos4 = e.clientY;
 
 		//set the window's new position:
-		_this.posY = _this.posY - pos2;
 		_this.posX = _this.posX - pos1;
+		_this.posY = _this.posY - pos2;
 		_this.poseNode();
 	}
 
@@ -209,7 +209,7 @@ function crteWndwNode(_this) {
     let newWindow = document.createElement("div");
     newWindow.setAttribute("class", "window "+_this.apps);
     newWindow.setAttribute("style", "left:"+_this.posX+"px;top:"+_this.posY+"px;width:"+_this.widt+"px;height:"+_this.heig+"px;z-index: 0;");
-	newWindow.setAttribute("id", "windowNumber" + windowArray.indexOf(_this))
+	newWindow.setAttribute("id", "windowNumber" + windowArray.indexOf(_this));
 
     let newWindowInner = document.createElement("div");
     newWindowInner.setAttribute("class", "windowInner");
@@ -221,7 +221,7 @@ function crteWndwNode(_this) {
 
 			let newWindowText = document.createElement("span");
 			newWindowText.setAttribute("class", "windowName");
-			let newWindowTextNode = document.createTextNode(_this.apps);
+			let newWindowTextNode = document.createTextNode(_this.name);
 			newWindowText.appendChild(newWindowTextNode);
 			newHeader.appendChild(newWindowText);
 
@@ -263,7 +263,7 @@ function crteWndwNode(_this) {
 	newWindowBorder.setAttribute("class", "windowBorder");
 	newWindow.appendChild(newWindowBorder);
 
-		if (_this.flex == true) {
+		if (_this.resi == true) {
 			let newWindowEtop = document.createElement("div");
 			newWindowEtop.setAttribute("class", "windowEdge windowEtop");
 			let newWindowEbot = document.createElement("div");
@@ -342,27 +342,27 @@ function dlteWndwNode(_this) {
 //------------------------------------------------------------------------icon behavior|
 
 /*
-				<div class="window explorerExe">
-					<div class="windowInner">
-						<div class="header"><span class="windowName">Explorer ONE</span>
-							<span class="windowButton _">_</span><span class="windowButton O">O</span><span class="windowButton X"></span>
-						</div>
-						<div class="content">
-							<h1 style="text-align: center; padding: .5em">Lorem Ipsum Dolor</h1>
-							<p style="text-align: center; padding: .5em">Lorem ipsum dolor sit amet consectetur adipisicing elit. Recusandae dicta esse sapiente veritatis nostrum molestiae perferendis dolorum quasi magnam voluptatibus fugit itaque inventore rerum iste repellat, a tenetur numquam quisquam quibusdam nam, libero atque dolores provident corrupti. Itaque iusto temporibus porro eum nostrum. Id molestiae laboriosam odio voluptatum fugiat a.</p>
-							<p style="text-align: center; padding: .5em">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Odit blanditiis sed consequatur dolor iusto assumenda ipsam recusandae sapiente esse provident ab hic nulla quae suscipit quia enim quo perferendis aperiam, qui ipsum velit? Ea dolor nam, vel deserunt distinctio, similique voluptatem ipsa sequi dolorem magnam rerum et harum, odit laboriosam!</p>
-							<p style="text-align: center; padding: .5em">Lorem ipsum dolor sit amet consectetur adipisicing elit. Reiciendis praesentium sit eveniet accusantium culpa quos magni corrupti alias nulla! Mollitia maiores velit dolorem veritatis cumque reiciendis facilis illo ad, similique obcaecati? Iusto quis, amet sequi non doloremque, consequatur eos porro obcaecati quo magnam ratione ipsum tempore modi! Enim, nisi voluptates.</p>
-						</div>
-					</div>
-					<div class="windowBorder">
-						<div class="windowEdge windowEtop"></div>
-						<div class="windowEdge windowEbot"></div>
-						<div class="windowEdge windowElef"></div>
-						<div class="windowEdge windowErig"></div>
-						<div class="windowCorner windowCtl"></div>
-						<div class="windowCorner windowCtr"></div>
-						<div class="windowCorner windowCbr"></div>
-						<div class="windowCorner windowCbl"></div>
-					</div>
-				</div>
+<div class="window explorerExe">
+	<div class="windowInner">
+		<div class="header"><span class="windowName">Explorer ONE</span>
+			<span class="windowButton _">_</span><span class="windowButton O">O</span><span class="windowButton X"></span>
+		</div>
+		<div class="content">
+			<h1 style="text-align: center; padding: .5em">Lorem Ipsum Dolor</h1>
+			<p style="text-align: center; padding: .5em">Lorem ipsum dolor sit amet consectetur adipisicing elit. Recusandae dicta esse sapiente veritatis nostrum molestiae perferendis dolorum quasi magnam voluptatibus fugit itaque inventore rerum iste repellat, a tenetur numquam quisquam quibusdam nam, libero atque dolores provident corrupti. Itaque iusto temporibus porro eum nostrum. Id molestiae laboriosam odio voluptatum fugiat a.</p>
+			<p style="text-align: center; padding: .5em">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Odit blanditiis sed consequatur dolor iusto assumenda ipsam recusandae sapiente esse provident ab hic nulla quae suscipit quia enim quo perferendis aperiam, qui ipsum velit? Ea dolor nam, vel deserunt distinctio, similique voluptatem ipsa sequi dolorem magnam rerum et harum, odit laboriosam!</p>
+			<p style="text-align: center; padding: .5em">Lorem ipsum dolor sit amet consectetur adipisicing elit. Reiciendis praesentium sit eveniet accusantium culpa quos magni corrupti alias nulla! Mollitia maiores velit dolorem veritatis cumque reiciendis facilis illo ad, similique obcaecati? Iusto quis, amet sequi non doloremque, consequatur eos porro obcaecati quo magnam ratione ipsum tempore modi! Enim, nisi voluptates.</p>
+		</div>
+	</div>
+	<div class="windowBorder">
+		<div class="windowEdge windowEtop"></div>
+		<div class="windowEdge windowEbot"></div>
+		<div class="windowEdge windowElef"></div>
+		<div class="windowEdge windowErig"></div>
+		<div class="windowCorner windowCtl"></div>
+		<div class="windowCorner windowCtr"></div>
+		<div class="windowCorner windowCbr"></div>
+		<div class="windowCorner windowCbl"></div>
+	</div>
+</div>
 */

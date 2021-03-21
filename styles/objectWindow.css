@@ -130,12 +130,11 @@
 .windowInner>.header>.windowName{
     color: #FFFFFF;
 	font-size: 20px;
-	font-weight: auto;
 
     padding: .4em;
 	margin-bottom: 4px;
 
-    min-width: 36;
+    min-width: 36px;
 
     text-overflow: ellipsis;
     white-space: nowrap;

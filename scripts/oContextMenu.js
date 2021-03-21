@@ -190,6 +190,9 @@ function deskIcon(e){
         !(e.target.classList.contains("cmcheck"))
     ) {
         console.log("Icon");
+
+        loadAPP("apps/deskGridOptions.html");
+
         closeMenu();
     }
 }
@@ -430,8 +433,3 @@ function deskMenuClose() {
     }
 }
 //-------------------------------------------------------------------------------------|
-
-function clearSelection(){
- if (window.getSelection) {window.getSelection().removeAllRanges();}
- else if (document.selection) {document.selection.empty();}
-}

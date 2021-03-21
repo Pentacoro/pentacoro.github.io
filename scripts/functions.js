@@ -11,36 +11,36 @@ function iframeAntiHover (coin) {
 	}
 }
 
-window.addEventListener("mousedown", (e) => {if(keyPressCtrl == true){console.log(e.target)}});
-window.addEventListener("keyup", (e) => {console.log(e.key)});
+window.addEventListener("mousedown", e => {if(keyPressCtrl == true)console.log(e.target)});
+window.addEventListener("keyup",     e => {if(keyPressCtrl == true)console.log(e.key)});
 
 //Boolean key checks-----------------------------------------------|
 	var keyPressCtrl = false; //17
 	var keyPressC = false; //67
 
 	//C KEY-------------------------------------------------|
-		window.addEventListener('keydown', function(e){
-			if(e.key === "c" && keyPressC === false){
-				keyPressC = true;
+		window.addEventListener('keydown', e => {
+			if(e.key === ","){
+				keyPressComma = true;
 			}
 		})
 
-		window.addEventListener('keyup', function(e){
-			if(e.key === "c" && keyPressC === true){
-				keyPressC = false;
+		window.addEventListener('keyup', e => {
+			if(e.key === ","){
+				keyPressComma = false;
 			}
 		})
 	//-------------------------------------------------C KEY|
 
 	//CONTROL-----------------------------------------------|
-		window.addEventListener('keydown', function(e){
-			if(e.key === "Control" && keyPressCtrl === false){
+		window.addEventListener('keydown', e => {
+			if(e.key === "Control"){
 				keyPressCtrl = true;
 			}
 		})
 
-		window.addEventListener('keyup', function(e){
-			if(e.key === "Control" && keyPressCtrl === true){
+		window.addEventListener('keyup', e => {
+			if(e.key === "Control"){
 				keyPressCtrl = false;
 			}
 		})
@@ -51,6 +51,8 @@ window.addEventListener("keyup", (e) => {console.log(e.key)});
 //HTML element references------------------------------------|
 
 const idBackground= document.getElementById('background');
+
+const idNavbar    = document.getElementById('navbar');
 
 const idSelectBox = document.getElementById('selectBox');
 
@@ -66,34 +68,51 @@ const classWindow = document.getElementsByClassName("window");
 
 //------------------------------------HTML element references|
 
+window.addEventListener("resize", e => {
+	idBackground.style.width = document.body.offsetWidth + "px";
+    idBackground.style.height = document.body.offsetHeight - cfg.deskNavB.height + "px";
+})
+
 var iconGrid = true;
+var iconArray = [];
+var windowArray = [];
 
 //background behavior------------------------------------------------------------------------------|
 
 //unselect all folders when desktop click:------------------------------|
 	//when desktop click-------------------|
-	document.onmousedown = function(e) {
+	idBackground.addEventListener("mousedown", e => {
 		//if not clicking folder or window--------------|
 		if(
 			e.target.id == "background" &&
 			keyPressCtrl == false
 		) {
-			for (i = iconArray.length - 1; i >= 0; i--){
-				iconArray[i].stat = 0;
-				iconArray[i].statNode();
+			for (icon of iconArray){
+				icon.stat = 0;
+				icon.statNode();
 			}
 		} 
-	}
+	})
 //----------------------------------------------------------------------|
+
+function clearSelection(){
+	if (window.getSelection) {window.getSelection().removeAllRanges();}
+	else if (document.selection) {document.selection.empty();}
+   }
 
 idBackground.oncontextmenu = (e) => {if(e.target == idBackground){deskMenu(e)}};
 
 window.addEventListener("mousedown", (e) => {
-	if(
-		e.target.parentElement.classList.contains("contextMenu") == false && 
-		e.target.parentElement.parentElement.classList.contains("contextMenu") == false
-	) {
-		closeMenu()
+	if (e.target.parentElement.parentElement){
+		if(
+			e.target.parentElement.classList.contains("contextMenu") == false && 
+			e.target.parentElement.parentElement.classList.contains("contextMenu") == false
+		) {
+			closeMenu()
+			clearSelection();
+		}
+	} else{
+		closeMenu();
 	}
 });
 
@@ -102,12 +121,11 @@ function deskMenu(e) {
 
 	closeMenu();
 	idDesktMenu.style.display = "grid";
-	idDesktMenu.style.top = e.clientY + "px";
-	idDesktMenu.style.left = e.clientX + "px";
+	idDesktMenu.style.top = e.clientY + idBackground.scrollTop + "px";
+	idDesktMenu.style.left = e.clientX + idBackground.scrollLeft + "px";
 
 	idDesktMenu.blur();
 	idCtextMenu.blur();
-	clearSelection();
 
 	deskMenuOpen();
 }
@@ -134,7 +152,7 @@ function selectBox() {
 	let pos1 = 0, pos2 = 0, posxIn = 0, posyIn = 0;
 	
 	//when desktop click------------------------------------------------|
-	document.body.addEventListener("mousedown", function(event) {
+	window.addEventListener("mousedown", function(event) {
 		let target = event.target;
 		//if not clicking folder or window------------------------------|
 		if(
@@ -152,8 +170,8 @@ function selectBox() {
 		e.preventDefault();
 		
 		//get click position:
-		posxIn = e.clientX;
-		posyIn = e.clientY;
+		posxIn = e.clientX + idBackground.scrollLeft;
+		posyIn = e.clientY + idBackground.scrollTop;
 
 		wasCtrl = (keyPressCtrl == true);
 		
@@ -171,8 +189,8 @@ function selectBox() {
 		e.preventDefault();
 		
 		//get cursor position:
-		pos1 = e.clientX;
-		pos2 = e.clientY;
+		pos1 = e.clientX + idBackground.scrollLeft;
+		pos2 = e.clientY + idBackground.scrollTop;
 		
 		//show selectBox:
 		idSelectBox.style.opacity = '1';
@@ -193,14 +211,14 @@ function selectBox() {
 		}
 		
 		//iconReaction--------------------------------------------------|
-		for (i = iconArray.length - 1; i >= 0; i--){
-			if (document.getElementById(iconArray[i].text) != null) { /*otherwise callback argument ruins everything*/
-				if (areRectanglesOverlap(document.getElementById(iconArray[i].text),idSelectBox)) {
+		for (icon of iconArray){
+			if (document.getElementById(icon.text) != null) { /*otherwise callback argument ruins everything*/
+				if (areRectanglesOverlap(document.getElementById(icon.text),idSelectBox)) {
 					//light up colliding icon hover border:
-					highlight(document.getElementById(iconArray[i].text));
+					highlight(document.getElementById(icon.text));
 				} else {
 					//unlight non-colliding icon hover border:
-					lowlight(document.getElementById(iconArray[i].text));
+					lowlight(document.getElementById(icon.text));
 				}
 			}
 		};
@@ -216,16 +234,16 @@ function selectBox() {
 
 		//iconReaction--------------------------------------------------|
 		
-		for (i = iconArray.length - 1; i >= 0; i--){
-			if (document.getElementById(iconArray[i].text) != null) { /*otherwise callback argument ruins everything*/
-				if (areRectanglesOverlap(document.getElementById(iconArray[i].text), idSelectBox)) {
+		for (icon of iconArray){
+			if (document.getElementById(icon.text) != null) { /*otherwise callback argument ruins everything*/
+				if (areRectanglesOverlap(document.getElementById(icon.text), idSelectBox)) {
 					//activate colliding icon hover border:
-					iconArray[i].stat = 1;
-					iconArray[i].statNode();
+					icon.stat = 1;
+					icon.statNode();
 				} else if (wasCtrl == false) {
 					//deactivate non-colliding icon hover border UNLESS ctrl:
-					iconArray[i].stat = 0;
-					iconArray[i].statNode();
+					icon.stat = 0;
+					icon.statNode();
 				}
 			}
 		}

@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Desk Grid Options</title>
+    <style>
+        *{
+            font-family: Arial, Helvetica, sans-serif;
+            margin: 0;
+            box-sizing: border-box;
+        }
+        body{
+            background-color: #000000;
+        }
+        #content{
+            display: grid;
+            grid-template-rows: 40px auto;
+
+            width: 350px;
+            height: 530px;
+
+            background-color: #e8e8e8;
+        }
+        #tabs{
+            display: grid;
+            grid-template-columns: 50% 50%;
+            width: 100%;
+        }
+        #tabs>.tab{
+            background-color: #c7c7c7;
+        }
+        .tab>.tabRadio_box{
+            height: 100%;
+            position: relative;
+            display: block;
+            padding: .5em;
+            
+            text-align: center;
+            font-weight: 550;
+            cursor: pointer;
+
+            user-select: none;
+        }
+        .tabRadio_input{
+            display: none;
+        }
+        .tabRadio_input:checked + .tabRadio_box{
+            background-color: #e8e8e8;
+        }
+
+        .tabContent{
+            display: grid;
+            padding: 1em;
+
+            height: 100%;
+            grid-template-rows: 40% auto;
+        }
+        #graph{
+            width: 100%;
+            height: 100%;
+            background-color: #FFFFFF;
+        }
+        #editable{
+            width: 80%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        h5{
+            margin-top: 10px;
+            text-align: center;
+            padding: .4em 0;
+            cursor: default;
+
+            user-select: none;
+        }
+        .optionInt{
+            height: 2.4em;
+            display: grid;
+            grid-template-columns: auto 80px 80px;
+            padding: .2em 0;
+            cursor: default;
+
+            user-select: none;
+        }
+        .optionName>h4{
+            margin-top: auto;
+            margin-bottom: auto;
+        }
+        .optionName{
+            display: flex;
+            width: 90%;
+            justify-content: center;
+            background-color: #c7c7c7;
+        }
+
+        .optionBoolean{
+            height: 2.4em;
+            display: grid;
+            grid-template-columns: auto 160px;
+            padding: .2em 0;
+            cursor: default;
+
+            user-select: none; 
+        }
+        .editBoolean{
+            display: grid;
+            grid-template-columns: 50% 50%;
+        }
+        .editBoolean>.optbool{
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+        .optbool:nth-child(1)>.optbool_box{
+            border-top-left-radius: 3px;
+            border-bottom-left-radius: 3px;
+            border-right: solid 1px white;
+        }
+        .optbool:nth-child(2)>.optbool_box{
+            border-top-right-radius: 3px;
+            border-bottom-right-radius: 3px;
+        }
+        .optbool>.optbool_box{
+            height: 100%;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            background-color: #888888;
+            color: white;
+            transition: font-size .15s, padding .15s;
+            
+            cursor: pointer;
+            user-select: none;
+        }
+        .optbool>.optbool_box>span{
+            text-align: center;
+            transform: scale(.65);
+            text-transform: uppercase;
+        }
+        .optbool>.optbool_box:hover{
+            background-color: #999999;
+        }
+        .optbool_input{
+            display: none;
+        }
+        .optbool_input:checked + .optbool_box, .optbool_input:checked + .optbool_box:hover{
+            background-color: #00A2E8;
+            color: white;
+            cursor: default;
+        }
+        .optbool_input:checked + .optbool_box>span{
+            transition: font-weight .075s, transform .075s;
+            transform: scale(.8);
+        }
+            
+            .hidden{
+            display: none;
+        }
+        .editButton{
+            display: grid;
+            grid-template-columns: auto auto;
+        }
+        .editButton>.edit{
+            grid-column: 1 / span 2;
+            width: 100%;
+            height: 100%;
+
+            color: white;
+            background-color: #0F7B9B;
+            border: none;
+            border-top-right-radius: 3px;
+            border-bottom-right-radius: 3px;
+            cursor: pointer;
+        }
+        .editButton>.edit:active{
+            background-color: #1b5566;
+        }
+        .editButton>.apply, .editButton>.cancel{
+            width: 100%;
+            height: 100%;
+            color: white;
+            cursor: pointer;
+        }
+        .editButton>.apply{
+            background-color: #00A2E8;
+            border: none;
+        }
+        .editButton>.apply:active{
+            background-color: #0F7B9B;
+        }
+        .editButton>.cancel{
+            background-color: #FF5189;
+            color: white;
+            border: none;
+            border-top-right-radius: 3px;
+            border-bottom-right-radius: 3px;
+        }
+        .editButton>.cancel:active{
+            background-color: #ad2651;
+        }
+        .optionValue{
+            padding: .4em;
+            text-align: center;
+            background-color: white;
+            border: solid 1px #969696;
+            border-right: none;
+            border-top-left-radius: 3px;
+            border-bottom-left-radius: 3px;
+            cursor: text;
+        }
+
+        /*custom footer checkbox---------------------------*/
+        .checkbox{
+            display: inline-flex;
+            align-items: center;
+            cursor: pointer;
+        }
+        .checkbox_input{
+            display: none;
+        }
+        .checkbox_box{
+            width: 100%;
+            height: 100%;
+            background-color: #00A2E8;
+            border-top-right-radius: 3px;
+            border-bottom-right-radius: 3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: background 0.075s;
+        }
+        .checkbox_box::after{
+            content: '⬤';
+            font-size: .95em;
+            color: #FFFFFF;
+            transform: scale(0);
+            transition: transform 0.15s;
+        }
+        .checkbox_box:active{
+            background-color: #0F7B9B;
+        }
+        .checkbox_input:checked + .checkbox_box::after{
+            transform: scale(1);
+        }
+        /*---------------------------custom footer checkbox*/
+
+        /*custom footer button-----------------------------*/
+        .button{
+            display: inline-flex;
+            align-items: center;
+            cursor: pointer;
+        }
+        .button_input{
+            display: none;
+        }
+        .button_box{
+            width: 100%;
+            height: 100%;
+
+            background-color: #00A2E8;
+            border-top-left-radius: 3px;
+            border-bottom-left-radius: 3px;
+            border-right: solid 1px #71D5FF;
+            transition: background 0.075s;
+
+            color: #FFFFFF;
+            flex-shrink: 0;
+
+            display: flex;
+            align-items: center;
+        }
+        .button_box>span{
+            width: 100%;
+            text-align: center;
+            margin-top: auto;
+            margin-bottom: auto;
+
+            user-select: none;
+        }
+        .button_input:active + .button_box{
+            background-color: #0F7B9B;
+        }
+        /*-----------------------------custom footer button*/
+        .footerButton{
+            margin-top: 10px;
+            display: grid;
+            grid-template-columns: auto 38px;
+            width: 100%;
+            height: 38px;
+        }
+    </style>
+</head>
+<body>
+    <div id="content">
+        <div id="tabs">
+            <label class="tab" for="tabPositioning">
+                <input class="tabRadio_input" type="radio" name="tabGrid" id="tabPositioning">
+                <div class="tabRadio_box"><span>Positioning</span></div>
+            </label>
+            <label class="tab" for="tabResizing">
+                <input class="tabRadio_input" type="radio" name="tabGrid" id="tabResizing">
+                <div class="tabRadio_box">Resizing</div>
+            </label>
+        </div>
+
+        <div class="tabContent" id="tabContent1">
+            <div id="graph"></div>
+            <div id="editable">
+                <h5>SIZE</h5>
+                <span class="optionInt"><div class="optionName"><h4>Width: </h4></div>
+                    <span class="optionValue" id="width"></span> 
+                    <div class="editButton">
+                        <button class="edit">Edit</button>
+                        <button class="apply hidden">✓</button>
+                        <button class="cancel hidden">✕</button>
+                    </div>
+                </span>
+
+                <span class="optionInt"><div class="optionName"><h4>Height: </h4></div>
+                    <span class="optionValue" id="height"></span> 
+                    <div class="editButton">
+                        <button class="edit">Edit</button>
+                        <button class="apply hidden">✓</button>
+                        <button class="cancel hidden">✕</button>
+                    </div>
+                </span>
+
+                <h5>MARGIN</h5>
+                <span class="optionInt"><div class="optionName"><h4>H-zontal: </h4></div>
+                    <span class="optionValue" id="hMargin"></span> 
+                    <div class="editButton">
+                        <button class="edit">Edit</button>
+                        <button class="apply hidden">✓</button>
+                        <button class="cancel hidden">✕</button>
+                    </div>
+                </span>
+
+                <span class="optionInt"><div class="optionName"><h4>Vertical: </h4></div>
+                    <span class="optionValue" id="vMargin"></span> 
+                    <div class="editButton">
+                        <button class="edit">Edit</button>
+                        <button class="apply hidden">✓</button>
+                        <button class="cancel hidden">✕</button>
+                    </div>
+                </span>
+
+                <div class="footerButton">
+                    <label class="button" for="marginButton">
+                        <input class="button_input" type="button" name="marginButton" id="marginButton">
+                        <div class="button_box" id="marginButton_"><span>Calculate Optimal Margin</span></div>
+                    </label>
+                    <label class="checkbox" for="marginCheckbox">
+                        <input class="checkbox_input" type="checkbox" name="marginCheckbox" id="marginCheckbox">
+                        <div class="checkbox_box" id="marginCheckbox_"></div>
+                    </label>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="tabContent hidden" id="tabContent2">
+            <div id="graph"></div>
+            <div id="editable">
+                <h5>SEND</h5>
+
+                <span class="optionBoolean"><div class="optionName"><h4>Desktop: </h4></div>
+                    <div class="editBoolean">
+                        <label class="optbool 1" for="optboolBorder">
+                            <input class="optbool_input" type="radio" name="sendBorder" id="optboolBorder">
+                            <div class="optbool_box"><span>Border</span></div>
+                        </label>
+                        <label class="optbool 2" for="optboolOrder">
+                            <input class="optbool_input" type="radio" name="sendBorder" id="optboolOrder">
+                            <div class="optbool_box"><span>Order</span></div>
+                        </label>
+                    </div>
+                </span>
+
+                <span class="optionBoolean"><div class="optionName"><h4>Directory: </h4></div>
+                    <div class="editBoolean">
+                        <label class="optbool 1" for="optboolStash">
+                            <input class="optbool_input" type="radio" name="sendStash" id="optboolStash">
+                            <div class="optbool_box"><span>Stash</span></div>
+                        </label>
+                        <label class="optbool 2" for="optboolBin">
+                            <input class="optbool_input" type="radio" name="sendStash" id="optboolBin">
+                            <div class="optbool_box"><span>Bin</span></div>
+                        </label>
+                    </div>
+                </span>
+
+                <h5>LENGTH</h5>
+                <span class="optionInt"><div class="optionName"><h4>X-Axis: </h4></div>
+                    <span class="optionValue" id="hLength"></span> 
+                    <div class="editButton">
+                        <button class="edit">Edit</button>
+                        <button class="apply hidden">✓</button>
+                        <button class="cancel hidden">✕</button>
+                    </div>
+                </span>
+
+                <span class="optionInt"><div class="optionName"><h4>Y-Axis: </h4></div>
+                    <span class="optionValue" id="vLength"></span> 
+                    <div class="editButton">
+                        <button class="edit">Edit</button>
+                        <button class="apply hidden">✓</button>
+                        <button class="cancel hidden">✕</button>
+                    </div>
+                </span>
+
+                <div class="footerButton">
+                    <label class="button" for="lengthButton">
+                        <input class="button_input" type="button" name="lengthButton" id="lengthButton">
+                        <div class="button_box" id="lengthButton_"><span>Calculate Optimal Length</span></div>
+                    </label>
+                    <label class="checkbox" for="lengthCheckbox">
+                        <input class="checkbox_input" type="checkbox" name="lengthCheckbox" id="lengthCheckbox">
+                        <div class="checkbox_box" id="lengthCheckbox_"></div>
+                    </label>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script src="../scripts/config.js"></script>
+    <script>
+        document.onmousedown = e => {
+            if (window.getSelection) {window.getSelection().removeAllRanges();}
+            else if (document.selection) {document.selection.empty();}
+        }
+        document.getElementById("tabPositioning").checked = true;
+
+        document.getElementById("tabPositioning").addEventListener("click", e => {
+            if (e.target.checked) {
+                document.getElementById("tabContent1").classList.remove("hidden");
+                document.getElementById("tabContent2").classList.add("hidden");
+                return;
+            }
+        })
+        document.getElementById("tabResizing").addEventListener("click", e => {
+            if (e.target.checked) {
+                document.getElementById("tabContent2").classList.remove("hidden");
+                document.getElementById("tabContent1").classList.add("hidden");
+                return;
+            }
+        })
+
+        for (option of document.getElementsByClassName("optionValue")){
+            option.onclick = (e) => editContent(e.target.parentElement);
+            option.parentElement.children[2].children[0].onclick = (e) => editContent(e.target.parentElement.parentElement);
+        }
+        function editContent(option){
+            let value = option.children[1];
+            let button = option.children[2];
+            value.setAttribute("contenteditable", "true");
+            value.setAttribute("spellcheck", "false");
+
+            value.focus();
+            let range = document.createRange();
+            range.setStart(value, 0);
+            range.setEnd(value, value.childNodes.length);
+            window.getSelection().addRange(range);
+
+            button.children[0].classList.add("hidden");
+            button.children[1].classList.remove("hidden");
+            button.children[2].classList.remove("hidden");
+
+            button.children[1].onclick = e => {
+                if (/^\d+$/.test(value.innerText)){
+                    let inner = parseInt(value.innerText);
+                    value.style.backgroundColor = "";
+
+                    new Function("cfg.deskGrid." + value.id + " = " + inner)()
+                    if(value.id == "width" || value.id == "height"){
+                        evaluateIconGrid(null,2);
+                    }
+                    if(value.id == "hMargin"){
+                        document.getElementById("marginCheckbox").checked = false;
+                        cfg.deskGrid.autoHmargin = false;
+                        cfg.deskGrid.modHmargin = 0;
+                        evaluateIconGrid(null,2);
+                    }
+                    if (value.id == "vMargin"){
+                        document.getElementById("marginCheckbox").checked = false;
+                        cfg.deskGrid.autoVmargin = false;
+                        cfg.deskGrid.modVmargin = 0;
+                        evaluateIconGrid(null,2);
+                    }
+                    if(value.id == "hLength"){
+                        document.getElementById("lengthCheckbox").checked = false;
+                        cfg.deskGrid.autoHlength = false;
+                        evaluateIconGrid(null,1);
+                    }
+                    if(value.id == "vLength"){
+                        document.getElementById("lengthCheckbox").checked = false;
+                        cfg.deskGrid.autoVlength = false;
+                        evaluateIconGrid(null,1);
+                    }
+
+                    value.setAttribute("contenteditable", "false");
+                    button.children[0].classList.remove("hidden");
+                    button.children[1].classList.add("hidden");
+                    button.children[2].classList.add("hidden");
+                } else {
+                    value.focus();
+                    let range = document.createRange();
+                    range.setStart(value, 0);
+                    range.setEnd(value, value.childNodes.length);
+                    window.getSelection().addRange(range);
+
+                    value.style.backgroundColor = "#f788ab";
+                }
+            }
+            button.children[2].onclick = e => {
+                value.style.backgroundColor = "";
+                value.setAttribute("contenteditable", "false");
+                button.children[0].classList.remove("hidden");
+                button.children[1].classList.add("hidden");
+                button.children[2].classList.add("hidden");
+
+                new Function(value.id + "HTML.innerText = cfg.deskGrid." + value.id)()
+            }
+        }
+
+        for (option of document.getElementsByClassName("editBoolean")){
+            option.onclick = (e) => editBoolean(e.target);
+        }
+        function editBoolean(option){
+            let bool = option.parentElement.children[0];
+            if(bool.name != undefined) {
+                switch (bool.parentElement.classList.contains("1")){
+                    case true:
+                        new Function("cfg.deskGrid." + bool.name + " = true")()
+                        break;
+                    case false:
+                        new Function("cfg.deskGrid." + bool.name + " = false")()
+                        break;
+                }
+            }
+        }
+
+        document.getElementById("marginButton").onclick = e => {
+            cfg.deskGrid.autoHmargin = true;
+            cfg.deskGrid.autoVmargin = true;
+            evaluateIconGrid(null,1)
+            cfg.deskGrid.autoHmargin = false;
+            cfg.deskGrid.autoVmargin = false;
+        }
+        document.getElementById("marginCheckbox").onclick = e => {
+            if(e.target.checked == true){
+                cfg.deskGrid.autoHmargin = true;
+                cfg.deskGrid.autoVmargin = true;
+                realTimeGridEval();
+
+                evaluateIconGrid(null,1);
+            } else {
+                cfg.deskGrid.autoHmargin = false;
+                cfg.deskGrid.autoVmargin = false;
+                realTimeGridEval();
+            }
+        }
+        document.getElementById("lengthButton").onclick = e => {
+            cfg.deskGrid.autoHlength = true;
+            cfg.deskGrid.autoVlength = true;
+            evaluateIconGrid(null,1)
+            cfg.deskGrid.autoHlength = false;
+            cfg.deskGrid.autoVlength = false;
+        }
+        document.getElementById("lengthCheckbox").onclick = e => {
+            if(e.target.checked == true){
+                cfg.deskGrid.autoHlength = true;
+                cfg.deskGrid.autoVlength = true;
+                realTimeGridEval();
+
+                evaluateIconGrid(null,1)
+            } else {
+                cfg.deskGrid.autoHlength = false;
+                cfg.deskGrid.autoVlength = false;
+                realTimeGridEval();
+            }
+        }
+
+        widthHTML = document.getElementById("width");
+        heightHTML = document.getElementById("height");
+        hMarginHTML = document.getElementById("hMargin");
+        vMarginHTML = document.getElementById("vMargin");
+        hLengthHTML = document.getElementById("hLength");
+        vLengthHTML = document.getElementById("vLength");
+
+        widthHTML.innerText = cfg.deskGrid.width;
+        heightHTML.innerText = cfg.deskGrid.height;
+        hMarginHTML.innerText = cfg.deskGrid.hMargin;
+        vMarginHTML.innerText = cfg.deskGrid.vMargin;
+        hLengthHTML.innerText = cfg.deskGrid.hLength;
+        vLengthHTML.innerText = cfg.deskGrid.vLength;
+
+        if (cfg.deskGrid.sendStash === true) {
+            document.getElementById("optboolStash").checked = true;
+        } else {
+            document.getElementById("optboolBin").checked = true;
+        }
+
+        if (cfg.deskGrid.sendBorder === true) {
+            document.getElementById("optboolBorder").checked = true;
+        } else {
+            document.getElementById("optboolOrder").checked = true;
+        }
+
+        if (cfg.deskGrid.autoHmargin && cfg.deskGrid.autoVmargin) {
+            document.getElementById("marginCheckbox").checked = true;
+        } else {
+            document.getElementById("marginCheckbox").checked = false;
+        }
+
+        if (cfg.deskGrid.autoHlength && cfg.deskGrid.autoVlength) {
+            document.getElementById("lengthCheckbox").checked = true;
+        } else {
+            document.getElementById("lengthCheckbox").checked = false;
+        }
+    </script>
+</body>
+</html>

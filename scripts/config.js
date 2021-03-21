@@ -6,12 +6,16 @@ var cfg = {
 
         modHmargin: 0, modVmargin: 0,
 
-        realTimeEvaluation: false,
+        autoHlength: false,
+        autoVlength: false,
         autoHmargin: false,
         autoVmargin: false,
 
+        sendStash: true,
+        sendBorder: true,
+
         borderRadius: 8,
-        visibleNodes: false,
+        visibleNodes: true,
     },
     deskBack: {
         image: "url('../assets/norrum/Desktop/fondoB.png')",
