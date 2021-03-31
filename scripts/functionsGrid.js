@@ -187,9 +187,25 @@ function evaluateIconGrid(
                 }
             }
         }
+
+        if (document.getElementsByClassName("grid_graph")) {
+            if (document.getElementsByClassName("grid_graph")[1]) {
+                document.getElementsByClassName("grid_graph")[1].children[0].children[0].innerText = cfg.deskGrid.hLength;
+                document.getElementsByClassName("grid_graph")[1].children[1].innerText = cfg.deskGrid.vLength;
+            }
+        }
     }
     //if updating object is necessary
     if( (wChanged || hChanged || wmChanged || hmChanged || autowm || autohm) || a == 2) {
+        
+        if (document.getElementsByClassName("grid_graph")) {
+            if (document.getElementsByClassName("grid_graph")[0]) {
+                if (cfg.deskGrid.autoHmargin) document.getElementsByClassName("grid_graph")[0].children[4].innerText = parseFloat(cfg.deskGrid.modHmargin).toFixed(2);
+                if (cfg.deskGrid.autoVmargin) document.getElementsByClassName("grid_graph")[0].children[5].innerText = parseFloat(cfg.deskGrid.modVmargin).toFixed(2);
+            }
+        }
+        
+
         for (x = 0; x < iconGridArray.length; x++){
             for(y = 0; y < iconGridArray[x].length; y++){
                 iconGridArray[x][y].posX = (x+1) * ewm + x * w;
@@ -244,7 +260,7 @@ function realTimeGridEval(margin = null, length = null){
     if(margin == null) margin = cfg.deskGrid.autoHmargin;
     if(length == null) length = cfg.deskGrid.autoHlength;
 
-    if(margin === true || length === true){
+    if(margin || length){
         evaluateIconGrid();
         window.addEventListener("resize",evaluateIconGrid);
         return;

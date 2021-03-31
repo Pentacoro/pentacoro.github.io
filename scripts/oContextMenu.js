@@ -184,14 +184,14 @@ function iconProperties(e, elmnt, _this){
     }
 }
 //-------------------------------------------------------------------------------------|
-function deskIcon(e){
+function deskGrid(e){
     if(
         (e.target.parentElement.id == "deskCM1" || e.target.id == "deskCM1") &&
         !(e.target.classList.contains("cmcheck"))
     ) {
-        console.log("Icon");
+        console.log("Grid");
 
-        loadAPP("apps/deskGridOptions.html");
+        loadAPP("./apps/settings_deskGrid/deskGridOptions.html");
 
         closeMenu();
     }
@@ -385,7 +385,7 @@ function iconMenuFunctions(e,elmnt,_this,n){
 function deskMenuFunctions(e,n){
     switch(n){
         case 1:
-            deskIcon(e);
+            deskGrid(e);
             break;
         case 2:
             deskNew(e);

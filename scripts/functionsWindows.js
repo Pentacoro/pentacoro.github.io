@@ -293,6 +293,13 @@ function crteWndwNode(_this) {
 
     document.getElementById("windowLayer").appendChild(newWindow);
 
+	let diffW = (newWindow.offsetWidth - newWindow.firstChild.children[1].offsetWidth);
+	let diffH = (newWindow.offsetHeight - newWindow.firstChild.children[1].offsetHeight);
+	_this.widt += diffW;
+	_this.heig += diffH;
+	_this.minW += diffW;
+	_this.minH += diffH;
+
 	for (i = 0; i < document.getElementsByClassName("windowButton").length; i++){
 		let windowButton = document.getElementsByClassName("windowButton")[i];
 		windowButton.onmousedown = () => {windowButtonClick(windowButton)};

@@ -34,10 +34,10 @@ class Window {
         this.posX = x;
         this.posY = y;
         
-        this.widt = w + 12;
-        this.heig = h + 58;
-        this.minW = mw + 12;
-        this.minH = mh + 58;
+        this.widt = w;
+        this.heig = h;
+        this.minW = mw;
+        this.minH = mh;
         
         this.apps = program; //next depend on this
         

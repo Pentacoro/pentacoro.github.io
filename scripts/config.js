@@ -13,6 +13,7 @@ var cfg = {
 
         sendStash: true,
         sendBorder: true,
+        sendForce: false,
 
         borderRadius: 8,
         visibleNodes: true,

@@ -190,7 +190,7 @@ function crteIconNode(_this) {
     let newIcon = document.createElement("div");
     newIcon.setAttribute("class", "icon");
     newIcon.setAttribute("id", _this.text);
-    newIcon.setAttribute("style", "left:"+_this.posX+"px;top:"+_this.posY+"px;");
+    newIcon.setAttribute("style", "left:"+_this.coor.px+"px;top:"+_this.coor.py+"px;");
 
     let newIconImage = document.createElement("div");
     newIconImage.setAttribute("class", "iconImage");
