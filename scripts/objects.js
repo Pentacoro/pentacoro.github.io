@@ -2,7 +2,7 @@ class Icon {
     constructor(image, name, program = null, state = 0, x, y){
         this.stat = state;
         this.coor = {px: x, py: y, tx: x, ty: y, ax: null, ay: null};
-        this.coor = validateIconPosition(this,true,false);
+        repositionIcons([this],true,false);
 
         this.imag = image;
         this.text = name;

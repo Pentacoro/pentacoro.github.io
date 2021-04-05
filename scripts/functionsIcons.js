@@ -90,18 +90,22 @@ function dragIcon(elmnt, _this) {
 		document.onmousemove = null;
         iframeAntiHover (false);
 		
-		//managing selected icons
+        let iconsToValidate = [];
+
+		//send all icons to position evaluation
 		for (icon of iconArray){
             if (iconGrid == true && icon.stat == 2) {
-			    //set position grid for selected icons:----------------------------------|
-                icon.coor = validateIconPosition(icon,true,true)
-                //-----------------------------------------------------------------------|
-
-                icon.stat = 1;
-                icon.poseNode();
-                icon.statNode();
+			    iconsToValidate.push(icon);
             }
 		}
+        repositionIcons(iconsToValidate, true, true);
+
+        //update HTML of icons after evaluation
+        for (icon of iconsToValidate){
+            icon.stat = 1;
+            icon.poseNode();
+            icon.statNode();
+        }
 		
 		//unselect other folders on mouseup W/O drag UNLESS ctrl
 		if(keyPressCtrl == false && dragging == false && e.button == 0) {

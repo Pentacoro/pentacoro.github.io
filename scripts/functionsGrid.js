@@ -268,60 +268,67 @@ function realTimeGridEval(margin = null, length = null){
     window.removeEventListener("resize",evaluateIconGrid);
 }
 
-function validateIconPosition(icon,mustSet = false,hasPrev = true){
+function repositionIcons(icons, mustSet = false, hasPrev = true){
     let w = cfg.deskGrid.width;
     let h = cfg.deskGrid.height;
     let wm = (cfg.deskGrid.modHmargin == 0) ? cfg.deskGrid.hMargin : cfg.deskGrid.modHmargin;
     let hm = (cfg.deskGrid.modVmargin == 0) ? cfg.deskGrid.vMargin : cfg.deskGrid.modVmargin;
 
-    let coords = icon.coor;
+    let invalidIcons = [];
 
-    //fit icon into closest grid
-    x = Math.round((coords.tx - wm)/(w + wm))*(w + wm) + wm;
-    y = Math.round((coords.ty - hm)/(h + hm))*(h + hm) + hm;
+    for(icon of icons) validateIconPosition(icon);
+
+    function validateIconPosition(icon){
+        let coords = icon.coor;
     
-    //get its spot in grid array
-    tx = Math.round((x - wm)/(w + wm));
-    ty = Math.round((y - hm)/(h + hm));
-
-    //get initial position in grid array
-    px = Math.round((coords.px - wm)/(w + wm));
-    py = Math.round((coords.py - hm)/(h + hm));
-
-    if(gridAvailable()) {
-        //if object exists and is not used (valid position)
-        let oldGrid = iconGridArray[px][py];
-        let newGrid = iconGridArray[tx][ty];
-
-        if(mustSet == true) {
-            oldGrid.used = false;
-            oldGrid.icon = null;
-            newGrid.used = true;
-            newGrid.icon = icon;
-
-            coords.px = newGrid.posX;
-            coords.py = newGrid.posY;
-            coords.tx = newGrid.posX;
-            coords.ty = newGrid.posY;
-            coords.ax = tx;
-            coords.ay = ty;
-
-            return coords;
+        //find closest grid for its tPos
+        x = Math.round((coords.tx - wm)/(w + wm))*(w + wm) + wm;
+        y = Math.round((coords.ty - hm)/(h + hm))*(h + hm) + hm;
+        
+        //get its spot in grid array
+        tx = Math.round((x - wm)/(w + wm));
+        ty = Math.round((y - hm)/(h + hm));
+    
+        if(gridAvailable(tx, ty)) {
+            //if object exists and is not used (valid position)
+            let newGrid = iconGridArray[tx][ty];
+    
+            if(mustSet) {
+                newGrid.used = true;
+                newGrid.icon = icon;
+    
+                coords.px = newGrid.posX;
+                coords.py = newGrid.posY;
+                coords.tx = newGrid.posX;
+                coords.ty = newGrid.posY;
+                coords.ax = tx;
+                coords.ay = ty;
+            }
+        } else {
+            //if the position is invalid
+            invalidIcons.push(icon);
         }
-        return true;
-    } else {
-        //if the position is invalid
+    }
+
+    for(icon of invalidIcons) reintegrateInvalidIcon(icon);
+
+    function reintegrateInvalidIcon(icon){
+        let coords = icon.coor;
+    
+        //get previous position in grid array
+        px = Math.round((coords.px - wm)/(w + wm));
+        py = Math.round((coords.py - hm)/(h + hm));
+
         let oldGrid = iconGridArray[px][py];
-        if(mustSet == true && hasPrev == true && classActive.length == 1){
+
+        if(mustSet && hasPrev && !oldGrid.used){
             oldGrid.used = true;
             oldGrid.icon = icon;
             coords.tx = coords.px;
             coords.ty = coords.py;
             coords.ax = px;
             coords.ay = py;
-
-            return coords;
-        }else if(mustSet == true){
+        }else if(mustSet){
             newGrid = orderIconPosition();
             newGrid[0].used = true;
             newGrid[0].icon = icon;
@@ -330,25 +337,20 @@ function validateIconPosition(icon,mustSet = false,hasPrev = true){
             coords.tx = newGrid[0].posX;
             coords.ty = newGrid[0].posY;
             coords.ax = newGrid[1];
-            coords.ay = newGrid[2]
-
-            return coords;
+            coords.ay = newGrid[2];
         }
-        return false;
     }
 }
 
-function gridAvailable(){
-    if(iconGridArray[tx]){
-        if(iconGridArray[tx][ty]){
-            if(iconGridArray[tx][ty].used == false) return true;
-        }
+function gridAvailable(x, y){
+    if(gridExists(x, y)){
+        if(iconGridArray[x][y].used == false) return true;
     }
     return false;
 }
-function gridExists(){
-    if(iconGridArray[tx]){
-        if(iconGridArray[tx][ty]) return true;
+function gridExists(x, y){
+    if(iconGridArray[x]){
+        if(iconGridArray[x][y]) return true;
     }
     return false;
 }
