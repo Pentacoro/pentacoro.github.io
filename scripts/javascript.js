@@ -64,4 +64,7 @@ function repDir(sonDir, parDir){ //replace asset directory for local apps
     return newDir;
 }
 
-"./assets/"
+function preloadImage(url){
+    var img=new Image();
+    img.src=url;
+}

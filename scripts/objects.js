@@ -30,7 +30,7 @@ class Icon {
 
 class Window {
     constructor(title, program, instances = false, resizable, uiux = 3, state = 1, x, y, w, h, mw, mh){
-        this.stat = state; // 0 => minimized | 1/2 => open/_&selected | 3/4 => maximized/_&selected
+        this.stat = state; // 0 => minimized | 1/2 => open/selected | 3/4 => maximized/selected
         this.posX = x;
         this.posY = y;
         

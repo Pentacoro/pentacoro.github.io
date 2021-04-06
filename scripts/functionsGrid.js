@@ -13,8 +13,8 @@ function evaluateIconGrid(
     autohm = null, 
     autowl = null,
     autohl = null,
-    dir = true, 
-    des = true
+    dir = null, 
+    des = null
 ){
     //take existing config values if null arguments
     if(w == null) w = cfg.deskGrid.width ;

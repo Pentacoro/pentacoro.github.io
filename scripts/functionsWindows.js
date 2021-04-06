@@ -147,17 +147,18 @@ function statWndwNode(elmnt, _this) {
         elmnt.id != "windowNumber" + 0
     ) {
 		//send to first array index
-		thisIndex = windowArray.indexOf(_this);
-		windowArray.splice(windowArray.indexOf(_this), 1)
+		let thisIndex = windowArray.indexOf(_this);
+		windowArray.splice(thisIndex, 1)
         windowArray.unshift(_this);
 
 		//make DOM elements's IDs and zIndex match new object arrangement
 		for(wndw of document.getElementsByClassName("window")){ 
 			let windowId = wndw.id.match(/(\d+)/)[0];
-			let windowInt= parseInt(windowId) + 1;
-			if(wndw != elmnt && windowInt - 1 < thisIndex){
-				wndw.id = "windowNumber" + windowInt;
-				wndw.style.zIndex = windowInt *-1;
+			let windowInt= parseInt(windowId);
+
+			if(wndw != elmnt && windowInt < thisIndex){
+				wndw.id = "windowNumber" + (windowInt + 1);
+				wndw.style.zIndex = (windowInt + 1) *-1;
 			}
 		}
 		//make this window's ID and zIndex match its object position
@@ -313,7 +314,7 @@ function crteWndwNode(_this) {
 		switch (button.classList[1]) {
 			case "_": console.log("_"); break;
 			case "O": console.log("O"); break;
-			case "X": button.onmouseup = () => _this.deleteNode(); break;
+			case "X": button.onmouseup = () => windowArray[parseInt(button.parentElement.parentElement.parentElement.id.match(/(\d+)/)[0])].deleteNode(); break;
 		}
 	}
 
@@ -325,24 +326,24 @@ function crteWndwNode(_this) {
 }
 
 function dlteWndwNode(_this) {
-    let delWindow = document.getElementById("windowNumber0");
-    delWindow.parentNode.removeChild(delWindow);
+	console.log(_this)
+	//delete window
+	let thisIndex = windowArray.indexOf(_this);
+	console.log(thisIndex)
+	windowArray.splice(thisIndex, 1);
 
-    windowArray.shift();
+	let delWindow = document.getElementById("windowNumber" + thisIndex);
+	delWindow.parentNode.removeChild(delWindow);
 
+	//make DOM elements's IDs and zIndex match new object arrangement
 	for(wndw of document.getElementsByClassName("window")){ 
 		let windowId = wndw.id.match(/(\d+)/)[0];
-		let windowInt= parseInt(windowId) - 1;
-
-		wndw.id = "windowNumber" + windowInt;
-		wndw.style.zIndex = windowInt *-1;
-
-		/*-------|
-	     v                     -1 -1 -1 -1
-		[0][1][2][3][4][5] => [1][2][3][4] => [0][1][2][3][4]
-
-		!a window to be deleted will always be one at the front
-		|-------*/
+		let windowInt= parseInt(windowId);
+		
+		if(windowInt > thisIndex){
+			wndw.id = "windowNumber" + (windowInt - 1);
+			wndw.style.zIndex = (windowInt - 1) *-1;
+		}
 	}
 }
 
