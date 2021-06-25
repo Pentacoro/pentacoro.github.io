@@ -326,10 +326,8 @@ function crteWndwNode(_this) {
 }
 
 function dlteWndwNode(_this) {
-	console.log(_this)
 	//delete window
 	let thisIndex = windowArray.indexOf(_this);
-	console.log(thisIndex)
 	windowArray.splice(thisIndex, 1);
 
 	let delWindow = document.getElementById("windowNumber" + thisIndex);

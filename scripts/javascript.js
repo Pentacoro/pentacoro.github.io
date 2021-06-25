@@ -41,7 +41,9 @@ const loadURL = function(data, container){
     container.innerHTML = data;
 
     if (container.getElementsByTagName("script")){
-        eval(container.getElementsByTagName("script")[1].innerText);
+        for(i = 0; i < container.getElementsByTagName("script").length; i++){
+            eval(container.getElementsByTagName("script")[i].innerText)
+        }
     }  
 }
 
@@ -68,3 +70,11 @@ function preloadImage(url){
     var img=new Image();
     img.src=url;
 }
+
+function wait(ms){
+    var start = new Date().getTime();
+    var end = start;
+    while(end < start + ms) {
+      end = new Date().getTime();
+   }
+ }

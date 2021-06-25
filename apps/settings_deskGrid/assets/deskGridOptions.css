@@ -1,0 +1,467 @@
+*{
+    font-family: Arial, Helvetica, sans-serif;
+    margin: 0;
+    box-sizing: border-box;
+}
+body{
+    background-color: #000000;
+}
+.appcontent{
+    position: relative;
+    display: grid;
+    grid-template-rows: 40px auto;
+
+    width: 350px;
+    height: 560px;
+
+    background-color: #e8e8e8;
+}
+.tabs{
+    display: grid;
+    grid-template-columns: 50% 50%;
+    width: 100%;
+}
+.tabs>.tab{
+    background-color: #c7c7c7;
+}
+.tab>.tabRadio_box{
+    height: 100%;
+    position: relative;
+    padding: .5em;
+    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    cursor: pointer;
+    user-select: none;
+}
+.tab>.tabRadio_box>span{
+    transform: translate(0px, 0px);
+    text-align: center;
+    transition: transform .075s;
+}
+.tabRadio_input{
+    display: none;
+}
+.tabRadio_input:checked + .tabRadio_box{ 
+    background-color: #e8e8e8;
+    transform: scale(1);
+    cursor: default;
+}
+.tabRadio_input:checked + .tabRadio_box>span{
+    transform: translate(0px, -3px);
+}
+
+.tabContent{
+    display: grid;
+    padding: 1em;
+
+    height: 100%;
+    grid-template-rows: 40% auto;
+}
+.grid_graph{
+    width: 100%;
+    height: 100%;
+    margin-top: 10px;
+    image-rendering: crisp-edges;
+}
+
+/*first graph-------------------*/
+.grid_graph.n1{
+    background-image: url("./deskIconGridGraph1.svg");
+}
+.grid_graph>span{
+    user-select: none;
+    position: absolute;
+    color: white;
+    text-align: center;
+}
+.grid_graph.n1>span:nth-child(1){
+    position: initial;
+    display: block;
+    margin-top: 7px;
+    width: 100%;
+}
+.grid_graph.n1>span:nth-child(1)>span{
+    background-color: #0F7B9B;
+}
+.grid_graph.n1>span:nth-child(2){
+    top: 145px;
+    right: 242px;
+    background-color: #0F7B9B;
+}
+.grid_graph.n1>span:nth-child(3){
+    top: 128px;
+    left: 226px;
+    background-color: #888888;
+}
+.grid_graph.n1>span:nth-child(4){
+    top: 207px;
+    right: 186px;
+    background-color: #888888;
+}
+.grid_graph.n1>span:nth-child(5){
+    top: 167px;
+    left: 226px;
+    color: #888888;
+}
+.grid_graph.n1>span:nth-child(6){
+    top: 207px;
+    left: 184px;
+    color: #888888;
+}
+
+/*-------------------first graph*/
+
+/*second graph------------------*/
+.grid_graph.n2{
+    background-image: url("./deskIconGridGraph2/deskIconGridGraph2_00.svg");
+    background-position: center;
+    background-size: 95%;
+    transform: translate(0px, -7px)
+}
+.grid_graph.n2>span{
+    position: absolute;
+    color: white;
+    text-align: center;
+}
+.grid_graph.n2>span:nth-child(1){
+    position: initial;
+    display: block;
+    margin-top: 14px;
+    width: 100%;
+}
+.grid_graph.n2>span:nth-child(1)>span{
+    background-color: #0F7B9B;
+}
+.grid_graph.n2>span:nth-child(2){
+    top: 86px;
+    right: 226px;
+    background-color: #0F7B9B;
+}
+.grid_graph.n2>span:nth-child(3){
+    display: block;
+    transform: scale(.7);
+    top: 46px;
+    left: 92px;
+    width: 1.15em;
+    height: 1.15em;
+    background-color: #0F7B9B;
+}
+.grid_graph.n2>span:nth-child(4){
+    display: block;
+    transform: scale(.7);
+    top: 31px;
+    left: 106px;
+    width: 1.15em;
+    height: 1.15em;
+    background-color: #0F7B9B;
+}
+.grid_graph.n2>span:nth-child(5){
+    top: 66px;
+    left: 220px;
+    color: #888888;
+}
+.grid_graph.n2>div:nth-child(6){
+    position: absolute;
+    display: block;
+    top: 85px;
+    left: 214px;
+    width: 30px;
+    height: 30px;
+    background-image: url("./deskIconGrid_stash.svg");
+}
+.grid_graph.n2>div:nth-child(7){
+    position: absolute;
+    top: 162px;
+    left: 107px;
+    width: 0px;
+    height: 5px;;
+    background-color: #888888;
+    z-index: 1;
+}
+.grid_graph.n2>div:nth-child(8){
+    position: absolute;
+    transform: rotate(45deg);
+    top: 158px;
+    left: 202px;
+    width: 12px;
+    height: 12px;;
+    background-color: #888888;
+    cursor: w-resize;
+    z-index: 2;
+}
+.grid_graph.n2>div:nth-child(9)>div:nth-child(1){
+    position: absolute;
+    top: 160px;
+    left: 140px;
+    width: 5px;
+    height: 9px;;
+    background-color: #888888;
+    z-index: 1;
+}
+.grid_graph.n2>div:nth-child(9)>div:nth-child(2){
+    position: absolute;
+    top: 160px;
+    left: 173px;
+    width: 5px;
+    height: 9px;;
+    background-color: #888888;
+    z-index: 1;
+}
+.grid_graph.n2>div:nth-child(10){
+    position: absolute;
+    top: 117px;
+    left: 222px;
+    width: 4px;
+    height: 9px;;
+    z-index: 1;
+}
+.grid_graph.n2>div:nth-child(11){
+    position: absolute;
+    top: 162px;
+    left: 111px;
+    width: 96px;
+    height: 5px;;
+    background-color: #C7C7C7;
+    z-index: 0;
+}
+/*------------------second graph*/
+
+.grid_editable{
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+}
+h5{
+    margin-top: 5px;
+    text-align: center;
+    padding: .4em 0;
+    cursor: default;
+
+    user-select: none;
+}
+.optionInt{
+    height: 2.4em;
+    display: grid;
+    grid-template-columns: auto 80px 80px;
+    padding: .2em 0;
+    cursor: default;
+
+    user-select: none;
+}
+.optionName>h4{
+    margin-top: auto;
+    margin-bottom: auto;
+}
+.optionName{
+    display: flex;
+    width: 90%;
+    justify-content: center;
+    background-color: #c7c7c7;
+}
+
+/*custom bool button-------------------------------*/
+.optionBoolean{
+    height: 2.4em;
+    display: grid;
+    grid-template-columns: auto 160px;
+    padding: .2em 0;
+    cursor: default;
+
+    user-select: none; 
+}
+.editBoolean{
+    display: grid;
+    grid-template-columns: 50% 50%;
+}
+.editBoolean>.optbool{
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+}
+.optbool:nth-child(1)>.optbool_box{
+    border-top-left-radius: 3px;
+    border-bottom-left-radius: 3px;
+    border-right: solid 1px white;
+}
+.optbool:nth-child(2)>.optbool_box{
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
+}
+.optbool>.optbool_box{
+    height: 100%;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background-color: #888888;
+    color: white;
+    transition: font-size .15s, padding .15s;
+    
+    cursor: pointer;
+    user-select: none;
+}
+.optbool>.optbool_box>span{
+    text-align: center;
+    transform: scale(.65);
+    text-transform: uppercase;
+}
+.optbool>.optbool_box:hover{
+    background-color: #999999;
+}
+.optbool_input{
+    display: none;
+}
+.optbool_input:checked + .optbool_box, .optbool_input:checked + .optbool_box:hover{
+    background-color: #00A2E8;
+    color: white;
+    cursor: default;
+}
+.optbool_input:checked + .optbool_box>span{
+    transition: font-weight .075s, transform .075s;
+    transform: scale(.8);
+}
+/*-------------------------------custom bool button*/
+    
+.hidden{
+    display: none;
+}
+
+/*custom edit button-------------------------------*/
+.editButton{
+    display: grid;
+    grid-template-columns: auto auto;
+}
+.editButton>.edit{
+    grid-column: 1 / span 2;
+    width: 100%;
+    height: 100%;
+
+    color: white;
+    background-color: #0F7B9B;
+    border: none;
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
+    cursor: pointer;
+}
+.editButton>.edit:active{
+    background-color: #1b5566;
+}
+.editButton>.apply, .editButton>.cancel{
+    width: 100%;
+    height: 100%;
+    color: white;
+    cursor: pointer;
+}
+.editButton>.apply{
+    background-color: #00A2E8;
+    border: none;
+}
+.editButton>.apply:active{
+    background-color: #0F7B9B;
+}
+.editButton>.cancel{
+    background-color: #FF5189;
+    color: white;
+    border: none;
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
+}
+.editButton>.cancel:active{
+    background-color: #ad2651;
+}
+.optionValue{
+    padding: .4em;
+    text-align: center;
+    background-color: white;
+    border: solid 1px #969696;
+    border-right: none;
+    border-top-left-radius: 3px;
+    border-bottom-left-radius: 3px;
+    cursor: text;
+}
+/*-------------------------------custom edit button*/
+
+/*custom footer checkbox---------------------------*/
+.checkbox{
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+}
+.checkbox_input{
+    display: none;
+}
+.checkbox_box{
+    width: 100%;
+    height: 100%;
+    background-color: #00A2E8;
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: background 0.075s;
+}
+.checkbox_box::after{
+    content: '⬤';
+    font-size: .95em;
+    color: #FFFFFF;
+    transform: scale(0);
+    transition: transform 0.15s;
+}
+.checkbox_box:active{
+    background-color: #0F7B9B;
+}
+.checkbox_input:checked + .checkbox_box::after{
+    transform: scale(1);
+}
+/*---------------------------custom footer checkbox*/
+
+/*custom footer button-----------------------------*/
+.button{
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+}
+.button_input{
+    display: none;
+}
+.button_box{
+    width: 100%;
+    height: 100%;
+
+    background-color: #00A2E8;
+    border-top-left-radius: 3px;
+    border-bottom-left-radius: 3px;
+    border-right: solid 1px #71D5FF;
+    transition: background 0.075s;
+
+    color: #FFFFFF;
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+}
+.button_box>span{
+    width: 100%;
+    text-align: center;
+    margin-top: auto;
+    margin-bottom: auto;
+
+    user-select: none;
+}
+.button_input:active + .button_box{
+    background-color: #0F7B9B;
+}
+/*-----------------------------custom footer button*/
+.footerButton{
+    margin-top: 10px;
+    display: grid;
+    grid-template-columns: auto 38px;
+    width: 100%;
+    height: 38px;
+}
