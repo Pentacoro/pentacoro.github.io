@@ -11,6 +11,22 @@ function iframeAntiHover (coin) {
 	}
 }
 
+function selectText(node) {
+    if (document.body.createTextRange) {
+        const range = document.body.createTextRange();
+        range.moveToElementText(node);
+        range.select();
+    } else if (window.getSelection) {
+        const selection = window.getSelection();
+        const range = document.createRange();
+        range.selectNodeContents(node);
+        selection.removeAllRanges();
+        selection.addRange(range);
+    } else {
+        console.warn("Could not select text in node: Unsupported browser.");
+    }
+}
+
 window.addEventListener("mousedown", e => {if(keyPressCtrl == true)console.log(e.target)});
 window.addEventListener("keyup",     e => {if(keyPressCtrl == true)console.log(e.key)});
 
@@ -70,7 +86,7 @@ const classWindow = document.getElementsByClassName("window");
 
 window.addEventListener("resize", e => {
 	idBackground.style.width = document.body.offsetWidth + "px";
-    idBackground.style.height = document.body.offsetHeight - cfg.deskNavB.height + "px";
+    idBackground.style.height = document.body.offsetHeight - cfg.desk.navB.height + "px";
 })
 
 var iconGrid = true;

@@ -17,40 +17,40 @@ function evaluateIconGrid(
     des = null
 ){
     //take existing config values if null arguments
-    if(w == null) w = cfg.deskGrid.width ;
-    if(h == null) h = cfg.deskGrid.height;
-    if(wm == null) wm = cfg.deskGrid.hMargin;
-    if(hm == null) hm = cfg.deskGrid.vMargin;
-    if(wl == null) wl = cfg.deskGrid.hLength;
-    if(hl == null) hl = cfg.deskGrid.vLength;
-    if(autowm == null) autowm = cfg.deskGrid.autoHmargin;
-    if(autohm == null) autohm = cfg.deskGrid.autoVmargin;
-    if(autowl == null) autowl = cfg.deskGrid.autoHlength;
-    if(autohl == null) autohl = cfg.deskGrid.autoVlength;
+    if(w == null) w = cfg.desk.grid.width ;
+    if(h == null) h = cfg.desk.grid.height;
+    if(wm == null) wm = cfg.desk.grid.hMargin;
+    if(hm == null) hm = cfg.desk.grid.vMargin;
+    if(wl == null) wl = cfg.desk.grid.hLength;
+    if(hl == null) hl = cfg.desk.grid.vLength;
+    if(autowm == null) autowm = cfg.desk.grid.autoHmargin;
+    if(autohm == null) autohm = cfg.desk.grid.autoVmargin;
+    if(autowl == null) autowl = cfg.desk.grid.autoHlength;
+    if(autohl == null) autohl = cfg.desk.grid.autoVlength;
 
     //set background size
     idBackground.style.width = document.body.offsetWidth + "px";
-    idBackground.style.height = document.body.offsetHeight - cfg.deskNavB.height + "px";
+    idBackground.style.height = document.body.offsetHeight - cfg.desk.navB.height + "px";
 
     //get some useful booleans
-    let wChanged = cfg.deskGrid.width  !== w;
-    let hChanged = cfg.deskGrid.height !== h;
-    let wmChanged = cfg.deskGrid.hMargin !== wm;
-    let hmChanged = cfg.deskGrid.vMargin !== hm;
-    let wlChanged = cfg.deskGrid.hLength !== wl;
-    let hlChanged = cfg.deskGrid.vLength !== hl;
+    let wChanged = cfg.desk.grid.width  !== w;
+    let hChanged = cfg.desk.grid.height !== h;
+    let wmChanged = cfg.desk.grid.hMargin !== wm;
+    let hmChanged = cfg.desk.grid.vMargin !== hm;
+    let wlChanged = cfg.desk.grid.hLength !== wl;
+    let hlChanged = cfg.desk.grid.vLength !== hl;
 
     //set new values to config
-    cfg.deskGrid.width  = w;
-    cfg.deskGrid.height = h;
-    cfg.deskGrid.hMargin = wm;
-    cfg.deskGrid.vMargin = hm;
-    cfg.deskGrid.hLength = wl;
-    cfg.deskGrid.vLength = hl;
-    cfg.deskGrid.autoHmargin = autowm;
-    cfg.deskGrid.autoVmargin = autohm; 
-    cfg.deskGrid.autoHlength = autowl;
-    cfg.deskGrid.autoVlength = autohl; 
+    cfg.desk.grid.width  = w;
+    cfg.desk.grid.height = h;
+    cfg.desk.grid.hMargin = wm;
+    cfg.desk.grid.vMargin = hm;
+    cfg.desk.grid.hLength = wl;
+    cfg.desk.grid.vLength = hl;
+    cfg.desk.grid.autoHmargin = autowm;
+    cfg.desk.grid.autoVmargin = autohm; 
+    cfg.desk.grid.autoHlength = autowl;
+    cfg.desk.grid.autoVlength = autohl; 
     
     let windowW = idBackground.offsetWidth;
     let windowH = idBackground.offsetHeight;
@@ -60,17 +60,17 @@ function evaluateIconGrid(
     let gridVertical = Math.round((windowH-(h+hm*3)/2)/(h+hm));
     
     //evaluate optimal margin if enabled
-    if(autowm || cfg.deskGrid.modHmargin > 0){
+    if(autowm || cfg.desk.grid.modHmargin > 0){
         ewm = (autowl) ? Math.round(windowW - w * gridHorizontal) / (gridHorizontal+1) : Math.round(windowW - w * wl) / (wl+1)
         if (ewm < wm) ewm = wm
-        if (autowm) cfg.deskGrid.modHmargin = ewm;
+        if (autowm) cfg.desk.grid.modHmargin = ewm;
     } else {
         ewm = wm;
     }
-    if(autohm || cfg.deskGrid.modVmargin > 0){
+    if(autohm || cfg.desk.grid.modVmargin > 0){
         ehm = (autohl) ? Math.round(windowH - h * gridVertical) / (gridVertical+1) : Math.round(windowH - h * hl) / (hl+1)
         if (ehm < hm) ehm = hm
-        if (autohm) cfg.deskGrid.modVmargin = ehm;
+        if (autohm) cfg.desk.grid.modVmargin = ehm;
     } else {
         ehm = hm;
     }
@@ -82,8 +82,8 @@ function evaluateIconGrid(
             iconGridArray[i] = new Array(gridVertical);
         }
 
-        cfg.deskGrid.hLength = gridHorizontal;
-        cfg.deskGrid.vLength = gridVertical;
+        cfg.desk.grid.hLength = gridHorizontal;
+        cfg.desk.grid.vLength = gridVertical;
         
         //fill each coordinate with an object
         for (x = 0; x < iconGridArray.length; x++){
@@ -104,8 +104,8 @@ function evaluateIconGrid(
     
         if (document.getElementsByClassName("grid_graph")) {
             if (document.getElementsByClassName("grid_graph")[0]) {
-                if (cfg.deskGrid.autoHmargin) document.getElementsByClassName("grid_graph")[0].children[4].innerText = parseFloat(cfg.deskGrid.modHmargin).toFixed(2);
-                if (cfg.deskGrid.autoVmargin) document.getElementsByClassName("grid_graph")[0].children[5].innerText = parseFloat(cfg.deskGrid.modVmargin).toFixed(2);
+                if (cfg.desk.grid.autoHmargin) document.getElementsByClassName("grid_graph")[0].children[4].innerText = parseFloat(cfg.desk.grid.modHmargin).toFixed(2);
+                if (cfg.desk.grid.autoVmargin) document.getElementsByClassName("grid_graph")[0].children[5].innerText = parseFloat(cfg.desk.grid.modVmargin).toFixed(2);
             }
         }
         
@@ -135,12 +135,12 @@ function evaluateIconGrid(
         if(iconGridArray) iconGridArrayX = iconGridArray.length;
         if(iconGridArray[0]) iconGridArrayY = iconGridArray[0].length;
 
-        if (cfg.deskGrid.modHmargin > 0){
-            ewm = cfg.deskGrid.modHmargin;
+        if (cfg.desk.grid.modHmargin > 0){
+            ewm = cfg.desk.grid.modHmargin;
             gridHorizontal = Math.round((windowW-(w+ewm)/2)/(w+ewm));
         }
-        if (cfg.deskGrid.modVmargin > 0){
-            ehm = cfg.deskGrid.modVmargin;
+        if (cfg.desk.grid.modVmargin > 0){
+            ehm = cfg.desk.grid.modVmargin;
             gridVertical = Math.round((windowH-(h+ehm)/2)/(h+ehm));  
         }
 
@@ -159,7 +159,7 @@ function evaluateIconGrid(
                 handleShorterRow()
             }
             //if longer row
-            if (gridHdiff > 0){
+            if (gridHdiff > 0 && gridVdiff >= 0){
                 handleLongerRow()
             }
         }
@@ -177,7 +177,7 @@ function evaluateIconGrid(
         }
 
         function handleShorterRow(){
-            cfg.deskGrid.hLength = gridHFinal;
+            cfg.desk.grid.hLength = gridHFinal;
 
             let iconsForShiftLate = []
 
@@ -189,7 +189,7 @@ function evaluateIconGrid(
                         objectNode.parentElement.removeChild(objectNode);
 
                         /*if(object.icon){*/
-                        if(object.icon && cfg.deskGrid.sendBorder){
+                        if(object.icon && cfg.desk.grid.sendBorder){
                             iconsForShift = []
 
                             iconsForShift.push(object.icon)
@@ -235,7 +235,7 @@ function evaluateIconGrid(
             }
         }
         function handleLongerRow(){
-            cfg.deskGrid.hLength = gridHFinal;
+            cfg.desk.grid.hLength = gridHFinal;
             for (x = iconGridArray.length; x < gridHFinal; x++){
                 iconGridArray.push(new Array(gridVFinal));
                 for(y = 0; y < iconGridArray[x].length; y++){
@@ -251,7 +251,7 @@ function evaluateIconGrid(
             }
 
             iconGridArray[gridHFinal - gridHdiff - 1].forEach(object => {
-                if(object.icon && cfg.deskGrid.sendBorder){
+                if(object.icon && cfg.desk.grid.sendBorder){
                     iconsForShift = []
 
                     iconsForShift.push(object.icon)
@@ -283,7 +283,7 @@ function evaluateIconGrid(
             })
         }
         function handleShorterColumn(){
-            cfg.deskGrid.vLength = gridVFinal;
+            cfg.desk.grid.vLength = gridVFinal;
 
             let iconsForShiftLate = []
 
@@ -299,7 +299,7 @@ function evaluateIconGrid(
                         /*if(object.icon){
                             dlteIconNode(object.icon, true);
                         }*/
-                        if(object.icon && cfg.deskGrid.sendBorder){
+                        if(object.icon && cfg.desk.grid.sendBorder){
                             iconsForShift = []
 
                             iconsForShift.push(object.icon)
@@ -345,7 +345,7 @@ function evaluateIconGrid(
             }
         }
         function handleLongerColumn(){
-            cfg.deskGrid.vLength = gridVFinal;
+            cfg.desk.grid.vLength = gridVFinal;
             for (x = 0; x < iconGridArray.length; x++){
                 for(y = iconGridArray[x].length; y < gridVFinal; y++){
                     iconGridArray[x].push({
@@ -360,7 +360,7 @@ function evaluateIconGrid(
             }
             iconGridArray.forEach(column => {
                 let object = column[gridVFinal - gridVdiff - 1]
-                if(object.icon && cfg.deskGrid.sendBorder){
+                if(object.icon && cfg.desk.grid.sendBorder){
                     iconsForShift = []
 
                     iconsForShift.push(object.icon)
@@ -394,8 +394,8 @@ function evaluateIconGrid(
 
         if (document.getElementsByClassName("grid_graph")) {
             if (document.getElementsByClassName("grid_graph")[1]) {
-                document.getElementsByClassName("grid_graph")[1].children[0].children[0].innerText = cfg.deskGrid.hLength;
-                document.getElementsByClassName("grid_graph")[1].children[1].innerText = cfg.deskGrid.vLength;
+                document.getElementsByClassName("grid_graph")[1].children[0].children[0].innerText = cfg.desk.grid.hLength;
+                document.getElementsByClassName("grid_graph")[1].children[1].innerText = cfg.desk.grid.vLength;
             }
         }
     }
@@ -414,9 +414,9 @@ function evaluateIconGrid(
         newGrid.style.zIndex = "-980";
         newGrid.style.pointerEvents = "none";
 
-        newGrid.style.borderRadius = cfg.deskGrid.borderRadius + "px";
-        if (cfg.deskGrid.visibleNodes === true) newGrid.style.backgroundColor = "rgba(127,127,127,0.5)";
-        if (cfg.deskGrid.visibleNodes === false)newGrid.style.backgroundColor = "rgba(127,127,127,0)";
+        newGrid.style.borderRadius = cfg.desk.grid.borderRadius + "px";
+        if (cfg.desk.grid.visibleNodes === true) newGrid.style.backgroundColor = "rgba(127,127,127,0.5)";
+        if (cfg.desk.grid.visibleNodes === false)newGrid.style.backgroundColor = "rgba(127,127,127,0)";
 
         document.getElementById("gridLayer").appendChild(newGrid);
     }
@@ -426,14 +426,14 @@ function evaluateIconGrid(
         updGrid.style.top = object.posY + "px";
         updGrid.style.width = object.widt + "px";
         updGrid.style.height = object.heig + "px";
-        if (cfg.deskGrid.visibleNodes === true) updGrid.style.backgroundColor = "rgba(127,127,127,0.5)";
-        if (cfg.deskGrid.visibleNodes === false)updGrid.style.backgroundColor = "rgba(127,127,127,0)";
+        if (cfg.desk.grid.visibleNodes === true) updGrid.style.backgroundColor = "rgba(127,127,127,0.5)";
+        if (cfg.desk.grid.visibleNodes === false)updGrid.style.backgroundColor = "rgba(127,127,127,0)";
     }
 }
 
 function realTimeGridEval(margin = null, length = null){
-    if(margin == null) margin = cfg.deskGrid.autoHmargin;
-    if(length == null) length = cfg.deskGrid.autoHlength;
+    if(margin == null) margin = cfg.desk.grid.autoHmargin;
+    if(length == null) length = cfg.desk.grid.autoHlength;
 
     if(margin || length){
         evaluateIconGrid();
@@ -441,86 +441,6 @@ function realTimeGridEval(margin = null, length = null){
         return;
     }
     window.removeEventListener("resize",evaluateIconGrid);
-}
-
-function repositionIcons(icons, mustSet = false, hasPrev = true){
-    let w = cfg.deskGrid.width;
-    let h = cfg.deskGrid.height;
-    let wm = (cfg.deskGrid.modHmargin == 0) ? cfg.deskGrid.hMargin : cfg.deskGrid.modHmargin;
-    let hm = (cfg.deskGrid.modVmargin == 0) ? cfg.deskGrid.vMargin : cfg.deskGrid.modVmargin;
-
-    let invalidIcons = [];
-
-    for(icon of icons) validateIconPosition(icon);
-
-    function validateIconPosition(icon){
-        let coords = icon.coor;
-    
-        //find closest grid for its tPos
-        x = Math.round((coords.tx - wm)/(w + wm))*(w + wm) + wm;
-        y = Math.round((coords.ty - hm)/(h + hm))*(h + hm) + hm;
-        
-        //get its spot in grid array
-        tx = Math.round((x - wm)/(w + wm));
-        ty = Math.round((y - hm)/(h + hm));
-    
-        if(gridAvailable(tx, ty)) {
-            //if object exists and is not used (valid position)
-            let newGrid = iconGridArray[tx][ty];
-    
-            if(mustSet) {
-                newGrid.used = true;
-                newGrid.icon = icon;
-    
-                coords.px = newGrid.posX;
-                coords.py = newGrid.posY;
-                coords.tx = newGrid.posX;
-                coords.ty = newGrid.posY;
-                coords.ax = tx;
-                coords.ay = ty;
-            }
-        } else {
-            //if the position is invalid
-            invalidIcons.push(icon);
-        }
-    }
-
-    for(icon of invalidIcons) reintegrateInvalidIcon(icon);
-
-    function reintegrateInvalidIcon(icon){
-        let coords = icon.coor;
-    
-        //get previous position in grid array
-        px = Math.round((coords.px - wm)/(w + wm));
-        py = Math.round((coords.py - hm)/(h + hm));
-
-        let oldGrid = {used: true}
-
-        if (iconGridArray[px]) {
-             if(iconGridArray[px][py]) {
-                oldGrid = iconGridArray[px][py];
-            }
-        }
-
-        if(mustSet && hasPrev && !oldGrid.used){
-            oldGrid.used = true;
-            oldGrid.icon = icon;
-            coords.tx = coords.px;
-            coords.ty = coords.py;
-            coords.ax = px;
-            coords.ay = py;
-        }else if(mustSet){
-            newGrid = orderIconPosition();
-            newGrid[0].used = true;
-            newGrid[0].icon = icon;
-            coords.px = newGrid[0].posX;
-            coords.py = newGrid[0].posY;
-            coords.tx = newGrid[0].posX;
-            coords.ty = newGrid[0].posY;
-            coords.ax = newGrid[1];
-            coords.ay = newGrid[2];
-        }
-    }
 }
 
 function gridAvailable(x, y){
@@ -534,14 +454,4 @@ function gridExists(x, y){
         if(iconGridArray[x][y]) return true;
     }
     return false;
-}
-
-function orderIconPosition(){
-    for (x = 0; x < iconGridArray.length; x++){
-        for(y = 0; y < iconGridArray[x].length; y++){
-            if (iconGridArray[x][y].used == false){
-                return [iconGridArray[x][y],x,y];
-            }
-        }
-    }
 }

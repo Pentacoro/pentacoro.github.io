@@ -195,11 +195,7 @@
             value.setAttribute("contenteditable", "true");
             value.setAttribute("spellcheck", "false");
 
-            value.focus();
-            let range = document.createRange();
-            range.setStart(value, 0);
-            range.setEnd(value, value.childNodes.length);
-            window.getSelection().addRange(range);
+            selectText(value)
 
             button.children[0].classList.add("hidden");
             button.children[1].classList.remove("hidden");
@@ -228,34 +224,34 @@
                     let inner = parseInt(value.innerText);
                     value.style.backgroundColor = "";
 
-                    new Function("cfg.deskGrid." + value.id + " = " + inner)()
+                    new Function("cfg.desk.grid." + value.id + " = " + inner)()
                     if(value.id == "width" || value.id == "height"){
                         evaluateIconGrid(null,2);
                     }
                     if(value.id == "hMargin"){
                         document.getElementById("deskGrid_marginCheckbox").checked = false;
-                        cfg.deskGrid.autoHmargin = false;
-                        cfg.deskGrid.modHmargin = 0;
+                        cfg.desk.grid.autoHmargin = false;
+                        cfg.desk.grid.modHmargin = 0;
                         evaluateIconGrid(null,2);
 
                         deskGrid_UpdateGraphAuto(null,0);
                     }
                     if (value.id == "vMargin"){
                         document.getElementById("deskGrid_marginCheckbox").checked = false;
-                        cfg.deskGrid.autoVmargin = false;
-                        cfg.deskGrid.modVmargin = 0;
+                        cfg.desk.grid.autoVmargin = false;
+                        cfg.desk.grid.modVmargin = 0;
                         evaluateIconGrid(null,2);
 
                         deskGrid_UpdateGraphAuto(null,1);
                     }
                     if(value.id == "hLength"){
                         document.getElementById("deskGrid_lengthCheckbox").checked = false;
-                        cfg.deskGrid.autoHlength = false;
+                        cfg.desk.grid.autoHlength = false;
                         evaluateIconGrid(null,1);
                     }
                     if(value.id == "vLength"){
                         document.getElementById("deskGrid_lengthCheckbox").checked = false;
-                        cfg.deskGrid.autoVlength = false;
+                        cfg.desk.grid.autoVlength = false;
                         evaluateIconGrid(null,1);
                     }
                     deskGrid_UpdateGraph();
@@ -281,7 +277,7 @@
                 button.children[1].classList.add("hidden");
                 button.children[2].classList.add("hidden");
 
-                new Function(value.id + "HTML.innerText = cfg.deskGrid." + value.id)()
+                new Function(value.id + "HTML.innerText = cfg.desk.grid." + value.id)()
             }
         }
 
@@ -294,11 +290,11 @@
             if(bool.name != undefined) {
                 switch (bool.parentElement.classList.contains("1")){
                     case true:
-                        new Function("cfg.deskGrid." + bool.name + " = true")();
+                        new Function("cfg.desk.grid." + bool.name + " = true")();
                         deskGrid_UpdateGraph2();
                         break;
                     case false:
-                        new Function("cfg.deskGrid." + bool.name + " = false")();
+                        new Function("cfg.desk.grid." + bool.name + " = false")();
                         deskGrid_UpdateGraph2();
                         break;
                 }
@@ -317,26 +313,26 @@
 
         //footer buttons funcitonality
         document.getElementById("deskGrid_marginButton").onclick = e => {
-            cfg.deskGrid.autoHmargin = true;
-            cfg.deskGrid.autoVmargin = true;
+            cfg.desk.grid.autoHmargin = true;
+            cfg.desk.grid.autoVmargin = true;
             deskGrid_UpdateGraphAuto();
             evaluateIconGrid(null,1)
-            cfg.deskGrid.autoHmargin = false;
-            cfg.deskGrid.autoVmargin = false;
+            cfg.desk.grid.autoHmargin = false;
+            cfg.desk.grid.autoVmargin = false;
         }
         document.getElementById("deskGrid_marginCheckbox").onclick = e => {
             if(e.target.checked == true){
-                cfg.deskGrid.autoHmargin = true;
-                cfg.deskGrid.autoVmargin = true;
+                cfg.desk.grid.autoHmargin = true;
+                cfg.desk.grid.autoVmargin = true;
                 deskGrid_UpdateGraphAuto();
                 realTimeGridEval();
 
                 evaluateIconGrid(null,1);
             } else {
-                cfg.deskGrid.autoHmargin = false;
-                cfg.deskGrid.autoVmargin = false;
-                cfg.deskGrid.modHmargin = 0;
-                cfg.deskGrid.modVmargin = 0;
+                cfg.desk.grid.autoHmargin = false;
+                cfg.desk.grid.autoVmargin = false;
+                cfg.desk.grid.modHmargin = 0;
+                cfg.desk.grid.modVmargin = 0;
                 deskGrid_UpdateGraphAuto();
                 realTimeGridEval();
 
@@ -344,24 +340,24 @@
             }
         }
         document.getElementById("deskGrid_lengthButton").onclick = e => {
-            cfg.deskGrid.autoHlength = true;
-            cfg.deskGrid.autoVlength = true;
+            cfg.desk.grid.autoHlength = true;
+            cfg.desk.grid.autoVlength = true;
             evaluateIconGrid(null,1);
             deskGrid_UpdateGraph2();
-            cfg.deskGrid.autoHlength = false;
-            cfg.deskGrid.autoVlength = false;
+            cfg.desk.grid.autoHlength = false;
+            cfg.desk.grid.autoVlength = false;
         }
         document.getElementById("deskGrid_lengthCheckbox").onclick = e => {
             if(e.target.checked == true){
-                cfg.deskGrid.autoHlength = true;
-                cfg.deskGrid.autoVlength = true;
+                cfg.desk.grid.autoHlength = true;
+                cfg.desk.grid.autoVlength = true;
                 realTimeGridEval();
                 
                 evaluateIconGrid(null,1);
                 deskGrid_UpdateGraph2();
             } else {
-                cfg.deskGrid.autoHlength = false;
-                cfg.deskGrid.autoVlength = false;
+                cfg.desk.grid.autoHlength = false;
+                cfg.desk.grid.autoVlength = false;
                 realTimeGridEval();
             }
         }
@@ -375,12 +371,12 @@
         vLengthHTML = document.getElementById("vLength");
 
         //set values to html
-        widthHTML.innerText = cfg.deskGrid.width;
-        heightHTML.innerText = cfg.deskGrid.height;
-        hMarginHTML.innerText = cfg.deskGrid.hMargin;
-        vMarginHTML.innerText = cfg.deskGrid.vMargin;
-        hLengthHTML.innerText = cfg.deskGrid.hLength;
-        vLengthHTML.innerText = cfg.deskGrid.vLength;
+        widthHTML.innerText = cfg.desk.grid.width;
+        heightHTML.innerText = cfg.desk.grid.height;
+        hMarginHTML.innerText = cfg.desk.grid.hMargin;
+        vMarginHTML.innerText = cfg.desk.grid.vMargin;
+        hLengthHTML.innerText = cfg.desk.grid.hLength;
+        vLengthHTML.innerText = cfg.desk.grid.vLength;
 
         //preload graph2 images
         let graph2images = 
@@ -405,19 +401,19 @@
         deskGrid_UpdateGraphAuto();
         deskGrid_UpdateGraph2();
         function deskGrid_UpdateGraph(){
-            document.getElementsByClassName("grid_graph")[0].children[0].children[0].innerText = cfg.deskGrid.width;
-            document.getElementsByClassName("grid_graph")[0].children[1].innerText = cfg.deskGrid.height;
-            document.getElementsByClassName("grid_graph")[0].children[2].innerText = cfg.deskGrid.hMargin;
-            document.getElementsByClassName("grid_graph")[0].children[3].innerText = cfg.deskGrid.vMargin;
+            document.getElementsByClassName("grid_graph")[0].children[0].children[0].innerText = cfg.desk.grid.width;
+            document.getElementsByClassName("grid_graph")[0].children[1].innerText = cfg.desk.grid.height;
+            document.getElementsByClassName("grid_graph")[0].children[2].innerText = cfg.desk.grid.hMargin;
+            document.getElementsByClassName("grid_graph")[0].children[3].innerText = cfg.desk.grid.vMargin;
         }
         function deskGrid_UpdateGraphAuto(arg = null, which = 2){
-            if (which == 0 || which == 2)document.getElementsByClassName("grid_graph")[0].children[4].innerText = (cfg.deskGrid.modHmargin != 0 || arg) ? parseFloat(cfg.deskGrid.modHmargin).toFixed(2) : "";
-            if (which == 1 || which == 2)document.getElementsByClassName("grid_graph")[0].children[5].innerText = (cfg.deskGrid.modVmargin != 0 || arg) ? parseFloat(cfg.deskGrid.modVmargin).toFixed(2) : "";
+            if (which == 0 || which == 2)document.getElementsByClassName("grid_graph")[0].children[4].innerText = (cfg.desk.grid.modHmargin != 0 || arg) ? parseFloat(cfg.desk.grid.modHmargin).toFixed(2) : "";
+            if (which == 1 || which == 2)document.getElementsByClassName("grid_graph")[0].children[5].innerText = (cfg.desk.grid.modVmargin != 0 || arg) ? parseFloat(cfg.desk.grid.modVmargin).toFixed(2) : "";
         }
         function deskGrid_UpdateGraph2(num = false){
-            document.getElementsByClassName("grid_graph")[1].children[0].children[0].innerText = cfg.deskGrid.hLength;
-            document.getElementsByClassName("grid_graph")[1].children[1].innerText = cfg.deskGrid.vLength;
-            document.getElementsByClassName("grid_graph")[1].children[5].style.backgroundImage = (cfg.deskGrid.sendStash) ? "url('./assets/deskIconGrid_stash.svg')" : "url('./assets/deskIconGrid_bin.svg')";
+            document.getElementsByClassName("grid_graph")[1].children[0].children[0].innerText = cfg.desk.grid.hLength;
+            document.getElementsByClassName("grid_graph")[1].children[1].innerText = cfg.desk.grid.vLength;
+            document.getElementsByClassName("grid_graph")[1].children[5].style.backgroundImage = (cfg.desk.grid.sendStash) ? "url('./assets/deskIconGrid_stash.svg')" : "url('./assets/deskIconGrid_bin.svg')";
 
             let chk = document.getElementsByClassName("grid_graph")[1].children[9].firstChild;
             let dot = document.getElementsByClassName("grid_graph")[1].children[7];
@@ -430,11 +426,11 @@
                     dir.innerText = "+0";
                 }
                 if (dot.offsetLeft <= 170 && dot.offsetLeft > 137) {
-                    img.style.backgroundImage = (cfg.deskGrid.sendBorder) ? "url('./assets/deskIconGridGraph2/deskIconGridGraph2_02-1.svg')" : "url('./assets/deskIconGridGraph2/deskIconGridGraph2_02-2.svg')";
+                    img.style.backgroundImage = (cfg.desk.grid.sendBorder) ? "url('./assets/deskIconGridGraph2/deskIconGridGraph2_02-1.svg')" : "url('./assets/deskIconGridGraph2/deskIconGridGraph2_02-2.svg')";
                     dir.innerText = "+0"
                 }
                 if (dot.offsetLeft <= 137 && dot.offsetLeft > 103) {
-                    img.style.backgroundImage = (cfg.deskGrid.sendBorder) ? "url('./assets/deskIconGridGraph2/deskIconGridGraph2_03-1.svg')" : "url('./assets/deskIconGridGraph2/deskIconGridGraph2_03-2.svg')";
+                    img.style.backgroundImage = (cfg.desk.grid.sendBorder) ? "url('./assets/deskIconGridGraph2/deskIconGridGraph2_03-1.svg')" : "url('./assets/deskIconGridGraph2/deskIconGridGraph2_03-2.svg')";
                     dir.innerText = "+1"
                 }
                 if (dot.offsetLeft === 103) {
@@ -501,25 +497,25 @@
         }
 
         //set values to booleans
-        if (cfg.deskGrid.sendStash === true) {
+        if (cfg.desk.grid.sendStash === true) {
             document.getElementById("deskGrid_optboolStash").checked = true;
         } else {
             document.getElementById("deskGrid_optboolBin").checked = true;
         }
 
-        if (cfg.deskGrid.sendBorder === true) {
+        if (cfg.desk.grid.sendBorder === true) {
             document.getElementById("deskGrid_optboolBorder").checked = true;
         } else {
             document.getElementById("deskGrid_optboolOrder").checked = true;
         }
 
-        if (cfg.deskGrid.autoHmargin && cfg.deskGrid.autoVmargin) {
+        if (cfg.desk.grid.autoHmargin && cfg.desk.grid.autoVmargin) {
             document.getElementById("deskGrid_marginCheckbox").checked = true;
         } else {
             document.getElementById("deskGrid_marginCheckbox").checked = false;
         }
 
-        if (cfg.deskGrid.autoHlength && cfg.deskGrid.autoVlength) {
+        if (cfg.desk.grid.autoHlength && cfg.desk.grid.autoVlength) {
             document.getElementById("deskGrid_lengthCheckbox").checked = true;
         } else {
             document.getElementById("deskGrid_lengthCheckbox").checked = false;

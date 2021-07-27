@@ -46,6 +46,11 @@ function dragIcon(elmnt, _this) {
                 }
             }
 		}
+
+        if(cfg.sound.icons && !dragging) {
+            audioArray[0].volume = 0.5
+            audioArray[0].play()
+        }
 		
         document.onmouseup = closeDragIcon;
 		if(e.button == 0) document.onmousemove = iconDrag;
@@ -61,7 +66,7 @@ function dragIcon(elmnt, _this) {
 		pos2 = pos4 - e.clientY;
 		pos3 = e.clientX;
 		pos4 = e.clientY;
-		
+
         dragging = true;
         _this.stat = 1;
         _this.statNode();
@@ -231,6 +236,104 @@ function deleteSelectedNodes(){
     for(icon of iconsToDelete){
         if(icon.stat == 1){
             icon.deleteNode();
+        }
+    }
+}
+
+function repositionIcons(icons, mustSet = false, hasPrev = true){
+    let w = cfg.desk.grid.width;
+    let h = cfg.desk.grid.height;
+    let wm = (cfg.desk.grid.modHmargin == 0) ? cfg.desk.grid.hMargin : cfg.desk.grid.modHmargin;
+    let hm = (cfg.desk.grid.modVmargin == 0) ? cfg.desk.grid.vMargin : cfg.desk.grid.modVmargin;
+
+    let invalidIcons = [];
+
+    for(icon of icons) validateIconPosition(icon);
+
+    function validateIconPosition(icon){
+        let coords = icon.coor;
+    
+        //find closest grid for its tPos
+        x = Math.round((coords.tx - wm)/(w + wm))*(w + wm) + wm;
+        y = Math.round((coords.ty - hm)/(h + hm))*(h + hm) + hm;
+        
+        //get its spot in grid array
+        tx = Math.round((x - wm)/(w + wm));
+        ty = Math.round((y - hm)/(h + hm));
+    
+        if(gridAvailable(tx, ty)) {
+            //if object exists and is not used (valid position)
+            let newGrid = iconGridArray[tx][ty];
+    
+            if(mustSet) {
+                newGrid.used = true;
+                newGrid.icon = icon;
+    
+                coords.px = newGrid.posX;
+                coords.py = newGrid.posY;
+                coords.tx = newGrid.posX;
+                coords.ty = newGrid.posY;
+                coords.ax = tx;
+                coords.ay = ty;
+            }
+        } else {
+            //if the position is invalid
+            invalidIcons.push(icon);
+        }
+    }
+
+    for(icon of invalidIcons) reintegrateInvalidIcon(icon);
+
+    function reintegrateInvalidIcon(icon){
+        let coords = icon.coor;
+    
+        //get previous position in grid array
+        px = Math.round((coords.px - wm)/(w + wm));
+        py = Math.round((coords.py - hm)/(h + hm));
+
+        let oldGrid = {used: true}
+
+        if (iconGridArray[px]) {
+             if(iconGridArray[px][py]) {
+                oldGrid = iconGridArray[px][py];
+            }
+        }
+
+        if(mustSet && hasPrev && !oldGrid.used){
+            oldGrid.used = true;
+            oldGrid.icon = icon;
+            coords.tx = coords.px;
+            coords.ty = coords.py;
+            coords.ax = px;
+            coords.ay = py;
+        }else if(mustSet){
+            newGrid = orderIconPosition();
+            newGrid[0].used = true;
+            newGrid[0].icon = icon;
+            coords.px = newGrid[0].posX;
+            coords.py = newGrid[0].posY;
+            coords.tx = newGrid[0].posX;
+            coords.ty = newGrid[0].posY;
+            coords.ax = newGrid[1];
+            coords.ay = newGrid[2];
+        }
+    }
+
+    if(cfg.sound.icons && dragging) {
+        if(invalidIcons.length > 0) {
+            audioArray[1].play()
+        } else {
+            audioArray[2].play()
+        }
+    }
+}
+
+function orderIconPosition(){
+    for (x = 0; x < iconGridArray.length; x++){
+        for(y = 0; y < iconGridArray[x].length; y++){
+            if (iconGridArray[x][y].used == false){
+                return [iconGridArray[x][y],x,y];
+            }
         }
     }
 }

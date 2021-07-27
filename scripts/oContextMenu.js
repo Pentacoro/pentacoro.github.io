@@ -6,7 +6,7 @@ function iconOpen(e, _this){
         console.log("Open");
         closeMenu();
 
-        windowArray.push(new Window ("Settings", _this.apps, true, true, 3, 1, 300, 300, 500, 500));
+        windowArray.push(new Window ("Settings", _this.apps, true, 3, 1, 300, 300, 500, 500));
         windowArray[windowArray.length -1].createNode();
     }
 }
@@ -71,11 +71,7 @@ function iconRename(e, elmnt, _this){
         iconText.setAttribute("spellcheck", "false");
         
         //select h3 content --------------------|
-        iconText.focus();
-        let range = document.createRange();
-        range.setStart(iconText, 0);
-        range.setEnd(iconText, iconText.childNodes.length);
-        window.getSelection().addRange(range);
+        selectText(iconText)
 
         iconText.style.textShadow = "none";
 
@@ -156,10 +152,7 @@ function iconRename(e, elmnt, _this){
                         _this.statNode();
                         _this.stat = 0;
         
-                        iconText.focus();
-                        range.setStart(iconText, 0);
-                        range.setEnd(iconText, iconText.childNodes.length);
-                        window.getSelection().addRange(range);
+                        selectText(iconText)
                     }
                 }
             }
@@ -191,7 +184,7 @@ function deskGrid(e){
     ) {
         console.log("Grid");
 
-        loadAPP("./apps/settings_deskGrid/deskGridOptions.html");
+        loadAPP("./apps/settings_deskGrid/deskGridOptions_launch.html");
 
         closeMenu();
     }
@@ -208,10 +201,10 @@ function deskNew(e){
         let initialX = parseInt(window.getComputedStyle(document.getElementById("deskContextMenu"),null).getPropertyValue("left"));
         let initialY = parseInt(window.getComputedStyle(document.getElementById("deskContextMenu"),null).getPropertyValue("top"));
 
-        let iconWidth = cfg.deskGrid.width/2;
-        let iconHeight = cfg.deskGrid.height/2;
+        let iconWidth = cfg.desk.grid.width/2;
+        let iconHeight = cfg.desk.grid.height/2;
 
-        let w = cfg.deskGrid.width; let h = cfg.deskGrid.height; let wm = cfg.deskGrid.hMargin; let hm = cfg.deskGrid.vMargin;
+        let w = cfg.desk.grid.width; let h = cfg.desk.grid.height; let wm = cfg.desk.grid.hMargin; let hm = cfg.desk.grid.vMargin;
 
         let iconPosX = (Math.round((initialX-iconWidth)/(w + wm))*(w + wm) + wm);
         let iconPosY = (Math.round((initialY-iconHeight)/(h + hm))*(h + hm) + hm);
@@ -227,11 +220,7 @@ function deskNew(e){
         iconText.setAttribute("spellcheck", "false");
 
         //select h3 content --------------------|
-        iconText.focus();
-        let range = document.createRange();
-        range.setStart(iconText, 0);
-        range.setEnd(iconText, iconText.childNodes.length);
-        window.getSelection().addRange(range);
+        selectText(iconText)
 
         iconText.style.textShadow = "none";
 
@@ -304,11 +293,8 @@ function deskNew(e){
                         createdIcon.stat = 1;
                         createdIcon.statNode();
                         createdIcon.stat = 0;
-        
-                        iconText.focus();
-                        range.setStart(iconText, 0);
-                        range.setEnd(iconText, iconText.childNodes.length);
-                        window.getSelection().addRange(range);
+
+                        selectText(iconText)
                     }
                 }
             }

@@ -1,0 +1,41 @@
+<script>
+    let url = "./apps/settings_deskGrid/deskGridOptions.html"
+
+    //on app end
+    function end() {
+        cfg.desk.grid.visibleNodes = false
+        evaluateIconGrid(null, 2)
+    }
+    //on app init
+    function ini() {
+        cfg.desk.grid.visibleNodes = true
+        evaluateIconGrid(null, 2)
+    }
+    //task creation
+    if (canInstance("Desk Grid Settings")) {
+        taskArray.push(new Task("Desk Grid Settings", false, end))
+        let task = taskArray[taskArray.length - 1]
+        let id = task.id
+
+        //get the .html
+        let appHTML = ajaxReturn("get", url)
+        appHTML.then( data => {
+            //window generation
+            windowArray.push(new Window("Desktop Grid Settings", id, false, 1, 1, 200, 200, 350, 560))
+            newWindow = windowArray[windowArray.length - 1]
+            newWindow.createNode()
+
+            //X button
+            document.getElementsByClassName(id)[0].children[0].children[0].children[1].addEventListener("mouseup", task.end)
+
+            ini()
+
+            loadURL(repDir(data,url), document.getElementById("windowNumber" + windowArray.indexOf(newWindow)).children[0].children[1])
+        })
+        appHTML.catch( err => {
+            console.log(err)
+        })
+    } else {
+        console.log("instanced")
+    }
+</script>

@@ -36,10 +36,11 @@ const ajaxReturn = function(method, url) {
         xhr.send();
     });
 }
+const genRanHex = size => [...Array(size)].map(() => Math.floor(Math.random() * 16).toString(16)).join('');
 
 const loadURL = function(data, container){
     container.innerHTML = data;
-
+    
     if (container.getElementsByTagName("script")){
         for(i = 0; i < container.getElementsByTagName("script").length; i++){
             eval(container.getElementsByTagName("script")[i].innerText)
@@ -48,15 +49,12 @@ const loadURL = function(data, container){
 }
 
 async function loadAPP(url){
-    windowArray.push(new Window("Desktop Grid Settings", "settingsApp:grid", false, false, 1, 1, 200, 200, 350, 560));
-    newWindow = windowArray[windowArray.length - 1]
-    newWindow.createNode();
-
-    let appHTML = ajaxReturn("get", url);
-    appHTML.then( data => {
-        loadURL(repDir(data,url), document.getElementById("windowNumber" + windowArray.indexOf(newWindow)).children[0].children[1]);
+    let appLauncher = ajaxReturn("get", url);
+    appLauncher.then( data => {
+        document.getElementById("appLauncher").innerHTML = data
+        eval(document.getElementById("appLauncher").getElementsByTagName("script")[0].innerText)
     })
-    appHTML.catch( err => {
+    appLauncher.catch( err => {
         console.log(err);
     })
 }
@@ -70,6 +68,7 @@ function preloadImage(url){
     var img=new Image();
     img.src=url;
 }
+
 
 function wait(ms){
     var start = new Date().getTime();

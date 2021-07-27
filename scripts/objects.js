@@ -29,7 +29,7 @@ class Icon {
 }
 
 class Window {
-    constructor(title, program, instances = false, resizable, uiux = 3, state = 1, x, y, w, h, mw, mh){
+    constructor(name, task, resizable, uiux = 3, state = 1, x, y, w, h, mw, mh){
         this.stat = state; // 0 => minimized | 1/2 => open/selected | 3/4 => maximized/selected
         this.posX = x;
         this.posY = y;
@@ -39,10 +39,9 @@ class Window {
         this.minW = mw;
         this.minH = mh;
         
-        this.apps = program; //next depend on this
+        this.task = task; //next depend on this
         
-        this.name = title;
-        this.inst = instances;
+        this.name = name;
         this.resi = resizable;
         this.uiux = uiux;
     }
@@ -69,8 +68,67 @@ class Window {
     }
 }
 
-var iconArray = [];
-var windowArray = [];
+class Directory {
+    constructor(name, cont, conf) {
+        this.name = name;
+        this.cont = cont;
+        this.conf = conf;
+    }
+}
+
+class Metafile {
+    constructor(title, file, icon, preview, download, type, app, stream = null, screen = null, marquee = null, reference = null, description = null, tags = null) {
+        this.title = title;
+        this.file = file;
+        this.stream = stream;
+        this.screen = screen;
+        this.marquee = marquee;
+        this.preview = preview;
+        this.download = download;
+        this.reference = reference;
+        this.description = description;
+        this.app  = app;
+        this.type = type;
+        this.tags = tags;
+        this.icon = icon;
+    }
+}
+
+class Executable {
+    constructor(url, type, param) {
+        this.url = url
+        this.type = type
+        this.param = param
+    }
+}
+
+class Task {
+    constructor(apps, inst = true, appEnd) {
+        this.apps = apps
+        this.inst = inst
+        this.id = genRanHex(16)
+        checkUniqueID(this)
+
+        //end task
+        let id = this.id
+        this.end = function() {
+            appEnd()
+            windowArray[parseInt(document.getElementsByClassName(id)[0].id.match(/(\d+)/)[0])].deleteNode()
+
+            taskArray.splice(taskArray.indexOf(this),1)
+        }
+    }
+}
+
+var iconArray = []
+var windowArray = []
+var taskArray = []
+var audioArray = []
+
+audioArray.push(new Audio("assets/sound/Norrum - Interfaz Click v1.mp3"))
+audioArray.push(new Audio("assets/sound/Norrum - Interfaz Item errOr v1.mp3"))
+audioArray.push(new Audio("assets/sound/Norrum - Interfaz Item OK c_ v1.mp3"))
+audioArray.push(new Audio("assets/sound/Norrum - Interfaz Startup 2 v1.mp3"))
 
 iconArray.push(new Icon ("background-image: url('assets/svg/desktopIcons/folderPlaceholder.svg');", "Folder 1", "explorerExe", 0, 12, 12));
 iconArray.push(new Icon ("background-image: url('assets/svg/desktopIcons/folderPlaceholder.svg');", "Folder 2", "explorerExe", 0, 12, 132));

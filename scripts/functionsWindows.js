@@ -208,7 +208,7 @@ function poseWndwNode(elmnt, _this) {
 
 function crteWndwNode(_this) {
     let newWindow = document.createElement("div");
-    newWindow.setAttribute("class", "window "+_this.apps);
+    newWindow.setAttribute("class", "window "+_this.task);
     newWindow.setAttribute("style", "left:"+_this.posX+"px;top:"+_this.posY+"px;width:"+_this.widt+"px;height:"+_this.heig+"px;z-index: 0;");
 	newWindow.setAttribute("id", "windowNumber" + windowArray.indexOf(_this));
 
@@ -314,7 +314,7 @@ function crteWndwNode(_this) {
 		switch (button.classList[1]) {
 			case "_": console.log("_"); break;
 			case "O": console.log("O"); break;
-			case "X": button.onmouseup = () => windowArray[parseInt(button.parentElement.parentElement.parentElement.id.match(/(\d+)/)[0])].deleteNode(); break;
+			case "X": console.log("X"); break;
 		}
 	}
 
