@@ -1,5 +1,129 @@
+//DROP MENU----------------------------------------------------------------------------|
+function makeDropContext(e = null,elmnt,_this) {
+    let contextArray = _this.drop
+
+    let x = 0
+    let z = 1
+    //for each section
+    for(section of contextArray) {
+        let newSection = document.createElement("div")
+        newSection.classList.add("contextSection")
+
+        let y = 0
+        //for each item
+        for(item of section.item) {
+            let id = "dropCM" + (x + y + z)
+
+            let newButton = document.createElement("div")
+            newButton.id = id
+            newButton.classList.add("dMenuOption")
+            
+            let newIcon = document.createElement("div")
+            newIcon.style.backgroundImage = item.icon
+            let newText = document.createElement("span")
+            newText.innerHTML = item.name
+    
+            newButton.appendChild(newIcon)
+            newButton.appendChild(newText)
+
+            newSection.appendChild(newButton)
+
+            //no idea why this only worked like this, but it did
+            let pls = [x,y]
+            let arg = [e,elmnt,_this]
+            newButton.onclick = e => contextArray[pls[0]].item[pls[1]].func(arg[0], arg[1], arg[2])
+
+            y++
+        }
+        //get on document
+        document.getElementById("dropContextMenu").appendChild(newSection)
+
+        z = z + (section.item.length - 1)
+        x++
+    }
+    let bottomSection = document.createElement("div")
+    bottomSection.classList.add("contextSection")
+    document.getElementById("dropContextMenu").appendChild(bottomSection)
+}
+
+function hideDropContext() {
+    for(section of document.getElementById("dropContextMenu").children){
+        document.getElementById("dropContextMenu").innerHTML = ""
+    }
+}
+//----------------------------------------------------------------------------DROP MENU|
+
+/* 
+<div class="contextSection">
+<div id="iconCM1" class="iMenuOption"><div style="background-image: url('assets/svg/contextMenu/open.svg');"></div><span>Open</span>
+<input type="radio" name="openCheck" class="cmcheck" id="openCheck">
+</div>
+<div id="iconCM2" class="iMenuOption"><div style="background-image: url('assets/svg/contextMenu/maximize.svg');"></div><span>Open maximized</span>
+<input type="radio" name="openCheck" class="cmcheck" id="maxiCheck">
+</div>
+<div id="iconCM3" class="iMenuOption"><div style="background-image: url('assets/svg/contextMenu/newtab.svg');"></div><span>Open in new tab</span>
+<input type="radio" name="openCheck" class="cmcheck" id="newtCheck">
+</div>
+</div>
+*/
+
+//open desk menu on right click background
+idBackground.oncontextmenu = e => { if(e.target == idBackground) deskMenu(e) };
+
+//close context menu on mousedown anywhere
+window.addEventListener("mousedown", (e) => {
+	if (e.target.parentElement.parentElement){
+		if(
+			e.target.parentElement.classList.contains("contextSection") == false && 
+			e.target.parentElement.parentElement.classList.contains("contextSection") == false
+		) {
+			closeMenu()
+			clearSelection()
+		}
+	} else{
+		closeMenu();
+	}
+});
+
+//open desk menu
+function deskMenu(e) {
+	e.preventDefault()
+
+	closeMenu()
+	idCtextMenu.style.display = "grid"
+	idCtextMenu.style.top = e.clientY + idBackground.scrollTop + "px"
+	idCtextMenu.style.left = e.clientX + idBackground.scrollLeft + "px"
+
+	idCtextMenu.blur()
+
+	makeDropContext(e,idBackground,idBackground)
+}
+
+//close all context menus
+function closeMenu() {
+	idCtextMenu.style.display = ""
+
+	hideDropContext()
+}
+
 //-------------------------------------------------------------------------------------|
-function iconOpen(e, _this){
+idBackground.drop = []
+
+idBackground.drop.push(new contextSection("icon"))
+idBackground.drop.push(new contextSection("clip"))
+idBackground.drop.push(new contextSection("info"))
+
+idBackground.drop[0].item.push(new contextOption("Grid","url('assets/svg/contextMenu/open.svg')",deskGrid))
+idBackground.drop[0].item.push(new contextOption("New","url('assets/svg/contextMenu/maximize.svg')",deskNew))
+
+idBackground.drop[1].item.push(new contextOption("Paste","url('assets/svg/contextMenu/paste.svg')",deskPaste))
+
+idBackground.drop[2].item.push(new contextOption("Settings","url('assets/svg/contextMenu/rename.svg')",deskSettings))
+idBackground.drop[2].item.push(new contextOption("Info","url('assets/svg/contextMenu/properties.svg')",deskInfo))
+//-------------------------------------------------------------------------------------|
+
+//-------------------------------------------------------------------------------------|
+function iconOpen(e, elmnt, _this){
     if(
         !(e.target.classList.contains("cmcheck"))
     ) {
@@ -177,9 +301,8 @@ function iconProperties(e, elmnt, _this){
     }
 }
 //-------------------------------------------------------------------------------------|
-function deskGrid(e){
+function deskGrid(e, elmnt, _this){
     if(
-        (e.target.parentElement.id == "deskCM1" || e.target.id == "deskCM1") &&
         !(e.target.classList.contains("cmcheck"))
     ) {
         console.log("Grid");
@@ -189,17 +312,16 @@ function deskGrid(e){
         closeMenu();
     }
 }
-function deskNew(e){
+function deskNew(e, elmnt, _this){
     if(
-        (e.target.parentElement.id == "deskCM2" || e.target.id == "deskCM2") &&
         !(e.target.classList.contains("cmcheck"))
     ) {
         console.log("New");
         closeMenu();
 
         //Make sure icon appears at center of initial right click-------|
-        let initialX = parseInt(window.getComputedStyle(document.getElementById("deskContextMenu"),null).getPropertyValue("left"));
-        let initialY = parseInt(window.getComputedStyle(document.getElementById("deskContextMenu"),null).getPropertyValue("top"));
+        let initialX = parseInt(window.getComputedStyle(document.getElementById("dropContextMenu"),null).getPropertyValue("left"));
+        let initialY = parseInt(window.getComputedStyle(document.getElementById("dropContextMenu"),null).getPropertyValue("top"));
 
         let iconWidth = cfg.desk.grid.width/2;
         let iconHeight = cfg.desk.grid.height/2;
@@ -210,7 +332,7 @@ function deskNew(e){
         let iconPosY = (Math.round((initialY-iconHeight)/(h + hm))*(h + hm) + hm);
         //--------------------------------------------------------------|
 
-        iconArray.push(new Icon ("background-image: url('assets/svg/desktopIcons/filePlaceholder.svg');", "Name me!", "explorerExe", 1, iconPosX, iconPosY));
+        iconArray.push(new Icon ("background-image: url('assets/svg/desktopIcons/filePlaceholder.svg');", "Name me!", "explorer", 1, iconPosX, iconPosY));
         let createdIcon = iconArray[iconArray.length - 1]
         createdIcon.createNode();
 
@@ -310,112 +432,28 @@ function deskNew(e){
         return false;
     }
 }
-function deskPaste(e){
+function deskPaste(e, elmnt, _this){
     if(
-        (e.target.parentElement.id == "deskCM3" || e.target.id == "deskCM3") &&
         !(e.target.classList.contains("cmcheck"))
     ) {
         console.log("Paste");
         closeMenu();
     }
 }
-function deskSettings(e){
+function deskSettings(e, elmnt, _this){
     if(
-        (e.target.parentElement.id == "deskCM4" || e.target.id == "deskCM4") &&
         !(e.target.classList.contains("cmcheck"))
     ) {
         console.log("Settings");
         closeMenu();
     }
 }
-function deskInfo(e){
+function deskInfo(e, elmnt, _this){
     if(
-        (e.target.parentElement.id == "deskCM5" || e.target.id == "deskCM5") &&
         !(e.target.classList.contains("cmcheck"))
     ) {
         console.log("Info");
         closeMenu();
-    }
-}
-//-------------------------------------------------------------------------------------|
-function iconMenuFunctions(e,elmnt,_this,n){
-    switch(n){
-        case 1:
-            iconOpen(e,_this);
-            break;
-        case 2:
-            iconMaximize(e,elmnt,_this);
-            break;
-        case 3:
-            iconNewtab(e,elmnt,_this);
-            break;
-        case 4:
-            iconCut(e,elmnt,_this);
-            break;
-        case 5:
-            iconCopy(e,elmnt,_this);
-            break;
-        case 6:
-            iconPaste(e,elmnt,_this);
-            break;
-        case 7:
-            iconDelete(e,elmnt,_this);
-            break;
-        case 8:
-            iconRename(e,elmnt,_this);
-            break;
-        case 9:
-            iconProperties(e,elmnt,_this);
-    }
-}
-function deskMenuFunctions(e,n){
-    switch(n){
-        case 1:
-            deskGrid(e);
-            break;
-        case 2:
-            deskNew(e);
-            break;
-        case 3:
-            deskPaste(e);
-            break;
-        case 4:
-            deskSettings(e);
-            break;
-        case 5:
-            deskInfo(e);
-    }
-}
-
-function iconMenuOpen(elmnt, _this) {
-    let iMenuOptions = document.getElementsByClassName("iMenuOption");
-    for (option of iMenuOptions){
-        let n = option.id.match(/(\d+)/)[0];
-        n = parseInt(n);
-        option.onclick = (e) => {iconMenuFunctions(e,elmnt,_this,n)}
-    }
-}
-
-function iconMenuClose() {
-    let iMenuOptions = document.getElementsByClassName("iMenuOption");
-    for (option of iMenuOptions){
-        option.onclick = null;
-    }
-}
-
-function deskMenuOpen() {
-    let dMenuOptions = document.getElementsByClassName("dMenuOption");
-    for (option of dMenuOptions){
-        let n = option.id.match(/(\d+)/)[0];
-        n = parseInt(n);
-        option.onclick = (e) => {deskMenuFunctions(e,n)}
-    }
-}
-
-function deskMenuClose() {
-    let dMenuOptions = document.getElementsByClassName("dMenuOption");
-    for (option of dMenuOptions){
-        option.onclick = null;
     }
 }
 //-------------------------------------------------------------------------------------|

@@ -72,9 +72,7 @@ const idNavbar    = document.getElementById('navbar');
 
 const idSelectBox = document.getElementById('selectBox');
 
-const idCtextMenu = document.getElementById("iconContextMenu");
-
-const idDesktMenu = document.getElementById("deskContextMenu");
+const idCtextMenu = document.getElementById("dropContextMenu");
 
 const classIcon   = document.getElementsByClassName("icon");
 
@@ -115,44 +113,6 @@ function clearSelection(){
 	if (window.getSelection) {window.getSelection().removeAllRanges();}
 	else if (document.selection) {document.selection.empty();}
    }
-
-idBackground.oncontextmenu = (e) => {if(e.target == idBackground){deskMenu(e)}};
-
-window.addEventListener("mousedown", (e) => {
-	if (e.target.parentElement.parentElement){
-		if(
-			e.target.parentElement.classList.contains("contextMenu") == false && 
-			e.target.parentElement.parentElement.classList.contains("contextMenu") == false
-		) {
-			closeMenu()
-			clearSelection();
-		}
-	} else{
-		closeMenu();
-	}
-});
-
-function deskMenu(e) {
-	e.preventDefault();
-
-	closeMenu();
-	idDesktMenu.style.display = "grid";
-	idDesktMenu.style.top = e.clientY + idBackground.scrollTop + "px";
-	idDesktMenu.style.left = e.clientX + idBackground.scrollLeft + "px";
-
-	idDesktMenu.blur();
-	idCtextMenu.blur();
-
-	deskMenuOpen();
-}
-function closeMenu() {
-    idDesktMenu.style.display = "";
-	idCtextMenu.style.display = "";
-
-	iconMenuClose();
-	deskMenuClose();
-}
-
 //------------------------------------------------------------------------------background behavior|
 
 function highlight(hIcon) {

@@ -1,48 +1,48 @@
 //icon behavior------------------------------------------------------------------------|
-var shouldSelect = true;
+var shouldSelect = true
 
-var dragging = false;
+var dragging = false
 
 function dragIcon(elmnt, _this) {
-	var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+	var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0
 	
-	elmnt.onmousedown = dragMouseDown;	
+	elmnt.onmousedown = dragMouseDown
 
 	function dragMouseDown(e) {
-		e = e || window.event;
-        e.preventDefault();
+		e = e || window.event
+        e.preventDefault()
 
         if(e.button == 0) 
 		
 		//get initial cursor position:
-		pos3 = e.clientX;
-		pos4 = e.clientY;
+		pos3 = e.clientX
+		pos4 = e.clientY
 		
 		//when mousedown on selected icon
 		if (_this.stat == 1) {
 			//managing selected icons
 			for (var i = 0; i < classActive.length; i++) {
 				//light up all hover border onmousedown:-|
-				highlight(classActive[i]);
+				highlight(classActive[i])
 				//---------------------------------------|
 			}
 		} else {
             if (shouldSelect == true) {
                 //light up 1 hover border onmousedown:
-                highlight(elmnt);
-                elmnt.style.backgroundColor = 'rgb(0,0,0,0)';
+                highlight(elmnt)
+                elmnt.style.backgroundColor = 'rgb(0,0,0,0)'
                 
                 //when mousedown on unselected icon
                 if(keyPressCtrl == false && dragging == false) {
                     for (icon of iconArray){
-                        icon.stat = 0;
-                        icon.statNode();
+                        icon.stat = 0
+                        icon.statNode()
                     }
-                    _this.stat = 1;
-                    highlight(elmnt);
+                    _this.stat = 1
+                    highlight(elmnt)
                 } else if(keyPressCtrl == true) {
-                    _this.stat = 1;
-                    highlight(elmnt);
+                    _this.stat = 1
+                    highlight(elmnt)
                 }
             }
 		}
@@ -52,81 +52,81 @@ function dragIcon(elmnt, _this) {
             audioArray[0].play()
         }
 		
-        document.onmouseup = closeDragIcon;
-		if(e.button == 0) document.onmousemove = iconDrag;
-		iframeAntiHover (true);
+        document.onmouseup = closeDragIcon
+		if(e.button == 0) document.onmousemove = iconDrag
+		iframeAntiHover (true)
 	}								 
 
 	function iconDrag(e) {
-		e = e || window.event;
-        e.preventDefault();
+		e = e || window.event
+        e.preventDefault()
 		
 		//calculate new cursor position:
-		pos1 = pos3 - e.clientX;
-		pos2 = pos4 - e.clientY;
-		pos3 = e.clientX;
-		pos4 = e.clientY;
+		pos1 = pos3 - e.clientX
+		pos2 = pos4 - e.clientY
+		pos3 = e.clientX
+		pos4 = e.clientY
 
-        dragging = true;
-        _this.stat = 1;
-        _this.statNode();
+        dragging = true
+        _this.stat = 1
+        _this.statNode()
         
 		
 		//managing selected icons
 		for (icon of iconArray){
             if (icon.stat == 1 || icon.stat == 2) {
                 //set position for selected icons:------------|
-                icon.coor.tx = (icon.coor.tx - pos1);
-                icon.coor.ty = (icon.coor.ty - pos2);
-                iconGridArray[icon.coor.ax][icon.coor.ay].used = false;
-                iconGridArray[icon.coor.ax][icon.coor.ay].icon = null;
+                icon.coor.tx = (icon.coor.tx - pos1)
+                icon.coor.ty = (icon.coor.ty - pos2)
+                iconGridArray[icon.coor.ax][icon.coor.ay].used = false
+                iconGridArray[icon.coor.ax][icon.coor.ay].icon = null
                 //--------------------------------------------|
                 
                 icon.stat = 2;
-                icon.poseNode();
-                icon.statNode();
+                icon.poseNode()
+                icon.statNode()
             }
 		}
 	}
 
 	function closeDragIcon(e) {	
 		//stop moving when mouse button is released:
-		document.onmouseup = null;
-		document.onmousemove = null;
-        iframeAntiHover (false);
+		document.onmouseup = null
+		document.onmousemove = null
+        iframeAntiHover (false)
 		
-        let iconsToValidate = [];
+        let iconsToValidate = []
 
 		//send all icons to position evaluation
 		for (icon of iconArray){
             if (iconGrid == true && icon.stat == 2) {
-			    iconsToValidate.push(icon);
+			    iconsToValidate.push(icon)
             }
 		}
-        repositionIcons(iconsToValidate, true, true);
+        repositionIcons(iconsToValidate, true, true)
 
         //update HTML of icons after evaluation
         for (icon of iconsToValidate){
-            icon.stat = 1;
-            icon.poseNode();
-            icon.statNode();
+            icon.stat = 1
+            icon.poseNode()
+            icon.statNode()
         }
 		
 		//unselect other folders on mouseup W/O drag UNLESS ctrl
 		if(keyPressCtrl == false && dragging == false && e.button == 0) {
 			for (icon of iconArray){
-                icon.stat = 0;
-                icon.statNode();
+                icon.stat = 0
+                icon.statNode()
             }
-            _this.stat = 1;
-            _this.statNode();
+            _this.stat = 1
+            _this.statNode()
         } else {
             for (icon of iconArray){
-                lowlight(document.getElementById(icon.text));
+                lowlight(document.getElementById(icon.text))
             }
 
-            _this.stat = 1;
-            _this.statNode();
+            _this.stat = 1
+            _this.statNode()
         }
         
 		dragging = false;
@@ -135,28 +135,27 @@ function dragIcon(elmnt, _this) {
 
 function menuIcon(elmnt, _this) {
 
-    elmnt.oncontextmenu = iconMenu;
+    elmnt.oncontextmenu = iconMenu
 
     function iconMenu(e) {
-        e.preventDefault();
+        e.preventDefault()
 
         if(
             e.target.classList.contains("icon") ||
             e.target.parentNode.classList.contains("icon")
         ) {
-            closeMenu();
+            closeMenu()
 
-            idCtextMenu.style.display = "grid";
-            idCtextMenu.style.top = e.clientY + "px";
-            idCtextMenu.style.left = e.clientX + "px";
+            idCtextMenu.style.display = "grid"
+            idCtextMenu.style.top = e.clientY + "px"
+            idCtextMenu.style.left = e.clientX + "px"
 
-            idDesktMenu.blur();
-            idCtextMenu.blur();
-            clearSelection();
+            idCtextMenu.blur()
+            clearSelection()
             
-            iconMenuOpen(elmnt, _this);
+            makeDropContext(e, elmnt, _this)
 
-            return false;
+            return false
         }
     }
 }

@@ -8,17 +8,17 @@
 <body>
     <div class="appcontent">
         <div class="tabs">
-            <label class="tab" for="deskGrid_tabPositioning">
-                <input class="tabRadio_input" type="radio" name="tabGrid" id="deskGrid_tabPositioning">
-                <div class="tabRadio_box"><span>Positioning</span></div>
-            </label>
             <label class="tab" for="deskGrid_tabResizing">
                 <input class="tabRadio_input" type="radio" name="tabGrid" id="deskGrid_tabResizing">
                 <div class="tabRadio_box"><span>Resizing</span></div>
             </label>
+            <label class="tab" for="deskGrid_tabPositioning">
+                <input class="tabRadio_input" type="radio" name="tabGrid" id="deskGrid_tabPositioning">
+                <div class="tabRadio_box"><span>Positioning</span></div>
+            </label>
         </div>
 
-        <div class="tabContent" id="deskGrid_tabContent1">
+        <div class="tabContent hidden" id="deskGrid_tabContent1">
             <div class="grid_graph n1">
                 <span><span class="graph_item">123</span></span>
                 <span class="graph_item">456</span>
@@ -30,7 +30,7 @@
             <div class="grid_editable">
                 <h5>SIZE</h5>
                 <span class="optionInt"><div class="optionName"><h4>Width: </h4></div>
-                    <span class="optionValue" id="width"></span> 
+                    <span class="optionValue" id="grid.width"></span> 
                     <div class="editButton">
                         <button class="edit">Edit</button>
                         <button class="apply hidden">✓</button>
@@ -39,7 +39,7 @@
                 </span>
 
                 <span class="optionInt"><div class="optionName"><h4>Height: </h4></div>
-                    <span class="optionValue" id="height"></span> 
+                    <span class="optionValue" id="grid.height"></span> 
                     <div class="editButton">
                         <button class="edit">Edit</button>
                         <button class="apply hidden">✓</button>
@@ -49,7 +49,7 @@
 
                 <h5>MARGIN</h5>
                 <span class="optionInt"><div class="optionName"><h4>H-zontal: </h4></div>
-                    <span class="optionValue" id="hMargin"></span> 
+                    <span class="optionValue" id="grid.hMargin"></span> 
                     <div class="editButton">
                         <button class="edit">Edit</button>
                         <button class="apply hidden">✓</button>
@@ -58,7 +58,7 @@
                 </span>
 
                 <span class="optionInt"><div class="optionName"><h4>Vertical: </h4></div>
-                    <span class="optionValue" id="vMargin"></span> 
+                    <span class="optionValue" id="grid.vMargin"></span> 
                     <div class="editButton">
                         <button class="edit">Edit</button>
                         <button class="apply hidden">✓</button>
@@ -80,7 +80,7 @@
             </div>
         </div>
 
-        <div class="tabContent hidden" id="deskGrid_tabContent2">
+        <div class="tabContent" id="deskGrid_tabContent2">
             <div class="grid_graph n2">
                 <span><span class="graph_item">123</span></span>
                 <span class="graph_item">456</span>
@@ -125,7 +125,7 @@
 
                 <h5>LENGTH</h5>
                 <span class="optionInt"><div class="optionName"><h4>X-Axis: </h4></div>
-                    <span class="optionValue" id="hLength"></span> 
+                    <span class="optionValue" id="grid.hLength"></span> 
                     <div class="editButton">
                         <button class="edit">Edit</button>
                         <button class="apply hidden">✓</button>
@@ -134,7 +134,7 @@
                 </span>
 
                 <span class="optionInt"><div class="optionName"><h4>Y-Axis: </h4></div>
-                    <span class="optionValue" id="vLength"></span> 
+                    <span class="optionValue" id="grid.vLength"></span> 
                     <div class="editButton">
                         <button class="edit">Edit</button>
                         <button class="apply hidden">✓</button>
@@ -166,7 +166,7 @@
         }
 
         //begin with 1st tab selected
-        document.getElementById("deskGrid_tabPositioning").checked = true;
+        document.getElementById("deskGrid_tabResizing").checked = true;
 
         //tabs functionality
         document.getElementById("deskGrid_tabPositioning").addEventListener("click", e => {
@@ -224,11 +224,11 @@
                     let inner = parseInt(value.innerText);
                     value.style.backgroundColor = "";
 
-                    new Function("cfg.desk.grid." + value.id + " = " + inner)()
-                    if(value.id == "width" || value.id == "height"){
+                    new Function("cfg.desk." + value.id + " = " + inner)()
+                    if(value.id == "grid.width" || value.id == "grid.height"){
                         evaluateIconGrid(null,2);
                     }
-                    if(value.id == "hMargin"){
+                    if(value.id == "grid.hMargin"){
                         document.getElementById("deskGrid_marginCheckbox").checked = false;
                         cfg.desk.grid.autoHmargin = false;
                         cfg.desk.grid.modHmargin = 0;
@@ -236,7 +236,7 @@
 
                         deskGrid_UpdateGraphAuto(null,0);
                     }
-                    if (value.id == "vMargin"){
+                    if (value.id == "grid.vMargin"){
                         document.getElementById("deskGrid_marginCheckbox").checked = false;
                         cfg.desk.grid.autoVmargin = false;
                         cfg.desk.grid.modVmargin = 0;
@@ -244,12 +244,12 @@
 
                         deskGrid_UpdateGraphAuto(null,1);
                     }
-                    if(value.id == "hLength"){
+                    if(value.id == "grid.hLength"){
                         document.getElementById("deskGrid_lengthCheckbox").checked = false;
                         cfg.desk.grid.autoHlength = false;
                         evaluateIconGrid(null,1);
                     }
-                    if(value.id == "vLength"){
+                    if(value.id == "grid.vLength"){
                         document.getElementById("deskGrid_lengthCheckbox").checked = false;
                         cfg.desk.grid.autoVlength = false;
                         evaluateIconGrid(null,1);
@@ -277,7 +277,7 @@
                 button.children[1].classList.add("hidden");
                 button.children[2].classList.add("hidden");
 
-                new Function(value.id + "HTML.innerText = cfg.desk.grid." + value.id)()
+                new Function("document.getElementById('" + value.id + "').innerText = cfg.desk." + value.id)()
             }
         }
 
@@ -363,20 +363,20 @@
         }
 
         //html references
-        widthHTML = document.getElementById("width");
-        heightHTML = document.getElementById("height");
-        hMarginHTML = document.getElementById("hMargin");
-        vMarginHTML = document.getElementById("vMargin");
-        hLengthHTML = document.getElementById("hLength");
-        vLengthHTML = document.getElementById("vLength");
+        widthHTML = document.getElementById("grid.width")
+        heightHTML = document.getElementById("grid.height")
+        hMarginHTML = document.getElementById("grid.hMargin")
+        vMarginHTML = document.getElementById("grid.vMargin")
+        hLengthHTML = document.getElementById("grid.hLength")
+        vLengthHTML = document.getElementById("grid.vLength")
 
         //set values to html
-        widthHTML.innerText = cfg.desk.grid.width;
-        heightHTML.innerText = cfg.desk.grid.height;
-        hMarginHTML.innerText = cfg.desk.grid.hMargin;
-        vMarginHTML.innerText = cfg.desk.grid.vMargin;
-        hLengthHTML.innerText = cfg.desk.grid.hLength;
-        vLengthHTML.innerText = cfg.desk.grid.vLength;
+        widthHTML.innerText = cfg.desk.grid.width
+        heightHTML.innerText = cfg.desk.grid.height
+        hMarginHTML.innerText = cfg.desk.grid.hMargin
+        vMarginHTML.innerText = cfg.desk.grid.vMargin
+        hLengthHTML.innerText = cfg.desk.grid.hLength
+        vLengthHTML.innerText = cfg.desk.grid.vLength
 
         //preload graph2 images
         let graph2images = 
