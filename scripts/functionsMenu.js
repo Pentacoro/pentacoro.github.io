@@ -28,7 +28,7 @@ function makeDropContext(e = null,elmnt,_this) {
 
             newSection.appendChild(newButton)
 
-            //no idea why this only worked like this, but it did
+            //no idea why it only worked like this, but it did
             let pls = [x,y]
             let arg = [e,elmnt,_this]
             newButton.onclick = e => contextArray[pls[0]].item[pls[1]].func(arg[0], arg[1], arg[2])
@@ -130,8 +130,7 @@ function iconOpen(e, elmnt, _this){
         console.log("Open");
         closeMenu();
 
-        windowArray.push(new Window ("Settings", _this.apps, true, 3, 1, 300, 300, 500, 500));
-        windowArray[windowArray.length -1].createNode();
+        loadAPP("./apps/filesystem_explorer/explorer_lau.html", [_this.text])
     }
 }
 function iconMaximize(e, elmnt, _this){
@@ -178,9 +177,10 @@ function iconDelete(e, elmnt, _this){
     if(
         !(e.target.classList.contains("cmcheck"))
     ) {
-        console.log("Delete");
-        closeMenu();
-        deleteSelectedNodes();
+        console.log("Delete")
+
+        closeMenu()
+        deleteSelectedNodes()
     }
 }
 function iconRename(e, elmnt, _this){
@@ -332,8 +332,9 @@ function deskNew(e, elmnt, _this){
         let iconPosY = (Math.round((initialY-iconHeight)/(h + hm))*(h + hm) + hm);
         //--------------------------------------------------------------|
 
-        iconArray.push(new Icon ("background-image: url('assets/svg/desktopIcons/filePlaceholder.svg');", "Name me!", "explorer", 1, iconPosX, iconPosY));
+        iconArray.push(new Icon ("background-image: url('assets/svg/desktopIcons/folderPlaceholder.svg');", "Name me!", "explorer", 1, iconPosX, iconPosY));
         let createdIcon = iconArray[iconArray.length - 1]
+        repositionIcons([createdIcon],true,false)
         createdIcon.createNode();
 
         let iconText = document.getElementById(createdIcon.text).childNodes[1];
@@ -386,6 +387,9 @@ function deskNew(e, elmnt, _this){
                     createdIcon.text = iconText.textContent;
                     iconText.style.backgroundColor = "";
                     iconText.style.textShadow = "";
+
+                    //insert it into filesystem
+                    currentVertex.createNewDir(iconText.textContent, {icon : createdIcon, from : currentVertex})
         
                     iconText.blur();
                     clearSelection();
