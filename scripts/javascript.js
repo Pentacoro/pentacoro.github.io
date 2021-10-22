@@ -61,6 +61,25 @@ async function loadAPP(url, arg = []){
     })
 }
 
+String.prototype.splice = function (index, count) {
+    let splicedStr = this.slice(0, index) + this.slice(index + count, this.length)
+    let extractStr = ""
+    for(i = index; i < index+count; i++) {
+        extractStr += this[i.toString()]
+    }
+    return [splicedStr, extractStr]
+}
+
+function renameKey(obj, oldName, newName) {
+    if(!obj.hasOwnProperty(oldName)) {
+        return false;
+    }
+
+    obj[newName] = obj[oldName];
+    delete obj[oldName];
+    return true;
+}
+
 function stringifyArrayArg(arr) {
     let loop   = 0
     let string = "["
