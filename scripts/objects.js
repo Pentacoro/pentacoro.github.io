@@ -1,9 +1,9 @@
 class Icon {
-    constructor(image, name, program = null, state = 0, x, y){
+    constructor(image, name, program = null, state = 0, x = 0, y = 0){
         this.stat = state
         this.coor = {px: x, py: y, tx: x, ty: y, ax: null, ay: null}
-        repositionIcons([this],true,false)
 
+        this.file = {}
         this.imag = image
         this.text = name
         this.apps = program
@@ -14,6 +14,7 @@ class Icon {
             switch (_this.apps) {
                 default:
                 case "exe":
+                case "vertex":
                 case "explorer":
                     _this.drop.push(new contextSection("open"))
                     _this.drop.push(new contextSection("clip"))
@@ -97,10 +98,39 @@ class Window {
 }
 
 class Directory {
-    constructor(name, conf = null, cont = []) {
+    constructor(name, conf = {}, cont = {}) {
         this.name = name
         this.conf = conf
         this.cont = cont
+    }
+
+    createNewDir(childName, childConf = null, parent = this) {
+        if (childConf) { 
+            //if conf argument passed use it
+            this.cont[childName] = new Directory(childName,childConf)
+            this.cont[childName].conf["icon"].file = this.cont[childName]
+        } else { 
+            //if no conf argument passed, create default folder
+            this.cont[childName] = new Directory(
+                                                    childName, 
+                                                    {
+                                                        icon : new Icon (
+                                                                            "background-image: url('assets/svg/desktopIcons/folderPlaceholder.svg');", 
+                                                                            childName, 
+                                                                            "explorer", 
+                                                                            0  
+                                                                        ),
+                                                        from : parent
+                                                    }
+                                                )
+            this.cont[childName].conf["icon"].file = this.cont[childName]
+        }
+        //if the parent is a vertex && icon doesn't have coord values then put them on deskGrid
+        if (this.conf.vert && this.cont[childName].conf.icon.coor.px == 0) {
+            repositionIcons([this.cont[childName].conf.icon],true,false)
+            iconArray.push(this.cont[childName].conf.icon)
+            this.cont[childName].conf.icon.createNode()
+        }
     }
 }
 
@@ -123,9 +153,9 @@ class Metafile {
 }
 
 class Executable {
-    constructor(url, name, conf = null) {
-        this.url = url
+    constructor(name, url, conf = null) {
         this.name = name
+        this.url = url
         this.conf = conf
     }
 }
@@ -137,9 +167,10 @@ class Task {
         this.id = genRanHex(16)
         checkUniqueID(this)
 
-        //end task
         let id = this.id
+        //end task
         this.end = function() {
+            
             appEnd()
             windowArray[parseInt(document.getElementsByClassName(id)[0].id.match(/(\d+)/)[0])].deleteNode()
 
@@ -178,14 +209,6 @@ windowArray.push(new Window ("Settings", "settingsExe", true, true, 3, 1, 420, 4
 windowArray.push(new Window ("Explorer ONE", "explorerExe", true, true, 3, 1, 420, 420, 500, 500));
 windowArray.push(new Window ("Explorer TWO", "explorerExe", true, true, 3, 1, 420, 420, 500, 500));
 */
-
-for (i = iconArray.length - 1; i >= 0; i--){
-    iconArray[i].createNode();
-}
-
-for (wndw of windowArray){
-    wndw.createNode();
-}
 
 //------------------------------------------------------------------------------------------------------------//
 norrumSettings = {

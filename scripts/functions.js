@@ -99,7 +99,8 @@ var windowArray = [];
 		//if not clicking folder or window--------------|
 		if(
 			e.target.id == "background" &&
-			keyPressCtrl == false
+			keyPressCtrl == false &&
+			!dragging
 		) {
 			for (icon of iconArray){
 				icon.stat = 0;
@@ -132,7 +133,8 @@ function selectBox() {
 		let target = event.target;
 		//if not clicking folder or window------------------------------|
 		if(
-			target.id == "background"
+			target.id == "background" &&
+			!dragging
 		) {
 			pos1 = 0;
 			pos2 = 0; 

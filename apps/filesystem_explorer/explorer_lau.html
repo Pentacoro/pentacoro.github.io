@@ -1,20 +1,19 @@
 <script>
     let arg = []
-    let url = "./apps/settings_deskGrid/deskGridOptions.html"
+    //[0] directory name
+    let url = "./apps/filesystem_explorer/explorer.html"
 
     //on app init
     function ini() {
-        cfg.desk.grid.visibleNodes = true
-        evaluateIconGrid(null, 2)
+
     }
     //on app end
     function end() {
-        cfg.desk.grid.visibleNodes = false
-        evaluateIconGrid(null, 2)
+
     }
     //task creation
-    if (canInstance("Desk Grid Settings")) {
-        taskArray.push(new Task("Desk Grid Settings", false, end))
+    if (canInstance("Explorer")) {
+        taskArray.push(new Task("Explorer", true, end))
         let task = taskArray[taskArray.length - 1]
         let id = task.id
 
@@ -22,12 +21,12 @@
         let appHTML = ajaxReturn("get", url)
         appHTML.then( data => {
             //window generation
-            windowArray.push(new Window("Desktop Grid Settings", id, false, 1, 1, 200, 200, 350, 560))
+            windowArray.push(new Window(arg[0], id, true, 3, 1, 200, 200, 350, 560))
             newWindow = windowArray[windowArray.length - 1]
             newWindow.createNode()
 
             //X button
-            document.getElementsByClassName(id)[0].children[0].children[0].children[1].addEventListener("mouseup", task.end)
+            document.getElementsByClassName(id)[0].children[0].children[0].children[3].addEventListener("mouseup", task.end)
 
             ini()
 

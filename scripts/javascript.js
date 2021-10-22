@@ -48,10 +48,12 @@ const loadURL = function(data, container){
     }  
 }
 
-async function loadAPP(url){
+async function loadAPP(url, arg = []){
     let appLauncher = ajaxReturn("get", url);
     appLauncher.then( data => {
         document.getElementById("appLauncher").innerHTML = data
+        let newData = document.getElementById("appLauncher").innerHTML.replace("let arg = []", "let arg = "+stringifyArg(arg))
+        document.getElementById("appLauncher").innerHTML = newData
         eval(document.getElementById("appLauncher").getElementsByTagName("script")[0].innerText)
     })
     appLauncher.catch( err => {
@@ -59,9 +61,71 @@ async function loadAPP(url){
     })
 }
 
+function stringifyArrayArg(arr) {
+    let loop   = 0
+    let string = "["
+    for (item of arr) {
+        if (loop > 0) string += ","
+        string += stringifyArg(item)
+        loop++
+    }
+    string += "]"
+    return string
+}
+
+function stringifyObjectArg(obj) {
+    let loop   = 0
+    let string = "{"
+    for([key, value] of Object.entries(obj)) {
+        if (loop > 0) string += ","
+        string += "" + key + ":" + stringifyArg(value)
+        loop++
+    }
+    string += "}"
+    return string
+}
+
+function stringifyArg(arg) {
+    string = ""
+    switch (typeof(arg)) {
+        case "number":
+        case "boolean":
+        case "undefined":
+            string = arg
+            break
+
+        case "string":
+            string = "\""+arg+"\""
+            break
+ 
+        case "function":
+            string = arg.name
+            break
+
+        case "object":
+            if (Array.isArray(arg)) {
+                string = stringifyArrayArg(arg)
+
+            } else if (arg === null) {
+                string = "null"
+            } else {
+                string = stringifyObjectArg(arg)
+            }
+            break
+
+        default: 
+            string = "undefined"
+    }
+    return string
+}
+
 function repDir(sonDir, parDir){ //replace asset directory for local apps
-    let newDir = sonDir.replace(/\.\/assets/g, parDir.substr(0, parDir.lastIndexOf("/")) + "/assets");
-    return newDir;
+    let newData = sonDir.replace(/\.\/assets/g, parDir.substr(0, parDir.lastIndexOf("/")) + "/assets");
+    return newData;
+}
+function repTid(data, taskId){ //place the task id on element classList for apps that allow multiple windows
+    let newData = data.replace(/TASKID/g, taskId);
+    return newData;
 }
 
 function preloadImage(url){

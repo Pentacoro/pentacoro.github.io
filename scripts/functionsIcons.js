@@ -12,7 +12,7 @@ function dragIcon(elmnt, _this) {
 		e = e || window.event
         e.preventDefault()
 
-        if(e.button == 0) 
+        if(e.button == 0) {}
 		
 		//get initial cursor position:
 		pos3 = e.clientX
@@ -27,20 +27,20 @@ function dragIcon(elmnt, _this) {
 				//---------------------------------------|
 			}
 		} else {
-            if (shouldSelect == true) {
+            if (shouldSelect == true && !dragging) {
                 //light up 1 hover border onmousedown:
                 highlight(elmnt)
                 elmnt.style.backgroundColor = 'rgb(0,0,0,0)'
                 
                 //when mousedown on unselected icon
-                if(keyPressCtrl == false && dragging == false) {
+                if(!keyPressCtrl) {
                     for (icon of iconArray){
                         icon.stat = 0
                         icon.statNode()
                     }
                     _this.stat = 1
                     highlight(elmnt)
-                } else if(keyPressCtrl == true) {
+                } else if(keyPressCtrl) {
                     _this.stat = 1
                     highlight(elmnt)
                 }
@@ -235,6 +235,12 @@ function deleteSelectedNodes(){
     for(icon of iconsToDelete){
         if(icon.stat == 1){
             icon.deleteNode();
+
+            //delete from filesystem
+            let parent = icon.file.conf.from
+            let child = icon.file
+
+            delete parent.cont[child.name]
         }
     }
 }
