@@ -237,10 +237,7 @@ function deleteSelectedNodes(){
             icon.deleteNode();
 
             //delete from filesystem
-            let parent = icon.file.conf.from
-            let child = icon.file
-
-            delete parent.cont[child.name]
+            icon.file.deleteMe()
         }
     }
 }

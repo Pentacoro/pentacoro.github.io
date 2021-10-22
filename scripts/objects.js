@@ -104,7 +104,8 @@ class Directory {
         this.cont = cont
     }
 
-    createNewDir(childName, childConf = null, parent = this) {
+    createNewDir(childName, childConf = null, childCont = null) {
+        let parent = this
         if (childConf) { 
             //if conf argument passed use it
             this.cont[childName] = new Directory(childName,childConf)
@@ -125,12 +126,22 @@ class Directory {
                                                 )
             this.cont[childName].conf["icon"].file = this.cont[childName]
         }
+        if (childCont) {
+            this.cont[childName].cont = childCont
+        }
         //if the parent is a vertex && icon doesn't have coord values then put them on deskGrid
         if (this.conf.vert && this.cont[childName].conf.icon.coor.px == 0) {
             repositionIcons([this.cont[childName].conf.icon],true,false)
             iconArray.push(this.cont[childName].conf.icon)
             this.cont[childName].conf.icon.createNode()
         }
+    }
+
+    deleteMe() {
+        let parent = this.conf.from
+        let child = this
+
+        delete parent.cont[child.name]
     }
 }
 
