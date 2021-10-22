@@ -235,7 +235,7 @@ function iconRename(e, elmnt, _this){
             function iconRenaming(){
                 if(
                     iconNameExists(iconText.textContent, _this) == false &&
-                    iconText.textContent != "Name me!" &&
+                    iconText.textContent != "¡Name me!" &&
                     iconText.textContent != ""
                 ) {
                     //if the name is allowed --------------------|
@@ -246,6 +246,10 @@ function iconRename(e, elmnt, _this){
                     _this.text = iconText.textContent;
                     iconText.style.backgroundColor = "";
                     iconText.style.textShadow = "";
+
+                    //insert into fylesystem
+                    renameKey(currentVertex.cont, _this.file.name, iconText.textContent)
+                    currentVertex.cont[iconText.textContent].name = iconText.textContent
 
                     iconText.blur();
                     clearSelection();
@@ -332,7 +336,7 @@ function deskNew(e, elmnt, _this){
         let iconPosY = (Math.round((initialY-iconHeight)/(h + hm))*(h + hm) + hm);
         //--------------------------------------------------------------|
 
-        iconArray.push(new Icon ("background-image: url('assets/svg/desktopIcons/folderPlaceholder.svg');", "Name me!", "explorer", 1, iconPosX, iconPosY));
+        iconArray.push(new Icon ("background-image: url('assets/svg/desktopIcons/folderPlaceholder.svg');", "¡Name me!", "explorer", 1, iconPosX, iconPosY));
         let createdIcon = iconArray[iconArray.length - 1]
         repositionIcons([createdIcon],true,false)
         createdIcon.createNode();
@@ -376,7 +380,7 @@ function deskNew(e, elmnt, _this){
             function iconNaming(){
                 if(
                     iconNameExists(iconText.textContent, createdIcon) == false &&
-                    iconText.textContent != "Name me!" &&
+                    iconText.textContent != "¡Name me!" &&
                     iconText.textContent != ""
                 ) {
                     //if the name is allowed --------------------|
