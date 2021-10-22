@@ -90,45 +90,53 @@ function sizeWndw(wndw, _this) {
 	}
 	
 	function doResize(e) {
-		e = e || window.event;
-		e.preventDefault();
+		e = e || window.event
+		e.preventDefault()
 
 		//get int for wndw min-height and min-width css values
-		let minHeight = parseInt(window.getComputedStyle(wndw,null).getPropertyValue("min-height"));
-		let minWidth = parseInt(window.getComputedStyle(wndw,null).getPropertyValue("min-width"));
+		let minHeight = parseInt(window.getComputedStyle(wndw,null).getPropertyValue("min-height"))
+		let minWidth = parseInt(window.getComputedStyle(wndw,null).getPropertyValue("min-width"))
 		
 		//when sizing towards →
 		if (border == "windowErig" || border == "windowCbr" || border == "windowCtr") {
-			_this.widt = startWidth + e.clientX - startX;
+			if ((startWidth + e.clientX - startX) > minWidth){
+				_this.widt = startWidth + e.clientX - startX
+			} else {
+				_this.widt = minWidth
+			}
 		}
 		//when sizing towards ↓
 		if (border == "windowEbot" || border == "windowCbr" || border == "windowCbl") {
-			_this.heig = startHeight + e.clientY - startY;
+			if ((startHeight + e.clientY - startY) > minHeight){
+				_this.heig = startHeight + e.clientY - startY
+			} else {
+				_this.heig = minHeight
+			}
 		}
 		//when sizing towards ← ---------- [accounting for wndw min-width]
 		if (border == "windowElef" || border == "windowCtl" || border == "windowCbl") {
 			if (startLeft + e.clientX - startX < startLeft + (startWidth - minWidth)){
-				_this.posX = startLeft + e.clientX - startX;
-				_this.widt = startWidth + (e.clientX - startX) * -1;
+				_this.posX = startLeft + e.clientX - startX
+				_this.widt = startWidth + (e.clientX - startX) * -1
 			} else {
 				//stuck in minimum size
-				_this.posX = startLeft + (startWidth - minWidth);
-				_this.widt = minWidth;
+				_this.posX = startLeft + (startWidth - minWidth)
+				_this.widt = minWidth
 			}
 		//when sizing towards ↑ ---------- [accounting for wndw min-height]
 		}
 		if (border == "windowEtop" || border == "windowCtl" || border == "windowCtr") {
 			if (startTop + e.clientY - startY < startTop + (startHeight - minHeight)){
-				_this.posY = startTop + e.clientY - startY;
-				_this.heig = startHeight + (e.clientY - startY) * -1;
+				_this.posY = startTop + e.clientY - startY
+				_this.heig = startHeight + (e.clientY - startY) * -1
 			} else {
 				//stuck in minimum size
-				_this.posY = startTop + (startHeight - minHeight);
-				_this.heig = minHeight;
+				_this.posY = startTop + (startHeight - minHeight)
+				_this.heig = minHeight
 			}
 		}
 
-		_this.poseNode();
+		_this.poseNode()
 	}
 
 	function stopResize() {
