@@ -1,6 +1,6 @@
 var cfg = {
     sound: {
-        icons: true,
+        icons: false,
     },
     desk: {
         grid: {

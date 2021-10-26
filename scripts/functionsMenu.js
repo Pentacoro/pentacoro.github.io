@@ -236,7 +236,8 @@ function iconRename(e, elmnt, _this){
                 if(
                     iconNameExists(iconText.textContent, _this) == false &&
                     iconText.textContent != "¡Name me!" &&
-                    iconText.textContent != ""
+                    iconText.textContent != "" &&
+                    iconText.textContent.match(/[\/']/g) === null
                 ) {
                     //if the name is allowed --------------------|
                     shouldSelect = true;
@@ -248,8 +249,14 @@ function iconRename(e, elmnt, _this){
                     iconText.style.textShadow = "";
 
                     //insert into fylesystem
-                    renameKey(currentVertex.cont, _this.file.name, iconText.textContent)
-                    currentVertex.cont[iconText.textContent].name = iconText.textContent
+                    let getFile = eval(addressInterpreter(_this.file))
+                    let getFrom = eval(addressInterpreter(eval(addressInterpreter(_this.file)).conf.from))
+                    //
+                    renameKey(getFrom.cont, getFile.name, iconText.textContent)
+                    getFrom.cont[iconText.textContent].name = iconText.textContent
+                    //
+                    console.log(getFrom.conf.icon)
+                    _this.file = "" + getFrom.conf.icon.file + "/" + iconText.textContent
 
                     iconText.blur();
                     clearSelection();
@@ -381,7 +388,8 @@ function deskNew(e, elmnt, _this){
                 if(
                     iconNameExists(iconText.textContent, createdIcon) == false &&
                     iconText.textContent != "¡Name me!" &&
-                    iconText.textContent != ""
+                    iconText.textContent != "" &&
+                    iconText.textContent.match(/[\/"]/g) === null
                 ) {
                     //if the name is allowed --------------------|
                     shouldSelect = true;
@@ -393,7 +401,7 @@ function deskNew(e, elmnt, _this){
                     iconText.style.textShadow = "";
 
                     //insert it into filesystem
-                    currentVertex.createNewDir(iconText.textContent, {icon : createdIcon, from : currentVertex})
+                    currentVertex.createNewDir(iconText.textContent, {icon : createdIcon, from : currentVertex.conf.icon.file})
         
                     iconText.blur();
                     clearSelection();

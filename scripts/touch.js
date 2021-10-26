@@ -22,9 +22,18 @@ function touchHandler(event)
                                   false, false, false, 0/*left*/, null);
 
     first.target.dispatchEvent(simulatedEvent);
-    event.preventDefault();
-}
 
+    //check if click
+    if (type === "mouseup"){
+        simulatedEvent.initMouseEvent("click", true, true, window, 1, 
+                                    first.screenX, first.screenY, 
+                                    first.clientX, first.clientY, false, 
+                                    false, false, false, 0/*left*/, null);
+        first.target.dispatchEvent(simulatedEvent)
+    }
+
+    //event.preventDefault();
+}
 function init() 
 {
     document.addEventListener("touchstart", touchHandler, true);
@@ -34,3 +43,18 @@ function init()
 }
 
 init();
+
+var touchTap = false
+
+window.addEventListener('touchstart', function() {
+    touchTap = true;
+    setTimeout(function() {
+      if(touchTap) {
+        touchTap = false
+      }
+    }, 250);
+  });
+  
+window.addEventListener('touchend', function() {
+    touchTap = false
+});

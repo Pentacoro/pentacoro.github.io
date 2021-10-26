@@ -109,7 +109,7 @@ class Directory {
         if (childConf) { 
             //if conf argument passed use it
             this.cont[childName] = new Directory(childName,childConf)
-            this.cont[childName].conf["icon"].file = this.cont[childName]
+            this.cont[childName].conf["icon"].file = this.cont[childName].conf["from"] + "/" + childName
         } else { 
             //if no conf argument passed, create default folder
             this.cont[childName] = new Directory(
@@ -121,14 +121,16 @@ class Directory {
                                                                             "explorer", 
                                                                             0  
                                                                         ),
-                                                        from : parent
+                                                        from : "" + parent.conf["from"] + "/" + parent.name
                                                     }
                                                 )
-            this.cont[childName].conf["icon"].file = this.cont[childName]
+            this.cont[childName].conf["icon"].file = this.cont[childName].conf["from"] + "/" + childName
         }
+
         if (childCont) {
             this.cont[childName].cont = childCont
         }
+
         //if the parent is a vertex && icon doesn't have coord values then put them on deskGrid
         if (this.conf.vert && this.cont[childName].conf.icon.coor.px == 0) {
             repositionIcons([this.cont[childName].conf.icon],true,false)

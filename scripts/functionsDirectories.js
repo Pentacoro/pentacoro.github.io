@@ -4,7 +4,7 @@ core.createNewDir   (
                         "vertex",  
                         {
                             icon : new Icon ("background-image: url('assets/svg/desktopIcons/folderPlaceholder.svg');", "vertex", "explorer", 0),
-                            from : core,
+                            from : "",
                             type : "dir",
                             vert : true
                         }
