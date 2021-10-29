@@ -3,7 +3,7 @@ var core = new Directory ("core")
 core.createNewDir   (
                         "vertex",  
                         {
-                            icon : new Icon ("background-image: url('assets/svg/desktopIcons/folderPlaceholder.svg');", "vertex", "explorer", 0),
+                            icon : new Icon ("background-image: url('assets/svg/desktopIcons/folderPlaceholder.svg');", "vertex", "dir", 0),
                             from : "",
                             type : "dir",
                             vert : true
@@ -15,6 +15,10 @@ var currentVertex = core.cont["vertex"]
 core.cont["vertex"].createNewDir("Folder 1")
 core.cont["vertex"].createNewDir("Folder 2")
 core.cont["vertex"].createNewDir("Folder 3")
+
+core.cont["vertex"].cont["Folder 1"].createNewDir("uwu")
+core.cont["vertex"].cont["Folder 1"].createNewDir("unu")
+core.cont["vertex"].cont["Folder 1"].createNewDir("owo")
 
 
 console.log(addressInterpreter("/vertex/Folder 3"))

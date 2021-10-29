@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: "Gotham", "Helvetica Neue", Helvetica, Arial, "sans-serif";
+            margin: 0;
+        }
+        .nav.ID_TASKID {
+            display: grid;
+            height: 40px;
+            background-color: rgb(195, 203, 221);
+        }
+        .list.ID_TASKID {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            justify-content: flex-start;
+            align-items: flex-start;
+            align-content: flex-start;
+            gap: 5px;
+            padding: 5px;
+        }
+        .list>.explorerIcon.ID_TASKID {
+            margin: 0px;
+            z-index: 10;
+
+            width: 80px;
+            height: 110px;
+
+            border: 2px dotted rgba(255, 255, 255, 0);
+        }
+        .list>.explorerIcon.ID_TASKID:hover {
+            border: 2px dotted rgba(0, 0, 0, 0.15);
+        }
+        .explorerIconImage.ID_TASKID{
+            width: 100%;
+            height: 50%;
+            margin: 7px auto;
+            background-image: url("../assets/svg/desktopIcons/folderPlaceholder.svg");
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+
+            -webkit-filter: drop-shadow(0px 1px 2px rgb(0,0,0,.5));
+            filter: drop-shadow(0px 1px 2px rgb(0,0,0,.5));
+        }
+        .explorerIconText.ID_TASKID{
+            text-align: center;
+            color: rgb(56, 56, 56);
+        }
+    </style>
+
+    <title>Document</title>
+</head>
+<body>
+    <div class="container ID_TASKID">
+        <div class="nav ID_TASKID">
+
+        </div>
+        <div class="list ID_TASKID">
+
+        </div>
+    </div>
+
+    <script>    
+        explorerInit("xcorex")
+
+        function explorerInit(dir) {           
+            let activeDir = dir 
+            let activeObj = eval(addressInterpreter(activeDir))
+            let dirList   = Object.entries(activeObj.cont)
+
+            let dirFolder = []
+            let dirFile   = []
+
+            for (item of dirList) {
+                if(item[1].conf.type === "dir") {
+                    dirFolder.push(item)
+                }
+            }
+            for (item of dirList) {
+                if(item[1].conf.type !=  "dir") {
+                    dirFile.push(item)
+                }
+            }
+
+            dirFolder.sort((a, b) => a[1].name.localeCompare(b[1].name))
+            dirFile.sort((a, b) => a[1].name.localeCompare(b[1].name))
+
+            for (rawr of document.getElementsByClassName("explorerIcon ID_TASKID")){
+                document.getElementsByClassName("list ID_TASKID")[0].removeChild(rawr)
+            }
+
+            createExplorerIcons(dirFolder)
+            createExplorerIcons(dirFile)
+        }
+
+        function createExplorerIcons(array) {
+                for(item of array) {
+                //Icon HTML structure-----|
+                let newIcon = document.createElement("div");
+                newIcon.setAttribute("class", "explorerIcon ID_TASKID");
+
+                let newIconImage = document.createElement("div");
+                newIconImage.setAttribute("class", "explorerIconImage ID_TASKID");
+                newIconImage.setAttribute("style", item[1].conf.icon.imag);
+                newIcon.appendChild(newIconImage);
+
+                let newIconText = document.createElement("p");
+                newIconText.setAttribute("class", "explorerIconText ID_TASKID");
+                let newIconTextNode = document.createTextNode(item[1].conf.icon.text);
+                newIconText.appendChild(newIconTextNode);
+                newIcon.appendChild(newIconText);
+
+                document.getElementsByClassName("list ID_TASKID")[0].appendChild(newIcon);
+                //------------------------|
+            }
+        }
+    </script>
+</body>
+</html>

@@ -216,8 +216,7 @@ function poseWndwNode(elmnt, _this) {
 
 function crteWndwNode(_this) {
     let newWindow = document.createElement("div");
-    newWindow.setAttribute("class", "window "+_this.task);
-    newWindow.setAttribute("style", "left:"+_this.posX+"px;top:"+_this.posY+"px;width:"+_this.widt+"px;height:"+_this.heig+"px;z-index: 0;");
+    newWindow.setAttribute("class", "window ID_"+_this.task);
 	newWindow.setAttribute("id", "windowNumber" + windowArray.indexOf(_this));
 
     let newWindowInner = document.createElement("div");
@@ -308,6 +307,8 @@ function crteWndwNode(_this) {
 	_this.heig += diffH;
 	_this.minW += diffW;
 	_this.minH += diffH;
+	
+	newWindow.setAttribute("style", "left:"+_this.posX+"px;top:"+_this.posY+"px;width:"+_this.widt+"px;height:"+_this.heig+"px;min-width:"+_this.minW+"px;min-height:"+_this.minH+"px;z-index: 0;");
 
 	for (i = 0; i < document.getElementsByClassName("windowButton").length; i++){
 		let windowButton = document.getElementsByClassName("windowButton")[i];

@@ -51,8 +51,7 @@ const loadURL = function(data, container){
 async function loadAPP(url, arg = []){
     let appLauncher = ajaxReturn("get", url);
     appLauncher.then( data => {
-        document.getElementById("appLauncher").innerHTML = data
-        let newData = document.getElementById("appLauncher").innerHTML.replace("let arg = []", "let arg = "+stringifyArg(arg))
+        newData = data.replace("let arg = []", "let arg = "+stringifyArg(arg))
         document.getElementById("appLauncher").innerHTML = newData
         eval(document.getElementById("appLauncher").getElementsByTagName("script")[0].innerText)
     })

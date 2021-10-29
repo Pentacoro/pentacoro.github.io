@@ -107,19 +107,39 @@ function closeMenu() {
 }
 
 //-------------------------------------------------------------------------------------|
-idBackground.drop = []
+var verDrop = []
 
-idBackground.drop.push(new contextSection("icon"))
-idBackground.drop.push(new contextSection("clip"))
-idBackground.drop.push(new contextSection("info"))
+verDrop.push(new contextSection("icon"))
+verDrop.push(new contextSection("clip"))
+verDrop.push(new contextSection("info"))
 
-idBackground.drop[0].item.push(new contextOption("Grid","url('assets/svg/contextMenu/open.svg')",deskGrid))
-idBackground.drop[0].item.push(new contextOption("New","url('assets/svg/contextMenu/maximize.svg')",deskNew))
+verDrop[0].item.push(new contextOption("Grid","url('assets/svg/contextMenu/open.svg')",deskGrid))
+verDrop[0].item.push(new contextOption("New","url('assets/svg/contextMenu/maximize.svg')",deskNew))
 
-idBackground.drop[1].item.push(new contextOption("Paste","url('assets/svg/contextMenu/paste.svg')",deskPaste))
+verDrop[1].item.push(new contextOption("Paste","url('assets/svg/contextMenu/paste.svg')",deskPaste))
 
-idBackground.drop[2].item.push(new contextOption("Settings","url('assets/svg/contextMenu/rename.svg')",deskSettings))
-idBackground.drop[2].item.push(new contextOption("Info","url('assets/svg/contextMenu/properties.svg')",deskInfo))
+verDrop[2].item.push(new contextOption("Settings","url('assets/svg/contextMenu/rename.svg')",deskSettings))
+verDrop[2].item.push(new contextOption("Info","url('assets/svg/contextMenu/properties.svg')",deskInfo))
+
+var dirDrop = []
+
+dirDrop.push(new contextSection("open"))
+dirDrop.push(new contextSection("clip"))
+dirDrop.push(new contextSection("prop"))
+
+dirDrop[0].item.push(new contextOption("Open","url('assets/svg/contextMenu/open.svg')",iconOpen))
+dirDrop[0].item.push(new contextOption("Open in fullscreen","url('assets/svg/contextMenu/maximize.svg')",iconMaximize))
+dirDrop[0].item.push(new contextOption("Open in new tab","url('assets/svg/contextMenu/newtab.svg')",iconNewtab))
+
+dirDrop[1].item.push(new contextOption("Cut","url('assets/svg/contextMenu/cut.svg')",iconCut))
+dirDrop[1].item.push(new contextOption("Copy","url('assets/svg/contextMenu/copy.svg')",iconCopy))
+dirDrop[1].item.push(new contextOption("Paste","url('assets/svg/contextMenu/paste.svg')",iconPaste))
+
+dirDrop[2].item.push(new contextOption("Delete","url('assets/svg/contextMenu/delete.svg')",iconDelete))
+dirDrop[2].item.push(new contextOption("Rename","url('assets/svg/contextMenu/rename.svg')",iconRename))
+dirDrop[2].item.push(new contextOption("Properties","url('assets/svg/contextMenu/properties.svg')",iconProperties))
+
+idBackground.drop = verDrop
 //-------------------------------------------------------------------------------------|
 
 //-------------------------------------------------------------------------------------|
@@ -127,10 +147,10 @@ function iconOpen(e, elmnt, _this){
     if(
         !(e.target.classList.contains("cmcheck"))
     ) {
-        console.log("Open");
-        closeMenu();
+        console.log("Open")
+        closeMenu()
 
-        loadAPP("./apps/filesystem_explorer/explorer_lau.html", [_this.text])
+        loadAPP("./apps/filesystem_explorer/explorer_lau.html", [_this.text, _this.file])
     }
 }
 function iconMaximize(e, elmnt, _this){
@@ -237,7 +257,7 @@ function iconRename(e, elmnt, _this){
                     iconNameExists(iconText.textContent, _this) == false &&
                     iconText.textContent != "¡Name me!" &&
                     iconText.textContent != "" &&
-                    iconText.textContent.match(/[\/']/g) === null
+                    iconText.textContent.match(/[\/"]/g) === null
                 ) {
                     //if the name is allowed --------------------|
                     shouldSelect = true;
@@ -255,7 +275,6 @@ function iconRename(e, elmnt, _this){
                     renameKey(getFrom.cont, getFile.name, iconText.textContent)
                     getFrom.cont[iconText.textContent].name = iconText.textContent
                     //
-                    console.log(getFrom.conf.icon)
                     _this.file = "" + getFrom.conf.icon.file + "/" + iconText.textContent
 
                     iconText.blur();
@@ -318,7 +337,7 @@ function deskGrid(e, elmnt, _this){
     ) {
         console.log("Grid");
 
-        loadAPP("./apps/settings_deskGrid/deskGridOptions_launch.html");
+        loadAPP("./apps/settings_deskGrid/deskGridOptions_lau.html");
 
         closeMenu();
     }
