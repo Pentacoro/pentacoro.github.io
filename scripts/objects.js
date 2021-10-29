@@ -14,24 +14,14 @@ class Icon {
             switch (_this.apps) {
                 default:
                 case "exe":
-                case "vertex":
-                case "explorer":
-                    _this.drop.push(new contextSection("open"))
-                    _this.drop.push(new contextSection("clip"))
-                    _this.drop.push(new contextSection("prop"))
-
-                    _this.drop[0].item.push(new contextOption("Open","url('assets/svg/contextMenu/open.svg')",iconOpen))
-                    _this.drop[0].item.push(new contextOption("Open in fullscreen","url('assets/svg/contextMenu/maximize.svg')",iconMaximize))
-                    _this.drop[0].item.push(new contextOption("Open in new tab","url('assets/svg/contextMenu/newtab.svg')",iconNewtab))
-
-                    _this.drop[1].item.push(new contextOption("Cut","url('assets/svg/contextMenu/cut.svg')",iconCut))
-                    _this.drop[1].item.push(new contextOption("Copy","url('assets/svg/contextMenu/copy.svg')",iconCopy))
-                    _this.drop[1].item.push(new contextOption("Paste","url('assets/svg/contextMenu/paste.svg')",iconPaste))
-
-                    _this.drop[2].item.push(new contextOption("Delete","url('assets/svg/contextMenu/delete.svg')",iconDelete))
-                    _this.drop[2].item.push(new contextOption("Rename","url('assets/svg/contextMenu/rename.svg')",iconRename))
-                    _this.drop[2].item.push(new contextOption("Properties","url('assets/svg/contextMenu/properties.svg')",iconProperties))
-                    break;  
+                    //_this.drop = exeDrop
+                    break
+                case "mfs":
+                    //_this.drop = mfsDrop
+                    break
+                case "dir":
+                    _this.drop = dirDrop
+                    break
             }
         }
 
@@ -118,10 +108,11 @@ class Directory {
                                                         icon : new Icon (
                                                                             "background-image: url('assets/svg/desktopIcons/folderPlaceholder.svg');", 
                                                                             childName, 
-                                                                            "explorer", 
+                                                                            "dir", 
                                                                             0  
                                                                         ),
-                                                        from : "" + parent.conf["from"] + "/" + parent.name
+                                                        from : "" + parent.conf["from"] + "/" + parent.name,
+                                                        type : "dir"
                                                     }
                                                 )
             this.cont[childName].conf["icon"].file = this.cont[childName].conf["from"] + "/" + childName
@@ -140,7 +131,7 @@ class Directory {
     }
 
     deleteMe() {
-        let parent = this.conf.from
+        let parent = eval(addressInterpreter(this.conf.from))
         let child = this
 
         delete parent.cont[child.name]
@@ -185,7 +176,7 @@ class Task {
         this.end = function() {
             
             appEnd()
-            windowArray[parseInt(document.getElementsByClassName(id)[0].id.match(/(\d+)/)[0])].deleteNode()
+            windowArray[parseInt(document.getElementsByClassName("ID_"+id)[0].id.match(/(\d+)/)[0])].deleteNode()
 
             taskArray.splice(taskArray.indexOf(this),1)
         }
@@ -214,6 +205,7 @@ var audioArray = []
 audioArray.push(new Audio("assets/sound/Norrum - Interfaz Click v1.mp3"))
 audioArray.push(new Audio("assets/sound/Norrum - Interfaz Item errOr v1.mp3"))
 audioArray.push(new Audio("assets/sound/Norrum - Interfaz Item OK c_ v1.mp3"))
+audioArray.push(new Audio("assets/sound/Norrum - Interfaz Item alMost.mp3"))
 audioArray.push(new Audio("assets/sound/Norrum - Interfaz Startup 2 v1.mp3"))
 
 /*

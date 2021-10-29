@@ -3,6 +3,13 @@ var shouldSelect = true
 
 var dragging = false
 
+function highlight(hIcon) {
+    hIcon.style.border = '3px dotted rgb(255,255,255,0.30)';
+} 
+function lowlight(hIcon) {
+    hIcon.style.border = '';
+} 
+
 function dragIcon(elmnt, _this) {
 	var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0
 	
@@ -21,7 +28,7 @@ function dragIcon(elmnt, _this) {
 		//when mousedown on selected icon
 		if (_this.stat == 1) {
 			//managing selected icons
-			for (var i = 0; i < classActive.length; i++) {
+			for (i = 0; i < classActive.length; i++) {
 				//light up all hover border onmousedown:-|
 				highlight(classActive[i])
 				//---------------------------------------|
@@ -71,6 +78,8 @@ function dragIcon(elmnt, _this) {
         _this.stat = 1
         _this.statNode()
         
+        //godGrasp layer
+        document.getElementById("godGrasp").appendChild(elmnt)
 		
 		//managing selected icons
 		for (icon of iconArray){
@@ -111,6 +120,9 @@ function dragIcon(elmnt, _this) {
             icon.poseNode()
             icon.statNode()
         }
+
+        //back to icon layer
+        document.getElementById("iconLayer").appendChild(elmnt)
 		
 		//unselect other folders on mouseup W/O drag UNLESS ctrl
 		if(keyPressCtrl == false && dragging == false && e.button == 0) {
@@ -237,7 +249,8 @@ function deleteSelectedNodes(){
             icon.deleteNode();
 
             //delete from filesystem
-            icon.file.deleteMe()
+            let getFile = eval(addressInterpreter(icon.file))
+            getFile.deleteMe()
         }
     }
 }
@@ -249,6 +262,7 @@ function repositionIcons(icons, mustSet = false, hasPrev = true){
     let hm = (cfg.desk.grid.modVmargin == 0) ? cfg.desk.grid.vMargin : cfg.desk.grid.modVmargin;
 
     let invalidIcons = [];
+    let iconAmount   = icons.length
 
     for(icon of icons) validateIconPosition(icon);
 
@@ -322,10 +336,12 @@ function repositionIcons(icons, mustSet = false, hasPrev = true){
     }
 
     if(cfg.sound.icons && dragging) {
-        if(invalidIcons.length > 0) {
+        if(invalidIcons.length == iconAmount) {
             audioArray[1].play()
-        } else {
+        } else if (invalidIcons.length == 0) {
             audioArray[2].play()
+        } else {
+            audioArray[3].play()
         }
     }
 }
