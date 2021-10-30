@@ -28,9 +28,9 @@ function dragIcon(elmnt, _this) {
 		//when mousedown on selected icon
 		if (_this.stat == 1) {
 			//managing selected icons
-			for (i = 0; i < classActive.length; i++) {
+			for (icon of pocket.icon) {
 				//light up all hover border onmousedown:-|
-				highlight(classActive[i])
+				highlight(document.getElementById("Icon: "+icon.text))
 				//---------------------------------------|
 			}
 		} else {
@@ -41,13 +41,15 @@ function dragIcon(elmnt, _this) {
                 
                 //when mousedown on unselected icon
                 if(!keyPressCtrl) {
-                    for (icon of iconArray){
-                        icon.stat = 0
-                        icon.statNode()
+                    for (icon of pocket.icon){
+                        pocket.icon = pocket.icon.remove(icon)
+                        icon.statNode(0)
                     }
+                    pocket.icon.push(_this)
                     _this.stat = 1
                     highlight(elmnt)
                 } else if(keyPressCtrl) {
+                    pocket.icon.push(_this)
                     _this.stat = 1
                     highlight(elmnt)
                 }
@@ -75,14 +77,12 @@ function dragIcon(elmnt, _this) {
 		pos4 = e.clientY
 
         dragging = true
-        _this.stat = 1
-        _this.statNode()
         
         //godGrasp layer
         document.getElementById("godGrasp").appendChild(elmnt)
 		
 		//managing selected icons
-		for (icon of iconArray){
+		for (icon of pocket.icon){
             if (icon.stat == 1 || icon.stat == 2) {
                 //set position for selected icons:------------|
                 icon.coor.tx = (icon.coor.tx - pos1)
@@ -91,9 +91,8 @@ function dragIcon(elmnt, _this) {
                 iconGridArray[icon.coor.ax][icon.coor.ay].icon = null
                 //--------------------------------------------|
                 
-                icon.stat = 2;
+                icon.statNode(2)
                 icon.poseNode()
-                icon.statNode()
             }
 		}
 	}
@@ -107,7 +106,7 @@ function dragIcon(elmnt, _this) {
         let iconsToValidate = []
 
 		//send all icons to position evaluation
-		for (icon of iconArray){
+		for (icon of pocket.icon){
             if (iconGrid == true && icon.stat == 2) {
 			    iconsToValidate.push(icon)
             }
@@ -116,9 +115,8 @@ function dragIcon(elmnt, _this) {
 
         //update HTML of icons after evaluation
         for (icon of iconsToValidate){
-            icon.stat = 1
             icon.poseNode()
-            icon.statNode()
+            icon.statNode(1)
         }
 
         //back to icon layer
@@ -126,19 +124,16 @@ function dragIcon(elmnt, _this) {
 		
 		//unselect other folders on mouseup W/O drag UNLESS ctrl
 		if(keyPressCtrl == false && dragging == false && e.button == 0) {
-			for (icon of iconArray){
-                icon.stat = 0
-                icon.statNode()
+			for (icon of pocket.icon){
+                icon.statNode(0)
             }
-            _this.stat = 1
-            _this.statNode()
+            _this.statNode(1)
         } else {
-            for (icon of iconArray){
-                lowlight(document.getElementById(icon.text))
+            for (icon of pocket.icon){
+                lowlight(document.getElementById("Icon: "+_this.text))
             }
 
-            _this.stat = 1
-            _this.statNode()
+            _this.statNode(1)
         }
         
 		dragging = false;
@@ -172,8 +167,10 @@ function menuIcon(elmnt, _this) {
     }
 }
 
-function statIconNode(elmnt, _this) {
+function statIconNode(elmnt, _this, num) {
     //0 => unselected | 1 => selected | 2 => moving
+    _this.stat = (num != undefined) ? num : _this.stat
+
     switch(_this.stat){
         case 0:
             elmnt.classList.remove("active");
@@ -207,22 +204,22 @@ function poseIconNode(elmnt, _this) {
 
 function crteIconNode(_this) {
     //Icon HTML structure-----|
-    let newIcon = document.createElement("div");
-    newIcon.setAttribute("class", "icon");
-    newIcon.setAttribute("id", _this.text);
-    newIcon.setAttribute("style", "left:"+_this.coor.px+"px;top:"+_this.coor.py+"px;");
+    let newIcon = document.createElement("div")
+    newIcon.setAttribute("class", "icon")
+    newIcon.setAttribute("id", "Icon: "+_this.text)
+    newIcon.setAttribute("style", "left:"+_this.coor.px+"px;top:"+_this.coor.py+"px;")
 
-    let newIconImage = document.createElement("div");
-    newIconImage.setAttribute("class", "iconImage");
-    newIconImage.setAttribute("style", _this.imag);
-    newIcon.appendChild(newIconImage);
+    let newIconImage = document.createElement("div")
+    newIconImage.setAttribute("class", "iconImage")
+    newIconImage.setAttribute("style", _this.imag)
+    newIcon.appendChild(newIconImage)
 
-    let newIconText = document.createElement("h3");
-    let newIconTextNode = document.createTextNode(_this.text);
-    newIconText.appendChild(newIconTextNode);
-    newIcon.appendChild(newIconText);
+    let newIconText = document.createElement("h3")
+    let newIconTextNode = document.createTextNode(_this.text)
+    newIconText.appendChild(newIconTextNode)
+    newIcon.appendChild(newIconText)
 
-    document.getElementById("iconLayer").appendChild(newIcon);
+    document.getElementById("iconLayer").appendChild(newIcon)
     //------------------------|
 
     _this.statNode();
@@ -232,18 +229,19 @@ function crteIconNode(_this) {
 }
 
 function dlteIconNode(_this, fromGrid = false) {
-    let delIcon = document.getElementById(_this.text);
+    let delIcon = document.getElementById("Icon: "+_this.text);
     delIcon.parentNode.removeChild(delIcon);
     
     if (fromGrid == false) {
         iconGridArray[_this.coor.ax][_this.coor.ay].used = false;
         iconGridArray[_this.coor.ax][_this.coor.ay].icon = null;
     }
-    iconArray.splice(iconArray.indexOf(_this), 1);
+    iconArray = iconArray.remove(_this)
+    pocket.icon = pocket.icon.remove(_this)
 }
 
 function deleteSelectedNodes(){
-    let iconsToDelete = iconArray.filter((icon) => {return icon.stat == 1})
+    let iconsToDelete = pocket.icon
     for(icon of iconsToDelete){
         if(icon.stat == 1){
             icon.deleteNode();

@@ -18,9 +18,10 @@ var windowArray = [];
 			keyPressCtrl == false &&
 			!dragging
 		) {
-			for (icon of iconArray){
-				icon.stat = 0;
-				icon.statNode();
+			for (icon of pocket.icon){
+				console.log(pocket.icon.indexOf(icon))
+				pocket.icon = pocket.icon.remove(icon)
+				icon.statNode(0)
 			}
 		} 
 	})
@@ -95,13 +96,13 @@ function selectBox() {
 		
 		//iconReaction--------------------------------------------------|
 		for (icon of iconArray){
-			if (document.getElementById(icon.text) != null) { /*otherwise callback argument ruins everything*/
-				if (areRectanglesOverlap(document.getElementById(icon.text),idSelectBox)) {
+			if (document.getElementById("Icon: "+icon.text) != null) { /*otherwise callback argument ruins everything*/
+				if (areRectanglesOverlap(document.getElementById("Icon: "+icon.text),idSelectBox)) {
 					//light up colliding icon hover border:
-					highlight(document.getElementById(icon.text));
+					highlight(document.getElementById("Icon: "+icon.text));
 				} else {
 					//unlight non-colliding icon hover border:
-					lowlight(document.getElementById(icon.text));
+					lowlight(document.getElementById("Icon: "+icon.text));
 				}
 			}
 		};
@@ -118,25 +119,25 @@ function selectBox() {
 		//iconReaction--------------------------------------------------|
 		
 		for (icon of iconArray){
-			if (document.getElementById(icon.text) != null) { /*otherwise callback argument ruins everything*/
-				if (areRectanglesOverlap(document.getElementById(icon.text), idSelectBox)) {
+			if (document.getElementById("Icon: "+icon.text) != null) { /*otherwise callback argument ruins everything*/
+				if (areRectanglesOverlap(document.getElementById("Icon: "+icon.text), idSelectBox)) {
 					//activate colliding icon hover border:
-					icon.stat = 1;
-					icon.statNode();
+					pocket.icon.push(icon)
+					icon.statNode(1)
 				} else if (wasCtrl == false) {
 					//deactivate non-colliding icon hover border UNLESS ctrl:
-					icon.stat = 0;
-					icon.statNode();
+					pocket.icon = pocket.icon.remove(icon)
+					icon.statNode(0)
 				}
 			}
 		}
 		//--------------------------------------------------iconReaction|
 	
-		idSelectBox.style.opacity = '';
-		idSelectBox.style.height = '';
-		idSelectBox.style.width = '';
-		idSelectBox.style.top = '0';
-		idSelectBox.style.left = '0';
+		idSelectBox.style.opacity = ''
+		idSelectBox.style.height = ''
+		idSelectBox.style.width = ''
+		idSelectBox.style.top = '0'
+		idSelectBox.style.left = '0'
 
 		//console.log("selectBoxRelease");
 	}

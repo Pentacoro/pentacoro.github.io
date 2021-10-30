@@ -207,43 +207,43 @@ function iconRename(e, elmnt, _this){
     if(
         !(e.target.classList.contains("cmcheck"))
     ) {
-        console.log("Rename");
-        closeMenu();
-        let iconText = elmnt.childNodes[1];
+        console.log("Rename")
+        closeMenu()
+        let iconText = elmnt.childNodes[1]
         //make h3 editable --------------------|
-        iconText.setAttribute("contenteditable", "true");
-        iconText.setAttribute("spellcheck", "false");
+        iconText.setAttribute("contenteditable", "true")
+        iconText.setAttribute("spellcheck", "false")
         
         //select h3 content --------------------|
         selectText(iconText)
 
-        iconText.style.textShadow = "none";
+        iconText.style.textShadow = "none"
 
         //restore -> leave icon unmodified
         document.body.oncontextmenu = iconRenamingRestore;
         window.onkeydown = (e) => {if(e.key == "Escape"){
-            iconRenamingRestore();
-            return false;
+            iconRenamingRestore()
+            return false
         }};
         function iconRenamingRestore(){
-            shouldSelect = true;
+            shouldSelect = true
             
-            _this.statNode();
+            _this.statNode()
 
             iconText.textContent = _this.text
-            iconText.setAttribute("contenteditable", "false"); 
-            iconText.style.backgroundColor = "";
-            iconText.style.textShadow = "";
+            iconText.setAttribute("contenteditable", "false");
+            iconText.style.backgroundColor = ""
+            iconText.style.textShadow = ""
 
             iconText.blur();
             clearSelection();
 
-            document.body.oncontextmenu = null;
-            document.body.onmousedown = null;
-            document.body.onclick = null;
-            iconText.onkeydown = null;
-            window.onkeydown = null;
-            window.onkeyup = null;
+            document.body.oncontextmenu = null
+            document.body.onmousedown = null
+            document.body.onclick = null
+            iconText.onkeydown = null
+            window.onkeydown = null
+            window.onkeyup = null
         }
 
         setTimeout( () => {
@@ -254,7 +254,7 @@ function iconRename(e, elmnt, _this){
             }};
             function iconRenaming(){
                 if(
-                    iconNameExists(iconText.textContent, _this) == false &&
+                    iconNameExists(iconText.textContent, _this, currentVertex) == false &&
                     iconText.textContent != "¡Name me!" &&
                     iconText.textContent != "" &&
                     iconText.textContent.match(/[\/"]/g) === null
@@ -262,11 +262,11 @@ function iconRename(e, elmnt, _this){
                     //if the name is allowed --------------------|
                     shouldSelect = true;
 
-                    iconText.setAttribute("contenteditable", "false");
-                    elmnt.id = iconText.textContent;
-                    _this.text = iconText.textContent;
-                    iconText.style.backgroundColor = "";
-                    iconText.style.textShadow = "";
+                    iconText.setAttribute("contenteditable", "false")
+                    elmnt.id = "Icon: "+iconText.textContent
+                    _this.text = iconText.textContent
+                    iconText.style.backgroundColor = ""
+                    iconText.style.textShadow = ""
 
                     //insert into fylesystem
                     let getFile = eval(addressInterpreter(_this.file))
@@ -277,49 +277,39 @@ function iconRename(e, elmnt, _this){
                     //
                     _this.file = "" + getFrom.conf.icon.file + "/" + iconText.textContent
 
-                    iconText.blur();
-                    clearSelection();
+                    iconText.blur()
+                    clearSelection()
 
-                    document.body.oncontextmenu = null;
-                    document.body.onmousedown = null;
-                    document.body.onclick = null;
-                    iconText.onkeydown = null;
-                    window.onkeydown = null;
-                    window.onkeyup = null;
+                    document.body.oncontextmenu = null
+                    document.body.onmousedown = null
+                    document.body.onclick = null
+                    iconText.onkeydown = null
+                    window.onkeydown = null
+                    window.onkeyup = null
                 } else {
                     //if the name not allowed --------------------|
                     shouldSelect = false;
-                    iconText.style.backgroundColor = "#c90000";
+                    iconText.style.backgroundColor = "#c90000"
 
                     //insist -> keep only edited selected
-                    document.body.onclick = iconRenamingInsist;
+                    document.body.onclick = iconRenamingInsist
                     window.onkeyup = (e) => {if(e.key == "Enter"){
-                        iconRenamingInsist();
-                        return false;
+                        iconRenamingInsist()
+                        return false
                     }};
                     function iconRenamingInsist(){
                         for (i = iconArray.length - 1; i >= 0; i--){
-                            iconArray[i].stat = 0;
-                            iconArray[i].statNode();
+                            iconArray[i].stat = 0
+                            iconArray[i].statNode()
                         }
-                        _this.stat = 1;
-                        _this.statNode();
-                        _this.stat = 0;
+                        _this.statNode(1)
+                        _this.stat = 0
         
                         selectText(iconText)
                     }
                 }
             }
-        }, 1);
-
-        function iconNameExists(name, _this){
-            for (i = iconArray.length - 1; i >= 0; i--){
-                if (iconArray[i].text == name && iconArray[i] != _this) {
-                    return true;
-                }
-            }
-            return false;
-        }
+        }, 1)
     }
 }
 function iconProperties(e, elmnt, _this){
@@ -350,50 +340,50 @@ function deskNew(e, elmnt, _this){
         closeMenu();
 
         //Make sure icon appears at center of initial right click-------|
-        let initialX = parseInt(window.getComputedStyle(document.getElementById("dropContextMenu"),null).getPropertyValue("left"));
-        let initialY = parseInt(window.getComputedStyle(document.getElementById("dropContextMenu"),null).getPropertyValue("top"));
+        let initialX = parseInt(window.getComputedStyle(document.getElementById("dropContextMenu"),null).getPropertyValue("left"))
+        let initialY = parseInt(window.getComputedStyle(document.getElementById("dropContextMenu"),null).getPropertyValue("top"))
 
-        let iconWidth = cfg.desk.grid.width/2;
-        let iconHeight = cfg.desk.grid.height/2;
+        let iconWidth = cfg.desk.grid.width/2
+        let iconHeight = cfg.desk.grid.height/2
 
-        let w = cfg.desk.grid.width; let h = cfg.desk.grid.height; let wm = cfg.desk.grid.hMargin; let hm = cfg.desk.grid.vMargin;
+        let w = cfg.desk.grid.width; let h = cfg.desk.grid.height; let wm = cfg.desk.grid.hMargin; let hm = cfg.desk.grid.vMargin
 
-        let iconPosX = (Math.round((initialX-iconWidth)/(w + wm))*(w + wm) + wm);
-        let iconPosY = (Math.round((initialY-iconHeight)/(h + hm))*(h + hm) + hm);
+        let iconPosX = (Math.round((initialX-iconWidth)/(w + wm))*(w + wm) + wm)
+        let iconPosY = (Math.round((initialY-iconHeight)/(h + hm))*(h + hm) + hm)
         //--------------------------------------------------------------|
 
-        iconArray.push(new Icon ("background-image: url('assets/svg/desktopIcons/folderPlaceholder.svg');", "¡Name me!", "explorer", 1, iconPosX, iconPosY));
+        iconArray.push(new Icon ("background-image: url('assets/svg/desktopIcons/folderPlaceholder.svg');", "¡Name me!", "dir", 1, iconPosX, iconPosY))
         let createdIcon = iconArray[iconArray.length - 1]
         repositionIcons([createdIcon],true,false)
-        createdIcon.createNode();
+        createdIcon.createNode()
 
-        let iconText = document.getElementById(createdIcon.text).childNodes[1];
+        let iconText = document.getElementById("Icon: "+createdIcon.text).childNodes[1]
         //make h3 editable --------------------|
-        iconText.setAttribute("contenteditable", "true");
-        iconText.setAttribute("spellcheck", "false");
+        iconText.setAttribute("contenteditable", "true")
+        iconText.setAttribute("spellcheck", "false")
 
         //select h3 content --------------------|
         selectText(iconText)
 
-        iconText.style.textShadow = "none";
+        iconText.style.textShadow = "none"
 
         //delete -> cancel icon creation
-        document.body.oncontextmenu = iconNamingDelete;
+        document.body.oncontextmenu = iconNamingDelete
         window.onkeydown = (e) => {if(e.key == "Escape"){
-            iconNamingDelete();
-            return false;
+            iconNamingDelete()
+            return false
         }};
         function iconNamingDelete(){
-            shouldSelect = true;
+            shouldSelect = true
                 
-            createdIcon.deleteNode();
+            createdIcon.deleteNode()
 
-            document.body.oncontextmenu = null;
-            document.body.onmousedown = null;
-            document.body.onclick = null;
-            iconText.onkeydown = null;
-            window.onkeydown = null;
-            window.onkeyup = null;
+            document.body.oncontextmenu = null
+            document.body.onmousedown = null
+            document.body.onclick = null
+            iconText.onkeydown = null
+            window.onkeydown = null
+            window.onkeyup = null
         }
 
         setTimeout( () => {
@@ -405,66 +395,57 @@ function deskNew(e, elmnt, _this){
 
             function iconNaming(){
                 if(
-                    iconNameExists(iconText.textContent, createdIcon) == false &&
+                    iconNameExists(iconText.textContent, createdIcon, currentVertex) == false &&
                     iconText.textContent != "¡Name me!" &&
                     iconText.textContent != "" &&
                     iconText.textContent.match(/[\/"]/g) === null
                 ) {
                     //if the name is allowed --------------------|
-                    shouldSelect = true;
+                    shouldSelect = true
         
-                    iconText.setAttribute("contenteditable", "false");
-                    document.getElementById(createdIcon.text).id = iconText.textContent;
-                    createdIcon.text = iconText.textContent;
-                    iconText.style.backgroundColor = "";
-                    iconText.style.textShadow = "";
+                    iconText.setAttribute("contenteditable", "false")
+                    document.getElementById("Icon: "+createdIcon.text).id = "Icon: "+iconText.textContent
+                    createdIcon.text = iconText.textContent
+                    iconText.style.backgroundColor = ""
+                    iconText.style.textShadow = ""
 
                     //insert it into filesystem
                     currentVertex.createNewDir(iconText.textContent, {icon : createdIcon, from : currentVertex.conf.icon.file})
         
-                    iconText.blur();
-                    clearSelection();
+                    iconText.blur()
+                    clearSelection()
         
-                    document.body.oncontextmenu = null;
-                    document.body.onmousedown = null;
-                    document.body.onclick = null;
-                    iconText.onkeydown = null;
-                    window.onkeydown = null;
-                    window.onkeyup = null;
+                    document.body.oncontextmenu = null
+                    document.body.onmousedown = null
+                    document.body.onclick = null
+                    iconText.onkeydown = null
+                    window.onkeydown = null
+                    window.onkeyup = null
                 } else {
                     //if the name not allowed --------------------|
-                    shouldSelect = false;
-                    iconText.style.backgroundColor = "#c90000";
+                    shouldSelect = false
+                    iconText.style.backgroundColor = "#c90000"
         
                     //insist -> keep only edited selected
-                    document.body.onclick = iconNamingInsist;
+                    document.body.onclick = iconNamingInsist
                     window.onkeyup = (e) => {if(e.key == "Enter" && e.shiftKey == false){
-                        iconNamingInsist();
-                        return false;
+                        iconNamingInsist()
+                        return false
                     }};
                     function iconNamingInsist(){
                         for (i = iconArray.length - 1; i >= 0; i--){
-                            iconArray[i].stat = 0;
-                            iconArray[i].statNode();
+                            iconArray[i].stat = 0
+                            iconArray[i].statNode()
                         }
-                        createdIcon.stat = 1;
-                        createdIcon.statNode();
-                        createdIcon.stat = 0;
+                        createdIcon.stat = 1
+                        createdIcon.statNode()
+                        createdIcon.stat = 0
 
                         selectText(iconText)
                     }
                 }
             }
         }, 1);
-    }
-
-    function iconNameExists(name, _this){
-        for (i = iconArray.length - 1; i >= 0; i--){
-            if (iconArray[i].text == name && iconArray[i] != _this) {
-                return true;
-            }
-        }
-        return false;
     }
 }
 function deskPaste(e, elmnt, _this){
@@ -492,3 +473,12 @@ function deskInfo(e, elmnt, _this){
     }
 }
 //-------------------------------------------------------------------------------------|
+
+function iconNameExists(text, _this, from){
+    for ([name, file] of Object.entries(from.cont)){
+        if (file.name == text && file.conf.icon != _this) {
+            return true
+        }
+    }
+    return false
+}
