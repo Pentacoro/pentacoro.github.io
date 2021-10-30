@@ -14,7 +14,7 @@ body {
 	z-index: -999;
 }
 
-#background {
+#desktop {
 	display: block;
 	position: relative;
 	z-index: -998;

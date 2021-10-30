@@ -41,15 +41,15 @@ function dragIcon(elmnt, _this) {
                 
                 //when mousedown on unselected icon
                 if(!keyPressCtrl) {
-                    for (icon of pocket.icon){
-                        pocket.icon = pocket.icon.remove(icon)
+                    for (icon of desktop.pocket){
+                        desktop.pocket = desktop.pocket.remove(icon)
                         icon.statNode(0)
                     }
-                    pocket.icon.push(_this)
+                    desktop.pocket.push(_this)
                     _this.stat = 1
                     highlight(elmnt)
                 } else if(keyPressCtrl) {
-                    pocket.icon.push(_this)
+                    desktop.pocket.push(_this)
                     _this.stat = 1
                     highlight(elmnt)
                 }
@@ -78,22 +78,20 @@ function dragIcon(elmnt, _this) {
 
         dragging = true
         
-        //godGrasp layer
-        document.getElementById("godGrasp").appendChild(elmnt)
 		
 		//managing selected icons
-		for (icon of pocket.icon){
-            if (icon.stat == 1 || icon.stat == 2) {
-                //set position for selected icons:------------|
-                icon.coor.tx = (icon.coor.tx - pos1)
-                icon.coor.ty = (icon.coor.ty - pos2)
-                iconGridArray[icon.coor.ax][icon.coor.ay].used = false
-                iconGridArray[icon.coor.ax][icon.coor.ay].icon = null
-                //--------------------------------------------|
-                
-                icon.statNode(2)
-                icon.poseNode()
-            }
+		for (icon of desktop.pocket){
+            //godGrasp layer
+            document.getElementById("godGrasp").appendChild(document.getElementById("Icon: "+icon.text))
+            //set position for selected icons:------------|
+            icon.coor.tx = (icon.coor.tx - pos1)
+            icon.coor.ty = (icon.coor.ty - pos2)
+            iconGridArray[icon.coor.ax][icon.coor.ay].used = false
+            iconGridArray[icon.coor.ax][icon.coor.ay].icon = null
+            //--------------------------------------------|
+            
+            icon.statNode(2)
+            icon.poseNode()
 		}
 	}
 
@@ -106,15 +104,15 @@ function dragIcon(elmnt, _this) {
         let iconsToValidate = []
 
 		//send all icons to position evaluation
-		for (icon of pocket.icon){
-            if (iconGrid == true && icon.stat == 2) {
+		for (icon of desktop.pocket){
+            if (cfg.desk.grid.enabled && icon.stat == 2) {
 			    iconsToValidate.push(icon)
             }
 		}
         repositionIcons(iconsToValidate, true, true)
 
         //update HTML of icons after evaluation
-        for (icon of iconsToValidate){
+        for (icon of desktop.pocket){
             icon.poseNode()
             icon.statNode(1)
         }
@@ -124,12 +122,12 @@ function dragIcon(elmnt, _this) {
 		
 		//unselect other folders on mouseup W/O drag UNLESS ctrl
 		if(keyPressCtrl == false && dragging == false && e.button == 0) {
-			for (icon of pocket.icon){
+			for (icon of desktop.pocket){
                 icon.statNode(0)
             }
             _this.statNode(1)
         } else {
-            for (icon of pocket.icon){
+            for (icon of desktop.pocket){
                 lowlight(document.getElementById("Icon: "+_this.text))
             }
 
@@ -222,10 +220,12 @@ function crteIconNode(_this) {
     document.getElementById("iconLayer").appendChild(newIcon)
     //------------------------|
 
-    _this.statNode();
-    _this.poseNode();
-    _this.drag();
-    _this.menu();
+    _this.node = document.getElementById("Icon: "+_this.text)
+
+    _this.statNode()
+    _this.poseNode()
+    _this.drag()
+    _this.menu()
 }
 
 function dlteIconNode(_this, fromGrid = false) {
@@ -237,11 +237,11 @@ function dlteIconNode(_this, fromGrid = false) {
         iconGridArray[_this.coor.ax][_this.coor.ay].icon = null;
     }
     iconArray = iconArray.remove(_this)
-    pocket.icon = pocket.icon.remove(_this)
+    desktop.pocket = desktop.pocket.remove(_this)
 }
 
 function deleteSelectedNodes(){
-    let iconsToDelete = pocket.icon
+    let iconsToDelete = desktop.pocket
     for(icon of iconsToDelete){
         if(icon.stat == 1){
             icon.deleteNode();
@@ -254,82 +254,82 @@ function deleteSelectedNodes(){
 }
 
 function repositionIcons(icons, mustSet = false, hasPrev = true){
-    let w = cfg.desk.grid.width;
-    let h = cfg.desk.grid.height;
-    let wm = (cfg.desk.grid.modHmargin == 0) ? cfg.desk.grid.hMargin : cfg.desk.grid.modHmargin;
-    let hm = (cfg.desk.grid.modVmargin == 0) ? cfg.desk.grid.vMargin : cfg.desk.grid.modVmargin;
+    let w = cfg.desk.grid.width
+    let h = cfg.desk.grid.height
+    let wm = (cfg.desk.grid.modHmargin == 0) ? cfg.desk.grid.hMargin : cfg.desk.grid.modHmargin
+    let hm = (cfg.desk.grid.modVmargin == 0) ? cfg.desk.grid.vMargin : cfg.desk.grid.modVmargin
 
-    let invalidIcons = [];
+    let invalidIcons = []
     let iconAmount   = icons.length
 
-    for(icon of icons) validateIconPosition(icon);
+    for(icon of icons) validateIconPosition(icon)
 
     function validateIconPosition(icon){
-        let coords = icon.coor;
+        let coords = icon.coor
     
         //find closest grid for its tPos
-        x = Math.round((coords.tx - wm)/(w + wm))*(w + wm) + wm;
-        y = Math.round((coords.ty - hm)/(h + hm))*(h + hm) + hm;
+        x = Math.round((coords.tx - wm)/(w + wm))*(w + wm) + wm
+        y = Math.round((coords.ty - hm)/(h + hm))*(h + hm) + hm
         
         //get its spot in grid array
-        tx = Math.round((x - wm)/(w + wm));
-        ty = Math.round((y - hm)/(h + hm));
+        tx = Math.round((x - wm)/(w + wm))
+        ty = Math.round((y - hm)/(h + hm))
     
         if(gridAvailable(tx, ty)) {
             //if object exists and is not used (valid position)
-            let newGrid = iconGridArray[tx][ty];
+            let newGrid = iconGridArray[tx][ty]
     
             if(mustSet) {
-                newGrid.used = true;
-                newGrid.icon = icon;
+                newGrid.used = true
+                newGrid.icon = icon
     
-                coords.px = newGrid.posX;
-                coords.py = newGrid.posY;
-                coords.tx = newGrid.posX;
-                coords.ty = newGrid.posY;
-                coords.ax = tx;
-                coords.ay = ty;
+                coords.px = newGrid.posX
+                coords.py = newGrid.posY
+                coords.tx = newGrid.posX
+                coords.ty = newGrid.posY
+                coords.ax = tx
+                coords.ay = ty
             }
         } else {
             //if the position is invalid
-            invalidIcons.push(icon);
+            invalidIcons.push(icon)
         }
     }
 
-    for(icon of invalidIcons) reintegrateInvalidIcon(icon);
+    for(icon of invalidIcons) reintegrateInvalidIcon(icon)
 
     function reintegrateInvalidIcon(icon){
         let coords = icon.coor;
     
         //get previous position in grid array
-        px = Math.round((coords.px - wm)/(w + wm));
-        py = Math.round((coords.py - hm)/(h + hm));
+        px = Math.round((coords.px - wm)/(w + wm))
+        py = Math.round((coords.py - hm)/(h + hm))
 
         let oldGrid = {used: true}
 
         if (iconGridArray[px]) {
              if(iconGridArray[px][py]) {
-                oldGrid = iconGridArray[px][py];
+                oldGrid = iconGridArray[px][py]
             }
         }
 
         if(mustSet && hasPrev && !oldGrid.used){
-            oldGrid.used = true;
-            oldGrid.icon = icon;
-            coords.tx = coords.px;
-            coords.ty = coords.py;
-            coords.ax = px;
-            coords.ay = py;
+            oldGrid.used = true
+            oldGrid.icon = icon
+            coords.tx = coords.px
+            coords.ty = coords.py
+            coords.ax = px
+            coords.ay = py
         }else if(mustSet){
-            newGrid = orderIconPosition();
-            newGrid[0].used = true;
-            newGrid[0].icon = icon;
-            coords.px = newGrid[0].posX;
-            coords.py = newGrid[0].posY;
-            coords.tx = newGrid[0].posX;
-            coords.ty = newGrid[0].posY;
-            coords.ax = newGrid[1];
-            coords.ay = newGrid[2];
+            newGrid = orderIconPosition()
+            newGrid[0].used = true
+            newGrid[0].icon = icon
+            coords.px = newGrid[0].posX
+            coords.py = newGrid[0].posY
+            coords.tx = newGrid[0].posX
+            coords.ty = newGrid[0].posY
+            coords.ax = newGrid[1]
+            coords.ay = newGrid[2]
         }
     }
 

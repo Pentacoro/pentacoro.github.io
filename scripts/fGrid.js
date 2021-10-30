@@ -29,8 +29,8 @@ function evaluateIconGrid(
     if(autohl == null) autohl = cfg.desk.grid.autoVlength;
 
     //set background size
-    idBackground.style.width = document.body.offsetWidth + "px";
-    idBackground.style.height = document.body.offsetHeight - cfg.desk.navB.height + "px";
+    idDesktop.style.width = document.body.offsetWidth + "px";
+    idDesktop.style.height = document.body.offsetHeight - cfg.desk.navB.height + "px";
 
     //get some useful booleans
     let wChanged = cfg.desk.grid.width  !== w;
@@ -52,8 +52,8 @@ function evaluateIconGrid(
     cfg.desk.grid.autoHlength = autowl;
     cfg.desk.grid.autoVlength = autohl; 
     
-    let windowW = idBackground.offsetWidth;
-    let windowH = idBackground.offsetHeight;
+    let windowW = idDesktop.offsetWidth;
+    let windowH = idDesktop.offsetHeight;
     
     //optimal number of icons that can fit in a row / column
     let gridHorizontal = Math.round((windowW-(w+wm*3)/2)/(w+wm));

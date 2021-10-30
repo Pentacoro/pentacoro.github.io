@@ -1,6 +1,60 @@
 //DROP MENU----------------------------------------------------------------------------|
+function findOutMenu(target) {
+    let drop = []
+    switch (target.apps) {
+        default:
+        case "exe":
+            //drop = exeDrop
+            break
+        case "mfs":
+            //drop = mfsDrop
+            break
+        case "dir":
+            drop = dirDrop
+            break
+        case "ver":
+            drop = verDrop
+            break
+    }
+    return drop
+}
+
+//-------------------------------------------------------------------------------------|
+var verDrop = []
+
+verDrop.push(new contextSection("icon"))
+verDrop.push(new contextSection("clip"))
+verDrop.push(new contextSection("info"))
+
+verDrop[0].item.push(new contextOption("Grid","url('assets/svg/contextMenu/open.svg')",deskGrid))
+verDrop[0].item.push(new contextOption("New","url('assets/svg/contextMenu/maximize.svg')",deskNew))
+
+verDrop[1].item.push(new contextOption("Paste","url('assets/svg/contextMenu/paste.svg')",deskPaste))
+
+verDrop[2].item.push(new contextOption("Settings","url('assets/svg/contextMenu/rename.svg')",deskSettings))
+verDrop[2].item.push(new contextOption("Info","url('assets/svg/contextMenu/properties.svg')",deskInfo))
+
+var dirDrop = []
+
+dirDrop.push(new contextSection("open"))
+dirDrop.push(new contextSection("clip"))
+dirDrop.push(new contextSection("prop"))
+
+dirDrop[0].item.push(new contextOption("Open","url('assets/svg/contextMenu/open.svg')",iconOpen))
+dirDrop[0].item.push(new contextOption("Open in fullscreen","url('assets/svg/contextMenu/maximize.svg')",iconFullscreen))
+dirDrop[0].item.push(new contextOption("Open in new tab","url('assets/svg/contextMenu/newtab.svg')",iconNewtab))
+
+dirDrop[1].item.push(new contextOption("Cut","url('assets/svg/contextMenu/cut.svg')",iconCut))
+dirDrop[1].item.push(new contextOption("Copy","url('assets/svg/contextMenu/copy.svg')",iconCopy))
+dirDrop[1].item.push(new contextOption("Paste","url('assets/svg/contextMenu/paste.svg')",iconPaste))
+
+dirDrop[2].item.push(new contextOption("Delete","url('assets/svg/contextMenu/delete.svg')",iconDelete))
+dirDrop[2].item.push(new contextOption("Rename","url('assets/svg/contextMenu/rename.svg')",iconRename))
+dirDrop[2].item.push(new contextOption("Properties","url('assets/svg/contextMenu/properties.svg')",iconProperties))
+//-------------------------------------------------------------------------------------|
+
 function makeDropContext(e = null,elmnt,_this) {
-    let contextArray = _this.drop
+    let contextArray = findOutMenu(_this)
 
     let x = 0
     let z = 1
@@ -68,7 +122,7 @@ function hideDropContext() {
 */
 
 //open desk menu on right click background
-idBackground.oncontextmenu = e => { if(e.target == idBackground) deskMenu(e) };
+idDesktop.oncontextmenu = e => { if(e.target == idDesktop) deskMenu(e) };
 
 //close context menu on mousedown anywhere
 window.addEventListener("mousedown", (e) => {
@@ -91,12 +145,12 @@ function deskMenu(e) {
 
 	closeMenu()
 	idCtextMenu.style.display = "grid"
-	idCtextMenu.style.top = e.clientY + idBackground.scrollTop + "px"
-	idCtextMenu.style.left = e.clientX + idBackground.scrollLeft + "px"
+	idCtextMenu.style.top = e.clientY + idDesktop.scrollTop + "px"
+	idCtextMenu.style.left = e.clientX + idDesktop.scrollLeft + "px"
 
 	idCtextMenu.blur()
 
-	makeDropContext(e,idBackground,idBackground)
+	makeDropContext(e,idDesktop, desktop)
 }
 
 //close all context menus
@@ -105,42 +159,6 @@ function closeMenu() {
 
 	hideDropContext()
 }
-
-//-------------------------------------------------------------------------------------|
-var verDrop = []
-
-verDrop.push(new contextSection("icon"))
-verDrop.push(new contextSection("clip"))
-verDrop.push(new contextSection("info"))
-
-verDrop[0].item.push(new contextOption("Grid","url('assets/svg/contextMenu/open.svg')",deskGrid))
-verDrop[0].item.push(new contextOption("New","url('assets/svg/contextMenu/maximize.svg')",deskNew))
-
-verDrop[1].item.push(new contextOption("Paste","url('assets/svg/contextMenu/paste.svg')",deskPaste))
-
-verDrop[2].item.push(new contextOption("Settings","url('assets/svg/contextMenu/rename.svg')",deskSettings))
-verDrop[2].item.push(new contextOption("Info","url('assets/svg/contextMenu/properties.svg')",deskInfo))
-
-var dirDrop = []
-
-dirDrop.push(new contextSection("open"))
-dirDrop.push(new contextSection("clip"))
-dirDrop.push(new contextSection("prop"))
-
-dirDrop[0].item.push(new contextOption("Open","url('assets/svg/contextMenu/open.svg')",iconOpen))
-dirDrop[0].item.push(new contextOption("Open in fullscreen","url('assets/svg/contextMenu/maximize.svg')",iconMaximize))
-dirDrop[0].item.push(new contextOption("Open in new tab","url('assets/svg/contextMenu/newtab.svg')",iconNewtab))
-
-dirDrop[1].item.push(new contextOption("Cut","url('assets/svg/contextMenu/cut.svg')",iconCut))
-dirDrop[1].item.push(new contextOption("Copy","url('assets/svg/contextMenu/copy.svg')",iconCopy))
-dirDrop[1].item.push(new contextOption("Paste","url('assets/svg/contextMenu/paste.svg')",iconPaste))
-
-dirDrop[2].item.push(new contextOption("Delete","url('assets/svg/contextMenu/delete.svg')",iconDelete))
-dirDrop[2].item.push(new contextOption("Rename","url('assets/svg/contextMenu/rename.svg')",iconRename))
-dirDrop[2].item.push(new contextOption("Properties","url('assets/svg/contextMenu/properties.svg')",iconProperties))
-
-idBackground.drop = verDrop
-//-------------------------------------------------------------------------------------|
 
 //-------------------------------------------------------------------------------------|
 function iconOpen(e, elmnt, _this){
@@ -153,11 +171,11 @@ function iconOpen(e, elmnt, _this){
         loadAPP("./apps/filesystem_explorer/explorer_lau.html", [_this.text, _this.file])
     }
 }
-function iconMaximize(e, elmnt, _this){
+function iconFullscreen(e, elmnt, _this){
     if(
         !(e.target.classList.contains("cmcheck"))
     ) {
-        console.log("Maximize");
+        console.log("Fullscreen");
         closeMenu();
     }
 }
