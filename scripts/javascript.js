@@ -69,6 +69,14 @@ String.prototype.splice = function (index, count) {
     return [splicedStr, extractStr]
 }
 
+Array.prototype.remove = function(value) {
+    let newArr = this.filter(function(item) {
+        return item !== value
+    })
+
+    return newArr
+}
+
 function renameKey(obj, oldName, newName) {
     if(!obj.hasOwnProperty(oldName)) {
         return false;

@@ -33,17 +33,17 @@ class Icon {
     deleteNode(){
         dlteIconNode(this)
     }
-    statNode(){
-        statIconNode(document.getElementById(this.text), this)
+    statNode(num){
+        statIconNode(document.getElementById("Icon: "+this.text), this, num)
     }
     poseNode(){
-        poseIconNode(document.getElementById(this.text), this)
+        poseIconNode(document.getElementById("Icon: "+this.text), this)
     }
     drag(){
-        dragIcon(document.getElementById(this.text), this)
+        dragIcon(document.getElementById("Icon: "+this.text), this)
     }
     menu(){
-        menuIcon(document.getElementById(this.text), this)
+        menuIcon(document.getElementById("Icon: "+this.text), this)
     }
 }
 
@@ -197,10 +197,10 @@ class contextSection {
     }
 }
 
-var iconArray = []
-var windowArray = []
-var taskArray = []
-var audioArray = []
+var iconArray      = []
+var windowArray    = []
+var taskArray      = []
+var audioArray     = []
 
 audioArray.push(new Audio("assets/sound/Norrum - Interfaz Click v1.mp3"))
 audioArray.push(new Audio("assets/sound/Norrum - Interfaz Item errOr v1.mp3"))
