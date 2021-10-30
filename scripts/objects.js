@@ -9,23 +9,6 @@ class Icon {
         this.apps = program
 
         this.drop = []
-
-        function findOutMenu(_this) {
-            switch (_this.apps) {
-                default:
-                case "exe":
-                    //_this.drop = exeDrop
-                    break
-                case "mfs":
-                    //_this.drop = mfsDrop
-                    break
-                case "dir":
-                    _this.drop = dirDrop
-                    break
-            }
-        }
-
-        findOutMenu(this)
     }
     createNode(){
         crteIconNode(this)
@@ -34,16 +17,16 @@ class Icon {
         dlteIconNode(this)
     }
     statNode(num){
-        statIconNode(document.getElementById("Icon: "+this.text), this, num)
+        statIconNode(this.node, this, num)
     }
     poseNode(){
-        poseIconNode(document.getElementById("Icon: "+this.text), this)
+        poseIconNode(this.node, this)
     }
     drag(){
-        dragIcon(document.getElementById("Icon: "+this.text), this)
+        dragIcon(this.node, this)
     }
     menu(){
-        menuIcon(document.getElementById("Icon: "+this.text), this)
+        menuIcon(this.node, this)
     }
 }
 
@@ -71,19 +54,19 @@ class Window {
         dlteWndwNode(this)
     }
     statNode(){
-        statWndwNode(document.getElementById("windowNumber" + windowArray.indexOf(this)), this)
+        statWndwNode(this.node, this)
     }
     poseNode(){
-        poseWndwNode(document.getElementById("windowNumber" + windowArray.indexOf(this)), this)
+        poseWndwNode(this.node, this)
     }
     drag(){
-        dragWndw(document.getElementById("windowNumber" + windowArray.indexOf(this)), this)
+        dragWndw(this.node, this)
     }
     size(){
-        sizeWndw(document.getElementById("windowNumber" + windowArray.indexOf(this)), this)
+        sizeWndw(this.node, this)
     }
     menu(){
-        menuWndw(document.getElementById("windowNumber" + windowArray.indexOf(this)), this)
+        menuWndw(this.node, this)
     }
 }
 

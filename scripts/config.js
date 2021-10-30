@@ -4,6 +4,8 @@ var cfg = {
     },
     desk: {
         grid: {
+            enabled: false,
+
             hLength: 0, vLength: 0,
             width: 108, height: 108,
             hMargin:12, vMargin:12,

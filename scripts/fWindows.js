@@ -1,92 +1,92 @@
 //window dragging------------------------------------------------------------------|
 function dragWndw(wndw, _this) {
-	let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+	let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0
 	
 	if (_this.uiux != 0) {
 		//if present, the header is where you move the window from:
-		wndw.getElementsByClassName("header")[0].onmousedown = dragMouseDown;
-		wndw.onmousedown = () => _this.statNode();
+		wndw.getElementsByClassName("header")[0].onmousedown = dragMouseDown
+		wndw.onmousedown = () => _this.statNode()
 	} else {
 		//otherwise, move the window from anywhere inside the DIV:
-		wndw.onmousedown = dragMouseDown;
+		wndw.onmousedown = dragMouseDown
 	}
 
 	function dragMouseDown(e) {
-		e = e || window.event;
-		e.preventDefault();
+		e = e || window.event
+		e.preventDefault()
 
-		_this.statNode();
+		_this.statNode()
 
 		if (e.target.classList.contains("windowButton") == false) {
 			//get initial cursor position:
-			pos3 = e.clientX;
-			pos4 = e.clientY;
+			pos3 = e.clientX
+			pos4 = e.clientY
 
-			document.onmouseup = closeDragWindow;
-			document.onmousemove = windowDrag;
-			iframeAntiHover (true);
+			document.onmouseup = closeDragWindow
+			document.onmousemove = windowDrag
+			iframeAntiHover (true)
 		}
 	}
 	
 	function windowDrag(e) {
-		e = e || window.event;
-		e.preventDefault();
+		e = e || window.event
+		e.preventDefault()
 
 		//calculate new cursor position:
-		pos1 = pos3 - e.clientX;
-		pos2 = pos4 - e.clientY;
-		pos3 = e.clientX;
-		pos4 = e.clientY;
+		pos1 = pos3 - e.clientX
+		pos2 = pos4 - e.clientY
+		pos3 = e.clientX
+		pos4 = e.clientY
 
 		//set the window's new position:
-		_this.posX = _this.posX - pos1;
-		_this.posY = _this.posY - pos2;
-		_this.poseNode();
+		_this.posX = _this.posX - pos1
+		_this.posY = _this.posY - pos2
+		_this.poseNode()
 	}
 
 	function closeDragWindow() {
 		//stop moving when mouse button is released:
-		document.onmouseup = null;
-		document.onmousemove = null;
-		iframeAntiHover (false);
+		document.onmouseup = null
+		document.onmousemove = null
+		iframeAntiHover (false)
 	}
 }
 //------------------------------------------------------------------window dragging|
 
 //window resizing------------------------------------------------------------------|
 function sizeWndw(wndw, _this) {
-	let startX, startY, startWidth, startHeight, startLeft, startTop, border;
+	let startX, startY, startWidth, startHeight, startLeft, startTop, border
 
-	let windowBorder = wndw.getElementsByClassName("windowBorder")[0];
+	let windowBorder = wndw.getElementsByClassName("windowBorder")[0]
 
 	windowBorder.childNodes.forEach((border) => {
 		if(
 			border.classList
 		) {
-			border.onmousedown = initResize;
+			border.onmousedown = initResize
 		}
 	});
 
 	function initResize(e) {
-		e = e || window.event;
-		e.preventDefault();
+		e = e || window.event
+		e.preventDefault()
 
-		_this.statNode();
+		_this.statNode()
 
-		startX = e.clientX;
-		startY = e.clientY;
+		startX = e.clientX
+		startY = e.clientY
 
-		startWidth = _this.widt;
-		startHeight = _this.heig;
+		startWidth = _this.widt
+		startHeight = _this.heig
 
-		startLeft = _this.posX;
-		startTop = _this.posY;
+		startLeft = _this.posX
+		startTop = _this.posY
 		
-		border = e.target.classList[1];
+		border = e.target.classList[1]
 		
-		document.onmouseup = stopResize;
-		document.onmousemove = doResize;
-		iframeAntiHover (true);
+		document.onmouseup = stopResize
+		document.onmousemove = doResize
+		iframeAntiHover (true)
 	}
 	
 	function doResize(e) {
@@ -140,14 +140,12 @@ function sizeWndw(wndw, _this) {
 	}
 
 	function stopResize() {
-		document.onmouseup = null;
-		document.onmousemove = null;
-		iframeAntiHover (false);
+		document.onmouseup = null
+		document.onmousemove = null
+		iframeAntiHover (false)
 	}
 }
 //------------------------------------------------------------------window resizing|
-
-//----------------------------------------------------------------------------------window behavior|
 
 function statWndwNode(elmnt, _this) {
     //if window isn't at front already
@@ -155,23 +153,23 @@ function statWndwNode(elmnt, _this) {
         elmnt.id != "windowNumber" + 0
     ) {
 		//send to first array index
-		let thisIndex = windowArray.indexOf(_this);
+		let thisIndex = windowArray.indexOf(_this)
 		windowArray.splice(thisIndex, 1)
-        windowArray.unshift(_this);
+        windowArray.unshift(_this)
 
 		//make DOM elements's IDs and zIndex match new object arrangement
 		for(wndw of document.getElementsByClassName("window")){ 
-			let windowId = wndw.id.match(/(\d+)/)[0];
-			let windowInt= parseInt(windowId);
+			let windowId = wndw.id.match(/(\d+)/)[0]
+			let windowInt= parseInt(windowId)
 
 			if(wndw != elmnt && windowInt < thisIndex){
-				wndw.id = "windowNumber" + (windowInt + 1);
-				wndw.style.zIndex = (windowInt + 1) *-1;
+				wndw.id = "windowNumber" + (windowInt + 1)
+				wndw.style.zIndex = (windowInt + 1) *-1
 			}
 		}
 		//make this window's ID and zIndex match its object position
-		elmnt.id = "windowNumber" + 0;
-		elmnt.style.zIndex = 0;
+		elmnt.id = "windowNumber" + 0
+		elmnt.style.zIndex = 0
 
 		/*principle: ---------------|
 		
@@ -207,154 +205,165 @@ function statWndwNode(elmnt, _this) {
 }
 
 function poseWndwNode(elmnt, _this) {
-    elmnt.style.top = _this.posY + "px";
-    elmnt.style.left = _this.posX + "px";
+    elmnt.style.top = _this.posY + "px"
+    elmnt.style.left = _this.posX + "px"
 
-	elmnt.style.height = _this.heig + "px";
-	elmnt.style.width = _this.widt + "px";
+	elmnt.style.height = _this.heig + "px"
+	elmnt.style.width = _this.widt + "px"
 }
 
 function crteWndwNode(_this) {
-    let newWindow = document.createElement("div");
-    newWindow.setAttribute("class", "window ID_"+_this.task);
-	newWindow.setAttribute("id", "windowNumber" + windowArray.indexOf(_this));
+    let newWindow = document.createElement("div")
+    newWindow.setAttribute("class", "window ID_"+_this.task)
+	newWindow.setAttribute("id", "windowNumber" + windowArray.indexOf(_this))
 
-    let newWindowInner = document.createElement("div");
-    newWindowInner.setAttribute("class", "windowInner");
-    newWindow.appendChild(newWindowInner);
+    let newWindowInner = document.createElement("div")
+    newWindowInner.setAttribute("class", "windowInner")
+    newWindow.appendChild(newWindowInner)
 
-		let newHeader = document.createElement("div");
-		newHeader.setAttribute("class", "header");
-		newWindowInner.appendChild(newHeader);
+		let newHeader = document.createElement("div")
+		newHeader.setAttribute("class", "header")
+		newWindowInner.appendChild(newHeader)
 
-			let newWindowText = document.createElement("span");
-			newWindowText.setAttribute("class", "windowName");
-			let newWindowTextNode = document.createTextNode(_this.name);
-			newWindowText.appendChild(newWindowTextNode);
-			newHeader.appendChild(newWindowText);
+			let newWindowText = document.createElement("span")
+			newWindowText.setAttribute("class", "windowName")
+			let newWindowTextNode = document.createTextNode(_this.name)
+			newWindowText.appendChild(newWindowTextNode)
+			newHeader.appendChild(newWindowText)
 
 			if (_this.uiux > 1){
-				let newWindow_ = document.createElement("span");
-				newWindow_.setAttribute("class", "windowButton _");
-				newHeader.appendChild(newWindow_);
+				let newWindow_ = document.createElement("span")
+				newWindow_.setAttribute("class", "windowButton _")
+				newHeader.appendChild(newWindow_)
 			}
 			if (_this.uiux > 2){
-				let newWindowO = document.createElement("span");
-				newWindowO.setAttribute("class", "windowButton O");
-				newHeader.appendChild(newWindowO);
+				let newWindowO = document.createElement("span")
+				newWindowO.setAttribute("class", "windowButton O")
+				newHeader.appendChild(newWindowO)
 			}
 			if (_this.uiux > 0){
-				let newWindowX = document.createElement("span");
-				newWindowX.setAttribute("class", "windowButton X");
-				newHeader.appendChild(newWindowX);
+				let newWindowX = document.createElement("span")
+				newWindowX.setAttribute("class", "windowButton X")
+				newHeader.appendChild(newWindowX)
 			}
 			switch (_this.uiux){
 				case 0:
-					newHeader.style.gridTemplateColumns = "";
-					break;
+					newHeader.style.gridTemplateColumns = ""
+					break
 				case 1:
-					newHeader.style.gridTemplateColumns = "auto 36px";
-					break;
+					newHeader.style.gridTemplateColumns = "auto 36px"
+					break
 				case 2:
-					newHeader.style.gridTemplateColumns = "auto 36px 36px";
-					break;
+					newHeader.style.gridTemplateColumns = "auto 36px 36px"
+					break
 				case 3:
-					newHeader.style.gridTemplateColumns = "auto 36px 36px 36px";
-					break;
+					newHeader.style.gridTemplateColumns = "auto 36px 36px 36px"
+					break
 			}
 
-		let newContent = document.createElement("div");
-		newContent.setAttribute("class", "content");
-		newWindowInner.appendChild(newContent);
+		let newContent = document.createElement("div")
+		newContent.setAttribute("class", "content")
+		newWindowInner.appendChild(newContent)
 
-	let newWindowBorder = document.createElement("div");
-	newWindowBorder.setAttribute("class", "windowBorder");
-	newWindow.appendChild(newWindowBorder);
+	let newWindowBorder = document.createElement("div")
+	newWindowBorder.setAttribute("class", "windowBorder")
+	newWindow.appendChild(newWindowBorder)
 
 		if (_this.resi == true) {
-			let newWindowEtop = document.createElement("div");
-			newWindowEtop.setAttribute("class", "windowEdge windowEtop");
-			let newWindowEbot = document.createElement("div");
-			newWindowEbot.setAttribute("class", "windowEdge windowEbot");
-			let newWindowElef = document.createElement("div");
-			newWindowElef.setAttribute("class", "windowEdge windowElef");
-			let newWindowErig = document.createElement("div");
-			newWindowErig.setAttribute("class", "windowEdge windowErig");
-			let newWindowCtl = document.createElement("div");
-			newWindowCtl.setAttribute("class", "windowCorner windowCtl");
-			let newWindowCtr = document.createElement("div");
-			newWindowCtr.setAttribute("class", "windowCorner windowCtr");
-			let newWindowCbr = document.createElement("div");
-			newWindowCbr.setAttribute("class", "windowCorner windowCbr");
-			let newWindowCbl = document.createElement("div");
-			newWindowCbl.setAttribute("class", "windowCorner windowCbl");
-			newWindowBorder.appendChild(newWindowEtop);
-			newWindowBorder.appendChild(newWindowEbot);
-			newWindowBorder.appendChild(newWindowElef);
-			newWindowBorder.appendChild(newWindowErig);
-			newWindowBorder.appendChild(newWindowCtl);
-			newWindowBorder.appendChild(newWindowCtr);
-			newWindowBorder.appendChild(newWindowCbr);
-			newWindowBorder.appendChild(newWindowCbl);
+			let newWindowEtop = document.createElement("div")
+			newWindowEtop.setAttribute("class", "windowEdge windowEtop")
+			let newWindowEbot = document.createElement("div")
+			newWindowEbot.setAttribute("class", "windowEdge windowEbot")
+			let newWindowElef = document.createElement("div")
+			newWindowElef.setAttribute("class", "windowEdge windowElef")
+			let newWindowErig = document.createElement("div")
+			newWindowErig.setAttribute("class", "windowEdge windowErig")
+			let newWindowCtl = document.createElement("div")
+			newWindowCtl.setAttribute("class", "windowCorner windowCtl")
+			let newWindowCtr = document.createElement("div")
+			newWindowCtr.setAttribute("class", "windowCorner windowCtr")
+			let newWindowCbr = document.createElement("div")
+			newWindowCbr.setAttribute("class", "windowCorner windowCbr")
+			let newWindowCbl = document.createElement("div")
+			newWindowCbl.setAttribute("class", "windowCorner windowCbl")
+			newWindowBorder.appendChild(newWindowEtop)
+			newWindowBorder.appendChild(newWindowEbot)
+			newWindowBorder.appendChild(newWindowElef)
+			newWindowBorder.appendChild(newWindowErig)
+			newWindowBorder.appendChild(newWindowCtl)
+			newWindowBorder.appendChild(newWindowCtr)
+			newWindowBorder.appendChild(newWindowCbr)
+			newWindowBorder.appendChild(newWindowCbl)
 		}
 
 
-    document.getElementById("windowLayer").appendChild(newWindow);
+    document.getElementById("windowLayer").appendChild(newWindow)
 
-	let diffW = (newWindow.offsetWidth - newWindow.firstChild.children[1].offsetWidth);
-	let diffH = (newWindow.offsetHeight - newWindow.firstChild.children[1].offsetHeight);
-	_this.widt += diffW;
-	_this.heig += diffH;
-	_this.minW += diffW;
-	_this.minH += diffH;
+	//Getting minimum size to apply to the content,
+	//instead of the window node, by comparing the 
+	//size of the window to that of the content.
+	//This should work for different css themes.
+	let diffW = (newWindow.offsetWidth - newWindow.firstChild.children[1].offsetWidth)
+	let diffH = (newWindow.offsetHeight - newWindow.firstChild.children[1].offsetHeight)
+	_this.widt += diffW
+	_this.heig += diffH
+	_this.minW += diffW
+	_this.minH += diffH
 	
-	newWindow.setAttribute("style", "left:"+_this.posX+"px;top:"+_this.posY+"px;width:"+_this.widt+"px;height:"+_this.heig+"px;min-width:"+_this.minW+"px;min-height:"+_this.minH+"px;z-index: 0;");
+	newWindow.setAttribute  ("style", 
+								"left:"+_this.posX+"px;"+
+								"top:"+_this.posY+"px;"+
+								"width:"+_this.widt+"px;"+
+								"height:"+_this.heig+"px;"+
+								"min-width:"+_this.minW+"px;"+
+								"min-height:"+_this.minH+"px;"+
+								"z-index: 0;");
 
 	for (i = 0; i < document.getElementsByClassName("windowButton").length; i++){
-		let windowButton = document.getElementsByClassName("windowButton")[i];
-		windowButton.onmousedown = () => {windowButtonClick(windowButton)};
+		let windowButton = document.getElementsByClassName("windowButton")[i]
+		windowButton.onmousedown = () => {windowButtonClick(windowButton)}
 	}
 	function windowButtonClick(button){
-		button.classList.add("mousedown");
+		button.classList.add("mousedown")
 		window.onmouseup = () => {
-			button.classList.remove("mousedown");
-			window.onmouseup = null;
+			button.classList.remove("mousedown")
+			window.onmouseup = null
 		}
 		switch (button.classList[1]) {
-			case "_": console.log("_"); break;
-			case "O": console.log("O"); break;
-			case "X": console.log("X"); break;
+			case "_": //console.log("_"); break;
+			case "O": //console.log("O"); break;
+			case "X": //console.log("X"); break;
 		}
 	}
 
-    _this.statNode();
-    _this.poseNode();
-    _this.drag();
-	_this.size();
+	_this.node = document.getElementById("windowNumber" + windowArray.indexOf(_this))
+
+    _this.statNode()
+    _this.poseNode()
+    _this.drag()
+	_this.size()
     /*_this.menu();*/
 }
 
 function dlteWndwNode(_this) {
 	//delete window
-	let thisIndex = windowArray.indexOf(_this);
-	windowArray.splice(thisIndex, 1);
+	let thisIndex = windowArray.indexOf(_this)
+	windowArray.splice(thisIndex, 1)
 
-	let delWindow = document.getElementById("windowNumber" + thisIndex);
-	delWindow.parentNode.removeChild(delWindow);
+	let delWindow = document.getElementById("windowNumber" + thisIndex)
+	delWindow.parentNode.removeChild(delWindow)
 
 	//make DOM elements's IDs and zIndex match new object arrangement
 	for(wndw of document.getElementsByClassName("window")){ 
-		let windowId = wndw.id.match(/(\d+)/)[0];
-		let windowInt= parseInt(windowId);
+		let windowId = wndw.id.match(/(\d+)/)[0]
+		let windowInt= parseInt(windowId)
 		
 		if(windowInt > thisIndex){
-			wndw.id = "windowNumber" + (windowInt - 1);
-			wndw.style.zIndex = (windowInt - 1) *-1;
+			wndw.id = "windowNumber" + (windowInt - 1)
+			wndw.style.zIndex = (windowInt - 1) *-1
 		}
 	}
 }
-
-//------------------------------------------------------------------------icon behavior|
 
 /*
 <div class="window explorerExe">

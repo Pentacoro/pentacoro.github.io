@@ -1,97 +1,97 @@
 window.addEventListener("resize", e => {
-	idBackground.style.width = document.body.offsetWidth + "px";
-    idBackground.style.height = document.body.offsetHeight - cfg.desk.navB.height + "px";
+	idDesktop.style.width = document.body.offsetWidth + "px"
+    idDesktop.style.height = document.body.offsetHeight - cfg.desk.navB.height + "px"
 })
 
-var iconGrid = true;
-var iconArray = [];
-var windowArray = [];
+var iconGrid = true
+var iconArray = []
+var windowArray = []
 
-//background behavior------------------------------------------------------------------------------|
+var desktop = {}
+desktop.apps   = "ver"
+desktop.node   = idDesktop
+desktop.pocket = []
 
 //unselect all folders when desktop click:------------------------------|
 	//when desktop click-------------------|
-	idBackground.addEventListener("mousedown", e => {
+	idDesktop.addEventListener("mousedown", e => {
 		//if not clicking folder or window--------------|
 		if(
-			e.target.id == "background" &&
+			e.target.id == "desktop" &&
 			keyPressCtrl == false &&
 			!dragging
 		) {
-			for (icon of pocket.icon){
-				console.log(pocket.icon.indexOf(icon))
-				pocket.icon = pocket.icon.remove(icon)
+			for (icon of desktop.pocket){
+				desktop.pocket = desktop.pocket.remove(icon)
 				icon.statNode(0)
 			}
 		} 
 	})
 //----------------------------------------------------------------------|
 
-//------------------------------------------------------------------------------background behavior|
-
-//selectBox behavior-------------------------------------------------------------------------------|
-selectBox();
+//selectBox behavior----------------------------------------------------|
+selectBox()
 function selectBox() {
-	let pos1 = 0, pos2 = 0, posxIn = 0, posyIn = 0;
+	let pos1 = 0, pos2 = 0, posxIn = 0, posyIn = 0
 	
 	//when desktop click------------------------------------------------|
 	window.addEventListener("mousedown", function(event) {
-		let target = event.target;
+		let target = event.target
 		//if not clicking folder or window------------------------------|
 		if(
-			target.id == "background" &&
+			target.id == "desktop" &&
 			!dragging
 		) {
-			pos1 = 0;
-			pos2 = 0; 
-			selectBoxPosition();
+			pos1 = 0
+			pos2 = 0
+			selectBoxPosition()
 		} 
 	});
 	
 	//get initial mouse position-----------|
 	function selectBoxPosition(e) {
-		e = e || window.event;
-		e.preventDefault();
+		e = e || window.event
+		e.preventDefault()
 		
 		//get click position:
-		posxIn = e.clientX + idBackground.scrollLeft;
-		posyIn = e.clientY + idBackground.scrollTop;
+		posxIn = e.clientX + idDesktop.scrollLeft
+		posyIn = e.clientY + idDesktop.scrollTop
 
-		wasCtrl = (keyPressCtrl == true);
+		wasCtrl = (keyPressCtrl == true)
 		
-		idSelectBox.style.top = posyIn + "px";
-		idSelectBox.style.left = posxIn + "px";
+		idSelectBox.style.top = posyIn + "px"
+		idSelectBox.style.left = posxIn + "px"
 
-		iframeAntiHover (true);
-		document.onmouseup = selectBoxRelease;
-		document.onmousemove = selectBoxSizing;
+		iframeAntiHover (true)
+		document.onmouseup = selectBoxRelease
+		document.onmousemove = selectBoxSizing
 	}
 	
 	//resizing-----------------------------|
 	function selectBoxSizing(e) {
-		e = e || window.event;
-		e.preventDefault();
+		e = e || window.event
+		e.preventDefault()
 		
 		//get cursor position:
-		pos1 = e.clientX + idBackground.scrollLeft;
-		pos2 = e.clientY + idBackground.scrollTop;
+		pos1 = e.clientX + idDesktop.scrollLeft
+		pos2 = e.clientY + idDesktop.scrollTop
 		
 		//show selectBox:
-		idSelectBox.style.opacity = '1';
+		idSelectBox.style.opacity = '1'
 
 		if ((pos2 - posyIn) > 0) { //if cursor below ↓ from initial position
-			idSelectBox.style.height = (pos2 - posyIn) + 1 + "px";
-			idSelectBox.style.top = posyIn + "px";
+			idSelectBox.style.height = (pos2 - posyIn) + 1 + "px"
+			idSelectBox.style.top = posyIn + "px"
 		} else { //cursor is above ↑ from initial position
-			idSelectBox.style.height = (pos2 - posyIn) * -1 + "px";
-			idSelectBox.style.top = (posyIn - idSelectBox.offsetHeight) + "px";
+			idSelectBox.style.height = (pos2 - posyIn) * -1 + "px"
+			idSelectBox.style.top = (posyIn - idSelectBox.offsetHeight) + "px"
 		}
 		if ((pos1 - posxIn) > 0) { //if cursor right → from initial position
-			idSelectBox.style.width = (pos1 - posxIn) + 1 + "px";
-			idSelectBox.style.left = posxIn + "px";
+			idSelectBox.style.width = (pos1 - posxIn) + 1 + "px"
+			idSelectBox.style.left = posxIn + "px"
 		} else { //cursor is left  ← from initial position
-			idSelectBox.style.width = (pos1 - posxIn) * -1 + "px";
-			idSelectBox.style.left = (posxIn - idSelectBox.offsetWidth) + "px";
+			idSelectBox.style.width = (pos1 - posxIn) * -1 + "px"
+			idSelectBox.style.left = (posxIn - idSelectBox.offsetWidth) + "px"
 		}
 		
 		//iconReaction--------------------------------------------------|
@@ -99,22 +99,20 @@ function selectBox() {
 			if (document.getElementById("Icon: "+icon.text) != null) { /*otherwise callback argument ruins everything*/
 				if (areRectanglesOverlap(document.getElementById("Icon: "+icon.text),idSelectBox)) {
 					//light up colliding icon hover border:
-					highlight(document.getElementById("Icon: "+icon.text));
+					highlight(document.getElementById("Icon: "+icon.text))
 				} else {
 					//unlight non-colliding icon hover border:
-					lowlight(document.getElementById("Icon: "+icon.text));
+					lowlight(document.getElementById("Icon: "+icon.text))
 				}
 			}
 		};
 		//--------------------------------------------------iconReaction|
-
-		//console.log("selectBoxSizing");
 	}
 	
 	function selectBoxRelease() {
-		iframeAntiHover (false);
-		document.onmouseup = null;
-		document.onmousemove = null;
+		iframeAntiHover (false)
+		document.onmouseup = null
+		document.onmousemove = null
 
 		//iconReaction--------------------------------------------------|
 		
@@ -122,11 +120,11 @@ function selectBox() {
 			if (document.getElementById("Icon: "+icon.text) != null) { /*otherwise callback argument ruins everything*/
 				if (areRectanglesOverlap(document.getElementById("Icon: "+icon.text), idSelectBox)) {
 					//activate colliding icon hover border:
-					pocket.icon.push(icon)
+					desktop.pocket.push(icon)
 					icon.statNode(1)
 				} else if (wasCtrl == false) {
 					//deactivate non-colliding icon hover border UNLESS ctrl:
-					pocket.icon = pocket.icon.remove(icon)
+					desktop.pocket = desktop.pocket.remove(icon)
 					icon.statNode(0)
 				}
 			}
@@ -138,8 +136,6 @@ function selectBox() {
 		idSelectBox.style.width = ''
 		idSelectBox.style.top = '0'
 		idSelectBox.style.left = '0'
-
-		//console.log("selectBoxRelease");
 	}
 }
-//-------------------------------------------------------------------------------selectBox behavior|
+//----------------------------------------------------selectBox behavior|

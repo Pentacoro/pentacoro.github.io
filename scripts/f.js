@@ -71,7 +71,7 @@ function clearSelection(){
 
 //HTML element references------------------------------------|
 
-const idBackground= document.getElementById('background');
+const idDesktop   = document.getElementById('desktop');
 
 const idNavbar    = document.getElementById('navbar');
 
