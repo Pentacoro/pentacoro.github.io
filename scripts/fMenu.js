@@ -121,9 +121,6 @@ function hideDropContext() {
 </div>
 */
 
-//open desk menu on right click background
-idDesktop.oncontextmenu = e => { if(e.target == idDesktop) deskMenu(e) };
-
 //close context menu on mousedown anywhere
 window.addEventListener("mousedown", (e) => {
 	if (e.target.parentElement.parentElement){
@@ -139,18 +136,18 @@ window.addEventListener("mousedown", (e) => {
 	}
 });
 
-//open desk menu
-function deskMenu(e) {
+//open context menu
+function openMenu(e, node, obj) {
 	e.preventDefault()
 
 	closeMenu()
 	idCtextMenu.style.display = "grid"
-	idCtextMenu.style.top = e.clientY + idDesktop.scrollTop + "px"
-	idCtextMenu.style.left = e.clientX + idDesktop.scrollLeft + "px"
+	idCtextMenu.style.top =  e.clientY + "px"
+	idCtextMenu.style.left = e.clientX + "px"
 
 	idCtextMenu.blur()
 
-	makeDropContext(e,idDesktop, desktop)
+	makeDropContext(e, node, obj)
 }
 
 //close all context menus
@@ -165,7 +162,7 @@ function iconOpen(e, elmnt, _this){
     if(
         !(e.target.classList.contains("cmcheck"))
     ) {
-        console.log("Open")
+        //console.log("Open")
         closeMenu()
 
         loadAPP("./apps/filesystem_explorer/explorer_lau.html", [_this.text, _this.file])
@@ -175,7 +172,7 @@ function iconFullscreen(e, elmnt, _this){
     if(
         !(e.target.classList.contains("cmcheck"))
     ) {
-        console.log("Fullscreen");
+        //console.log("Fullscreen");
         closeMenu();
     }
 }
@@ -183,7 +180,7 @@ function iconNewtab(e, elmnt, _this){
     if(
         !(e.target.classList.contains("cmcheck"))
     ) {
-        console.log("Newtab");
+        //console.log("Newtab");
         closeMenu();
     }
 }
@@ -191,7 +188,7 @@ function iconCut(e, elmnt, _this){
     if(
         !(e.target.classList.contains("cmcheck"))
     ) {
-        console.log("Cut");
+        //console.log("Cut");
         closeMenu();
     }
 }
@@ -199,7 +196,7 @@ function iconCopy(e, elmnt, _this){
     if(
         !(e.target.classList.contains("cmcheck"))
     ) {
-        console.log("Copy");
+        //console.log("Copy");
         closeMenu();
     }
 }
@@ -207,7 +204,7 @@ function iconPaste(e, elmnt, _this){
     if(
         !(e.target.classList.contains("cmcheck"))
     ) {
-        console.log("Paste");
+        //console.log("Paste");
         closeMenu();
     }
 }
@@ -215,7 +212,7 @@ function iconDelete(e, elmnt, _this){
     if(
         !(e.target.classList.contains("cmcheck"))
     ) {
-        console.log("Delete")
+        //console.log("Delete")
 
         closeMenu()
         deleteSelectedNodes()
@@ -225,7 +222,7 @@ function iconRename(e, elmnt, _this){
     if(
         !(e.target.classList.contains("cmcheck"))
     ) {
-        console.log("Rename")
+        //console.log("Rename")
         closeMenu()
         let iconText = elmnt.childNodes[1]
         //make h3 editable --------------------|
@@ -246,7 +243,10 @@ function iconRename(e, elmnt, _this){
         function iconRenamingRestore(){
             shouldSelect = true
             
-            _this.statNode()
+            //if this icon is from the desktop
+            if (eval(addressInterpreter(eval(addressInterpreter(_this.file)).conf.from)) === currentVertex){
+                _this.statNode()
+            }
 
             iconText.textContent = _this.text
             iconText.setAttribute("contenteditable", "false");
@@ -267,12 +267,12 @@ function iconRename(e, elmnt, _this){
         setTimeout( () => {
             document.body.onmousedown = iconRenaming;
             iconText.onkeydown = (e) => {if(e.key == "Enter" && e.shiftKey == false){
-                iconRenaming();
-                return false;
+                iconRenaming()
+                return false
             }};
             function iconRenaming(){
                 if(
-                    iconNameExists(iconText.textContent, _this, currentVertex) == false &&
+                    iconNameExists(iconText.textContent, _this, eval(addressInterpreter(eval(addressInterpreter(_this.file)).conf.from))) == false &&
                     iconText.textContent != "¡Name me!" &&
                     iconText.textContent != "" &&
                     iconText.textContent.match(/[\/"]/g) === null
@@ -287,13 +287,16 @@ function iconRename(e, elmnt, _this){
                     iconText.style.textShadow = ""
 
                     //insert into fylesystem
-                    let getFile = eval(addressInterpreter(_this.file))
-                    let getFrom = eval(addressInterpreter(eval(addressInterpreter(_this.file)).conf.from))
-                    //
-                    renameKey(getFrom.cont, getFile.name, iconText.textContent)
-                    getFrom.cont[iconText.textContent].name = iconText.textContent
-                    //
-                    _this.file = "" + getFrom.conf.icon.file + "/" + iconText.textContent
+                    if (iconText.textContent != eval(addressInterpreter(_this.file)).name) { //if the name changed
+                        let getFile = eval(addressInterpreter(_this.file))
+                        let getFrom = eval(addressInterpreter(eval(addressInterpreter(_this.file)).conf.from))
+                        //
+                        renameKey(getFrom.cont, getFile.name, iconText.textContent)
+                        getFrom.cont[iconText.textContent].name = iconText.textContent
+                        //
+                        _this.file = "" + getFrom.conf.icon.file + "/" + iconText.textContent
+                    }
+
 
                     iconText.blur()
                     clearSelection()
@@ -320,8 +323,12 @@ function iconRename(e, elmnt, _this){
                             iconArray[i].stat = 0
                             iconArray[i].statNode()
                         }
-                        _this.statNode(1)
-                        _this.stat = 0
+                        //if this icon is from the desktop
+                        if (eval(addressInterpreter(eval(addressInterpreter(_this.file)).conf.from)) === currentVertex){
+                            _this.statNode(1)
+                            _this.stat = 0
+                        }
+
         
                         selectText(iconText)
                     }
@@ -334,7 +341,7 @@ function iconProperties(e, elmnt, _this){
     if(
         !(e.target.classList.contains("cmcheck"))
     ) {
-        console.log("Properties");
+        //console.log("Properties");
         closeMenu();
     }
 }
@@ -343,7 +350,7 @@ function deskGrid(e, elmnt, _this){
     if(
         !(e.target.classList.contains("cmcheck"))
     ) {
-        console.log("Grid");
+        //console.log("Grid");
 
         loadAPP("./apps/settings_deskGrid/deskGridOptions_lau.html");
 
@@ -354,7 +361,7 @@ function deskNew(e, elmnt, _this){
     if(
         !(e.target.classList.contains("cmcheck"))
     ) {
-        console.log("New");
+        //console.log("New");
         closeMenu();
 
         //Make sure icon appears at center of initial right click-------|
@@ -470,7 +477,7 @@ function deskPaste(e, elmnt, _this){
     if(
         !(e.target.classList.contains("cmcheck"))
     ) {
-        console.log("Paste");
+        //console.log("Paste");
         closeMenu();
     }
 }
@@ -478,7 +485,7 @@ function deskSettings(e, elmnt, _this){
     if(
         !(e.target.classList.contains("cmcheck"))
     ) {
-        console.log("Settings");
+        //console.log("Settings");
         closeMenu();
     }
 }
@@ -486,7 +493,7 @@ function deskInfo(e, elmnt, _this){
     if(
         !(e.target.classList.contains("cmcheck"))
     ) {
-        console.log("Info");
+        //console.log("Info");
         closeMenu();
     }
 }

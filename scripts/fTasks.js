@@ -13,3 +13,8 @@ function canInstance(appName){
     }
     return true
 }
+
+function findTask(id) {
+    let find = taskArray.filter(task => task.id === id)
+    return find[0]
+}

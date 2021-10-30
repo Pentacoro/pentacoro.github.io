@@ -35,6 +35,9 @@
 
             border: 2px dotted rgba(255, 255, 255, 0);
         }
+        .list>.explorerIcon.active.ID_TASKID {
+            background-color: rgba(111, 161, 228, 0.623);
+        }
         .list>.explorerIcon.ID_TASKID:hover {
             border: 2px dotted rgba(0, 0, 0, 0.15);
         }
@@ -104,22 +107,100 @@
         function createExplorerIcons(array) {
                 for(item of array) {
                 //Icon HTML structure-----|
-                let newIcon = document.createElement("div");
-                newIcon.setAttribute("class", "explorerIcon ID_TASKID");
+                let newIcon = document.createElement("div")
+                newIcon.setAttribute("class", "explorerIcon ID_TASKID")
 
-                let newIconImage = document.createElement("div");
-                newIconImage.setAttribute("class", "explorerIconImage ID_TASKID");
-                newIconImage.setAttribute("style", item[1].conf.icon.imag);
-                newIcon.appendChild(newIconImage);
+                let newIconImage = document.createElement("div")
+                newIconImage.setAttribute("class", "explorerIconImage ID_TASKID")
+                newIconImage.setAttribute("style", item[1].conf.icon.imag)
+                newIcon.appendChild(newIconImage)
 
-                let newIconText = document.createElement("p");
-                newIconText.setAttribute("class", "explorerIconText ID_TASKID");
-                let newIconTextNode = document.createTextNode(item[1].conf.icon.text);
-                newIconText.appendChild(newIconTextNode);
-                newIcon.appendChild(newIconText);
+                let newIconText = document.createElement("p")
+                newIconText.setAttribute("class", "explorerIconText ID_TASKID")
+                let newIconTextNode = document.createTextNode(item[1].conf.icon.text)
+                newIconText.appendChild(newIconTextNode)
+                newIcon.appendChild(newIconText)
 
-                document.getElementsByClassName("list ID_TASKID")[0].appendChild(newIcon);
+                document.getElementsByClassName("list ID_TASKID")[0].appendChild(newIcon)
                 //------------------------|
+
+                newIcon.object = item[1]
+
+                newIcon.oncontextmenu = e => {
+                    openMenu(e, newIcon, newIcon.object.conf.icon)
+                } 
+
+                newIcon.onmousedown = e => dragMouseDown(e, newIcon)
+
+                function dragMouseDown(e, node) {
+                    e = e || window.event
+                    e.preventDefault()
+                    
+                    //when mousedown on selected icon
+                    if (node.classList.contains("active")) {
+                        //managing selected icons
+                        for (icon of findTask("TASKID").pocket) {
+                            //light up all hover border onmousedown:-|
+                            highlight(icon)
+                            //---------------------------------------|
+                        }
+                    } else {
+                        if (shouldSelect == true && !dragging) {
+                            //light up 1 hover border onmousedown:
+                            highlight(node)
+                            
+                            //when mousedown on unselected icon
+                            if(!keyPressCtrl) {
+                                for (icon of findTask("TASKID").pocket){
+                                    findTask("TASKID").pocket = findTask("TASKID").pocket.remove(icon)
+                                    icon.classList.remove("active")
+                                    lowlight(icon)
+                                }
+                                findTask("TASKID").pocket.push(node)
+                                node.classList.add("active")
+                                highlight(node)
+                            } else if(keyPressCtrl) {
+                                findTask("TASKID").pocket.push(node)
+                                node.classList.add("active")
+                                highlight(node)
+                            }
+                        }
+                    }
+
+                    document.onmousemove = e => dragMouseMove(e, node)
+                    document.onmouseup   = e => dragMouseEnd(e, node)
+
+                    function dragMouseMove(e, node) {
+                        e.preventDefault()
+
+                        dragging = true
+                    }
+
+                    function dragMouseEnd(e, node) {
+                        e.preventDefault()
+                        document.onmousemove = null
+                        document.onmouseup   = null
+
+                        //unselect other folders on mouseup W/O drag UNLESS ctrl
+                        if(keyPressCtrl == false && dragging == false && e.button == 0) {
+                            for (icon of findTask("TASKID").pocket){
+                                findTask("TASKID").pocket = findTask("TASKID").pocket.remove(icon)
+                                icon.classList.remove("active")
+                                lowlight(icon)
+                            }
+                            node.classList.add("active")
+                            findTask("TASKID").pocket.push(node)
+                        } else {
+                            for (icon of findTask("TASKID").pocket){
+                                lowlight(icon)
+                            }
+
+                            node.classList.add("active")
+                            findTask("TASKID").pocket.push(node)
+                        }
+                        dragging = false
+                    }
+                }
             }
         }
     </script>

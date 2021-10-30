@@ -27,6 +27,11 @@ desktop.pocket = []
 			}
 		} 
 	})
+
+	//open desk menu on right click background
+	idDesktop.oncontextmenu = e => {
+		if(e.target == idDesktop) openMenu(e,idDesktop,desktop)
+	}
 //----------------------------------------------------------------------|
 
 //selectBox behavior----------------------------------------------------|
