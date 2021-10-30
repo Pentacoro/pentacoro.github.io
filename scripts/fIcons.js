@@ -28,7 +28,7 @@ function dragIcon(elmnt, _this) {
 		//when mousedown on selected icon
 		if (_this.stat == 1) {
 			//managing selected icons
-			for (icon of pocket.icon) {
+			for (icon of desktop.pocket) {
 				//light up all hover border onmousedown:-|
 				highlight(document.getElementById("Icon: "+icon.text))
 				//---------------------------------------|
@@ -134,35 +134,13 @@ function dragIcon(elmnt, _this) {
             _this.statNode(1)
         }
         
-		dragging = false;
+		dragging = false
 	}
 }
 
 function menuIcon(elmnt, _this) {
 
-    elmnt.oncontextmenu = iconMenu
-
-    function iconMenu(e) {
-        e.preventDefault()
-
-        if(
-            e.target.classList.contains("icon") ||
-            e.target.parentNode.classList.contains("icon")
-        ) {
-            closeMenu()
-
-            idCtextMenu.style.display = "grid"
-            idCtextMenu.style.top = e.clientY + "px"
-            idCtextMenu.style.left = e.clientX + "px"
-
-            idCtextMenu.blur()
-            clearSelection()
-            
-            makeDropContext(e, elmnt, _this)
-
-            return false
-        }
-    }
+    elmnt.oncontextmenu = e => openMenu(e,elmnt,_this)
 }
 
 function statIconNode(elmnt, _this, num) {

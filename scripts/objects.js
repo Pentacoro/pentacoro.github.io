@@ -151,17 +151,18 @@ class Task {
     constructor(apps, inst = true, appEnd) {
         this.apps = apps
         this.inst = inst
+        this.pocket = []
         this.id = genRanHex(16)
         checkUniqueID(this)
-
         let id = this.id
+
         //end task
         this.end = function() {
             
             appEnd()
             windowArray[parseInt(document.getElementsByClassName("ID_"+id)[0].id.match(/(\d+)/)[0])].deleteNode()
 
-            taskArray.splice(taskArray.indexOf(this),1)
+            taskArray = taskArray.remove(this)
         }
     }
 }
