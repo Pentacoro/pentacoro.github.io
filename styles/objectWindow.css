@@ -31,82 +31,6 @@
 	padding: 0px;
 }
 
-/*WINDOW BORDER RESIZERS--------*/
-.windowBorder>.windowEtop {
-	width: 100%;
-	height: 6px;
-	background: transparent;
-	position: absolute;
-	right: 0;
-	top: 0;
-	cursor: n-resize;
-}
-.windowBorder>.windowEbot {
-	width: 100%;
-	height: 6px;
-	background: transparent;
-	position: absolute;
-	right: 0;
-	bottom: 0;
-	cursor: n-resize;
-}
-.windowBorder>.windowElef {
-	width: 6px;
-	height: 100%;
-	background: transparent;
-	position: absolute;
-	left: 0;
-	bottom: 0;
-	cursor: e-resize;
-}
-.windowBorder>.windowErig {
-	width: 6px;
-	height: 100%;
-	background: transparent;
-	position: absolute;
-	right: 0;
-	bottom: 0;
-	cursor: e-resize;
-}
-.windowBorder>.windowCtl {
-	width: 6px;
-	height: 6px;
-	z-index: 10;
-	position: absolute;
-	left: 0;
-	top: 0;
-	cursor: nw-resize;
-}
-.windowBorder>.windowCtr {
-	width: 6px;
-	height: 6px;
-	z-index: 10;
-	position: absolute;
-	right: 0;
-	top: 0;
-	cursor: ne-resize;
-}
-.windowBorder>.windowCbr {
-	width: 6px;
-	height: 6px;
-	z-index: 10;
-	position: absolute;
-	right: 0;
-	bottom: 0;
-	cursor: nw-resize;
-	z-index: 2;
-}
-.windowBorder>.windowCbl {
-	width: 6px;
-	height: 6px;
-	z-index: 10;
-	position: absolute;
-	left: 0;
-	bottom: 0;
-	cursor: ne-resize;
-}
-/*--------WINDOW BORDER RESIZERS*/
-
 .windowInner>.header {
 	position: sticky;
 	top: 0%;
@@ -235,6 +159,7 @@
 
 .windowInner>.content {
 	display: block;
+	position: relative;
 	background-color: #FFFFFF;
 	height: 100%;
 
@@ -253,6 +178,82 @@
 	pointer-events: none;
 }
 /*------------------------iframe*/
+
+/*WINDOW BORDER RESIZERS--------*/
+.windowBorder>.windowEtop {
+	width: 100%;
+	height: 6px;
+	background: transparent;
+	position: absolute;
+	right: 0;
+	top: 0;
+	cursor: n-resize;
+}
+.windowBorder>.windowEbot {
+	width: 100%;
+	height: 6px;
+	background: transparent;
+	position: absolute;
+	right: 0;
+	bottom: 0;
+	cursor: n-resize;
+}
+.windowBorder>.windowElef {
+	width: 6px;
+	height: 100%;
+	background: transparent;
+	position: absolute;
+	left: 0;
+	bottom: 0;
+	cursor: e-resize;
+}
+.windowBorder>.windowErig {
+	width: 6px;
+	height: 100%;
+	background: transparent;
+	position: absolute;
+	right: 0;
+	bottom: 0;
+	cursor: e-resize;
+}
+.windowBorder>.windowCtl {
+	width: 6px;
+	height: 6px;
+	z-index: 10;
+	position: absolute;
+	left: 0;
+	top: 0;
+	cursor: nw-resize;
+}
+.windowBorder>.windowCtr {
+	width: 6px;
+	height: 6px;
+	z-index: 10;
+	position: absolute;
+	right: 0;
+	top: 0;
+	cursor: ne-resize;
+}
+.windowBorder>.windowCbr {
+	width: 6px;
+	height: 6px;
+	z-index: 10;
+	position: absolute;
+	right: 0;
+	bottom: 0;
+	cursor: nw-resize;
+	z-index: 2;
+}
+.windowBorder>.windowCbl {
+	width: 6px;
+	height: 6px;
+	z-index: 10;
+	position: absolute;
+	left: 0;
+	bottom: 0;
+	cursor: ne-resize;
+}
+/*--------WINDOW BORDER RESIZERS*/
 
 
 /*------------------------------WINDOW SETTINGS*/

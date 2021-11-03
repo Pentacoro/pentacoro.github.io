@@ -11,12 +11,80 @@
             font-family: "Gotham", "Helvetica Neue", Helvetica, Arial, "sans-serif";
             margin: 0;
         }
-        .nav.ID_TASKID {
+        .container.ID_TASKID {
+            position: absolute;
             display: grid;
+            grid-template-rows: 40px auto;
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+        }
+        .nav.ID_TASKID {
+            position: sticky;
+            top: 0px;
             height: 40px;
+            width: 100%;
+
+            display: grid;
+            grid-template-columns: 40px 40px 40px auto 40px;
             background-color: rgb(195, 203, 221);
+            z-index: 100;
+        }
+        .nav.ID_TASKID>button{
+            background-color: rgb(195, 203, 221);
+            border: 0px;
+            font-size: 1.4em;
+            color: rgb(90, 108, 126);
+            cursor: pointer;
+        }
+        .nav.ID_TASKID>.back:active , .nav.ID_TASKID>.forth:active{
+            color: rgb(123, 140, 156);
+        }
+        .nav.ID_TASKID>.back:hover , .nav.ID_TASKID>.forth:hover{
+            background-color: rgb(207, 213, 228);
+        }
+        .nav.ID_TASKID>.parent:active , .nav.ID_TASKID>.refresh:active{
+            color: rgb(123, 140, 156);
+        }
+        .nav.ID_TASKID>.parent{
+            background-color: rgb(174, 183, 204);
+        }
+        .nav.ID_TASKID>.refresh{
+            background-color: rgb(174, 183, 204);
+        }
+        .nav.ID_TASKID>.addressBox{
+            background-color: white;
+            border: 3px solid rgb(174, 183, 204);
+            cursor: text;
+
+            display: flex;
+            align-items: center;
+            justify-content: left;
+            padding-left: .5em;
+            width: 100%;
+            height: 100%;
+
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+        .addressBox.ID_TASKID>.address{
+            background-color: white;
+            color: rgb(167, 167, 167);
+            cursor: text;
+            font-size: 1.1em;
+        }
+        /*---------------------------------------*/
+        .background.ID_TASKID {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
         }
         .list.ID_TASKID {
+            width: 100%;
+            height: 100%;
+            
             display: flex;
             flex-direction: row;
             flex-wrap: wrap;
@@ -37,9 +105,13 @@
         }
         .list>.explorerIcon.active.ID_TASKID {
             background-color: rgba(111, 161, 228, 0.623);
+            border: 2px solid rgba(0, 0, 0, 0.08);
         }
         .list>.explorerIcon.ID_TASKID:hover {
             border: 2px dotted rgba(0, 0, 0, 0.15);
+        }
+        .list>.explorerIcon.highlight.ID_TASKID {
+            border: 2px dotted rgba(0, 0, 0, 0.39);
         }
         .explorerIconImage.ID_TASKID{
             width: 100%;
@@ -54,153 +126,137 @@
             filter: drop-shadow(0px 1px 2px rgb(0,0,0,.5));
         }
         .explorerIconText.ID_TASKID{
+            display: block;
             text-align: center;
             color: rgb(56, 56, 56);
+            max-height: 2.35em;
+            width: 100%;
+
+            hyphens: auto;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            word-wrap: break-word;
         }
     </style>
 
     <title>Document</title>
 </head>
 <body>
+
     <div class="container ID_TASKID">
+
         <div class="nav ID_TASKID">
+            <button class="back ID_TASKID">◀</button>
+            <button class="forth ID_TASKID">▶</button>
+            <button class="parent ID_TASKID">▲</button>
 
-        </div>
-        <div class="list ID_TASKID">
+            <div class="addressBox ID_TASKID">
+                <span class="address ID_TASKID">xcorex</span>
+            </div>
 
+            <button class="refresh ID_TASKID">⭮</button>
         </div>
+
+            <div class="background ID_TASKID">
+                <div class="list ID_TASKID">
+
+                </div>
+            </div>
+
     </div>
 
-    <script>    
-        explorerInit("xcorex")
+    <script>  
+        let task = findTask("TASKID")
+        let mem  = findTask("TASKID").memory
+        task.apps = "exp"
+        mem.iconArray = []
+        mem.directory = "xcorex"
 
-        function explorerInit(dir) {           
-            let activeDir = dir 
-            let activeObj = eval(addressInterpreter(activeDir))
-            let dirList   = Object.entries(activeObj.cont)
+        mem.explorerInit = function (dir, id) {    
+            try {       
+                let activeDir = dir 
+                let activeObj = addressInterpreter(activeDir)
+                let dirList   = Object.entries(activeObj.cont)
 
-            let dirFolder = []
-            let dirFile   = []
+                let dirFolder = []
+                let dirFile   = []
+                let dirTran   = []
 
-            for (item of dirList) {
-                if(item[1].conf.type === "dir") {
-                    dirFolder.push(item)
+                for (icon of findTask(id).memory.iconArray){
+                    document.getElementsByClassName("list ID_"+id)[0].removeChild(icon.node)
                 }
-            }
-            for (item of dirList) {
-                if(item[1].conf.type !=  "dir") {
-                    dirFile.push(item)
+
+                findTask(id).memory.iconArray = []
+                findTask(id).memory.directory = dir
+                findTask(id).pocket = []
+
+                for (item of dirList) {
+                    if(item[1].conf.type === "dir" && !item[1].conf.tran) {
+                        dirFolder.push(item[1])
+                    }
                 }
+                for (item of dirList) {
+                    if(item[1].conf.type !=  "dir") {
+                        dirFile.push(item[1])
+                    }
+                }
+                for (item of dirList) {
+                    if(item[1].conf.tran) {
+                        dirTran.push(item[1])
+                    }
+                }
+
+                dirFolder.sort((a, b) => a.name.localeCompare(b.name))
+                dirFile.sort  ((a, b) => a.name.localeCompare(b.name))
+                dirTran.sort  ((a, b) => a.name.localeCompare(b.name))
+
+                document.getElementsByClassName("address ID_"+id)[0].innerHTML = dir
+
+                createExplorerIcons(dirFolder)
+                createExplorerIcons(dirFile)
+                createExplorerIcons(dirTran)
+            } catch (error) {
+
             }
-
-            dirFolder.sort((a, b) => a[1].name.localeCompare(b[1].name))
-            dirFile.sort((a, b) => a[1].name.localeCompare(b[1].name))
-
-            for (rawr of document.getElementsByClassName("explorerIcon ID_TASKID")){
-                document.getElementsByClassName("list ID_TASKID")[0].removeChild(rawr)
-            }
-
-            createExplorerIcons(dirFolder)
-            createExplorerIcons(dirFile)
         }
+
+        mem.explorerInit("xcorex", "TASKID")
+
+        document.getElementsByClassName("back ID_TASKID")[0].onclick = e => {
+
+        }
+        document.getElementsByClassName("parent ID_TASKID")[0].onclick = e => {
+            if (mem.directory !== "") {
+                mem.explorerInit(addressInterpreter(mem.directory).conf.from, "TASKID")
+            } else {
+                mem.explorerInit(mem.directory, "TASKID")
+            }
+        }
+        document.getElementsByClassName("refresh ID_TASKID")[0].onclick = e => {
+            mem.explorerInit(mem.directory, "TASKID")
+        }
+        document.getElementsByClassName("list ID_TASKID")[0].onmousedown = e => {
+            if (e.target.classList.contains("list")) {
+                for (icon of task.pocket) {
+                    icon.statNode(0)
+                    task.pocket = task.pocket.remove(icon)
+                }
+            }
+        }
+        document.getElementsByClassName("list ID_TASKID")[0].oncontextmenu = e => {
+            if (e.target.classList.contains("list")) {
+                openMenu(e, task)
+            }
+        }
+
 
         function createExplorerIcons(array) {
                 for(item of array) {
-                //Icon HTML structure-----|
-                let newIcon = document.createElement("div")
-                newIcon.setAttribute("class", "explorerIcon ID_TASKID")
-
-                let newIconImage = document.createElement("div")
-                newIconImage.setAttribute("class", "explorerIconImage ID_TASKID")
-                newIconImage.setAttribute("style", item[1].conf.icon.imag)
-                newIcon.appendChild(newIconImage)
-
-                let newIconText = document.createElement("p")
-                newIconText.setAttribute("class", "explorerIconText ID_TASKID")
-                let newIconTextNode = document.createTextNode(item[1].conf.icon.text)
-                newIconText.appendChild(newIconTextNode)
-                newIcon.appendChild(newIconText)
-
-                document.getElementsByClassName("list ID_TASKID")[0].appendChild(newIcon)
-                //------------------------|
-
-                newIcon.object = item[1]
-
-                newIcon.oncontextmenu = e => {
-                    openMenu(e, newIcon, newIcon.object.conf.icon)
-                } 
-
-                newIcon.onmousedown = e => dragMouseDown(e, newIcon)
-
-                function dragMouseDown(e, node) {
-                    e = e || window.event
-                    e.preventDefault()
+                    let itemIcon = item.conf.icon
+                    let dirIcon  = new IconDir(itemIcon.imag, itemIcon.text, "TASKID", itemIcon.apps, itemIcon.file)
+                    mem.iconArray.push(dirIcon)
                     
-                    //when mousedown on selected icon
-                    if (node.classList.contains("active")) {
-                        //managing selected icons
-                        for (icon of findTask("TASKID").pocket) {
-                            //light up all hover border onmousedown:-|
-                            highlight(icon)
-                            //---------------------------------------|
-                        }
-                    } else {
-                        if (shouldSelect == true && !dragging) {
-                            //light up 1 hover border onmousedown:
-                            highlight(node)
-                            
-                            //when mousedown on unselected icon
-                            if(!keyPressCtrl) {
-                                for (icon of findTask("TASKID").pocket){
-                                    findTask("TASKID").pocket = findTask("TASKID").pocket.remove(icon)
-                                    icon.classList.remove("active")
-                                    lowlight(icon)
-                                }
-                                findTask("TASKID").pocket.push(node)
-                                node.classList.add("active")
-                                highlight(node)
-                            } else if(keyPressCtrl) {
-                                findTask("TASKID").pocket.push(node)
-                                node.classList.add("active")
-                                highlight(node)
-                            }
-                        }
-                    }
-
-                    document.onmousemove = e => dragMouseMove(e, node)
-                    document.onmouseup   = e => dragMouseEnd(e, node)
-
-                    function dragMouseMove(e, node) {
-                        e.preventDefault()
-
-                        dragging = true
-                    }
-
-                    function dragMouseEnd(e, node) {
-                        e.preventDefault()
-                        document.onmousemove = null
-                        document.onmouseup   = null
-
-                        //unselect other folders on mouseup W/O drag UNLESS ctrl
-                        if(keyPressCtrl == false && dragging == false && e.button == 0) {
-                            for (icon of findTask("TASKID").pocket){
-                                findTask("TASKID").pocket = findTask("TASKID").pocket.remove(icon)
-                                icon.classList.remove("active")
-                                lowlight(icon)
-                            }
-                            node.classList.add("active")
-                            findTask("TASKID").pocket.push(node)
-                        } else {
-                            for (icon of findTask("TASKID").pocket){
-                                lowlight(icon)
-                            }
-
-                            node.classList.add("active")
-                            findTask("TASKID").pocket.push(node)
-                        }
-                        dragging = false
-                    }
-                }
+                    dirIcon.createNode()
             }
         }
     </script>

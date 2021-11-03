@@ -3,19 +3,23 @@ window.addEventListener("resize", e => {
     idDesktop.style.height = document.body.offsetHeight - cfg.desk.navB.height + "px"
 })
 
-var iconGrid = true
-var iconArray = []
 var windowArray = []
 
-var desktop = {}
-desktop.apps   = "ver"
-desktop.node   = idDesktop
-desktop.pocket = []
+var desktop = {
+	dir    : "/vertex",
+	apps   : "ver",
+	node   : idDesktop,
+	pocket : [],
+	memory : {
+		iconArray : []
+	}
+}
 
 //unselect all folders when desktop click:------------------------------|
 	//when desktop click-------------------|
 	idDesktop.addEventListener("mousedown", e => {
 		//if not clicking folder or window--------------|
+		envfocus = desktop
 		if(
 			e.target.id == "desktop" &&
 			keyPressCtrl == false &&
@@ -30,7 +34,7 @@ desktop.pocket = []
 
 	//open desk menu on right click background
 	idDesktop.oncontextmenu = e => {
-		if(e.target == idDesktop) openMenu(e,idDesktop,desktop)
+		if(e.target == idDesktop) openMenu(e,desktop)
 	}
 //----------------------------------------------------------------------|
 
@@ -101,13 +105,13 @@ function selectBox() {
 		
 		//iconReaction--------------------------------------------------|
 		for (icon of iconArray){
-			if (document.getElementById("Icon: "+icon.text) != null) { /*otherwise callback argument ruins everything*/
-				if (areRectanglesOverlap(document.getElementById("Icon: "+icon.text),idSelectBox)) {
+			if (icon.node != null) { /*otherwise callback argument ruins everything*/
+				if (areRectanglesOverlap(icon.node,idSelectBox)) {
 					//light up colliding icon hover border:
-					highlight(document.getElementById("Icon: "+icon.text))
+					highlight(icon.node)
 				} else {
 					//unlight non-colliding icon hover border:
-					lowlight(document.getElementById("Icon: "+icon.text))
+					lowlight(icon.node)
 				}
 			}
 		};
@@ -122,15 +126,17 @@ function selectBox() {
 		//iconReaction--------------------------------------------------|
 		
 		for (icon of iconArray){
-			if (document.getElementById("Icon: "+icon.text) != null) { /*otherwise callback argument ruins everything*/
-				if (areRectanglesOverlap(document.getElementById("Icon: "+icon.text), idSelectBox)) {
+			if (icon.node != null) { /*otherwise callback argument ruins everything*/
+				if (areRectanglesOverlap(icon.node, idSelectBox)) {
 					//activate colliding icon hover border:
 					desktop.pocket.push(icon)
 					icon.statNode(1)
+					lowlight(icon.node)
 				} else if (wasCtrl == false) {
 					//deactivate non-colliding icon hover border UNLESS ctrl:
 					desktop.pocket = desktop.pocket.remove(icon)
 					icon.statNode(0)
+					lowlight(icon.node)
 				}
 			}
 		}
