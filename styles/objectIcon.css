@@ -19,12 +19,15 @@
 	z-index: -50;
 	pointer-events: all;
 }
+.icon.active{
+	background-color: rgba(0, 119, 199, 0.7);
+	border: 3px solid rgb(255,255,255,0.10);
+}
 .icon:hover{
 	border: 3px dotted rgb(255,255,255,0.15);
 }
-.active{
-	background-color: rgba(0, 119, 199, 0.7);
-	border: 3px solid rgb(255,255,255,0.10);
+.icon.highlight{
+	border: 3px dotted rgb(255,255,255,0.30)
 }
 .iconImage{
 	width: 46px;

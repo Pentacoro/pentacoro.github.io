@@ -1,3 +1,43 @@
+class Window {
+    constructor(name, task, resizable, uiux = 3, state = 1, x, y, w, h, mw, mh){
+        this.stat = state // 0 => minimized | 1/2 => open/selected | 3/4 => maximized/selected
+        this.posX = x
+        this.posY = y
+        
+        this.widt = w
+        this.heig = h
+        this.minW = mw
+        this.minH = mh
+        
+        this.task = task //next depend on this
+        
+        this.name = name
+        this.resi = resizable
+        this.uiux = uiux
+    }
+    createNode(){
+        crteWndwNode(this)
+    }
+    deleteNode(){
+        dlteWndwNode(this)
+    }
+    statNode(){
+        statWndwNode(this.node, this)
+    }
+    poseNode(){
+        poseWndwNode(this.node, this)
+    }
+    drag(){
+        dragWndw(this.node, this)
+    }
+    size(){
+        sizeWndw(this.node, this)
+    }
+    menu(){
+        menuWndw(this.node, this)
+    }
+}
+
 //window dragging------------------------------------------------------------------|
 function dragWndw(wndw, _this) {
 	let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0
@@ -5,10 +45,16 @@ function dragWndw(wndw, _this) {
 	if (_this.uiux != 0) {
 		//if present, the header is where you move the window from:
 		wndw.getElementsByClassName("header")[0].onmousedown = dragMouseDown
-		wndw.onmousedown = () => _this.statNode()
+		wndw.onmousedown = e => {
+			envfocus = findTask(_this.task)
+			_this.statNode()
+		}
 	} else {
 		//otherwise, move the window from anywhere inside the DIV:
-		wndw.onmousedown = dragMouseDown
+		wndw.onmousedown = e => {
+			envfocus = findTask(_this.task)
+			dragMouseDown
+		}
 	}
 
 	function dragMouseDown(e) {
@@ -298,6 +344,8 @@ function crteWndwNode(_this) {
 
 
     document.getElementById("windowLayer").appendChild(newWindow)
+	
+	envfocus = findTask(_this.task)
 
 	//Getting minimum size to apply to the content,
 	//instead of the window node, by comparing the 

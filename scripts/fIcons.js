@@ -1,19 +1,51 @@
+class Icon {
+    constructor(image, name, program = null, state = 0, x = 0, y = 0){
+        this.stat = state
+        this.coor = {px: x, py: y, tx: x, ty: y, ax: null, ay: null}
+
+        this.file = {}
+        this.imag = image
+        this.text = name
+        this.apps = program
+
+        this.drop = []
+    }
+    createNode(){
+        crteIconNode(this)
+    }
+    deleteNode(){
+        dlteIconNode(this)
+    }
+    statNode(num){
+        statIconNode(this.node, this, num)
+    }
+    poseNode(){
+        poseIconNode(this.node, this)
+    }
+    drag(){
+        dragIcon(this.node, this)
+    }
+    menu(){
+        menuIcon(this.node, this)
+    }
+}
+
 //icon behavior------------------------------------------------------------------------|
 var shouldSelect = true
 
 var dragging = false
 
 function highlight(hIcon) {
-    hIcon.style.border = '3px dotted rgb(255,255,255,0.30)';
+    hIcon.classList.add("highlight")
 } 
 function lowlight(hIcon) {
-    hIcon.style.border = '';
+    hIcon.classList.remove("highlight")
 } 
 
-function dragIcon(elmnt, _this) {
+function dragIcon(node, _this) {
 	var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0
 	
-	elmnt.onmousedown = dragMouseDown
+	node.onmousedown = dragMouseDown
 
 	function dragMouseDown(e) {
 		e = e || window.event
@@ -30,14 +62,14 @@ function dragIcon(elmnt, _this) {
 			//managing selected icons
 			for (icon of desktop.pocket) {
 				//light up all hover border onmousedown:-|
-				highlight(document.getElementById("Icon: "+icon.text))
+				highlight(icon.node)
 				//---------------------------------------|
 			}
 		} else {
             if (shouldSelect == true && !dragging) {
                 //light up 1 hover border onmousedown:
-                highlight(elmnt)
-                elmnt.style.backgroundColor = 'rgb(0,0,0,0)'
+                highlight(node)
+                node.style.backgroundColor = 'rgb(0,0,0,0)'
                 
                 //when mousedown on unselected icon
                 if(!keyPressCtrl) {
@@ -47,11 +79,11 @@ function dragIcon(elmnt, _this) {
                     }
                     desktop.pocket.push(_this)
                     _this.stat = 1
-                    highlight(elmnt)
+                    highlight(node)
                 } else if(keyPressCtrl) {
                     desktop.pocket.push(_this)
                     _this.stat = 1
-                    highlight(elmnt)
+                    highlight(node)
                 }
             }
 		}
@@ -82,7 +114,7 @@ function dragIcon(elmnt, _this) {
 		//managing selected icons
 		for (icon of desktop.pocket){
             //godGrasp layer
-            document.getElementById("godGrasp").appendChild(document.getElementById("Icon: "+icon.text))
+            document.getElementById("godGrasp").appendChild(icon.node)
             //set position for selected icons:------------|
             icon.coor.tx = (icon.coor.tx - pos1)
             icon.coor.ty = (icon.coor.ty - pos2)
@@ -118,19 +150,20 @@ function dragIcon(elmnt, _this) {
         }
 
         //back to icon layer
-        document.getElementById("iconLayer").appendChild(elmnt)
+        document.getElementById("iconLayer").appendChild(node)
 		
 		//unselect other folders on mouseup W/O drag UNLESS ctrl
 		if(keyPressCtrl == false && dragging == false && e.button == 0) {
 			for (icon of desktop.pocket){
+                if (icon != _this) desktop.pocket = desktop.pocket.remove(icon)
                 icon.statNode(0)
+                lowlight(icon.node)
             }
             _this.statNode(1)
         } else {
             for (icon of desktop.pocket){
-                lowlight(document.getElementById("Icon: "+_this.text))
+                lowlight(icon.node)
             }
-
             _this.statNode(1)
         }
         
@@ -140,7 +173,7 @@ function dragIcon(elmnt, _this) {
 
 function menuIcon(elmnt, _this) {
 
-    elmnt.oncontextmenu = e => openMenu(e,elmnt,_this)
+    elmnt.oncontextmenu = e => openMenu(e,_this)
 }
 
 function statIconNode(elmnt, _this, num) {
@@ -214,21 +247,8 @@ function dlteIconNode(_this, fromGrid = false) {
         iconGridArray[_this.coor.ax][_this.coor.ay].used = false;
         iconGridArray[_this.coor.ax][_this.coor.ay].icon = null;
     }
-    iconArray = iconArray.remove(_this)
+    desktop.memory.iconArray = desktop.memory.iconArray.remove(_this)
     desktop.pocket = desktop.pocket.remove(_this)
-}
-
-function deleteSelectedNodes(){
-    let iconsToDelete = desktop.pocket
-    for(icon of iconsToDelete){
-        if(icon.stat == 1){
-            icon.deleteNode();
-
-            //delete from filesystem
-            let getFile = eval(addressInterpreter(icon.file))
-            getFile.deleteMe()
-        }
-    }
 }
 
 function repositionIcons(icons, mustSet = false, hasPrev = true){

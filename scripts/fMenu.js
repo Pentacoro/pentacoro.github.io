@@ -1,3 +1,17 @@
+class contextOption {
+    constructor(name, icon, func){
+        this.name = name
+        this.icon = icon
+        this.func = func 
+    }
+}
+class contextSection {
+    constructor(name = null, item = []){
+        this.name = name
+        this.item = item
+    }
+}
+
 //DROP MENU----------------------------------------------------------------------------|
 function findOutMenu(target) {
     let drop = []
@@ -6,11 +20,24 @@ function findOutMenu(target) {
         case "exe":
             //drop = exeDrop
             break
-        case "mfs":
+        case "ifr":
             //drop = mfsDrop
             break
+        case "img":
+            //drop = mfsDrop
+            break
+        case "vid":
+            //drop = mfsDrop
+            break
+        case "snd":
+            //drop = mfsDrop
+            break
+        case "exp":
+            drop = expDrop
+            break
         case "dir":
-            drop = dirDrop
+            if(!target.task ) drop = dirDrop1
+            if( target.task ) drop = dirDrop2
             break
         case "ver":
             drop = verDrop
@@ -19,41 +46,7 @@ function findOutMenu(target) {
     return drop
 }
 
-//-------------------------------------------------------------------------------------|
-var verDrop = []
-
-verDrop.push(new contextSection("icon"))
-verDrop.push(new contextSection("clip"))
-verDrop.push(new contextSection("info"))
-
-verDrop[0].item.push(new contextOption("Grid","url('assets/svg/contextMenu/open.svg')",deskGrid))
-verDrop[0].item.push(new contextOption("New","url('assets/svg/contextMenu/maximize.svg')",deskNew))
-
-verDrop[1].item.push(new contextOption("Paste","url('assets/svg/contextMenu/paste.svg')",deskPaste))
-
-verDrop[2].item.push(new contextOption("Settings","url('assets/svg/contextMenu/rename.svg')",deskSettings))
-verDrop[2].item.push(new contextOption("Info","url('assets/svg/contextMenu/properties.svg')",deskInfo))
-
-var dirDrop = []
-
-dirDrop.push(new contextSection("open"))
-dirDrop.push(new contextSection("clip"))
-dirDrop.push(new contextSection("prop"))
-
-dirDrop[0].item.push(new contextOption("Open","url('assets/svg/contextMenu/open.svg')",iconOpen))
-dirDrop[0].item.push(new contextOption("Open in fullscreen","url('assets/svg/contextMenu/maximize.svg')",iconFullscreen))
-dirDrop[0].item.push(new contextOption("Open in new tab","url('assets/svg/contextMenu/newtab.svg')",iconNewtab))
-
-dirDrop[1].item.push(new contextOption("Cut","url('assets/svg/contextMenu/cut.svg')",iconCut))
-dirDrop[1].item.push(new contextOption("Copy","url('assets/svg/contextMenu/copy.svg')",iconCopy))
-dirDrop[1].item.push(new contextOption("Paste","url('assets/svg/contextMenu/paste.svg')",iconPaste))
-
-dirDrop[2].item.push(new contextOption("Delete","url('assets/svg/contextMenu/delete.svg')",iconDelete))
-dirDrop[2].item.push(new contextOption("Rename","url('assets/svg/contextMenu/rename.svg')",iconRename))
-dirDrop[2].item.push(new contextOption("Properties","url('assets/svg/contextMenu/properties.svg')",iconProperties))
-//-------------------------------------------------------------------------------------|
-
-function makeDropContext(e = null,elmnt,_this) {
+function makeDropContext(e = null,_this) {
     let contextArray = findOutMenu(_this)
 
     let x = 0
@@ -84,7 +77,7 @@ function makeDropContext(e = null,elmnt,_this) {
 
             //no idea why it only worked like this, but it did
             let pls = [x,y]
-            let arg = [e,elmnt,_this]
+            let arg = [e,_this]
             newButton.onclick = e => contextArray[pls[0]].item[pls[1]].func(arg[0], arg[1], arg[2])
 
             y++
@@ -137,7 +130,7 @@ window.addEventListener("mousedown", (e) => {
 });
 
 //open context menu
-function openMenu(e, node, obj) {
+function openMenu(e, obj) {
 	e.preventDefault()
 
 	closeMenu()
@@ -147,7 +140,7 @@ function openMenu(e, node, obj) {
 
 	idCtextMenu.blur()
 
-	makeDropContext(e, node, obj)
+	makeDropContext(e, obj)
 }
 
 //close all context menus
@@ -158,7 +151,7 @@ function closeMenu() {
 }
 
 //-------------------------------------------------------------------------------------|
-function iconOpen(e, elmnt, _this){
+function iconOpen(e, _this){
     if(
         !(e.target.classList.contains("cmcheck"))
     ) {
@@ -168,7 +161,7 @@ function iconOpen(e, elmnt, _this){
         loadAPP("./apps/filesystem_explorer/explorer_lau.html", [_this.text, _this.file])
     }
 }
-function iconFullscreen(e, elmnt, _this){
+function iconFullscreen(e, _this){
     if(
         !(e.target.classList.contains("cmcheck"))
     ) {
@@ -176,7 +169,7 @@ function iconFullscreen(e, elmnt, _this){
         closeMenu();
     }
 }
-function iconNewtab(e, elmnt, _this){
+function iconNewtab(e, _this){
     if(
         !(e.target.classList.contains("cmcheck"))
     ) {
@@ -184,7 +177,7 @@ function iconNewtab(e, elmnt, _this){
         closeMenu();
     }
 }
-function iconCut(e, elmnt, _this){
+function iconCut(e, _this){
     if(
         !(e.target.classList.contains("cmcheck"))
     ) {
@@ -192,7 +185,7 @@ function iconCut(e, elmnt, _this){
         closeMenu();
     }
 }
-function iconCopy(e, elmnt, _this){
+function iconCopy(e, _this){
     if(
         !(e.target.classList.contains("cmcheck"))
     ) {
@@ -200,7 +193,7 @@ function iconCopy(e, elmnt, _this){
         closeMenu();
     }
 }
-function iconPaste(e, elmnt, _this){
+function iconPaste(e, _this){
     if(
         !(e.target.classList.contains("cmcheck"))
     ) {
@@ -208,23 +201,25 @@ function iconPaste(e, elmnt, _this){
         closeMenu();
     }
 }
-function iconDelete(e, elmnt, _this){
+function iconDelete(e, _this){
     if(
         !(e.target.classList.contains("cmcheck"))
     ) {
         //console.log("Delete")
 
         closeMenu()
-        deleteSelectedNodes()
+        deleteSelectedNodes(envfocus.pocket)
     }
 }
-function iconRename(e, elmnt, _this){
+function iconRename(e, _this){
     if(
         !(e.target.classList.contains("cmcheck"))
     ) {
         //console.log("Rename")
         closeMenu()
-        let iconText = elmnt.childNodes[1]
+        let iconText = _this.node.childNodes[1]
+        let editFile = addressInterpreter(_this.file)
+        let editFrom = addressInterpreter(editFile.conf.from)
         //make h3 editable --------------------|
         iconText.setAttribute("contenteditable", "true")
         iconText.setAttribute("spellcheck", "false")
@@ -233,20 +228,18 @@ function iconRename(e, elmnt, _this){
         selectText(iconText)
 
         iconText.style.textShadow = "none"
+        iconText.style.display = "block"
 
         //restore -> leave icon unmodified
-        document.body.oncontextmenu = iconRenamingRestore;
+        document.body.oncontextmenu = iconRenamingRestore
         window.onkeydown = (e) => {if(e.key == "Escape"){
             iconRenamingRestore()
             return false
-        }};
+        }}
         function iconRenamingRestore(){
             shouldSelect = true
             
-            //if this icon is from the desktop
-            if (eval(addressInterpreter(eval(addressInterpreter(_this.file)).conf.from)) === currentVertex){
-                _this.statNode()
-            }
+            _this.statNode()
 
             iconText.textContent = _this.text
             iconText.setAttribute("contenteditable", "false");
@@ -256,79 +249,80 @@ function iconRename(e, elmnt, _this){
             iconText.blur();
             clearSelection();
 
-            document.body.oncontextmenu = null
-            document.body.onmousedown = null
-            document.body.onclick = null
-            iconText.onkeydown = null
-            window.onkeydown = null
-            window.onkeyup = null
+            nullifyOnEvents(iconText)
         }
 
         setTimeout( () => {
-            document.body.onmousedown = iconRenaming;
-            iconText.onkeydown = (e) => {if(e.key == "Enter" && e.shiftKey == false){
-                iconRenaming()
-                return false
-            }};
+            document.body.onmousedown = iconRenaming
+            iconText.onkeydown = (e) => {
+                if(e.key == "Enter" && e.shiftKey == false){
+                    iconRenaming()
+                    return false
+                }
+            }
             function iconRenaming(){
                 if(
-                    iconNameExists(iconText.textContent, _this, eval(addressInterpreter(eval(addressInterpreter(_this.file)).conf.from))) == false &&
-                    iconText.textContent != "¡Name me!" &&
-                    iconText.textContent != "" &&
-                    iconText.textContent.match(/[\/"]/g) === null
+                    !iconNameExists(iconText.textContent, editFile.conf.icon, editFrom) &&
+                    validIconName(iconText.textContent)
                 ) {
                     //if the name is allowed --------------------|
                     shouldSelect = true;
 
+                    if (editFrom === currentVertex) _this.node.id = "Icon: "+iconText.textContent
+
                     iconText.setAttribute("contenteditable", "false")
-                    elmnt.id = "Icon: "+iconText.textContent
-                    _this.text = iconText.textContent
+                    editFile.conf.icon.text = iconText.textContent
                     iconText.style.backgroundColor = ""
                     iconText.style.textShadow = ""
 
                     //insert into fylesystem
-                    if (iconText.textContent != eval(addressInterpreter(_this.file)).name) { //if the name changed
-                        let getFile = eval(addressInterpreter(_this.file))
-                        let getFrom = eval(addressInterpreter(eval(addressInterpreter(_this.file)).conf.from))
-                        //
-                        renameKey(getFrom.cont, getFile.name, iconText.textContent)
-                        getFrom.cont[iconText.textContent].name = iconText.textContent
-                        //
-                        _this.file = "" + getFrom.conf.icon.file + "/" + iconText.textContent
-                    }
+                    if (iconText.textContent != editFile.name) { //if the name changed
+                        editFile.renameMe(iconText.textContent)
+                        if (_this.task) {
+                            taskid = _this.task
+                            task   = findTask(taskid)
+                            task.memory.explorerInit(task.memory.directory, taskid)
 
+                            for (icon of task.memory.iconArray) {
+                                if (icon.text == iconText.textContent) {
+                                    icon.statNode(1)
+                                    task.pocket.push(icon)
+                                }
+                            }
+                        }
+                    }
 
                     iconText.blur()
                     clearSelection()
 
-                    document.body.oncontextmenu = null
-                    document.body.onmousedown = null
-                    document.body.onclick = null
-                    iconText.onkeydown = null
-                    window.onkeydown = null
-                    window.onkeyup = null
+                    nullifyOnEvents(iconText)
                 } else {
                     //if the name not allowed --------------------|
-                    shouldSelect = false;
+                    shouldSelect = false
                     iconText.style.backgroundColor = "#c90000"
 
                     //insist -> keep only edited selected
                     document.body.onclick = iconRenamingInsist
-                    window.onkeyup = (e) => {if(e.key == "Enter"){
-                        iconRenamingInsist()
-                        return false
-                    }};
+                    window.onkeyup = (e) => {
+                        if(e.key == "Enter"){
+                            iconRenamingInsist()
+                            return false
+                        }
+                    }
                     function iconRenamingInsist(){
-                        for (i = iconArray.length - 1; i >= 0; i--){
-                            iconArray[i].stat = 0
-                            iconArray[i].statNode()
+                        if (_this.task) {
+                            for (icon of findTask(_this.task).memory.iconArray){
+                                icon.statNode(0)
+                                findTask(_this.task).pocket = findTask(_this.task).pocket.remove(icon)
+                            }
+                        } else {
+                            for (icon of desktop.memory.iconArray){
+                                icon.statNode(0)
+                                desktop.pocket = desktop.pocket.remove(icon)
+                            }
                         }
-                        //if this icon is from the desktop
-                        if (eval(addressInterpreter(eval(addressInterpreter(_this.file)).conf.from)) === currentVertex){
-                            _this.statNode(1)
-                            _this.stat = 0
-                        }
-
+                        _this.statNode(1)
+                        _this.stat = 0
         
                         selectText(iconText)
                     }
@@ -337,7 +331,7 @@ function iconRename(e, elmnt, _this){
         }, 1)
     }
 }
-function iconProperties(e, elmnt, _this){
+function iconProperties(e, _this){
     if(
         !(e.target.classList.contains("cmcheck"))
     ) {
@@ -346,7 +340,15 @@ function iconProperties(e, elmnt, _this){
     }
 }
 //-------------------------------------------------------------------------------------|
-function deskGrid(e, elmnt, _this){
+function dirIconOpen(e, _this){
+    closeMenu()
+    findTask(_this.task).memory.explorerInit(_this.file, _this.task)
+}
+function dirIconNewWindow(e, _this){
+    explorerInit(_this.file, _this.task)
+}
+//-------------------------------------------------------------------------------------|
+function deskGrid(e, _this){
     if(
         !(e.target.classList.contains("cmcheck"))
     ) {
@@ -357,7 +359,7 @@ function deskGrid(e, elmnt, _this){
         closeMenu();
     }
 }
-function deskNew(e, elmnt, _this){
+function deskNew(e, _this){
     if(
         !(e.target.classList.contains("cmcheck"))
     ) {
@@ -473,7 +475,7 @@ function deskNew(e, elmnt, _this){
         }, 1);
     }
 }
-function deskPaste(e, elmnt, _this){
+function deskPaste(e, _this){
     if(
         !(e.target.classList.contains("cmcheck"))
     ) {
@@ -481,7 +483,7 @@ function deskPaste(e, elmnt, _this){
         closeMenu();
     }
 }
-function deskSettings(e, elmnt, _this){
+function deskSettings(e, _this){
     if(
         !(e.target.classList.contains("cmcheck"))
     ) {
@@ -489,7 +491,7 @@ function deskSettings(e, elmnt, _this){
         closeMenu();
     }
 }
-function deskInfo(e, elmnt, _this){
+function deskInfo(e, _this){
     if(
         !(e.target.classList.contains("cmcheck"))
     ) {
@@ -499,11 +501,78 @@ function deskInfo(e, elmnt, _this){
 }
 //-------------------------------------------------------------------------------------|
 
-function iconNameExists(text, _this, from){
-    for ([name, file] of Object.entries(from.cont)){
-        if (file.name == text && file.conf.icon != _this) {
-            return true
-        }
-    }
-    return false
+function nullifyOnEvents(rawr) {
+    document.body.oncontextmenu = null
+    document.body.onmousedown = null
+    document.body.onclick = null
+    rawr.onkeydown = null
+    window.onkeydown = null
+    window.onkeyup = null
 }
+
+//-------------------------------------------------------------------------------------|
+//--------------------n
+var verDrop = []
+
+verDrop.push(new contextSection("file"))
+verDrop.push(new contextSection("clip"))
+verDrop.push(new contextSection("view"))
+verDrop.push(new contextSection("info"))
+
+verDrop[0].item.push(new contextOption("New","url('assets/svg/contextMenu/maximize.svg')",deskNew))
+
+verDrop[1].item.push(new contextOption("Paste","url('assets/svg/contextMenu/paste.svg')",deskPaste))
+
+verDrop[2].item.push(new contextOption("Grid","url('assets/svg/contextMenu/open.svg')",deskGrid))
+
+verDrop[3].item.push(new contextOption("Settings","url('assets/svg/contextMenu/rename.svg')",deskSettings))
+verDrop[3].item.push(new contextOption("Info","url('assets/svg/contextMenu/properties.svg')",deskInfo))
+//--------------------n
+var expDrop = []
+
+expDrop.push(new contextSection("icon"))
+expDrop.push(new contextSection("clip"))
+expDrop.push(new contextSection("info"))
+
+expDrop[0].item.push(new contextOption("New","url('assets/svg/contextMenu/maximize.svg')",deskNew))
+expDrop[0].item.push(new contextOption("View","url('assets/svg/contextMenu/open.svg')",deskGrid))
+
+expDrop[1].item.push(new contextOption("Paste","url('assets/svg/contextMenu/paste.svg')",deskPaste))
+
+expDrop[2].item.push(new contextOption("Info","url('assets/svg/contextMenu/properties.svg')",deskInfo))
+expDrop[2].item.push(new contextOption("Properties","url('assets/svg/contextMenu/properties.svg')",deskSettings))
+//--------------------n
+var dirDrop1 = []
+
+dirDrop1.push(new contextSection("open"))
+dirDrop1.push(new contextSection("clip"))
+dirDrop1.push(new contextSection("prop"))
+
+dirDrop1[0].item.push(new contextOption("Open","url('assets/svg/contextMenu/open.svg')",iconOpen))
+
+dirDrop1[1].item.push(new contextOption("Cut","url('assets/svg/contextMenu/cut.svg')",iconCut))
+dirDrop1[1].item.push(new contextOption("Copy","url('assets/svg/contextMenu/copy.svg')",iconCopy))
+dirDrop1[1].item.push(new contextOption("Paste","url('assets/svg/contextMenu/paste.svg')",iconPaste))
+
+dirDrop1[2].item.push(new contextOption("Delete","url('assets/svg/contextMenu/delete.svg')",iconDelete))
+dirDrop1[2].item.push(new contextOption("Rename","url('assets/svg/contextMenu/rename.svg')",iconRename))
+dirDrop1[2].item.push(new contextOption("Properties","url('assets/svg/contextMenu/properties.svg')",iconProperties))
+//--------------------n
+var dirDrop2 = []
+
+dirDrop2.push(new contextSection("open"))
+dirDrop2.push(new contextSection("clip"))
+dirDrop2.push(new contextSection("prop"))
+
+dirDrop2[0].item.push(new contextOption("Open","url('assets/svg/contextMenu/open.svg')",dirIconOpen))
+dirDrop2[0].item.push(new contextOption("Open in new window","url('assets/svg/contextMenu/maximize.svg')",iconOpen))
+
+dirDrop2[1].item.push(new contextOption("Cut","url('assets/svg/contextMenu/cut.svg')",iconCut))
+dirDrop2[1].item.push(new contextOption("Copy","url('assets/svg/contextMenu/copy.svg')",iconCopy))
+dirDrop2[1].item.push(new contextOption("Paste","url('assets/svg/contextMenu/paste.svg')",iconPaste))
+
+dirDrop2[2].item.push(new contextOption("Delete","url('assets/svg/contextMenu/delete.svg')",iconDelete))
+dirDrop2[2].item.push(new contextOption("Rename","url('assets/svg/contextMenu/rename.svg')",iconRename))
+dirDrop2[2].item.push(new contextOption("Properties","url('assets/svg/contextMenu/properties.svg')",iconProperties))
+//--------------------n
+//-------------------------------------------------------------------------------------|

@@ -102,6 +102,7 @@ function evaluateIconGrid(
     //if updating object is necessary
     if( (wChanged || hChanged || wmChanged || hmChanged || autowm || autohm) || a == 2) {
     
+        //if the grid app is open update graph
         if (document.getElementsByClassName("grid_graph")) {
             if (document.getElementsByClassName("grid_graph")[0]) {
                 if (cfg.desk.grid.autoHmargin) document.getElementsByClassName("grid_graph")[0].children[4].innerText = parseFloat(cfg.desk.grid.modHmargin).toFixed(2);
@@ -150,6 +151,7 @@ function evaluateIconGrid(
         let gridHFinal= (autowl) ? gridHorizontal : wl;
         let gridVFinal= (autohl) ? gridVertical : hl;
 
+        //if the grid app is open update values
         if(document.getElementById("hLength")) document.getElementById("hLength").innerText = gridHFinal;
         if(document.getElementById("vLength")) document.getElementById("vLength").innerText = gridVFinal;
 
