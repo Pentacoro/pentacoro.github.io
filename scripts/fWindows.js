@@ -1,5 +1,5 @@
 class Window {
-    constructor(name, task, resizable, uiux = 3, state = 1, x, y, w, h, mw, mh){
+    constructor(name, task, resizable, uiux = 3, state = 1, w, h, mw, mh, x = 200, y = 200){
         this.stat = state // 0 => minimized | 1/2 => open/selected | 3/4 => maximized/selected
         this.posX = x
         this.posY = y
@@ -250,12 +250,12 @@ function statWndwNode(elmnt, _this) {
     }
 }
 
-function poseWndwNode(elmnt, _this) {
-    elmnt.style.top = _this.posY + "px"
-    elmnt.style.left = _this.posX + "px"
+function poseWndwNode(node, _this) {
+    node.style.top = _this.posY + "px"
+    node.style.left = _this.posX + "px"
 
-	elmnt.style.height = _this.heig + "px"
-	elmnt.style.width = _this.widt + "px"
+	node.style.height = _this.heig + "px"
+	node.style.width = _this.widt + "px"
 }
 
 function crteWndwNode(_this) {

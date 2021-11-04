@@ -21,7 +21,7 @@
         let appHTML = ajaxReturn("get", url)
         appHTML.then( data => {
             //window generation
-            windowArray.push(new Window(arg[0], id, true, 3, 1, 200, 200, 700, 460, 192, 160))
+            windowArray.push(new Window(arg[0], id, true, 3, 1, 700, 460, 192, 160))
             newWindow = windowArray[windowArray.length - 1]
             newWindow.createNode()
 

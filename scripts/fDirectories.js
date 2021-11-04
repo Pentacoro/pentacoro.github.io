@@ -37,7 +37,7 @@ class Directory {
         //if the parent is a vertex && icon doesn't have coord values then put them on deskGrid
         if (this.conf.vert && this.cont[childName].conf.icon.coor.px == 0) {
             repositionIcons([this.cont[childName].conf.icon],true,false)
-            iconArray.push(this.cont[childName].conf.icon)
+            desktop.memory.iconArray.push(this.cont[childName].conf.icon)
             this.cont[childName].conf.icon.createNode()
         }
     }
@@ -81,7 +81,7 @@ var core = new Directory ("core")
 core.createNewDir   (
                         "vertex",  
                         {
-                            icon : new Icon ("background-image: url('assets/svg/desktopIcons/folderPlaceholder.svg');", "vertex", "dir", 0),
+                            icon : new Icon ("background-image: url('assets/svg/desktopIcons/vertexPH.svg');", "vertex", "dir", 0),
                             from : "",
                             type : "dir",
                             vert : true,
@@ -166,7 +166,7 @@ function addressInterpreter(addr = "") {
                 expression += ".cont[\""+string+"\"]"
                 steps.push(string)
                 return expression
-            } else { 
+            } else if (string === ""){ 
                 return expression 
             }
 

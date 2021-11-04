@@ -113,6 +113,8 @@
         .list>.explorerIcon.highlight.ID_TASKID {
             border: 2px dotted rgba(0, 0, 0, 0.39);
         }
+
+        /*---------------------------------------*/
         .explorerIconImage.ID_TASKID{
             width: 100%;
             height: 50%;
@@ -137,9 +139,10 @@
             text-overflow: ellipsis;
             word-wrap: break-word;
         }
+        /*---------------------------------------*/
     </style>
 
-    <title>Document</title>
+    <title>Explorer</title>
 </head>
 <body>
 
@@ -170,12 +173,12 @@
         let mem  = findTask("TASKID").memory
         task.apps = "exp"
         mem.iconArray = []
+        mem.variables = {}
         mem.directory = "xcorex"
 
-        mem.explorerInit = function (dir, id) {    
+        mem.explorerInit = function (dir, id, act = null) {    
             try {       
-                let activeDir = dir 
-                let activeObj = addressInterpreter(activeDir)
+                let activeObj = addressInterpreter(dir)
                 let dirList   = Object.entries(activeObj.cont)
 
                 let dirFolder = []
@@ -188,6 +191,7 @@
 
                 findTask(id).memory.iconArray = []
                 findTask(id).memory.directory = dir
+                findTask(id).memory.variables.dirname = activeObj.name
                 findTask(id).pocket = []
 
                 for (item of dirList) {
@@ -211,29 +215,48 @@
                 dirTran.sort  ((a, b) => a.name.localeCompare(b.name))
 
                 document.getElementsByClassName("address ID_"+id)[0].innerHTML = dir
+                document.getElementsByClassName("window ID_"+id)[0].children[0].children[0].children[0].innerHTML = activeObj.name
 
                 createExplorerIcons(dirFolder)
                 createExplorerIcons(dirFile)
                 createExplorerIcons(dirTran)
-            } catch (error) {
+            } catch (e) {
+                mem.variables.error = e
+                mem.variables.errorB = [["Okay", endTask]]
+                loadAPP("./apps/system_popup/popup_lau.html",["Error",false,"Couldn't load directory", "This directory seems to no longer exist. It might have been moved, or a parent directory been renamed","TASKID",""])
 
+                if (act === "refresh") mem.explorerInit("", "TASKID")
             }
         }
 
         mem.explorerInit("xcorex", "TASKID")
 
+        //nav buttons
         document.getElementsByClassName("back ID_TASKID")[0].onclick = e => {
 
         }
         document.getElementsByClassName("parent ID_TASKID")[0].onclick = e => {
             if (mem.directory !== "") {
-                mem.explorerInit(addressInterpreter(mem.directory).conf.from, "TASKID")
+                try {
+                    mem.explorerInit(addressInterpreter(mem.directory).conf.from, "TASKID")
+                } catch (e1) {
+                    try {
+                        let newDir = mem.directory.replace(/\/(?:.(?!\/))+$/gim, "")
+                        mem.explorerInit(newDir, "TASKID")
+                    } catch (e) {
+                        mem.variables.error  = e
+                        mem.variables.errorB = [["Okay", endTask]]
+                        loadAPP("./apps/system_popup/popup_lau.html",["Error",false,"Couldn't load directory", "This directory seems to no longer exist. It might have been moved, or a parent directory been renamed","TASKID",""])
+
+                        mem.explorerInit("", "TASKID")
+                    }
+                }
             } else {
                 mem.explorerInit(mem.directory, "TASKID")
             }
         }
         document.getElementsByClassName("refresh ID_TASKID")[0].onclick = e => {
-            mem.explorerInit(mem.directory, "TASKID")
+            mem.explorerInit(mem.directory, "TASKID", "refresh")
         }
         document.getElementsByClassName("list ID_TASKID")[0].onmousedown = e => {
             if (e.target.classList.contains("list")) {
@@ -249,7 +272,7 @@
             }
         }
 
-
+        //local functions
         function createExplorerIcons(array) {
                 for(item of array) {
                     let itemIcon = item.conf.icon
