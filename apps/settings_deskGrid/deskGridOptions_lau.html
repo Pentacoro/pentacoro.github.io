@@ -22,7 +22,7 @@
         let appHTML = ajaxReturn("get", url)
         appHTML.then( data => {
             //window generation
-            windowArray.push(new Window("Desktop Grid Settings", id, false, 1, 1, 200, 200, 350, 560))
+            windowArray.push(new Window("Desktop Grid Settings", id, false, 1, 1, 350, 560))
             newWindow = windowArray[windowArray.length - 1]
             newWindow.createNode()
 

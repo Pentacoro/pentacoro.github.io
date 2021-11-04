@@ -135,6 +135,12 @@ function dlteIconDirNode(_this) {
 
     findTask(_this.task).pocket = findTask(_this.task).pocket.remove(_this)
     findTask(_this.task).memory.iconArray = findTask(_this.task).memory.iconArray.remove(_this)
+
+    if (addressInterpreter(addressInterpreter(_this.file).conf.from) === currentVertex) { //delete desktop icon if file is from vertex
+        let rawr = addressInterpreter(_this.file).conf.icon
+        rawr.deleteNode()
+        deskRefresh(null, desktop)
+    }
 }
 
 

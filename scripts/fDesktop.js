@@ -104,7 +104,7 @@ function selectBox() {
 		}
 		
 		//iconReaction--------------------------------------------------|
-		for (icon of iconArray){
+		for (icon of desktop.memory.iconArray){
 			if (icon.node != null) { /*otherwise callback argument ruins everything*/
 				if (areRectanglesOverlap(icon.node,idSelectBox)) {
 					//light up colliding icon hover border:
@@ -125,7 +125,7 @@ function selectBox() {
 
 		//iconReaction--------------------------------------------------|
 		
-		for (icon of iconArray){
+		for (icon of desktop.memory.iconArray){
 			if (icon.node != null) { /*otherwise callback argument ruins everything*/
 				if (areRectanglesOverlap(icon.node, idSelectBox)) {
 					//activate colliding icon hover border:

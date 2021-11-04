@@ -283,6 +283,10 @@ function iconRename(e, _this){
                             task   = findTask(taskid)
                             task.memory.explorerInit(task.memory.directory, taskid)
 
+                            if (addressInterpreter(task.memory.directory) === currentVertex){
+                                deskRefresh(e, currentVertex)
+                            }
+
                             for (icon of task.memory.iconArray) {
                                 if (icon.text == iconText.textContent) {
                                     icon.statNode(1)
@@ -345,6 +349,7 @@ function dirIconOpen(e, _this){
     findTask(_this.task).memory.explorerInit(_this.file, _this.task)
 }
 function dirIconNewWindow(e, _this){
+    closeMenu()
     explorerInit(_this.file, _this.task)
 }
 //-------------------------------------------------------------------------------------|
@@ -359,12 +364,27 @@ function deskGrid(e, _this){
         closeMenu();
     }
 }
+function deskRefresh(e, _this){
+    closeMenu()
+
+    desktop.pocket = []
+
+    document.getElementById("desktop").children[2].innerHTML = ""
+
+    for (icon of desktop.memory.iconArray) {
+        icon.createNode()
+        icon.statNode(0)
+    }
+
+}
 function deskNew(e, _this){
     if(
         !(e.target.classList.contains("cmcheck"))
     ) {
         //console.log("New");
-        closeMenu();
+        closeMenu()
+        let editFile = addressInterpreter(_this.file)
+        let editFrom = addressInterpreter(editFile.conf.from)
 
         //Make sure icon appears at center of initial right click-------|
         let initialX = parseInt(window.getComputedStyle(document.getElementById("dropContextMenu"),null).getPropertyValue("left"))
@@ -405,12 +425,7 @@ function deskNew(e, _this){
                 
             createdIcon.deleteNode()
 
-            document.body.oncontextmenu = null
-            document.body.onmousedown = null
-            document.body.onclick = null
-            iconText.onkeydown = null
-            window.onkeydown = null
-            window.onkeyup = null
+            nullifyOnEvents(_this)
         }
 
         setTimeout( () => {
@@ -422,10 +437,8 @@ function deskNew(e, _this){
 
             function iconNaming(){
                 if(
-                    iconNameExists(iconText.textContent, createdIcon, currentVertex) == false &&
-                    iconText.textContent != "¡Name me!" &&
-                    iconText.textContent != "" &&
-                    iconText.textContent.match(/[\/"]/g) === null
+                    !iconNameExists(iconText.textContent, editFile.conf.icon, editFrom) &&
+                    validIconName(iconText.textContent)
                 ) {
                     //if the name is allowed --------------------|
                     shouldSelect = true
@@ -438,16 +451,14 @@ function deskNew(e, _this){
 
                     //insert it into filesystem
                     currentVertex.createNewDir(iconText.textContent, {icon : createdIcon, from : currentVertex.conf.icon.file})
+
+                    //insert it into desktop memory
+                    desktop.memory.iconArray.push(createdIcon)
         
                     iconText.blur()
                     clearSelection()
         
-                    document.body.oncontextmenu = null
-                    document.body.onmousedown = null
-                    document.body.onclick = null
-                    iconText.onkeydown = null
-                    window.onkeydown = null
-                    window.onkeyup = null
+                    nullifyOnEvents(_this)
                 } else {
                     //if the name not allowed --------------------|
                     shouldSelect = false
@@ -458,14 +469,12 @@ function deskNew(e, _this){
                     window.onkeyup = (e) => {if(e.key == "Enter" && e.shiftKey == false){
                         iconNamingInsist()
                         return false
-                    }};
+                    }}
                     function iconNamingInsist(){
-                        for (i = iconArray.length - 1; i >= 0; i--){
-                            iconArray[i].stat = 0
-                            iconArray[i].statNode()
+                        for (icon of desktop.memory.iconArray){
+                            icon.statNode(0)
                         }
-                        createdIcon.stat = 1
-                        createdIcon.statNode()
+                        createdIcon.statNode(1)
                         createdIcon.stat = 0
 
                         selectText(iconText)
@@ -514,16 +523,17 @@ function nullifyOnEvents(rawr) {
 //--------------------n
 var verDrop = []
 
-verDrop.push(new contextSection("file"))
-verDrop.push(new contextSection("clip"))
 verDrop.push(new contextSection("view"))
+verDrop.push(new contextSection("clip"))
+verDrop.push(new contextSection("file"))
 verDrop.push(new contextSection("info"))
 
-verDrop[0].item.push(new contextOption("New","url('assets/svg/contextMenu/maximize.svg')",deskNew))
+verDrop[0].item.push(new contextOption("Grid","url('assets/svg/contextMenu/open.svg')",deskGrid))
+verDrop[0].item.push(new contextOption("Refresh","url('assets/svg/contextMenu/open.svg')",deskRefresh))
 
 verDrop[1].item.push(new contextOption("Paste","url('assets/svg/contextMenu/paste.svg')",deskPaste))
 
-verDrop[2].item.push(new contextOption("Grid","url('assets/svg/contextMenu/open.svg')",deskGrid))
+verDrop[2].item.push(new contextOption("New","url('assets/svg/contextMenu/maximize.svg')",deskNew))
 
 verDrop[3].item.push(new contextOption("Settings","url('assets/svg/contextMenu/rename.svg')",deskSettings))
 verDrop[3].item.push(new contextOption("Info","url('assets/svg/contextMenu/properties.svg')",deskInfo))

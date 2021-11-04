@@ -39,3 +39,7 @@ function findTask(id) {
     let find = taskArray.filter(task => task.id === id)
     return find[0]
 }
+
+function endTask(taskid) {
+    findTask(taskid).end()
+}

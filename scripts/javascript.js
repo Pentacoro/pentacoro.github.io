@@ -43,20 +43,30 @@ const loadURL = function(data, container){
     
     if (container.getElementsByTagName("script")){
         for(i = 0; i < container.getElementsByTagName("script").length; i++){
-            eval(container.getElementsByTagName("script")[i].innerText)
+            try {
+                eval(container.getElementsByTagName("script")[i].innerText)
+            } catch (e) {
+                console.log([e])
+                console.log(container.getElementsByTagName("script")[i].innerText)
+            }
         }
     }  
 }
 
 async function loadAPP(url, arg = []){
-    let appLauncher = ajaxReturn("get", url);
+    let appLauncher = ajaxReturn("get", url)
     appLauncher.then( data => {
         newData = data.replace("let arg = []", "let arg = "+stringifyArg(arg))
         document.getElementById("appLauncher").innerHTML = newData
-        eval(document.getElementById("appLauncher").getElementsByTagName("script")[0].innerText)
+        try {
+            eval(document.getElementById("appLauncher").getElementsByTagName("script")[0].innerText)
+        } catch (e) {
+            console.log([e])
+            console.log(document.getElementById("appLauncher").getElementsByTagName("script")[0].innerText)
+        }
     })
-    appLauncher.catch( err => {
-        console.log(err);
+    appLauncher.catch( e => {
+        console.log([e]);
     })
 }
 
