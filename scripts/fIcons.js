@@ -148,9 +148,6 @@ function dragIcon(node, _this) {
             icon.poseNode()
             icon.statNode(1)
         }
-
-        //back to icon layer
-        document.getElementById("iconLayer").appendChild(node)
 		
 		//unselect other folders on mouseup W/O drag UNLESS ctrl
 		if(keyPressCtrl == false && dragging == false && e.button == 0) {
@@ -171,44 +168,47 @@ function dragIcon(node, _this) {
 	}
 }
 
-function menuIcon(elmnt, _this) {
+function menuIcon(node, _this) {
 
-    elmnt.oncontextmenu = e => openMenu(e,_this)
+    node.oncontextmenu = e => openMenu(e,_this)
 }
 
-function statIconNode(elmnt, _this, num) {
+function statIconNode(node, _this, num) {
     //0 => unselected | 1 => selected | 2 => moving
     _this.stat = (num != undefined) ? num : _this.stat
 
     switch(_this.stat){
         case 0:
-            elmnt.classList.remove("active");
-            elmnt.style.border = '';
-            elmnt.style.zIndex = '';
-            elmnt.style.pointerEvents = ''
-            break;
+            node.classList.remove("active")
+            node.classList.remove("moving")
+            node.style.backgroundColor = ''
+
+            //back to icon layer
+            document.getElementById("iconLayer").appendChild(node)
+            break
         case 1:
-            if(!elmnt.classList.contains("active")){elmnt.className += " active"};
-            elmnt.style.opacity = '1';
-			elmnt.style.zIndex = '';
-			elmnt.style.border = '';
-			elmnt.style.backgroundColor = '';
-            elmnt.style.pointerEvents = ''
-            break;
+            if(!node.classList.contains("active")) node.className += " active"
+            node.classList.remove("moving")
+			node.style.backgroundColor = ''
+
+            //back to icon layer
+            document.getElementById("iconLayer").appendChild(node)
+            break
         case 2: 
-            elmnt.style.opacity = '0.5';
-            elmnt.style.zIndex = '1000';
-            elmnt.style.border = '3px solid rgb(0,0,0,0.0)';
-            elmnt.style.backgroundColor = 'rgb(0,0,0,0)';
-            elmnt.style.pointerEvents = 'none';
-            break;
+            if(!node.classList.contains("moving")) node.className += " moving"
+
+            //godGrasp layer
+            document.getElementById("godGrasp").appendChild(node)
+            break
         default: 
     }
 }
 
-function poseIconNode(elmnt, _this) {
-    elmnt.style.left = _this.coor.tx + "px";
-    elmnt.style.top = _this.coor.ty + "px";
+function poseIconNode(node, _this) {
+    node.style.left = _this.coor.tx + "px";
+    node.style.top = _this.coor.ty + "px";
+    node.style.width = cfg.desk.grid.width + "px";
+    node.style.height = cfg.desk.grid.height + "px";
 }
 
 function crteIconNode(_this) {
@@ -216,12 +216,19 @@ function crteIconNode(_this) {
     let newIcon = document.createElement("div")
     newIcon.setAttribute("class", "icon")
     newIcon.setAttribute("id", "Icon: "+_this.text)
-    newIcon.setAttribute("style", "left:"+_this.coor.px+"px;top:"+_this.coor.py+"px;")
+    newIcon.setAttribute("style",   "left:"+_this.coor.px+"px;"+
+                                    "top:"+_this.coor.py+"px;"+
+                                    "width:"+cfg.desk.grid.width+"px;"+
+                                    "height:"+cfg.desk.grid.height+"px;")
 
     let newIconImage = document.createElement("div")
+    let newIconFrame = document.createElement("div")
     newIconImage.setAttribute("class", "iconImage")
     newIconImage.setAttribute("style", _this.imag)
-    newIcon.appendChild(newIconImage)
+    newIconFrame.setAttribute("class", "iconFrame")
+    
+    newIconFrame.appendChild(newIconImage)
+    newIcon.appendChild(newIconFrame)
 
     let newIconText = document.createElement("h3")
     let newIconTextNode = document.createTextNode(_this.text)
