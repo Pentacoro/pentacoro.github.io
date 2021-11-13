@@ -18,7 +18,12 @@
 
 	z-index: -50;
 	pointer-events: all;
+
+	display: grid;
+	grid-template-rows: auto 2.60em 0;
 }
+
+/*-STATES-----------*/
 .icon.active{
 	background-color: rgba(0, 119, 199, 0.7);
 	border: 3px solid rgb(255,255,255,0.10);
@@ -29,10 +34,24 @@
 .icon.highlight{
 	border: 3px dotted rgb(255,255,255,0.30)
 }
+.icon.moving{
+	opacity: 0.5;
+	z-index: 1000;
+	border: 3px solid rgb(0,0,0,0.0);
+	background-color: rgb(0,0,0,0);
+	pointer-events: none;
+}
+/*-----------STATES-*/
+
+/*-CHILDREN---------*/
+.iconFrame{
+	width: 100%;
+	height: 100%;
+	padding: 7px;
+}
 .iconImage{
-	width: 46px;
-	height: 46px;
-	margin: 7px auto;
+	width: 100%;
+	height: 100%;
 	background-image: url("../assets/svg/desktopIcons/folderPlaceholder.svg");
 	background-size: contain;
 	background-repeat: no-repeat;
@@ -63,4 +82,73 @@
 	text-overflow: ellipsis;
 	word-wrap: break-word;
 }
+/*---------CHILDREN-*/
+
+/*-PRESETS----------*/
+
+/*1---------*/ /*icon alone*/
+.icon.style1{
+	grid-template-rows: 100% 0%;
+}
+.icon.style1>.iconFrame{
+	padding: 2px;
+}
+.icon.style1>h3{
+	display: none;
+}
+
+/*2---------*/ /*icon alone and all covering*/
+.icon.style2{
+	grid-template-rows: 100% 0%;
+}
+.icon.style2>.iconFrame{
+	padding: 2px;
+}
+.icon.style2>.iconFrame>.iconImage{
+	background-size: cover;
+}
+.icon.style2>h3{
+	display: none;
+}
+
+/*3---------*/ /*text alone*/
+.icon.style3{
+	grid-template-rows: 0% 100%;
+}
+.icon.style3>.iconFrame{
+	display: none;
+}
+.icon.style3>h3{
+	font-size: 1px; /*js*/
+}
+
+/*4---------*/ /*icon left text right*/
+.icon.style4{
+	grid-template-rows: 100%;
+	grid-template-columns: auto auto; /*js*/
+}
+.icon.style4>.iconFrame{
+	padding: 2px;
+}
+.icon.style4>h3{
+	text-align: left;
+	margin-left: 8px;
+	font-size: 1px; /*js*/
+}
+
+/*5---------*/ /*small*/
+.icon.style5{
+	grid-template-rows: auto 1.30em;
+}
+.icon.style5>.iconFrame{
+	padding: 2px;
+}
+.icon.style5>h3{
+	font-size: 1em; /*js*/
+}
+
+/*6---------*/
+/*7---------*/
+/*----------PRESETS-*/
+
 /*-----------------------------------ICON CLASS*/
