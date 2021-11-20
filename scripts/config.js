@@ -24,6 +24,10 @@ var cfg = {
             borderRadius: 8,
             visibleNodes: false,
         },
+        icon: {
+            responsive: true,
+            style: null
+        },
         back: {
             image: "url('../assets/norrum/Desktop/fondoB.png')",
             color: "#444444",

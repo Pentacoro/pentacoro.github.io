@@ -1,3 +1,5 @@
+//javascript.js
+
 var envfocus  = {}
 
 function deleteSelectedNodes(pocket){

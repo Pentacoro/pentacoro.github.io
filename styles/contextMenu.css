@@ -1,4 +1,4 @@
-#dropContextMenu {
+.clickContext {
     position: absolute;
 
     width: 220px;
@@ -6,7 +6,7 @@
 
     background-color: #eeeeee;
 
-    display: none;
+    display: grid;
     grid-template-rows: auto auto auto;
 
     z-index: 999;
@@ -41,12 +41,12 @@
     background-position: center;
     background-repeat: no-repeat;
 }
-.cmcheck{
+.contextSection>div>.last{
     float: inline-end;
     margin: 0;
     width: 100%;
     height: 100%;
 }
-.contextSection>div:hover{
+.contextSection>div:hover , .contextSection>div.hover{
     background-color: #9ecbdf;
 }

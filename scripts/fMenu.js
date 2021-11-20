@@ -1,8 +1,23 @@
+//javascript.js
+//f.js
+//fIcons.js
+//fIconsDir.js
+//fDirectories.js
+//fWindows.js
+
 class contextOption {
     constructor(name, icon, func){
         this.name = name
         this.icon = icon
         this.func = func 
+    }
+}
+class contextSubmenu {
+    constructor(name, icon, cont){
+        this.name = name
+        this.icon = icon
+        this.cont = [new contextSection("sub")]
+        this.cont[0].item = cont 
     }
 }
 class contextSection {
@@ -46,57 +61,140 @@ function findOutMenu(target) {
     return drop
 }
 
-function makeDropContext(e = null,_this) {
+let subMenus = 0
+
+function makeDropContext(e = null,_this, node) {
     let contextArray = findOutMenu(_this)
 
-    let x = 0
-    let z = 1
-    //for each section
-    for(section of contextArray) {
-        let newSection = document.createElement("div")
-        newSection.classList.add("contextSection")
+    buildMenu(contextArray, node)
 
-        let y = 0
-        //for each item
-        for(item of section.item) {
-            let id = "dropCM" + (x + y + z)
+    function buildMenu(arr, node) {
+        //id-number-magic
+        let x = 0
+        let z = 1
+        
+        //for each section
+        for(section of arr) {
+            let newSection = document.createElement("div")
+            newSection.classList.add("contextSection")
 
-            let newButton = document.createElement("div")
-            newButton.id = id
-            newButton.classList.add("dMenuOption")
-            
-            let newIcon = document.createElement("div")
-            newIcon.style.backgroundImage = item.icon
-            let newText = document.createElement("span")
-            newText.innerHTML = item.name
-    
-            newButton.appendChild(newIcon)
-            newButton.appendChild(newText)
+            //id-number-magic
+            let y = 0
 
-            newSection.appendChild(newButton)
+            //for each item
+            for(item of section.item) {
+                let id = "drop_" + subMenus + "_" + (x + y + z)
 
-            //no idea why it only worked like this, but it did
-            let pls = [x,y]
-            let arg = [e,_this]
-            newButton.onclick = e => contextArray[pls[0]].item[pls[1]].func(arg[0], arg[1], arg[2])
+                let newButton = document.createElement("div")
+                newButton.id = id
+                newButton.classList.add("dropOpt")
+                
+                let newIcon = document.createElement("div")
+                newIcon.style.backgroundImage = item.icon
+                let newText = document.createElement("span")
+                newText.innerHTML = item.name
+        
+                newButton.appendChild(newIcon)
+                newButton.appendChild(newText)
 
-            y++
+                newSection.appendChild(newButton)
+
+                if (arr[x].item[y].func != undefined) {
+                    //no idea why it only worked like this, but it did 
+                    //FUTURE ASCENDED SEBAS: because it catches variables in place with let declaration
+                    let pls = [x,y]
+                    let arg = [e,_this]
+                    let sub = subMenus
+                    newButton.onclick     = e => arr[pls[0]].item[pls[1]].func(arg[0], arg[1], arg[2])
+                    newButton.onmouseover = e => closeSubOpt(sub)
+                } else if (arr[x].item[y].cont != undefined) {
+                    let pls = [x,y]
+                    let arg = x+y+z
+                    let sub = subMenus
+                    newButton.onmouseover  = e => openSubOpt(arr[pls[0]].item[pls[1]], arg, sub)
+
+                    let newLast = document.createElement("span")
+                    newLast.setAttribute("class", "last")
+                    //newLast.setAttribute("style", "font-weight: bold")
+                    newLast.setAttribute("style", "text-align: right;")
+                    newLast.innerHTML = "❯"
+                    newButton.appendChild(newLast)
+                }
+
+                //id-number-magic
+                y++
+            }
+
+            //get on document
+            node.appendChild(newSection)
+
+            //id-number-magic
+            z = z + (section.item.length - 1)
+            x++
         }
-        //get on document
-        document.getElementById("dropContextMenu").appendChild(newSection)
+        //bottom border
+        let bottomSection = document.createElement("div")
+        bottomSection.classList.add("contextSection")
+        node.appendChild(bottomSection)
+        
+        function openSubOpt(opt, optPos, sub) {
+            //check if submenu isn't open already
+            for (drop of document.getElementsByClassName("clickContext")) {
+                if (drop.classList[1].match(/[sub_](\d+)/)) {
+                    classInt = parseInt(drop.classList[1].match(/(\d+)/)[0])
+                    if (classInt > sub) return
+                }
+            }
+            //references to main menu and submenu option
+            let main  = document.getElementsByClassName("clickContext sub_0")[0]
+            let menu  = document.getElementsByClassName("clickContext sub_" + subMenus)[0]
+            let rect1 = menu.getBoundingClientRect()
+            let from  = document.getElementById("drop_" + subMenus + "_" + optPos)
+            let rect2 = from.getBoundingClientRect()
 
-        z = z + (section.item.length - 1)
-        x++
+            subMenus++
+
+            if (!from.classList.contains("hover")) from.classList.add("hover")
+
+            let newSub = document.createElement("div")
+            newSub.setAttribute("class", "clickContext sub_" + subMenus)
+            document.getElementById("contextLayer").appendChild(newSub)
+
+            //position of submenu
+            newSub.style.left  = rect1.left + menu.offsetWidth - 1 + "px"
+            newSub.style.top   = rect2.top - 1 + "px"
+            newSub.style.width = main.offsetWidth - main.offsetWidth / 3 + "px"
+
+            buildMenu(opt.cont, newSub, true)
+        }
+
+        function closeSubOpt(trigger) {
+            //
+            let delArr = []
+            for (menu of document.getElementsByClassName("clickContext")) {
+                classInt = menu.classList[1].match(/(\d+)/)[0]
+                if (classInt > trigger) {
+                    delArr.push(menu)
+                }
+            }
+            for (men of delArr) {
+                men.parentElement.removeChild(men)
+            }
+            //remove hover class from previous menu
+            for (sect of document.getElementsByClassName("sub_"+(trigger))[0].children){
+                for (opt of sect.children) {
+                    if (opt.classList.contains("hover")) opt.classList.remove("hover")
+                }
+            }
+        
+            subMenus = trigger
+        }
     }
-    let bottomSection = document.createElement("div")
-    bottomSection.classList.add("contextSection")
-    document.getElementById("dropContextMenu").appendChild(bottomSection)
 }
 
 function hideDropContext() {
-    for(section of document.getElementById("dropContextMenu").children){
-        document.getElementById("dropContextMenu").innerHTML = ""
-    }
+    let menu = document.getElementsByClassName("clickContext")[0]
+    menu.parentElement.removeChild(menu)
 }
 //----------------------------------------------------------------------------DROP MENU|
 
@@ -125,7 +223,7 @@ window.addEventListener("mousedown", (e) => {
 			clearSelection()
 		}
 	} else{
-		closeMenu();
+		closeMenu()
 	}
 });
 
@@ -134,20 +232,21 @@ function openMenu(e, obj) {
 	e.preventDefault()
 
 	closeMenu()
-	idCtextMenu.style.display = "grid"
-	idCtextMenu.style.top =  e.clientY + "px"
-	idCtextMenu.style.left = e.clientX + "px"
 
-	idCtextMenu.blur()
+    let newMenu = document.createElement("div")
+    newMenu.setAttribute("class", "clickContext sub_0")
+    document.getElementById("contextLayer").appendChild(newMenu)
 
-	makeDropContext(e, obj)
+    newMenu.style.top  = e.clientY + "px"
+    newMenu.style.left = e.clientX + "px"
+
+	makeDropContext(e, obj, newMenu)
 }
 
 //close all context menus
 function closeMenu() {
-	idCtextMenu.style.display = ""
-
-	hideDropContext()
+    document.getElementById("contextLayer").innerHTML = ""
+    subMenus = 0
 }
 
 //-------------------------------------------------------------------------------------|
@@ -381,14 +480,15 @@ function deskNew(e, _this){
     if(
         !(e.target.classList.contains("cmcheck"))
     ) {
-        //console.log("New");
+        //console.log("New")
+
+        //Make sure icon appears at center of initial right click-------|
+        let initialX = parseInt(window.getComputedStyle(document.getElementsByClassName("clickContext sub_0")[0],null).getPropertyValue("left"))
+        let initialY = parseInt(window.getComputedStyle(document.getElementsByClassName("clickContext sub_0")[0],null).getPropertyValue("top"))
+
         closeMenu()
         let editFile = addressInterpreter(_this.file)
         let editFrom = addressInterpreter(editFile.conf.from)
-
-        //Make sure icon appears at center of initial right click-------|
-        let initialX = parseInt(window.getComputedStyle(document.getElementById("dropContextMenu"),null).getPropertyValue("left"))
-        let initialY = parseInt(window.getComputedStyle(document.getElementById("dropContextMenu"),null).getPropertyValue("top"))
 
         let iconWidth = cfg.desk.grid.width/2
         let iconHeight = cfg.desk.grid.height/2
@@ -398,6 +498,8 @@ function deskNew(e, _this){
         let iconPosX = (Math.round((initialX-iconWidth)/(w + wm))*(w + wm) + wm)
         let iconPosY = (Math.round((initialY-iconHeight)/(h + hm))*(h + hm) + hm)
         //--------------------------------------------------------------|
+
+        let iconArray = desktop.memory.iconArray
 
         iconArray.push(new Icon ("background-image: url('assets/svg/desktopIcons/folderPlaceholder.svg');", "¡Name me!", "dir", 1, iconPosX, iconPosY))
         let createdIcon = iconArray[iconArray.length - 1]
@@ -524,19 +626,23 @@ function nullifyOnEvents(rawr) {
 var verDrop = []
 
 verDrop.push(new contextSection("view"))
-verDrop.push(new contextSection("clip"))
 verDrop.push(new contextSection("file"))
 verDrop.push(new contextSection("info"))
 
 verDrop[0].item.push(new contextOption("Grid","url('assets/svg/contextMenu/open.svg')",deskGrid))
 verDrop[0].item.push(new contextOption("Refresh","url('assets/svg/contextMenu/open.svg')",deskRefresh))
 
+verDrop[1].item.push(new contextSubmenu("New","url('assets/svg/contextMenu/maximize.svg')",     
+    [                                                                            
+        new contextOption("Directory","url('assets/svg/contextMenu/maximize.svg')",deskNew),
+        new contextOption("Launcher","url('assets/svg/contextMenu/maximize.svg')",deskNew),
+        new contextOption("Metafile","url('assets/svg/contextMenu/maximize.svg')", deskNew),
+    ]
+))
 verDrop[1].item.push(new contextOption("Paste","url('assets/svg/contextMenu/paste.svg')",deskPaste))
 
-verDrop[2].item.push(new contextOption("New","url('assets/svg/contextMenu/maximize.svg')",deskNew))
-
-verDrop[3].item.push(new contextOption("Settings","url('assets/svg/contextMenu/rename.svg')",deskSettings))
-verDrop[3].item.push(new contextOption("Info","url('assets/svg/contextMenu/properties.svg')",deskInfo))
+verDrop[2].item.push(new contextOption("Settings","url('assets/svg/contextMenu/rename.svg')",deskSettings))
+verDrop[2].item.push(new contextOption("Info","url('assets/svg/contextMenu/properties.svg')",deskInfo))
 //--------------------n
 var expDrop = []
 
@@ -544,9 +650,17 @@ expDrop.push(new contextSection("icon"))
 expDrop.push(new contextSection("clip"))
 expDrop.push(new contextSection("info"))
 
-expDrop[0].item.push(new contextOption("New","url('assets/svg/contextMenu/maximize.svg')",deskNew))
-expDrop[0].item.push(new contextOption("View","url('assets/svg/contextMenu/open.svg')",deskGrid))
 
+expDrop[0].item.push(new contextOption("View","url('assets/svg/contextMenu/open.svg')",deskGrid))
+expDrop[0].item.push(new contextOption("Refresh","url('assets/svg/contextMenu/open.svg')",deskRefresh))
+
+expDrop[1].item.push(new contextSubmenu("New","url('assets/svg/contextMenu/maximize.svg')",     
+    [                                                                            
+        new contextOption("Directory","url('assets/svg/contextMenu/maximize.svg')",deskNew),
+        new contextOption("Launcher","url('assets/svg/contextMenu/maximize.svg')",deskNew),
+        new contextOption("Metafile","url('assets/svg/contextMenu/maximize.svg')", deskNew),
+    ]
+))
 expDrop[1].item.push(new contextOption("Paste","url('assets/svg/contextMenu/paste.svg')",deskPaste))
 
 expDrop[2].item.push(new contextOption("Info","url('assets/svg/contextMenu/properties.svg')",deskInfo))
