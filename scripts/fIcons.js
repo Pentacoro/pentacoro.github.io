@@ -1,3 +1,7 @@
+//javascript.js
+//f.js
+//fPocket.js
+
 class Icon {
     constructor(image, name, program = null, state = 0, x = 0, y = 0){
         this.stat = state
@@ -89,8 +93,8 @@ function dragIcon(node, _this) {
 		}
 
         if(cfg.sound.icons && !dragging) {
-            audioArray[0].volume = 0.5
-            audioArray[0].play()
+            sys.audiArr[0].volume = 0.5
+            sys.audiArr[0].play()
         }
 		
         document.onmouseup = closeDragIcon
@@ -209,6 +213,106 @@ function poseIconNode(node, _this) {
     node.style.top = _this.coor.ty + "px";
     node.style.width = cfg.desk.grid.width + "px";
     node.style.height = cfg.desk.grid.height + "px";
+
+    function rawr(px, dem = 2.35, dpx = 44) {
+		let per = px/dpx * 100
+		let nem = per/100 * dem
+		return nem
+	}
+    function stylize(node, styleName = "style1") {
+        let styleClass
+        for (className of node.classList) {
+            if (className.match(/style(\d+)/)) {
+                styleClass = className.match(/style(\d+)/)[0]
+                node.classList.remove(styleClass)
+            }
+        }
+        node.classList.add(styleName)
+        node.children[1].style.fontSize = ""
+        node.style.gridTemplateColumns = ""
+    }
+    function isBetween(a, b, c) {
+        if (a >= b && a <= c) return true
+        return false
+    }
+    function gcd (a, b) {
+		return (b == 0) ? a : gcd (b, a%b);
+	}
+
+    //_______________________
+    w = node.offsetWidth
+    h = node.offsetHeight
+    r = gcd (w, h)
+    //_______________________
+
+
+    let dim = [w,h]
+    let gdc = r
+    let asp = [w/r,h/r]
+    let div = (w/r)/(h/r)
+
+    let sSize = 1
+    let mSize = 1.17
+    let bSize = 1.40
+
+    responsiveIcon(node)
+
+    function responsiveIcon(node) {
+        if (isBetween(w, 1, 50) || isBetween(h, 1, 50)) {
+            if (isBetween(div, 0.5, 1.5)) {
+                stylize(node, "style1")
+            }
+            if (div < 0.5) {
+                stylize(node, "style2")
+            }
+            if (div > 1.5) {
+                stylize(node, "style3")
+                node.children[1].style.fontSize = (h === 50) ? "" : rawr(node.children[1].offsetHeight, 2.35, 44) + "em"
+            }
+            if (div > 3.5) {
+                stylize(node, "style4")
+                node.style.gridTemplateColumns = node.children[0].offsetHeight + "px auto"
+                node.children[1].style.fontSize = (h === 50) ? "" : rawr(node.children[1].offsetHeight, 2.35, 44) + "em"
+            }
+            return
+        }
+        if (isBetween(w, 51, 90) || isBetween(h, 51, 90)) {
+            if (isBetween(div, 0.5, 2.5)) {
+                stylize(node, "style5")
+            }
+            if (div < 0.5) {
+                stylize(node, "style2")
+            }
+            if (div > 2.5) {
+                stylize(node, "style4")
+                node.style.gridTemplateColumns = node.children[0].offsetHeight + "px auto"
+                node.children[1].style.fontSize = rawr(node.children[1].offsetHeight, 1.2, 44) + "em"
+            }
+            if (div > 6) {
+                stylize(node, "style2")
+            }
+            return
+        }
+        if (isBetween(w, 91, 200) || isBetween(h, 91, 200)) {
+            if (isBetween(div, 0.5, 1.5)) {
+                stylize(node, "style6")
+            }
+            if (div < 0.5 || div > 1.5) {
+                stylize(node, "style2")
+            }
+            return
+        }
+        if (w > 200 || h > 200) {
+            if (isBetween(div, 0.5, 1.5)) {
+                stylize(node, "style7")
+                node.children[1].style.fontSize = rawr(node.children[1].offsetHeight, 1.2, 44) + "em"
+            }
+            if (div < 0.5 || div > 1.5) {
+                stylize(node, "style2")
+            }
+            return
+        }
+    }
 }
 
 function crteIconNode(_this) {
@@ -340,11 +444,11 @@ function repositionIcons(icons, mustSet = false, hasPrev = true){
 
     if(cfg.sound.icons && dragging) {
         if(invalidIcons.length == iconAmount) {
-            audioArray[1].play()
+            sys.audiArr[1].play()
         } else if (invalidIcons.length == 0) {
-            audioArray[2].play()
+            sys.audiArr[2].play()
         } else {
-            audioArray[3].play()
+            sys.audiArr[3].play()
         }
     }
 }

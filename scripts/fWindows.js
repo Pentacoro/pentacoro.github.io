@@ -1,3 +1,8 @@
+//javascript.js
+//f.js
+//fPocket.js
+//fDesktop.js
+
 class Window {
     constructor(name, task, resizable, uiux = 3, state = 1, w, h, mw, mh, x = 200, y = 200){
         this.stat = state // 0 => minimized | 1/2 => open/selected | 3/4 => maximized/selected
@@ -199,9 +204,9 @@ function statWndwNode(elmnt, _this) {
         elmnt.id != "windowNumber" + 0
     ) {
 		//send to first array index
-		let thisIndex = windowArray.indexOf(_this)
-		windowArray.splice(thisIndex, 1)
-        windowArray.unshift(_this)
+		let thisIndex = sys.wndwArr.indexOf(_this)
+		sys.wndwArr.splice(thisIndex, 1)
+        sys.wndwArr.unshift(_this)
 
 		//make DOM elements's IDs and zIndex match new object arrangement
 		for(wndw of document.getElementsByClassName("window")){ 
@@ -221,7 +226,7 @@ function statWndwNode(elmnt, _this) {
 		
 			Let's say this is our list of window HTML elements, represented as an array whose 
 		indexes stand for their ID number, as well as match their associated object's index
-		within the windowArray:
+		within the sys.wndwArr:
 
 			[0][1][2][3][4][5] 
 			
@@ -261,7 +266,7 @@ function poseWndwNode(node, _this) {
 function crteWndwNode(_this) {
     let newWindow = document.createElement("div")
     newWindow.setAttribute("class", "window ID_"+_this.task)
-	newWindow.setAttribute("id", "windowNumber" + windowArray.indexOf(_this))
+	newWindow.setAttribute("id", "windowNumber" + sys.wndwArr.indexOf(_this))
 
     let newWindowInner = document.createElement("div")
     newWindowInner.setAttribute("class", "windowInner")
@@ -384,7 +389,7 @@ function crteWndwNode(_this) {
 		}
 	}
 
-	_this.node = document.getElementById("windowNumber" + windowArray.indexOf(_this))
+	_this.node = document.getElementById("windowNumber" + sys.wndwArr.indexOf(_this))
 
     _this.statNode()
     _this.poseNode()
@@ -395,8 +400,8 @@ function crteWndwNode(_this) {
 
 function dlteWndwNode(_this) {
 	//delete window
-	let thisIndex = windowArray.indexOf(_this)
-	windowArray.splice(thisIndex, 1)
+	let thisIndex = sys.wndwArr.indexOf(_this)
+	sys.wndwArr.splice(thisIndex, 1)
 
 	let delWindow = document.getElementById("windowNumber" + thisIndex)
 	delWindow.parentNode.removeChild(delWindow)

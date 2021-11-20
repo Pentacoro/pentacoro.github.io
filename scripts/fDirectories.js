@@ -1,3 +1,9 @@
+//javascript.js
+//f.js
+//fIcon.js
+//fIconDir.js
+//fDesktop.js
+
 class Directory {
     constructor(name, conf = {}, cont = {}) {
         this.name = name

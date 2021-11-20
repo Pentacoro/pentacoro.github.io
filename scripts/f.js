@@ -1,3 +1,5 @@
+//javascript.js
+
 function iframeAntiHover (coin) {
 	var tagIframe = document.getElementsByTagName("iframe");
 
@@ -77,7 +79,7 @@ const idNavbar    = document.getElementById('navbar');
 
 const idSelectBox = document.getElementById('selectBox');
 
-const idCtextMenu = document.getElementById("dropContextMenu");
+const idDropMenu  = document.getElementsByClassName("clickContext")[0];
 
 const classIcon   = document.getElementsByClassName("icon");
 

@@ -1,9 +1,10 @@
+//javascript.js
+//f.js
+
 window.addEventListener("resize", e => {
 	idDesktop.style.width = document.body.offsetWidth + "px"
     idDesktop.style.height = document.body.offsetHeight - cfg.desk.navB.height + "px"
 })
-
-var windowArray = []
 
 var desktop = {
 	dir    : "/vertex",

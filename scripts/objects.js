@@ -24,22 +24,11 @@ class Executable {
     }
 }
 
-var iconArray      = []
-var windowArray    = []
-var taskArray      = []
-var audioArray     = []
-
-audioArray.push(new Audio("assets/sound/Norrum - Interfaz Click v1.mp3"))
-audioArray.push(new Audio("assets/sound/Norrum - Interfaz Item errOr v1.mp3"))
-audioArray.push(new Audio("assets/sound/Norrum - Interfaz Item OK c_ v1.mp3"))
-audioArray.push(new Audio("assets/sound/Norrum - Interfaz Item alMost.mp3"))
-audioArray.push(new Audio("assets/sound/Norrum - Interfaz Startup 2 v1.mp3"))
-
 /*
-windowArray.push(new Window ("Settings", "settingsExe", true, true, 3, 1, 300, 300, 500, 500));
-windowArray.push(new Window ("Settings", "settingsExe", true, true, 3, 1, 420, 420, 500, 500));
-windowArray.push(new Window ("Explorer ONE", "explorerExe", true, true, 3, 1, 420, 420, 500, 500));
-windowArray.push(new Window ("Explorer TWO", "explorerExe", true, true, 3, 1, 420, 420, 500, 500));
+sys.wndwArr.push(new Window ("Settings", "settingsExe", true, true, 3, 1, 300, 300, 500, 500));
+sys.wndwArr.push(new Window ("Settings", "settingsExe", true, true, 3, 1, 420, 420, 500, 500));
+sys.wndwArr.push(new Window ("Explorer ONE", "explorerExe", true, true, 3, 1, 420, 420, 500, 500));
+sys.wndwArr.push(new Window ("Explorer TWO", "explorerExe", true, true, 3, 1, 420, 420, 500, 500));
 */
 
 //------------------------------------------------------------------------------------------------------------//
