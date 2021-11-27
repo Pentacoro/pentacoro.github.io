@@ -1,5 +1,4 @@
 var sys = {
-    iconArr: [],
     wndwArr: [],
     taskArr: [],
     audiArr: [],

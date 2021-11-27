@@ -170,28 +170,38 @@
 
     <script>  
         let task = findTask("TASKID")
-        let mem  = findTask("TASKID").memory
+        let mem  = findTask("TASKID").mem
         task.apps = "exp"
         mem.iconArray = []
-        mem.variables = {}
+        mem.var = {}
         mem.directory = "xcorex"
 
+        //local functions
+        mem.createExplorerIcons = async function(array) {
+            for(item of array) {
+                let itemIcon = item.conf.icon
+                let dirIcon  = new IconDir(itemIcon.imag, itemIcon.text, "TASKID", itemIcon.apps, itemIcon.file)
+                mem.iconArray.push(dirIcon)
+                
+                dirIcon.createNode()
+            }
+        }
         mem.explorerInit = function (dir, id, act = null) {    
             try {       
-                let activeObj = addressInterpreter(dir)
+                let activeObj = addrObj(dir)
                 let dirList   = Object.entries(activeObj.cont)
 
                 let dirFolder = []
                 let dirFile   = []
                 let dirTran   = []
 
-                for (icon of findTask(id).memory.iconArray){
+                for (icon of findTask(id).mem.iconArray){
                     document.getElementsByClassName("list ID_"+id)[0].removeChild(icon.node)
                 }
 
-                findTask(id).memory.iconArray = []
-                findTask(id).memory.directory = dir
-                findTask(id).memory.variables.dirname = activeObj.name
+                findTask(id).mem.iconArray = []
+                findTask(id).mem.directory = dir
+                findTask(id).mem.var.dirname = activeObj.name
                 findTask(id).pocket = []
 
                 for (item of dirList) {
@@ -217,12 +227,11 @@
                 document.getElementsByClassName("address ID_"+id)[0].innerHTML = dir
                 document.getElementsByClassName("window ID_"+id)[0].children[0].children[0].children[0].innerHTML = activeObj.name
 
-                createExplorerIcons(dirFolder)
-                createExplorerIcons(dirFile)
-                createExplorerIcons(dirTran)
+                mem.createExplorerIcons(dirFolder).then( e => mem.createExplorerIcons(dirFile).then(e => mem.createExplorerIcons(dirTran)))
+                
             } catch (e) {
-                mem.variables.error = e
-                mem.variables.errorB = [["Okay", endTask]]
+                mem.var.error = e
+                mem.var.errorB = [["Okay"]]
                 loadAPP("./apps/system_popup/popup_lau.html",["Error",false,"Couldn't load directory", "This directory seems to no longer exist. It might have been moved, or a parent directory been renamed","TASKID",""])
 
                 if (act === "refresh") mem.explorerInit("", "TASKID")
@@ -238,14 +247,14 @@
         document.getElementsByClassName("parent ID_TASKID")[0].onclick = e => {
             if (mem.directory !== "") {
                 try {
-                    mem.explorerInit(addressInterpreter(mem.directory).conf.from, "TASKID")
+                    mem.explorerInit(addrObj(mem.directory).conf.from, "TASKID")
                 } catch (e1) {
                     try {
                         let newDir = mem.directory.replace(/\/(?:.(?!\/))+$/gim, "")
                         mem.explorerInit(newDir, "TASKID")
                     } catch (e) {
-                        mem.variables.error  = e
-                        mem.variables.errorB = [["Okay", endTask]]
+                        mem.var.error  = e
+                        mem.var.errorB = [["Okay"]]
                         loadAPP("./apps/system_popup/popup_lau.html",["Error",false,"Couldn't load directory", "This directory seems to no longer exist. It might have been moved, or a parent directory been renamed","TASKID",""])
 
                         mem.explorerInit("", "TASKID")
@@ -269,17 +278,6 @@
         document.getElementsByClassName("list ID_TASKID")[0].oncontextmenu = e => {
             if (e.target.classList.contains("list")) {
                 openMenu(e, task)
-            }
-        }
-
-        //local functions
-        function createExplorerIcons(array) {
-                for(item of array) {
-                    let itemIcon = item.conf.icon
-                    let dirIcon  = new IconDir(itemIcon.imag, itemIcon.text, "TASKID", itemIcon.apps, itemIcon.file)
-                    mem.iconArray.push(dirIcon)
-                    
-                    dirIcon.createNode()
             }
         }
     </script>

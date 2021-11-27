@@ -116,13 +116,16 @@
         if (description != "") document.getElementsByClassName("message ID_TASKID")[0].children[1].innerHTML = description
         if (image       != "") document.getElementsByClassName("container ID_TASKID")[0].children[0].setAttribute("src", image)
         if (taskid      != "") {
-            buttons = findTask(taskid).memory.variables.errorB
+            buttons = findTask(taskid).mem.var.errorB
             for (button of buttons) {
                 newButton = document.createElement("button")
                 newButton.setAttribute("class", "option ID_TASKID")
                 newButton.innerHTML = button[0]
                 document.getElementsByClassName("buttons ID_TASKID")[0].appendChild(newButton)
-                newButton.onclick = e => button[1]("TASKID")
+                newButton.onclick = e => {
+                    if (button[1]) button[1]()
+                    endTask("TASKID")
+                }
             }
         }
     </script>

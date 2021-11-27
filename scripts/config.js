@@ -1,5 +1,5 @@
 var cfg = {
-    sound: {
+    ssfx: {
         icons: false,
     },
     desk: {
@@ -35,5 +35,11 @@ var cfg = {
         navB: {
             height: 60
         }
+    },
+    exec: {
+        dir: "./apps/filesystem_explorer/explorer_lau.html",
+        ifr: "./apps/media/iframer/iframer_lau.html",
+        img: "./apps/media/gallery/gallery_lau.html",
+        vid: "./apps/media/player/player_lau.html",
     }
 }

@@ -3,7 +3,7 @@
 //fPocket.js
 
 class Icon {
-    constructor(image, name, program = null, state = 0, x = 0, y = 0){
+    constructor(image, name, program = null, state = 0, x = -1, y = -1){
         this.stat = state
         this.coor = {px: x, py: y, tx: x, ty: y, ax: null, ay: null}
 
@@ -51,6 +51,8 @@ function dragIcon(node, _this) {
 	
 	node.onmousedown = dragMouseDown
 
+    node.ondblclick = e => addrObj(_this.file).open()
+
 	function dragMouseDown(e) {
 		e = e || window.event
         e.preventDefault()
@@ -92,7 +94,7 @@ function dragIcon(node, _this) {
             }
 		}
 
-        if(cfg.sound.icons && !dragging) {
+        if(cfg.ssfx.icons && !dragging) {
             sys.audiArr[0].volume = 0.5
             sys.audiArr[0].play()
         }
@@ -358,7 +360,7 @@ function dlteIconNode(_this, fromGrid = false) {
         iconGridArray[_this.coor.ax][_this.coor.ay].used = false;
         iconGridArray[_this.coor.ax][_this.coor.ay].icon = null;
     }
-    desktop.memory.iconArray = desktop.memory.iconArray.remove(_this)
+    desktop.mem.iconArr = desktop.mem.iconArr.remove(_this)
     desktop.pocket = desktop.pocket.remove(_this)
 }
 
@@ -442,7 +444,7 @@ function repositionIcons(icons, mustSet = false, hasPrev = true){
         }
     }
 
-    if(cfg.sound.icons && dragging) {
+    if(cfg.ssfx.icons && dragging) {
         if(invalidIcons.length == iconAmount) {
             sys.audiArr[1].play()
         } else if (invalidIcons.length == 0) {

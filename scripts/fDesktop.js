@@ -1,20 +1,26 @@
 //javascript.js
 //f.js
+//fMenu.js
+//fTasks.js
+//fIcons.js
 
 window.addEventListener("resize", e => {
 	idDesktop.style.width = document.body.offsetWidth + "px"
     idDesktop.style.height = document.body.offsetHeight - cfg.desk.navB.height + "px"
 })
 
-var desktop = {
-	dir    : "/vertex",
-	apps   : "ver",
-	node   : idDesktop,
-	pocket : [],
-	memory : {
-		iconArray : []
+//desktop task reference
+sys.taskArr.push(new Task("sys", false, null, idDesktop, "desktop"))
+const desktop = sys.taskArr[sys.taskArr.length - 1]
+
+desktop.mem.iconArr = []
+
+desktop.mem.renderIcons = function() {
+	for (file of Object.entries(currentVertex.cont)) {
+		file[1].renderMe()
 	}
 }
+
 
 //unselect all folders when desktop click:------------------------------|
 	//when desktop click-------------------|
@@ -105,7 +111,7 @@ function selectBox() {
 		}
 		
 		//iconReaction--------------------------------------------------|
-		for (icon of desktop.memory.iconArray){
+		for (icon of desktop.mem.iconArr){
 			if (icon.node != null) { /*otherwise callback argument ruins everything*/
 				if (areRectanglesOverlap(icon.node,idSelectBox)) {
 					//light up colliding icon hover border:
@@ -126,7 +132,7 @@ function selectBox() {
 
 		//iconReaction--------------------------------------------------|
 		
-		for (icon of desktop.memory.iconArray){
+		for (icon of desktop.mem.iconArr){
 			if (icon.node != null) { /*otherwise callback argument ruins everything*/
 				if (areRectanglesOverlap(icon.node, idSelectBox)) {
 					//activate colliding icon hover border:

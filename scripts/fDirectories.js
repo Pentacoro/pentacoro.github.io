@@ -16,40 +16,33 @@ class Directory {
         if (childConf) { 
             //if conf argument passed use it
             this.cont[childName] = new Directory(childName,childConf)
-            this.cont[childName].conf["icon"].file = this.cont[childName].conf["from"] + "/" + childName
         } else { 
             //if no conf argument passed, create default folder
             this.cont[childName] = new Directory(
                                                     childName, 
                                                     {
+                                                        from : "" + parent.conf["from"] + "/" + parent.name,
+                                                        type : "dir",
+                                                        move : true,
                                                         icon : new Icon (
                                                                             "background-image: url('assets/svg/desktopIcons/folderPlaceholder.svg');", 
                                                                             childName, 
                                                                             "dir", 
                                                                             0  
                                                                         ),
-                                                        from : "" + parent.conf["from"] + "/" + parent.name,
-                                                        type : "dir",
-                                                        move : true
                                                     }
                                                 )
-            this.cont[childName].conf["icon"].file = this.cont[childName].conf["from"] + "/" + childName
         }
+        this.cont[childName].conf.addr = this.cont[childName].conf["from"] + "/" + childName
+        this.cont[childName].conf["icon"].file = this.cont[childName].conf["from"] + "/" + childName
 
         if (childCont) {
             this.cont[childName].cont = childCont
         }
-
-        //if the parent is a vertex && icon doesn't have coord values then put them on deskGrid
-        if (this.conf.vert && this.cont[childName].conf.icon.coor.px == 0) {
-            repositionIcons([this.cont[childName].conf.icon],true,false)
-            desktop.memory.iconArray.push(this.cont[childName].conf.icon)
-            this.cont[childName].conf.icon.createNode()
-        }
     }
 
     deleteMe() {
-        let parent = addressInterpreter(this.conf.from)
+        let parent = addrObj(this.conf.from)
         let child = this
 
         delete parent.cont[child.name]
@@ -58,7 +51,7 @@ class Directory {
         
     }
     renameMe(rename) {
-        let parent  = addressInterpreter(this.conf.from)
+        let parent  = addrObj(this.conf.from)
         let newAddress = "" + parent.conf.icon.file + "/" + rename
         let oldAddress = this.conf.icon.file
 
@@ -78,6 +71,29 @@ class Directory {
         parent.cont[rename].name = rename
         //
     }
+
+    renderMe() {
+        if (addrObj(this.conf.from) === currentVertex) {
+            repositionIcons([this.conf.icon],true,false)
+            desktop.mem.iconArr.push(this.conf.icon)
+            this.conf.icon.createNode()
+        } else if (isDirOpen(this.conf.from)) {
+            for (task of sys.taskArr) {
+                if (task.apps === "exp" && task.mem.directory === this.conf.from) task.mem.createExplorerIcons([this])
+            }
+        }
+    }
+
+    open() {
+        loadAPP(cfg.exec[this.conf.type], [this.name, this.conf.addr], envfocus)
+    }
+}
+
+function isDirOpen(addr) {
+    for (task of sys.taskArr) {
+        if (task.apps === "exp" && task.mem.directory === addr) return true
+    }
+    return false
 }
 
 //--------------------------------------------------------------------------|
@@ -127,7 +143,9 @@ core.cont["vertex"].cont["Folder 1"].createNewDir("owo")
 
 core.cont["vertex"].cont["Folder 1"].cont["owo"].createNewDir("rawr")
 
-function addressInterpreter(addr = "") {
+desktop.mem.renderIcons()
+
+function addrObj(addr = "") {
     //string: where we'll devour addr one dir at a time as we build expression
     let string = addr
     //steps: where we'll store each of the dirs extracted from string (useless for now)
