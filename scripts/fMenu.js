@@ -6,10 +6,11 @@
 //fWindows.js
 
 class contextOption {
-    constructor(name, icon, func){
+    constructor(name, icon, func, able = true){
         this.name = name
         this.icon = icon
         this.func = func 
+        this.able = able
     }
 }
 class contextSubmenu {
@@ -52,10 +53,12 @@ function findOutMenu(target) {
             break
         case "dir":
             if(!target.task ) drop = dirDrop1
-            if( target.task ) drop = dirDrop2
+            if( target.task ) {
+                drop = dirDrop2
+            }
             break
-        case "ver":
-            drop = verDrop
+        case "sys":
+            if( target.name === "desktop" ) drop = verDrop
             break
     }
     return drop
@@ -154,10 +157,11 @@ function makeDropContext(e = null,_this, node) {
 
             subMenus++
 
+            //make submenu option stay hover colored
             if (!from.classList.contains("hover")) from.classList.add("hover")
 
             let newSub = document.createElement("div")
-            newSub.setAttribute("class", "clickContext sub_" + subMenus)
+            newSub.setAttribute("class", "clickContext sub_" + subMenus + " shadow")
             document.getElementById("contextLayer").appendChild(newSub)
 
             //position of submenu
@@ -257,7 +261,7 @@ function iconOpen(e, _this){
         //console.log("Open")
         closeMenu()
 
-        loadAPP("./apps/filesystem_explorer/explorer_lau.html", [_this.text, _this.file])
+        addrObj(_this.file).open()
     }
 }
 function iconFullscreen(e, _this){
@@ -317,8 +321,8 @@ function iconRename(e, _this){
         //console.log("Rename")
         closeMenu()
         let iconText = _this.node.childNodes[1]
-        let editFile = addressInterpreter(_this.file)
-        let editFrom = addressInterpreter(editFile.conf.from)
+        let editFile = addrObj(_this.file)
+        let editFrom = addrObj(editFile.conf.from)
         //make h3 editable --------------------|
         iconText.setAttribute("contenteditable", "true")
         iconText.setAttribute("spellcheck", "false")
@@ -380,13 +384,13 @@ function iconRename(e, _this){
                         if (_this.task) {
                             taskid = _this.task
                             task   = findTask(taskid)
-                            task.memory.explorerInit(task.memory.directory, taskid)
+                            task.mem.explorerInit(task.mem.directory, taskid)
 
-                            if (addressInterpreter(task.memory.directory) === currentVertex){
+                            if (addrObj(task.mem.directory) === currentVertex){
                                 deskRefresh(e, currentVertex)
                             }
 
-                            for (icon of task.memory.iconArray) {
+                            for (icon of task.mem.iconArray) {
                                 if (icon.text == iconText.textContent) {
                                     icon.statNode(1)
                                     task.pocket.push(icon)
@@ -414,12 +418,12 @@ function iconRename(e, _this){
                     }
                     function iconRenamingInsist(){
                         if (_this.task) {
-                            for (icon of findTask(_this.task).memory.iconArray){
+                            for (icon of findTask(_this.task).mem.iconArray){
                                 icon.statNode(0)
                                 findTask(_this.task).pocket = findTask(_this.task).pocket.remove(icon)
                             }
                         } else {
-                            for (icon of desktop.memory.iconArray){
+                            for (icon of desktop.mem.iconArr){
                                 icon.statNode(0)
                                 desktop.pocket = desktop.pocket.remove(icon)
                             }
@@ -445,7 +449,7 @@ function iconProperties(e, _this){
 //-------------------------------------------------------------------------------------|
 function dirIconOpen(e, _this){
     closeMenu()
-    findTask(_this.task).memory.explorerInit(_this.file, _this.task)
+    findTask(_this.task).mem.explorerInit(_this.file, _this.task)
 }
 function dirIconNewWindow(e, _this){
     closeMenu()
@@ -470,7 +474,7 @@ function deskRefresh(e, _this){
 
     document.getElementById("desktop").children[2].innerHTML = ""
 
-    for (icon of desktop.memory.iconArray) {
+    for (icon of desktop.mem.iconArr) {
         icon.createNode()
         icon.statNode(0)
     }
@@ -487,8 +491,8 @@ function deskNew(e, _this){
         let initialY = parseInt(window.getComputedStyle(document.getElementsByClassName("clickContext sub_0")[0],null).getPropertyValue("top"))
 
         closeMenu()
-        let editFile = addressInterpreter(_this.file)
-        let editFrom = addressInterpreter(editFile.conf.from)
+        let editFile = addrObj(_this.file)
+        let editFrom = addrObj(editFile.conf.from)
 
         let iconWidth = cfg.desk.grid.width/2
         let iconHeight = cfg.desk.grid.height/2
@@ -499,7 +503,7 @@ function deskNew(e, _this){
         let iconPosY = (Math.round((initialY-iconHeight)/(h + hm))*(h + hm) + hm)
         //--------------------------------------------------------------|
 
-        let iconArray = desktop.memory.iconArray
+        let iconArray = desktop.mem.iconArr
 
         iconArray.push(new Icon ("background-image: url('assets/svg/desktopIcons/folderPlaceholder.svg');", "¡Name me!", "dir", 1, iconPosX, iconPosY))
         let createdIcon = iconArray[iconArray.length - 1]
@@ -552,10 +556,17 @@ function deskNew(e, _this){
                     iconText.style.textShadow = ""
 
                     //insert it into filesystem
-                    currentVertex.createNewDir(iconText.textContent, {icon : createdIcon, from : currentVertex.conf.icon.file})
+                    currentVertex.createNewDir(iconText.textContent, 
+                        {
+                            icon : createdIcon, 
+                            from : currentVertex.conf.icon.file, 
+                            type : "dir", 
+                            move : true
+                        }
+                    )
 
-                    //insert it into desktop memory
-                    desktop.memory.iconArray.push(createdIcon)
+                    //insert it into desktop mem
+                    //desktop.mem.iconArr.push(createdIcon)
         
                     iconText.blur()
                     clearSelection()
@@ -573,7 +584,7 @@ function deskNew(e, _this){
                         return false
                     }}
                     function iconNamingInsist(){
-                        for (icon of desktop.memory.iconArray){
+                        for (icon of desktop.mem.iconArr){
                             icon.statNode(0)
                         }
                         createdIcon.statNode(1)

@@ -14,6 +14,9 @@
 
     /*image-rendering: crisp-edges;*/
 }
+.clickContext.shadow {
+    filter: drop-shadow(0px 1px 4px rgb(0,0,0,.5));
+}
 .contextSection{
     border: #a1a1a1;
     border-width: 1px;
@@ -50,3 +53,4 @@
 .contextSection>div:hover , .contextSection>div.hover{
     background-color: #9ecbdf;
 }
+

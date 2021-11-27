@@ -4,7 +4,7 @@ var envfocus  = {}
 
 function deleteSelectedNodes(pocket){
     for(icon of pocket){
-        let getFile = addressInterpreter(icon.file)
+        let getFile = addrObj(icon.file)
 
         icon.deleteNode()
 

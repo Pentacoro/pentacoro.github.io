@@ -15,59 +15,113 @@ const ajax = function(method, url, callback, arg = null){
 
 const ajaxReturn = function(method, url) {
     return new Promise((resolve, reject) => {
-        let xhr = new XMLHttpRequest;
-        xhr.open(method, url);
+        let xhr = new XMLHttpRequest
+        xhr.open(method, url)
         xhr.onload = () => {
             if (xhr.status >= 200 && xhr.status < 300) {
-                resolve(xhr.response);
+                resolve(xhr.response)
             } else {
                 reject({
                     status: xhr.status,
-                    statusText: xhr.statusText
-                });
+                    statusText: xhr.statusText,
+                    statusUrl: url
+                })
             }
-        };
+        }
         xhr.onerror = () => {
             reject({
                 status: xhr.status,
-                statusText: xhr.statusText
-            });
-        };
-        xhr.send();
-    });
+                statusText: xhr.statusText,
+                statusUrl: url
+            })
+        }
+        xhr.send()
+    })
 }
 const genRanHex = size => [...Array(size)].map(() => Math.floor(Math.random() * 16).toString(16)).join('');
 
 const loadURL = function(data, container){
-    container.innerHTML = data;
+    taskid = container.parentElement.parentElement.classList[1].splice(0, 3)[0]
+
+    container.innerHTML = data
     
     if (container.getElementsByTagName("script")){
         for(i = 0; i < container.getElementsByTagName("script").length; i++){
             try {
                 eval(container.getElementsByTagName("script")[i].innerText)
             } catch (e) {
-                console.log([e])
-                console.log(container.getElementsByTagName("script")[i].innerText)
+                evalErrorPopup
+                (
+                    container.getElementsByTagName("script")[i].innerText,
+                    "The script number <i>"+i+"</i> from the application <i>"+taskid+"</i> failed evaluation.",
+                    e
+                )
+                findTask(taskid).end()
             }
         }
     }  
 }
 
-async function loadAPP(url, arg = []){
+async function loadAPP(url, arg = [], env = null){
+    if (env) env.loader(true)
     let appLauncher = ajaxReturn("get", url)
     appLauncher.then( data => {
         newData = data.replace("let arg = []", "let arg = "+stringifyArg(arg))
         document.getElementById("appLauncher").innerHTML = newData
         try {
             eval(document.getElementById("appLauncher").getElementsByTagName("script")[0].innerText)
+            if (env) env.loader(false)
         } catch (e) {
-            console.log([e])
-            console.log(document.getElementById("appLauncher").getElementsByTagName("script")[0].innerText)
+            evalErrorPopup
+            (
+                document.getElementById("appLauncher").getElementsByTagName("script")[0].innerText,
+                "The application launcher at: <i>'" + url + "'</i> failed evaluation.",
+                e
+            )
+            if (env) env.loader(false)
         }
     })
     appLauncher.catch( e => {
-        console.log([e]);
+        system.mem.var.error = e
+        system.mem.var.errorB = [["Okay"]]
+        loadAPP("./apps/system_popup/popup_lau.html",
+            [
+                e.status,
+                false,
+                "Launcher: " + e.statusText, 
+                "Couldn't load launcher at: <i>'" + url + "'</i>.",
+                system.id,
+                ""
+            ]
+        )
+        if (env) env.loader(false)
     })
+}
+
+function evalErrorPopup(code, desc, err) {
+    //find and color-code the problematic line
+    let coder = ""
+    coder = code.replace(/[<]/g, "&lt;")
+    coder = coder.replace(/[>]/g, "&gt;")
+    let script = coder.lines()
+    let colour = ""
+    for (y = 0; y < script.length; y++) {
+        colour += (y === (err.lineNumber - 1)) ? "<span style='color: red;'>"+script[y]+"</span> //¡PROBLEM HERE!<br>" : script[y]+"<br>"
+    }
+
+    //add it to typeError stack
+    err.stack = err.stack + "<br><br><hr><br> <b>script:</b>" + colour
+    system.mem.var.error = err
+    loadAPP("./apps/system_popup/popup_lau.html",
+        [
+            "Error",
+            true,
+            "Evaluation Failed", 
+            desc,
+            system.id,
+            ""
+        ]
+    )
 }
 
 String.prototype.splice = function (index, count) {
@@ -77,6 +131,10 @@ String.prototype.splice = function (index, count) {
         extractStr += this[i.toString()]
     }
     return [splicedStr, extractStr]
+}
+
+String.prototype.lines = function () {
+    return this.split('\n')
 }
 
 Array.prototype.remove = function(value) {

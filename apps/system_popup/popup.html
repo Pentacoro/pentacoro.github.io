@@ -67,13 +67,19 @@
             height: 300px;
             background-color: white;
             
+            white-space: pre;
+            text-overflow: clip;
             overflow: scroll;
         }
-        .details.ID_TASKID>p{
+        .details.ID_TASKID>p, .details.ID_TASKID>span{
             font-size: .6em;
         }
-        p{
+        .details.ID_TASKID>p>b{
+            color: blue;
+        }
+        p, span{
             cursor: text;
+            user-select: text;
         }
     </style>
     <title>Popup Message</title>
@@ -116,12 +122,20 @@
         if (description != "") document.getElementsByClassName("message ID_TASKID")[0].children[1].innerHTML = description
         if (image       != "") document.getElementsByClassName("container ID_TASKID")[0].children[0].setAttribute("src", image)
         if (taskid     != "") {
+            document.getElementsByClassName("details ID_TASKID")[0].innerHTML  = ""
+            let newDetails = document.createElement("p")
+            let newButton = document.createElement("button")
+            newButton.setAttribute("class", "warn ID_TASKID")
+            newButton.innerHTML = "console.log()"
+
+            document.getElementsByClassName("details ID_TASKID")[0].appendChild(newDetails)
             document.getElementsByClassName("details ID_TASKID")[0].children[0].innerHTML  = ""
-            document.getElementsByClassName("details ID_TASKID")[0].children[0].innerHTML += "<b>message: </b>" + findTask(taskid).memory.variables.error.message + "<br>"
-            document.getElementsByClassName("details ID_TASKID")[0].children[0].innerHTML += "<b>columnNumber: </b>" + findTask(taskid).memory.variables.error.columnNumber + "<br>"
-            document.getElementsByClassName("details ID_TASKID")[0].children[0].innerHTML += "<b>fileName: </b>" + findTask(taskid).memory.variables.error.fileName + "<br>"
-            document.getElementsByClassName("details ID_TASKID")[0].children[0].innerHTML += "<b>lineNumber: </b>" + findTask(taskid).memory.variables.error.lineNumber + "<br>"
-            document.getElementsByClassName("details ID_TASKID")[0].children[0].innerHTML += "<b>stack: </b>" + findTask(taskid).memory.variables.error.stack + "<br>"
+            document.getElementsByClassName("details ID_TASKID")[0].children[0].innerHTML += "<b>message: </b>" + findTask(taskid).mem.var.error.message + "<br>"
+            document.getElementsByClassName("details ID_TASKID")[0].children[0].innerHTML += "<b>columnNumber: </b>" + findTask(taskid).mem.var.error.columnNumber + "<br>"
+            document.getElementsByClassName("details ID_TASKID")[0].children[0].innerHTML += "<b>fileName: </b>" + findTask(taskid).mem.var.error.fileName + "<br>"
+            document.getElementsByClassName("details ID_TASKID")[0].children[0].innerHTML += "<b>lineNumber: </b>" + findTask(taskid).mem.var.error.lineNumber + "<br><br><hr><br>"
+            document.getElementsByClassName("details ID_TASKID")[0].children[0].innerHTML += "<b>stack: </b><br>" + findTask(taskid).mem.var.error.stack + "<br><hr><br>"
+            document.getElementsByClassName("details ID_TASKID")[0].appendChild(newButton)
         }
 
         document.getElementsByClassName("expand ID_TASKID")[0].onclick = e => {
@@ -140,7 +154,7 @@
             }
         }
         document.getElementsByClassName("warn ID_TASKID")[0].onclick = e => {
-            console.log(findTask(taskid).memory.variables.error)
+            console.log(findTask(taskid).mem.var.error)
             document.getElementsByClassName("warn ID_TASKID")[0].onclick = null
         }
     </script>

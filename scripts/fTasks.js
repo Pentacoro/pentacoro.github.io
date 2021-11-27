@@ -1,23 +1,45 @@
 //javascript.js
 //f.js
+//fWindows.js
 
 class Task {
-    constructor(apps, inst = true, appEnd) {
+    constructor(apps, inst = true, appEnd = null, node = null, name = null) {
         this.apps = apps
+        this.name = name
+
         this.inst = inst
+        this.node = node
+
+        this.load = 0
         this.pocket = []
-        this.memory = {}
+
+        this.mem = {var: {} }
         this.id = genRanHex(16)
         checkUniqueID(this)
         let id = this.id
 
         //end task
-        this.end = function() {
-            
-            appEnd()
-            sys.wndwArr[parseInt(document.getElementsByClassName("ID_"+id)[0].id.match(/(\d+)/)[0])].deleteNode()
+        if (appEnd) {
+            this.end = function() {
+                
+                appEnd()
 
-            sys.taskArr = sys.taskArr.remove(findTask(id))
+                //close window
+                if (document.getElementsByClassName("ID_"+id).length > 0) sys.wndwArr[parseInt(document.getElementsByClassName("ID_"+id)[0].id.match(/(\d+)/)[0])].deleteNode()
+    
+                sys.taskArr = sys.taskArr.remove(findTask(id))
+            }
+        }
+
+        this.loader = function(op) {
+            (op) ? this.load++ : this.load--
+            this.load = (this.load < 0) ? 0 : this.load
+
+            if (this.load === 0) {
+                if (this.node) this.node.style.cursor = ""
+            } else {
+                if (this.node) this.node.style.cursor = "progress"
+            }
         }
     }
 }
@@ -46,3 +68,6 @@ function findTask(id) {
 function endTask(taskid) {
     findTask(taskid).end()
 }
+
+sys.taskArr.push(new Task("sys", false, null, null, "system"))
+const system = sys.taskArr[sys.taskArr.length - 1]
