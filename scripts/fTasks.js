@@ -3,9 +3,9 @@
 //fWindows.js
 
 class Task {
-    constructor(apps, inst = true, appEnd = null, node = null, name = null) {
+    constructor(apps, inst = true, appEnd = null, node = null, from = null, id = null) {
         this.apps = apps
-        this.name = name
+        this.from = from
 
         this.inst = inst
         this.node = node
@@ -14,33 +14,41 @@ class Task {
         this.pocket = []
 
         this.mem = {var: {} }
-        this.id = genRanHex(16)
+        this.id = (id !== null) ? id : genRanHex(16)
         checkUniqueID(this)
-        let id = this.id
-
+        
         //end task
-        if (appEnd) {
-            this.end = function() {
-                
-                appEnd()
+        let thisid = this.id
+        this.end = function() {
+            
+            if (appEnd) appEnd()
 
-                //close window
-                if (document.getElementsByClassName("ID_"+id).length > 0) sys.wndwArr[parseInt(document.getElementsByClassName("ID_"+id)[0].id.match(/(\d+)/)[0])].deleteNode()
-    
-                sys.taskArr = sys.taskArr.remove(findTask(id))
+            //close window
+            if (document.getElementsByClassName("ID_"+thisid).length > 0) {
+                sys.wndwArr[parseInt(document.getElementsByClassName("ID_"+thisid)[0].id.match(/(\d+)/)[0])].deleteNode()
             }
-        }
 
-        this.loader = function(op) {
-            (op) ? this.load++ : this.load--
-            this.load = (this.load < 0) ? 0 : this.load
-
-            if (this.load === 0) {
-                if (this.node) this.node.style.cursor = ""
-            } else {
-                if (this.node) this.node.style.cursor = "progress"
-            }
+            sys.taskArr = sys.taskArr.remove(findTask(thisid))
         }
+    }
+    loader(op) {
+        (op) ? this.load++ : this.load--
+        this.load = (this.load < 0) ? 0 : this.load
+
+        if (this.load === 0) {
+            if (this.node) this.node.style.cursor = ""
+        } else {
+            if (this.node) this.node.style.cursor = "progress"
+        }
+    }
+    focus() {
+        if (this.wndw) {
+            this.wndw.focus(true)
+            this.wndw.statNode()
+        }
+    }
+    unfocus() {
+        if (this.wndw) this.wndw.focus(false)
     }
 }
 
@@ -69,5 +77,28 @@ function endTask(taskid) {
     findTask(taskid).end()
 }
 
-sys.taskArr.push(new Task("sys", false, null, null, "system"))
+function deleteSelectedNodes(pocket){
+    for(icon of pocket){
+        let getFile = addrObj(icon.file)
+
+        icon.deleteNode()
+
+        //delete from filesystem
+        getFile.delete()
+    }
+}
+
+sys.taskArr.push(new Task("system", false, null, null, "sys"))
 const system = sys.taskArr[sys.taskArr.length - 1]
+
+system.mem.lau = {}
+system.mem.var.dragging = false
+system.mem.var.shSelect = true
+system.mem.var.envfocus = {}
+system.mem.focus = function (env) {
+    if (env != system.mem.var.envfocus){
+        if (system.mem.var.envfocus.mem) system.mem.var.envfocus.unfocus()
+        system.mem.var.envfocus = env
+        system.mem.var.envfocus.focus()
+    }
+}

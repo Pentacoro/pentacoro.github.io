@@ -94,7 +94,8 @@
             gap: 5px;
             padding: 5px;
         }
-        .list>.explorerIcon.ID_TASKID {
+
+        .list.ID_TASKID>.explorerIcon {
             margin: 0px;
             z-index: 10;
 
@@ -103,16 +104,32 @@
 
             border: 2px dotted rgba(255, 255, 255, 0);
         }
-        .list>.explorerIcon.active.ID_TASKID {
+        /*---------------------------------------*/
+        .list.ID_TASKID>.explorerIcon.active {
             background-color: rgba(111, 161, 228, 0.623);
             border: 2px solid rgba(0, 0, 0, 0.08);
         }
-        .list>.explorerIcon.ID_TASKID:hover {
+        .list.ID_TASKID>.explorerIcon:hover {
             border: 2px dotted rgba(0, 0, 0, 0.15);
         }
-        .list>.explorerIcon.highlight.ID_TASKID {
+        .list.ID_TASKID>.explorerIcon.highlight {
             border: 2px dotted rgba(0, 0, 0, 0.39);
         }
+        .list.ID_TASKID>.explorerIcon.active.moving {
+            background-color: rgba(111, 162, 228, 0.219);
+            border: 2px dotted rgba(0, 0, 0, 0.39);
+        }
+        .list.ID_TASKID>.explorerIcon.active.moving>* {
+            opacity: .7;
+        }
+        /*---------------------------------------*/
+
+        /*>>>>>>> Anything that changes on unfocus goes here <<<<<<<*/
+        .content.dfocus>.container.ID_TASKID>div>div>.explorerIcon.active{
+            background-color: rgba(138, 138, 138, 0.425);
+        }
+
+        /*>>>>>>>--------------------------------------------<<<<<<<*/
 
         /*---------------------------------------*/
         .explorerIconImage.ID_TASKID{
@@ -172,8 +189,9 @@
         let task = findTask("TASKID")
         let mem  = findTask("TASKID").mem
         task.apps = "exp"
-        mem.iconArray = []
         mem.var = {}
+        mem.iconArray = []
+        mem.dirObject = {}
         mem.directory = "xcorex"
 
         //local functions
@@ -186,6 +204,9 @@
                 dirIcon.createNode()
             }
         }
+        mem.refresh = function () {
+            mem.explorerInit(mem.dirObject.conf.addr, "TASKID", "refresh")
+        }
         mem.explorerInit = function (dir, id, act = null) {    
             try {       
                 let activeObj = addrObj(dir)
@@ -193,7 +214,7 @@
 
                 let dirFolder = []
                 let dirFile   = []
-                let dirTran   = []
+                let dirPlex   = []
 
                 for (icon of findTask(id).mem.iconArray){
                     document.getElementsByClassName("list ID_"+id)[0].removeChild(icon.node)
@@ -201,11 +222,12 @@
 
                 findTask(id).mem.iconArray = []
                 findTask(id).mem.directory = dir
+                findTask(id).mem.dirObject = addrObj(dir)
                 findTask(id).mem.var.dirname = activeObj.name
                 findTask(id).pocket = []
 
                 for (item of dirList) {
-                    if(item[1].conf.type === "dir" && !item[1].conf.tran) {
+                    if(item[1].conf.type === "dir" && !item[1].conf.plex) {
                         dirFolder.push(item[1])
                     }
                 }
@@ -215,19 +237,19 @@
                     }
                 }
                 for (item of dirList) {
-                    if(item[1].conf.tran) {
-                        dirTran.push(item[1])
+                    if(item[1].conf.plex) {
+                        dirPlex.push(item[1])
                     }
                 }
 
                 dirFolder.sort((a, b) => a.name.localeCompare(b.name))
                 dirFile.sort  ((a, b) => a.name.localeCompare(b.name))
-                dirTran.sort  ((a, b) => a.name.localeCompare(b.name))
+                dirPlex.sort  ((a, b) => a.name.localeCompare(b.name))
 
                 document.getElementsByClassName("address ID_"+id)[0].innerHTML = dir
                 document.getElementsByClassName("window ID_"+id)[0].children[0].children[0].children[0].innerHTML = activeObj.name
 
-                mem.createExplorerIcons(dirFolder).then( e => mem.createExplorerIcons(dirFile).then(e => mem.createExplorerIcons(dirTran)))
+                mem.createExplorerIcons(dirPlex).then( e => mem.createExplorerIcons(dirFolder).then(e => mem.createExplorerIcons(dirFile)))
                 
             } catch (e) {
                 mem.var.error = e
@@ -240,14 +262,17 @@
 
         mem.explorerInit("xcorex", "TASKID")
 
-        //nav buttons
+        //nav buttons ---------------|
+
+        //history back [<]
         document.getElementsByClassName("back ID_TASKID")[0].onclick = e => {
 
         }
+        //parent dir
         document.getElementsByClassName("parent ID_TASKID")[0].onclick = e => {
             if (mem.directory !== "") {
                 try {
-                    mem.explorerInit(addrObj(mem.directory).conf.from, "TASKID")
+                    mem.explorerInit(mem.dirObject.conf.from, "TASKID")
                 } catch (e1) {
                     try {
                         let newDir = mem.directory.replace(/\/(?:.(?!\/))+$/gim, "")
@@ -264,9 +289,12 @@
                 mem.explorerInit(mem.directory, "TASKID")
             }
         }
+        //refresh
         document.getElementsByClassName("refresh ID_TASKID")[0].onclick = e => {
-            mem.explorerInit(mem.directory, "TASKID", "refresh")
+            mem.refresh()
         }
+
+        //background click listeners
         document.getElementsByClassName("list ID_TASKID")[0].onmousedown = e => {
             if (e.target.classList.contains("list")) {
                 for (icon of task.pocket) {

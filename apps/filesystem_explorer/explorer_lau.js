@@ -1,23 +1,22 @@
-<script>
     let arg = []
-    let lau = "./apps/settings_deskGrid/deskGridOptions_lau.html"
-    let url = "./apps/settings_deskGrid/deskGridOptions.html"
+    //[0] directory name
+    let tid = ''
+    let url = "./apps/filesystem_explorer/explorer.html"
+    let lau = "./apps/filesystem_explorer/explorer_lau.html"
 
     //on app init
     function ini() {
-        cfg.desk.grid.visibleNodes = true
-        evaluateIconGrid(null, 2)
+
     }
     //on app end
     function end() {
-        cfg.desk.grid.visibleNodes = false
-        evaluateIconGrid(null, 2)
+
     }
 
     //check if instance allowed
-    if (canInstance("Desk Grid Settings")) {
+    if (canInstance("Explorer")) {
         //task creation
-        sys.taskArr.push(new Task("Desk Grid Settings", false, end))
+        sys.taskArr.push(new Task("Explorer", true, end, null, "plx", tid))
         let task = sys.taskArr[sys.taskArr.length - 1]
         let id = task.id
 
@@ -25,22 +24,26 @@
         let appHTML = ajaxReturn("get", url)
         appHTML.then( data => {
             try {
-    
                 //window generation
-                sys.wndwArr.push(new Window("Desktop Grid Settings", id, false, 1, 1, 350, 560))
+                sys.wndwArr.push(new Window(arg[0], id, true, 3, 1, 700, 460, 192, 160))
                 newWindow = sys.wndwArr[sys.wndwArr.length - 1]
                 newWindow.createNode()
-                task.node = newWindow
+                
+                task.wndw = newWindow 
+                task.node = newWindow.cont
     
                 //X button
-                document.getElementsByClassName("ID_"+id)[0].children[0].children[0].getElementsByClassName("X")[0].addEventListener("click", task.end)
+                document.getElementsByClassName("ID_"+id)[0].children[0].children[0].getElementsByClassName("X")[0].addEventListener("mouseup", task.end)
     
                 ini()
     
-                loadURL(repDir(data,url), document.getElementById("windowNumber" + sys.wndwArr.indexOf(newWindow)).children[0].children[1])
+                data = repDir(data,url)
+                data = repTid(data,id)
+                data = data.replace(/xcorex/g,arg[1])
+    
+                loadURL(data, document.getElementById("window_" + sys.wndwArr.indexOf(newWindow)).children[0].children[1])
             } catch (e) {
-                evalErrorPopup
-                (
+                evalErrorPopup(
                     document.getElementById("appLauncher").getElementsByTagName("script")[0].innerText,
                     "The application launcher at: <i>'" + lau + "'</i> failed evaluation.",
                     e
@@ -48,10 +51,11 @@
                 findTask(id).end()
             }
         })
+
         appHTML.catch( e => {
             desktop.mem.var.error = e
             desktop.mem.var.errorB = [["Okay"]]
-            loadAPP("./apps/system_popup/popup_lau.html",
+            loadAPP("./apps/system_popup/popup_lau.js",
                 [
                     e.status,
                     false,
@@ -66,4 +70,3 @@
     } else {
         console.log("instanced")
     }
-</script>
