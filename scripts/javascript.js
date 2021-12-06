@@ -1,12 +1,12 @@
-const ajax = function(method, url, callback, arg = null){
+const ajax = function(method, url, callback = null, arg = null){
     let xhr = new XMLHttpRequest;
     xhr.open(method,url)
     xhr.onload = () => {
         if(xhr.status == 200){
             if (arg === null){
-                callback(xhr.response)
+                if (callback) callback(xhr.response)
             } else {
-                callback(xhr.response, arg)
+                if (callback) callback(xhr.response, arg)
             }
         }
     }
@@ -38,17 +38,21 @@ const ajaxReturn = function(method, url) {
         xhr.send()
     })
 }
+
 const genRanHex = size => [...Array(size)].map(() => Math.floor(Math.random() * 16).toString(16)).join('');
 
-const loadURL = function(data, container){
+const loadURL = function(data, container, env = null){
     taskid = container.parentElement.parentElement.classList[1].splice(0, 3)[0]
 
+    if (env) env.loader(true)
     container.innerHTML = data
     
     if (container.getElementsByTagName("script")){
         for(i = 0; i < container.getElementsByTagName("script").length; i++){
             try {
                 eval(container.getElementsByTagName("script")[i].innerText)
+
+                system.mem.focus(findTask(taskid))
             } catch (e) {
                 evalErrorPopup
                 (
@@ -60,31 +64,47 @@ const loadURL = function(data, container){
             }
         }
     }  
+    if (env) env.loader(false)
 }
 
 async function loadAPP(url, arg = [], env = null){
+    //add to env workload
     if (env) env.loader(true)
+
+    //generate task id
+    let appID = { id : genRanHex(16)}
+    checkUniqueID(appID)
+
+    //place arguments on system task
+    system.mem.lau[appID.id] = arg
+
+    //get _lau file
     let appLauncher = ajaxReturn("get", url)
-    appLauncher.then( data => {
-        newData = data.replace("let arg = []", "let arg = "+stringifyArg(arg))
-        document.getElementById("appLauncher").innerHTML = newData
+
+    appLauncher.then( oData => {
+        nData = oData.replace("let arg = []", "let arg = system.mem.lau['"+appID.id+"']")
+        nData = nData.replace("let tid = ''", "let tid = '"+appID.id+"'")
+
+        //put launcher code here to later be referenced
+        document.getElementById("appLauncher").innerHTML = "<script>"+nData+"</script>"
+        
         try {
-            eval(document.getElementById("appLauncher").getElementsByTagName("script")[0].innerText)
+            eval(nData)
             if (env) env.loader(false)
         } catch (e) {
             evalErrorPopup
             (
-                document.getElementById("appLauncher").getElementsByTagName("script")[0].innerText,
+                nData,
                 "The application launcher at: <i>'" + url + "'</i> failed evaluation.",
                 e
             )
-            if (env) env.loader(false)
         }
     })
     appLauncher.catch( e => {
         system.mem.var.error = e
         system.mem.var.errorB = [["Okay"]]
-        loadAPP("./apps/system_popup/popup_lau.html",
+        
+        loadAPP("./apps/system_popup/popup_lau.js",
             [
                 e.status,
                 false,
@@ -94,6 +114,8 @@ async function loadAPP(url, arg = [], env = null){
                 ""
             ]
         )
+    })
+    appLauncher.finally( e => {
         if (env) env.loader(false)
     })
 }
@@ -106,13 +128,13 @@ function evalErrorPopup(code, desc, err) {
     let script = coder.lines()
     let colour = ""
     for (y = 0; y < script.length; y++) {
-        colour += (y === (err.lineNumber - 1)) ? "<span style='color: red;'>"+script[y]+"</span> //¡PROBLEM HERE!<br>" : script[y]+"<br>"
+        colour += (y === (err.lineNumber - 1)) ? "<span style='color: red;'>"+script[y]+"</span> <span style='color: green;'>// <--- ¡PROBLEM HERE!</span><br>" : script[y]+"<br>"
     }
 
     //add it to typeError stack
     err.stack = err.stack + "<br><br><hr><br> <b>script:</b>" + colour
     system.mem.var.error = err
-    loadAPP("./apps/system_popup/popup_lau.html",
+    loadAPP("./apps/system_popup/popup_lau.js",
         [
             "Error",
             true,
@@ -166,7 +188,6 @@ function stringifyArrayArg(arr) {
     string += "]"
     return string
 }
-
 function stringifyObjectArg(obj) {
     let loop   = 0
     let string = "{"
@@ -178,7 +199,6 @@ function stringifyObjectArg(obj) {
     string += "}"
     return string
 }
-
 function stringifyArg(arg) {
     string = ""
     switch (typeof(arg)) {
@@ -223,15 +243,76 @@ function repTid(data, taskId){ //place the task id on element classList for apps
 }
 
 function preloadImage(url){
-    var img=new Image();
-    img.src=url;
+    let img=new Image()
+    img.src=url
 }
 
+function getValue(key) {
+    let value = null 
+    let pairs = []
+    let items = location.search.substr(1).split("&")
+    for (let i = 0; i < items.length; i++) {
+        pairs = items[i].split("=")
+        if (pairs[0] === key) value = decodeURIComponent(pairs[1])
+    }
+    return value
+}
 
 function wait(ms){
-    var start = new Date().getTime();
-    var end = start;
+    let start = new Date().getTime()
+    let end = start
     while(end < start + ms) {
-      end = new Date().getTime();
-   }
- }
+      end = new Date().getTime()
+    }
+}
+
+function iframeAntiHover (coin) {
+    let tagIframe = document.getElementsByTagName("iframe")
+
+    for (i = 0; i < tagIframe.length; i++) {
+        if (coin == true) {
+            tagIframe[i].className += "antiHover"
+        }
+        if (coin == false) {
+            tagIframe[i].classList.remove("antiHover")
+        }
+    }
+}
+
+function selectText(node) {
+    if (document.body.createTextRange) {
+        const range = document.body.createTextRange()
+        range.moveToElementText(node)
+        range.select()
+    } else if (window.getSelection) {
+        const selection = window.getSelection()
+        const range = document.createRange()
+        range.selectNodeContents(node)
+        selection.removeAllRanges()
+        selection.addRange(range)
+    } else {
+        console.warn("Could not select text in node: Unsupported browser.")
+    }
+}
+
+function clearSelection(){
+    if (window.getSelection) {window.getSelection().removeAllRanges()}
+    else if (document.selection) {document.selection.empty()}
+}
+
+//-----------------------------------------------------------------|
+function areRectanglesOverlap(div1, div2) {
+	let x1 = div1.offsetLeft;
+	let y1 = div1.offsetTop;
+	let h1 = y1 + div1.offsetHeight;
+	let w1 = x1 + div1.offsetWidth;
+
+	let x2 = div2.offsetLeft;
+	let y2 = div2.offsetTop;
+	let h2 = y2 + div2.offsetHeight;
+	let w2 = x2 + div2.offsetWidth;
+
+	if (h1 < y2 || y1 > h2 || w1 < x2 || x1 > w2) return false;
+	return true;
+}
+//-----------------------------------------------------------------|

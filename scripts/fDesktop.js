@@ -10,33 +10,65 @@ window.addEventListener("resize", e => {
 })
 
 //desktop task reference
-sys.taskArr.push(new Task("sys", false, null, idDesktop, "desktop"))
+sys.taskArr.push(new Task("desktop", false, null, idDesktop, "sys"))
 const desktop = sys.taskArr[sys.taskArr.length - 1]
 
 desktop.mem.iconArr = []
-
 desktop.mem.renderIcons = function() {
-	for (file of Object.entries(currentVertex.cont)) {
-		file[1].renderMe()
+	for (file of Object.entries(sys.vertex.cont)) {
+		file[1].render()
+	}
+}
+desktop.mem.refresh = function() {
+    desktop.pocket = []
+
+	for (icon of desktop.mem.iconArr) {
+		icon.deleteNode()
+	}
+
+	for (file of Object.entries(sys.vertex.cont)) {
+		file[1].render()
+	}
+}
+desktop.focus = function() {
+	for (icon of desktop.mem.iconArr) {
+		icon.gray(false)
+	}
+}
+desktop.unfocus = function() {
+	for (icon of desktop.mem.iconArr) {
+		icon.gray(true)
 	}
 }
 
 
-//unselect all folders when desktop click:------------------------------|
+//when desktop click:---------------------------------------------------|
 	//when desktop click-------------------|
 	idDesktop.addEventListener("mousedown", e => {
+		system.mem.focus(desktop)
 		//if not clicking folder or window--------------|
-		envfocus = desktop
 		if(
 			e.target.id == "desktop" &&
 			keyPressCtrl == false &&
-			!dragging
+			!system.mem.var.dragging
 		) {
 			for (icon of desktop.pocket){
 				desktop.pocket = desktop.pocket.remove(icon)
 				icon.statNode(0)
 			}
 		} 
+	})
+	idDesktop.addEventListener("mousedown", e => {
+		//if not clicking folder or window--------------|
+		if(
+			e.target.id == "desktop" &&
+			!system.mem.var.dragging
+		) {
+			pos1 = 0
+			pos2 = 0
+
+			selectBox()
+		}
 	})
 
 	//open desk menu on right click background
@@ -46,24 +78,18 @@ desktop.mem.renderIcons = function() {
 //----------------------------------------------------------------------|
 
 //selectBox behavior----------------------------------------------------|
-selectBox()
 function selectBox() {
 	let pos1 = 0, pos2 = 0, posxIn = 0, posyIn = 0
+
+	let selectBox = document.createElement("div")
+	selectBox.setAttribute("id", "selectBox")
+	idDesktop.appendChild(selectBox)
 	
-	//when desktop click------------------------------------------------|
-	window.addEventListener("mousedown", function(event) {
-		let target = event.target
-		//if not clicking folder or window------------------------------|
-		if(
-			target.id == "desktop" &&
-			!dragging
-		) {
-			pos1 = 0
-			pos2 = 0
-			selectBoxPosition()
-		} 
-	});
-	
+	pos1 = 0
+	pos2 = 0
+
+	selectBoxPosition()
+
 	//get initial mouse position-----------|
 	function selectBoxPosition(e) {
 		e = e || window.event
@@ -75,8 +101,8 @@ function selectBox() {
 
 		wasCtrl = (keyPressCtrl == true)
 		
-		idSelectBox.style.top = posyIn + "px"
-		idSelectBox.style.left = posxIn + "px"
+		selectBox.style.top = posyIn + "px"
+		selectBox.style.left = posxIn + "px"
 
 		iframeAntiHover (true)
 		document.onmouseup = selectBoxRelease
@@ -93,27 +119,27 @@ function selectBox() {
 		pos2 = e.clientY + idDesktop.scrollTop
 		
 		//show selectBox:
-		idSelectBox.style.opacity = '1'
+		selectBox.style.opacity = '1'
 
 		if ((pos2 - posyIn) > 0) { //if cursor below ↓ from initial position
-			idSelectBox.style.height = (pos2 - posyIn) + 1 + "px"
-			idSelectBox.style.top = posyIn + "px"
+			selectBox.style.height = (pos2 - posyIn) + 1 + "px"
+			selectBox.style.top = posyIn + "px"
 		} else { //cursor is above ↑ from initial position
-			idSelectBox.style.height = (pos2 - posyIn) * -1 + "px"
-			idSelectBox.style.top = (posyIn - idSelectBox.offsetHeight) + "px"
+			selectBox.style.height = (pos2 - posyIn) * -1 + "px"
+			selectBox.style.top = (posyIn - selectBox.offsetHeight) + "px"
 		}
 		if ((pos1 - posxIn) > 0) { //if cursor right → from initial position
-			idSelectBox.style.width = (pos1 - posxIn) + 1 + "px"
-			idSelectBox.style.left = posxIn + "px"
+			selectBox.style.width = (pos1 - posxIn) + 1 + "px"
+			selectBox.style.left = posxIn + "px"
 		} else { //cursor is left  ← from initial position
-			idSelectBox.style.width = (pos1 - posxIn) * -1 + "px"
-			idSelectBox.style.left = (posxIn - idSelectBox.offsetWidth) + "px"
+			selectBox.style.width = (pos1 - posxIn) * -1 + "px"
+			selectBox.style.left = (posxIn - selectBox.offsetWidth) + "px"
 		}
 		
 		//iconReaction--------------------------------------------------|
 		for (icon of desktop.mem.iconArr){
 			if (icon.node != null) { /*otherwise callback argument ruins everything*/
-				if (areRectanglesOverlap(icon.node,idSelectBox)) {
+				if (areRectanglesOverlap(icon.node,selectBox)) {
 					//light up colliding icon hover border:
 					highlight(icon.node)
 				} else {
@@ -121,7 +147,7 @@ function selectBox() {
 					lowlight(icon.node)
 				}
 			}
-		};
+		}
 		//--------------------------------------------------iconReaction|
 	}
 	
@@ -134,26 +160,20 @@ function selectBox() {
 		
 		for (icon of desktop.mem.iconArr){
 			if (icon.node != null) { /*otherwise callback argument ruins everything*/
-				if (areRectanglesOverlap(icon.node, idSelectBox)) {
-					//activate colliding icon hover border:
+				if (areRectanglesOverlap(icon.node, selectBox) && icon.stat === 0) {
 					desktop.pocket.push(icon)
 					icon.statNode(1)
-					lowlight(icon.node)
 				} else if (wasCtrl == false) {
-					//deactivate non-colliding icon hover border UNLESS ctrl:
 					desktop.pocket = desktop.pocket.remove(icon)
 					icon.statNode(0)
-					lowlight(icon.node)
 				}
+				lowlight(icon.node)
 			}
 		}
 		//--------------------------------------------------iconReaction|
 	
-		idSelectBox.style.opacity = ''
-		idSelectBox.style.height = ''
-		idSelectBox.style.width = ''
-		idSelectBox.style.top = '0'
-		idSelectBox.style.left = '0'
+		selectBox.parentElement.removeChild(selectBox)
 	}
 }
+
 //----------------------------------------------------selectBox behavior|

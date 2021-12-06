@@ -11,37 +11,66 @@ class Directory {
         this.cont = cont
     }
 
-    createNewDir(childName, childConf = null, childCont = null) {
+    new(Type, childName, childConf = null, childCont = null) {
         let parent = this
+
+        let iconImag = null
+        let confType = null
+        let skeyName = null
+
+        switch (Type) {
+            case Directory:
+                iconImag = "background-image: url('assets/svg/desktopIcons/folderPlaceholder.svg');"
+                confType = "dir"
+                skeyName = "cont"
+                break
+            case Executable:
+                iconImag = "background-image: url('assets/svg/desktopIcons/folderPlaceholder.svg');"
+                confType = "lau"
+                skeyName = "lurl"
+                break 
+            case Metafile: 
+                iconImag = "background-image: url('assets/svg/desktopIcons/folderPlaceholder.svg');"
+                confType = "msf"
+                skeyName = "meta"
+                break
+            case JSobject:
+                iconImag = "background-image: url('assets/svg/desktopIcons/folderPlaceholder.svg');"
+                confType = "obj"
+                skeyName = "data"
+                break 
+        }
+
         if (childConf) { 
             //if conf argument passed use it
-            this.cont[childName] = new Directory(childName,childConf)
+            this.cont[childName] = new Type(childName,childConf)
         } else { 
-            //if no conf argument passed, create default folder
-            this.cont[childName] = new Directory(
-                                                    childName, 
-                                                    {
-                                                        from : "" + parent.conf["from"] + "/" + parent.name,
-                                                        type : "dir",
-                                                        move : true,
-                                                        icon : new Icon (
-                                                                            "background-image: url('assets/svg/desktopIcons/folderPlaceholder.svg');", 
-                                                                            childName, 
-                                                                            "dir", 
-                                                                            0  
-                                                                        ),
-                                                    }
-                                                )
+            //if no conf argument passed, create default filetype
+            this.cont[childName] = new Type
+            (
+                childName, 
+                {
+                    from : "" + parent.conf["from"] + "/" + parent.name,
+                    type : confType,
+                    move : true,
+                    icon : new Icon (
+                                        iconImag, 
+                                        childName, 
+                                        confType, 
+                                        0  
+                                    ),
+                }
+            )
         }
         this.cont[childName].conf.addr = this.cont[childName].conf["from"] + "/" + childName
         this.cont[childName].conf["icon"].file = this.cont[childName].conf["from"] + "/" + childName
 
         if (childCont) {
-            this.cont[childName].cont = childCont
+            this.cont[childName][skeyName] = childCont
         }
     }
 
-    deleteMe() {
+    delete() {
         let parent = addrObj(this.conf.from)
         let child = this
 
@@ -50,17 +79,19 @@ class Directory {
     moveMe(dest) {
         
     }
-    renameMe(rename) {
+    rename(rename) {
         let parent  = addrObj(this.conf.from)
         let newAddress = "" + parent.conf.icon.file + "/" + rename
         let oldAddress = this.conf.icon.file
 
+        this.conf.addr = newAddress
         this.conf.icon.file = newAddress
 
         rerouteChildren(this)
 
         function rerouteChildren(parent) {
             for ([name, file] of Object.entries(parent.cont)) {
+                file.conf.addr = file.conf.addr.replace(oldAddress, newAddress)
                 file.conf.from = file.conf.from.replace(oldAddress, newAddress)
                 file.conf.icon.file = file.conf.icon.file.replace(oldAddress, newAddress)
                 rerouteChildren(file)
@@ -72,12 +103,12 @@ class Directory {
         //
     }
 
-    renderMe() {
-        if (addrObj(this.conf.from) === currentVertex) {
+    render() {
+        if (addrObj(this.conf.from) === sys.vertex) { //if is on current vertex / render on desktop
             repositionIcons([this.conf.icon],true,false)
             desktop.mem.iconArr.push(this.conf.icon)
             this.conf.icon.createNode()
-        } else if (isDirOpen(this.conf.from)) {
+        } else if (isDirOpen(this.conf.from)) { //if is on any other directory / render on explorer
             for (task of sys.taskArr) {
                 if (task.apps === "exp" && task.mem.directory === this.conf.from) task.mem.createExplorerIcons([this])
             }
@@ -85,7 +116,7 @@ class Directory {
     }
 
     open() {
-        loadAPP(cfg.exec[this.conf.type], [this.name, this.conf.addr], envfocus)
+        loadAPP(cfg.exec[this.conf.type], [this.name, this.conf.addr], system.mem.var.envfocus)
     }
 }
 
@@ -97,54 +128,6 @@ function isDirOpen(addr) {
 }
 
 //--------------------------------------------------------------------------|
-
-var core = new Directory ("core")
-
-core.createNewDir   (
-                        "vertex",  
-                        {
-                            icon : new Icon ("background-image: url('assets/svg/desktopIcons/vertexPH.svg');", "vertex", "dir", 0),
-                            from : "",
-                            type : "dir",
-                            vert : true,
-                            move : false
-                        }
-                    )
-core.createNewDir   (
-                        "trash",  
-                        {
-                            icon : new Icon ("background-image: url('assets/svg/desktopIcons/trashPH.svg');", "trash", "dir", 0),
-                            from : "",
-                            type : "dir",
-                            tran : true,
-                            move : false
-                        }
-                    )
-core.createNewDir   (
-                        "stash",  
-                        {
-                            icon : new Icon ("background-image: url('assets/svg/desktopIcons/stashPH.svg');", "stash", "dir", 0),
-                            from : "",
-                            type : "dir",
-                            tran : true,
-                            move : false
-                        }
-                    )
-
-var currentVertex = core.cont["vertex"]
-
-core.cont["vertex"].createNewDir("Folder 1")
-core.cont["vertex"].createNewDir("Folder 2")
-core.cont["vertex"].createNewDir("Folder 3")
-
-core.cont["vertex"].cont["Folder 1"].createNewDir("uwu")
-core.cont["vertex"].cont["Folder 1"].createNewDir("unu")
-core.cont["vertex"].cont["Folder 1"].createNewDir("owo")
-
-core.cont["vertex"].cont["Folder 1"].cont["owo"].createNewDir("rawr")
-
-desktop.mem.renderIcons()
-
 function addrObj(addr = "") {
     //string: where we'll devour addr one dir at a time as we build expression
     let string = addr

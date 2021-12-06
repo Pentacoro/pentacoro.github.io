@@ -1,5 +1,3 @@
-
-
 /*WINDOW SETTINGS------------------------------*/
 .window {
 	position: absolute;
@@ -51,6 +49,15 @@
 	background-color: #00A2E8;
 
 	cursor: default;
+}
+
+.window.dfocus>.windowInner>.header{
+	background-color: #6e8a9b;
+
+	border-bottom-color: #526c7a;
+    border-left-color: #526c7a;
+    border-top-color: #7ba4bd;
+    border-right-color: #7ba4bd;
 }
 
 .windowInner>.header>.windowName{

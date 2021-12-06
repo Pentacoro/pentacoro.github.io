@@ -30,7 +30,7 @@ class contextSection {
 
 //DROP MENU----------------------------------------------------------------------------|
 function findOutMenu(target) {
-    let drop = []
+    let menu = []
     switch (target.apps) {
         default:
         case "exe":
@@ -49,19 +49,17 @@ function findOutMenu(target) {
             //drop = mfsDrop
             break
         case "exp":
-            drop = expDrop
+            menu = drop.expDrop(target)
             break
         case "dir":
-            if(!target.task ) drop = dirDrop1
-            if( target.task ) {
-                drop = dirDrop2
-            }
+            if(!target.task ) menu = drop.dirDrop1(target)
+            if( target.task ) menu = drop.dirDrop2(target)
             break
-        case "sys":
-            if( target.name === "desktop" ) drop = verDrop
+        case "desktop":
+            if( target.from === "sys" ) menu = drop.verDrop(target)
             break
     }
-    return drop
+    return menu
 }
 
 let subMenus = 0
@@ -108,7 +106,10 @@ function makeDropContext(e = null,_this, node) {
                     let pls = [x,y]
                     let arg = [e,_this]
                     let sub = subMenus
-                    newButton.onclick     = e => arr[pls[0]].item[pls[1]].func(arg[0], arg[1], arg[2])
+                    newButton.onclick     = e => {
+                        arr[pls[0]].item[pls[1]].func(arg[0], arg[1], arg[2])
+                        closeMenu()
+                    }
                     newButton.onmouseover = e => closeSubOpt(sub)
                 } else if (arr[x].item[y].cont != undefined) {
                     let pls = [x,y]
@@ -142,9 +143,9 @@ function makeDropContext(e = null,_this, node) {
         
         function openSubOpt(opt, optPos, sub) {
             //check if submenu isn't open already
-            for (drop of document.getElementsByClassName("clickContext")) {
-                if (drop.classList[1].match(/[sub_](\d+)/)) {
-                    classInt = parseInt(drop.classList[1].match(/(\d+)/)[0])
+            for (subM of document.getElementsByClassName("clickContext")) {
+                if (subM.classList[1].match(/[sub_](\d+)/)) {
+                    classInt = parseInt(subM.classList[1].match(/(\d+)/)[0])
                     if (classInt > sub) return
                 }
             }
@@ -175,14 +176,15 @@ function makeDropContext(e = null,_this, node) {
         function closeSubOpt(trigger) {
             //
             let delArr = []
+            //add every submenu up to trigger to deletion queue
             for (menu of document.getElementsByClassName("clickContext")) {
                 classInt = menu.classList[1].match(/(\d+)/)[0]
                 if (classInt > trigger) {
                     delArr.push(menu)
                 }
             }
-            for (men of delArr) {
-                men.parentElement.removeChild(men)
+            for (item of delArr) {
+                item.parentElement.removeChild(item)
             }
             //remove hover class from previous menu
             for (sect of document.getElementsByClassName("sub_"+(trigger))[0].children){
@@ -251,6 +253,7 @@ function openMenu(e, obj) {
 function closeMenu() {
     document.getElementById("contextLayer").innerHTML = ""
     subMenus = 0
+    drop.arr = []
 }
 
 //-------------------------------------------------------------------------------------|
@@ -258,9 +261,6 @@ function iconOpen(e, _this){
     if(
         !(e.target.classList.contains("cmcheck"))
     ) {
-        //console.log("Open")
-        closeMenu()
-
         addrObj(_this.file).open()
     }
 }
@@ -268,58 +268,48 @@ function iconFullscreen(e, _this){
     if(
         !(e.target.classList.contains("cmcheck"))
     ) {
-        //console.log("Fullscreen");
-        closeMenu();
+
     }
 }
 function iconNewtab(e, _this){
     if(
         !(e.target.classList.contains("cmcheck"))
     ) {
-        //console.log("Newtab");
-        closeMenu();
+
     }
 }
 function iconCut(e, _this){
     if(
         !(e.target.classList.contains("cmcheck"))
     ) {
-        //console.log("Cut");
-        closeMenu();
+
     }
 }
 function iconCopy(e, _this){
     if(
         !(e.target.classList.contains("cmcheck"))
     ) {
-        //console.log("Copy");
-        closeMenu();
+
     }
 }
 function iconPaste(e, _this){
     if(
         !(e.target.classList.contains("cmcheck"))
     ) {
-        //console.log("Paste");
-        closeMenu();
+
     }
 }
 function iconDelete(e, _this){
     if(
         !(e.target.classList.contains("cmcheck"))
     ) {
-        //console.log("Delete")
-
-        closeMenu()
-        deleteSelectedNodes(envfocus.pocket)
+        deleteSelectedNodes(system.mem.var.envfocus.pocket)
     }
 }
 function iconRename(e, _this){
     if(
         !(e.target.classList.contains("cmcheck"))
     ) {
-        //console.log("Rename")
-        closeMenu()
         let iconText = _this.node.childNodes[1]
         let editFile = addrObj(_this.file)
         let editFrom = addrObj(editFile.conf.from)
@@ -340,7 +330,7 @@ function iconRename(e, _this){
             return false
         }}
         function iconRenamingRestore(){
-            shouldSelect = true
+            system.mem.var.shSelect = true
             
             _this.statNode()
 
@@ -369,9 +359,9 @@ function iconRename(e, _this){
                     validIconName(iconText.textContent)
                 ) {
                     //if the name is allowed --------------------|
-                    shouldSelect = true;
+                    system.mem.var.shSelect = true;
 
-                    if (editFrom === currentVertex) _this.node.id = "Icon: "+iconText.textContent
+                    if (editFrom === sys.vertex) _this.node.id = "Icon: "+iconText.textContent
 
                     iconText.setAttribute("contenteditable", "false")
                     editFile.conf.icon.text = iconText.textContent
@@ -380,14 +370,14 @@ function iconRename(e, _this){
 
                     //insert into fylesystem
                     if (iconText.textContent != editFile.name) { //if the name changed
-                        editFile.renameMe(iconText.textContent)
+                        editFile.rename(iconText.textContent)
                         if (_this.task) {
                             taskid = _this.task
                             task   = findTask(taskid)
                             task.mem.explorerInit(task.mem.directory, taskid)
 
-                            if (addrObj(task.mem.directory) === currentVertex){
-                                deskRefresh(e, currentVertex)
+                            if (addrObj(task.mem.directory) === sys.vertex){
+                                desktop.mem.refresh()
                             }
 
                             for (icon of task.mem.iconArray) {
@@ -405,7 +395,7 @@ function iconRename(e, _this){
                     nullifyOnEvents(iconText)
                 } else {
                     //if the name not allowed --------------------|
-                    shouldSelect = false
+                    system.mem.var.shSelect = false
                     iconText.style.backgroundColor = "#c90000"
 
                     //insist -> keep only edited selected
@@ -435,24 +425,21 @@ function iconRename(e, _this){
                     }
                 }
             }
-        }, 1)
+        }, 0)
     }
 }
 function iconProperties(e, _this){
     if(
         !(e.target.classList.contains("cmcheck"))
     ) {
-        //console.log("Properties");
-        closeMenu();
+
     }
 }
 //-------------------------------------------------------------------------------------|
 function dirIconOpen(e, _this){
-    closeMenu()
     findTask(_this.task).mem.explorerInit(_this.file, _this.task)
 }
 function dirIconNewWindow(e, _this){
-    closeMenu()
     explorerInit(_this.file, _this.task)
 }
 //-------------------------------------------------------------------------------------|
@@ -460,39 +447,19 @@ function deskGrid(e, _this){
     if(
         !(e.target.classList.contains("cmcheck"))
     ) {
-        //console.log("Grid");
-
-        loadAPP("./apps/settings_deskGrid/deskGridOptions_lau.html");
-
-        closeMenu();
+        loadAPP("./apps/settings_deskGrid/deskGridOptions_lau.js");
     }
-}
-function deskRefresh(e, _this){
-    closeMenu()
-
-    desktop.pocket = []
-
-    document.getElementById("desktop").children[2].innerHTML = ""
-
-    for (icon of desktop.mem.iconArr) {
-        icon.createNode()
-        icon.statNode(0)
-    }
-
 }
 function deskNew(e, _this){
     if(
         !(e.target.classList.contains("cmcheck"))
     ) {
-        //console.log("New")
-
         //Make sure icon appears at center of initial right click-------|
         let initialX = parseInt(window.getComputedStyle(document.getElementsByClassName("clickContext sub_0")[0],null).getPropertyValue("left"))
         let initialY = parseInt(window.getComputedStyle(document.getElementsByClassName("clickContext sub_0")[0],null).getPropertyValue("top"))
 
-        closeMenu()
-        let editFile = addrObj(_this.file)
-        let editFrom = addrObj(editFile.conf.from)
+        let editFile = null
+        let editFrom = sys.vertex
 
         let iconWidth = cfg.desk.grid.width/2
         let iconHeight = cfg.desk.grid.height/2
@@ -527,7 +494,7 @@ function deskNew(e, _this){
             return false
         }};
         function iconNamingDelete(){
-            shouldSelect = true
+            system.mem.var.shSelect = true
                 
             createdIcon.deleteNode()
 
@@ -543,11 +510,11 @@ function deskNew(e, _this){
 
             function iconNaming(){
                 if(
-                    !iconNameExists(iconText.textContent, editFile.conf.icon, editFrom) &&
+                    !iconNameExists(iconText.textContent, createdIcon, editFrom) &&
                     validIconName(iconText.textContent)
                 ) {
                     //if the name is allowed --------------------|
-                    shouldSelect = true
+                    system.mem.var.shSelect = true
         
                     iconText.setAttribute("contenteditable", "false")
                     document.getElementById("Icon: "+createdIcon.text).id = "Icon: "+iconText.textContent
@@ -556,14 +523,17 @@ function deskNew(e, _this){
                     iconText.style.textShadow = ""
 
                     //insert it into filesystem
-                    currentVertex.createNewDir(iconText.textContent, 
+                    sys.vertex.new(Directory,iconText.textContent, 
                         {
                             icon : createdIcon, 
-                            from : currentVertex.conf.icon.file, 
+                            from : sys.vertex.conf.icon.file, 
                             type : "dir", 
                             move : true
                         }
                     )
+
+                    createdIcon.statNode(1)
+                    desktop.pocket.push(createdIcon)
 
                     //insert it into desktop mem
                     //desktop.mem.iconArr.push(createdIcon)
@@ -574,7 +544,7 @@ function deskNew(e, _this){
                     nullifyOnEvents(_this)
                 } else {
                     //if the name not allowed --------------------|
-                    shouldSelect = false
+                    system.mem.var.shSelect = false
                     iconText.style.backgroundColor = "#c90000"
         
                     //insist -> keep only edited selected
@@ -633,81 +603,99 @@ function nullifyOnEvents(rawr) {
 }
 
 //-------------------------------------------------------------------------------------|
+sys.reg.dropMenu = {arr: []}
+const drop = sys.reg.dropMenu
 //--------------------n
-var verDrop = []
+drop.verDrop = function (tar) {
+    let envfocus = system.mem.var.envfocus
 
-verDrop.push(new contextSection("view"))
-verDrop.push(new contextSection("file"))
-verDrop.push(new contextSection("info"))
+    drop.arr.push(new contextSection("view"))
+    drop.arr.push(new contextSection("file"))
+    drop.arr.push(new contextSection("info"))
+    
+    drop.arr[0].item.push(new contextOption("Grid","url('assets/svg/contextMenu/open.svg')",deskGrid))
+    drop.arr[0].item.push(new contextOption("Refresh","url('assets/svg/contextMenu/open.svg')",desktop.mem.refresh))
+    
+    drop.arr[1].item.push(new contextSubmenu("New","url('assets/svg/contextMenu/maximize.svg')",     
+        [                                                                            
+            new contextOption("Directory","url('assets/svg/contextMenu/maximize.svg')",deskNew),
+            new contextOption("Launcher","url('assets/svg/contextMenu/maximize.svg')",deskNew),
+            new contextOption("Metafile","url('assets/svg/contextMenu/maximize.svg')", deskNew),
+        ]
+    ))
+    drop.arr[1].item.push(new contextOption("Paste","url('assets/svg/contextMenu/paste.svg')",deskPaste))
+    
+    drop.arr[2].item.push(new contextOption("Settings","url('assets/svg/contextMenu/rename.svg')",deskSettings))
+    drop.arr[2].item.push(new contextOption("Info","url('assets/svg/contextMenu/properties.svg')",deskInfo))
 
-verDrop[0].item.push(new contextOption("Grid","url('assets/svg/contextMenu/open.svg')",deskGrid))
-verDrop[0].item.push(new contextOption("Refresh","url('assets/svg/contextMenu/open.svg')",deskRefresh))
-
-verDrop[1].item.push(new contextSubmenu("New","url('assets/svg/contextMenu/maximize.svg')",     
-    [                                                                            
-        new contextOption("Directory","url('assets/svg/contextMenu/maximize.svg')",deskNew),
-        new contextOption("Launcher","url('assets/svg/contextMenu/maximize.svg')",deskNew),
-        new contextOption("Metafile","url('assets/svg/contextMenu/maximize.svg')", deskNew),
-    ]
-))
-verDrop[1].item.push(new contextOption("Paste","url('assets/svg/contextMenu/paste.svg')",deskPaste))
-
-verDrop[2].item.push(new contextOption("Settings","url('assets/svg/contextMenu/rename.svg')",deskSettings))
-verDrop[2].item.push(new contextOption("Info","url('assets/svg/contextMenu/properties.svg')",deskInfo))
+    return drop.arr
+}
 //--------------------n
-var expDrop = []
+drop.expDrop = function (tar) {
+    let envfocus = system.mem.var.envfocus
 
-expDrop.push(new contextSection("icon"))
-expDrop.push(new contextSection("clip"))
-expDrop.push(new contextSection("info"))
+    drop.arr.push(new contextSection("icon"))
+    drop.arr.push(new contextSection("clip"))
+    drop.arr.push(new contextSection("info"))
+    
+    drop.arr[0].item.push(new contextOption("View","url('assets/svg/contextMenu/open.svg')",deskGrid))
+    drop.arr[0].item.push(new contextOption("Refresh","url('assets/svg/contextMenu/open.svg')",envfocus.mem.refresh))
+    
+    drop.arr[1].item.push(new contextSubmenu("New","url('assets/svg/contextMenu/maximize.svg')",     
+        [                                                                            
+            new contextOption("Directory","url('assets/svg/contextMenu/maximize.svg')",deskNew),
+            new contextOption("Launcher","url('assets/svg/contextMenu/maximize.svg')",deskNew),
+            new contextOption("Metafile","url('assets/svg/contextMenu/maximize.svg')", deskNew),
+        ]
+    ))
+    drop.arr[1].item.push(new contextOption("Paste","url('assets/svg/contextMenu/paste.svg')",deskPaste))
+    
+    drop.arr[2].item.push(new contextOption("Info","url('assets/svg/contextMenu/properties.svg')",deskInfo))
+    drop.arr[2].item.push(new contextOption("Properties","url('assets/svg/contextMenu/properties.svg')",deskSettings))
 
-
-expDrop[0].item.push(new contextOption("View","url('assets/svg/contextMenu/open.svg')",deskGrid))
-expDrop[0].item.push(new contextOption("Refresh","url('assets/svg/contextMenu/open.svg')",deskRefresh))
-
-expDrop[1].item.push(new contextSubmenu("New","url('assets/svg/contextMenu/maximize.svg')",     
-    [                                                                            
-        new contextOption("Directory","url('assets/svg/contextMenu/maximize.svg')",deskNew),
-        new contextOption("Launcher","url('assets/svg/contextMenu/maximize.svg')",deskNew),
-        new contextOption("Metafile","url('assets/svg/contextMenu/maximize.svg')", deskNew),
-    ]
-))
-expDrop[1].item.push(new contextOption("Paste","url('assets/svg/contextMenu/paste.svg')",deskPaste))
-
-expDrop[2].item.push(new contextOption("Info","url('assets/svg/contextMenu/properties.svg')",deskInfo))
-expDrop[2].item.push(new contextOption("Properties","url('assets/svg/contextMenu/properties.svg')",deskSettings))
+    return drop.arr
+}
 //--------------------n
-var dirDrop1 = []
+drop.dirDrop1 = function(tar) {
+    let envfocus = system.mem.var.envfocus
 
-dirDrop1.push(new contextSection("open"))
-dirDrop1.push(new contextSection("clip"))
-dirDrop1.push(new contextSection("prop"))
+    drop.arr.push(new contextSection("open"))
+    drop.arr.push(new contextSection("clip"))
+    drop.arr.push(new contextSection("prop"))
+    
+    drop.arr[0].item.push(new contextOption("Open","url('assets/svg/contextMenu/open.svg')",iconOpen))
+    
+    drop.arr[1].item.push(new contextOption("Cut","url('assets/svg/contextMenu/cut.svg')",iconCut))
+    drop.arr[1].item.push(new contextOption("Copy","url('assets/svg/contextMenu/copy.svg')",iconCopy))
+    drop.arr[1].item.push(new contextOption("Paste","url('assets/svg/contextMenu/paste.svg')",iconPaste))
+    
+    drop.arr[2].item.push(new contextOption("Delete","url('assets/svg/contextMenu/delete.svg')",iconDelete))
+    drop.arr[2].item.push(new contextOption("Rename","url('assets/svg/contextMenu/rename.svg')",iconRename))
+    drop.arr[2].item.push(new contextOption("Properties","url('assets/svg/contextMenu/properties.svg')",iconProperties))
 
-dirDrop1[0].item.push(new contextOption("Open","url('assets/svg/contextMenu/open.svg')",iconOpen))
-
-dirDrop1[1].item.push(new contextOption("Cut","url('assets/svg/contextMenu/cut.svg')",iconCut))
-dirDrop1[1].item.push(new contextOption("Copy","url('assets/svg/contextMenu/copy.svg')",iconCopy))
-dirDrop1[1].item.push(new contextOption("Paste","url('assets/svg/contextMenu/paste.svg')",iconPaste))
-
-dirDrop1[2].item.push(new contextOption("Delete","url('assets/svg/contextMenu/delete.svg')",iconDelete))
-dirDrop1[2].item.push(new contextOption("Rename","url('assets/svg/contextMenu/rename.svg')",iconRename))
-dirDrop1[2].item.push(new contextOption("Properties","url('assets/svg/contextMenu/properties.svg')",iconProperties))
+    return drop.arr
+}
 //--------------------n
-var dirDrop2 = []
+drop.dirDrop2 = function (tar) {
+    let envfocus = system.mem.var.envfocus
 
-dirDrop2.push(new contextSection("open"))
-dirDrop2.push(new contextSection("clip"))
-dirDrop2.push(new contextSection("prop"))
+    drop.arr.push(new contextSection("open"))
+    drop.arr.push(new contextSection("clip"))
+    drop.arr.push(new contextSection("prop"))
+    
+    drop.arr[0].item.push(new contextOption("Open","url('assets/svg/contextMenu/open.svg')",dirIconOpen))
+    drop.arr[0].item.push(new contextOption("Open in new window","url('assets/svg/contextMenu/maximize.svg')",iconOpen))
+    
+    drop.arr[1].item.push(new contextOption("Cut","url('assets/svg/contextMenu/cut.svg')",iconCut))
+    drop.arr[1].item.push(new contextOption("Copy","url('assets/svg/contextMenu/copy.svg')",iconCopy))
+    drop.arr[1].item.push(new contextOption("Paste","url('assets/svg/contextMenu/paste.svg')",iconPaste))
+    
+    drop.arr[2].item.push(new contextOption("Delete","url('assets/svg/contextMenu/delete.svg')",iconDelete))
+    drop.arr[2].item.push(new contextOption("Rename","url('assets/svg/contextMenu/rename.svg')",iconRename))
+    drop.arr[2].item.push(new contextOption("Properties","url('assets/svg/contextMenu/properties.svg')",iconProperties))
 
-dirDrop2[0].item.push(new contextOption("Open","url('assets/svg/contextMenu/open.svg')",dirIconOpen))
-dirDrop2[0].item.push(new contextOption("Open in new window","url('assets/svg/contextMenu/maximize.svg')",iconOpen))
-
-dirDrop2[1].item.push(new contextOption("Cut","url('assets/svg/contextMenu/cut.svg')",iconCut))
-dirDrop2[1].item.push(new contextOption("Copy","url('assets/svg/contextMenu/copy.svg')",iconCopy))
-dirDrop2[1].item.push(new contextOption("Paste","url('assets/svg/contextMenu/paste.svg')",iconPaste))
-
-dirDrop2[2].item.push(new contextOption("Delete","url('assets/svg/contextMenu/delete.svg')",iconDelete))
-dirDrop2[2].item.push(new contextOption("Rename","url('assets/svg/contextMenu/rename.svg')",iconRename))
-dirDrop2[2].item.push(new contextOption("Properties","url('assets/svg/contextMenu/properties.svg')",iconProperties))
+    return drop.arr
+}
 //--------------------n
+
 //-------------------------------------------------------------------------------------|
