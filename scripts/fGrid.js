@@ -34,10 +34,6 @@ function evaluateIconGrid(
     if(autowl == null) autowl = cfg.desk.grid.autoHlength
     if(autohl == null) autohl = cfg.desk.grid.autoVlength
 
-    //set background size
-    idDesktop.style.width = document.body.offsetWidth + "px"
-    idDesktop.style.height = document.body.offsetHeight - cfg.desk.navB.height + "px"
-
     //get some useful booleans
     let wChanged = cfg.desk.grid.width  !== w
     let hChanged = cfg.desk.grid.height !== h
@@ -406,10 +402,14 @@ function evaluateIconGrid(
                 document.getElementsByClassName("grid_graph")[1].children[1].innerText = cfg.desk.grid.vLength
             }
         }
+
+        checkGridGap()
     }
 
     //graph array elements on the DOM
     function createGridNode(object) {
+        let gridLayer = document.getElementById("gridLayer")
+
         let newGrid = document.createElement("div")
         newGrid.setAttribute("id", object.id)
         newGrid.setAttribute("class", "gridElement")
@@ -426,7 +426,7 @@ function evaluateIconGrid(
         if (cfg.desk.grid.visibleNodes === true) newGrid.style.backgroundColor = "rgba(127,127,127,0.5)"
         if (cfg.desk.grid.visibleNodes === false)newGrid.style.backgroundColor = "rgba(127,127,127,0)"
 
-        document.getElementById("gridLayer").appendChild(newGrid)
+        gridLayer.appendChild(newGrid)
     }
     function updateGridNode(object) {
         let updGrid = document.getElementById(object.id);
@@ -463,3 +463,49 @@ function gridExists(x, y){
     }
     return false
 }
+
+function checkGridGap() {
+    let w = cfg.desk.grid.width
+    let h = cfg.desk.grid.height
+    let ewm = cfg.desk.grid.hMargin
+    let ehm = cfg.desk.grid.vMargin
+    let wl = cfg.desk.grid.hLength
+    let hl = cfg.desk.grid.vLength
+
+    //if vertical gap is needed (right)
+    if ( (w + ewm*2) * wl > idDesktop.offsetWidth) {
+        if (gridLayer.getElementsByClassName("gap horizontalGap").length === 0) {
+            let newGap = document.createElement("div")
+            newGap.setAttribute("class","gap horizontalGap")
+            gridLayer.appendChild(newGap)
+        }
+        let gap = gridLayer.getElementsByClassName("gap horizontalGap")[0]
+        
+        gap.style.left   = (w + ewm) * wl + "px"
+        gap.style.width  = ewm + "px"
+        gap.style.height = (h + ehm) * hl + "px"
+    } else {
+        if (gridLayer.getElementsByClassName("gap horizontalGap").length === 1) {
+            gridLayer.removeChild(gridLayer.getElementsByClassName("gap horizontalGap")[0])
+        }
+    }
+    //if horizontal gap is needed (bottom)
+    if ( (h + ehm*2) * hl > idDesktop.offsetHeight) {
+        if (gridLayer.getElementsByClassName("gap verticalGap").length === 0) {
+            let newGap = document.createElement("div")
+            newGap.setAttribute("class","gap verticalGap")
+            gridLayer.appendChild(newGap)
+        }
+        let gap = gridLayer.getElementsByClassName("gap verticalGap")[0]
+        
+        gap.style.top    = (h + ehm) * hl + "px"
+        gap.style.height = ehm + "px"
+        gap.style.width  = (w + ewm) * wl + "px"
+    } else {
+        if (gridLayer.getElementsByClassName("gap verticalGap").length === 1) {
+            gridLayer.removeChild(gridLayer.getElementsByClassName("gap verticalGap")[0])
+        }
+    }
+}
+
+window.addEventListener("resize", checkGridGap)
