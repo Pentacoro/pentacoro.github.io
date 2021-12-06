@@ -63,6 +63,11 @@ body {
 }
 /*---------------------------------START BUTTON*/
 
+.gap{
+	position: absolute;
+	opacity: 0;
+}
+
 /*SELCT BOX------------------------------------*/
 #selectBox {
 	position: absolute;

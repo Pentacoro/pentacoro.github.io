@@ -9,6 +9,10 @@ window.addEventListener("resize", e => {
     idDesktop.style.height = document.body.offsetHeight - cfg.desk.navB.height + "px"
 })
 
+//set background size
+idDesktop.style.width = document.body.offsetWidth + "px"
+idDesktop.style.height = document.body.offsetHeight - cfg.desk.navB.height + "px"
+
 //desktop task reference
 sys.taskArr.push(new Task("desktop", false, null, idDesktop, "sys"))
 const desktop = sys.taskArr[sys.taskArr.length - 1]
