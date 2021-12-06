@@ -214,8 +214,8 @@ class Icon {
             //if(e.button == 0) {}
             
             //get initial cursor position:
-            pos3 = e.clientX
-            pos4 = e.clientY
+            pos3 = e.clientX + idDesktop.scrollLeft
+            pos4 = e.clientY + idDesktop.scrollTop
             
             //when mousedown on selected icon
             if (_this.stat == 1) {
@@ -359,8 +359,8 @@ function repositionIcons(icons, mustSet = false, hasPrev = true){
         let coords = icon.coor
     
         //find closest grid for its tPos
-        x = Math.round((coords.tx - wm)/(w + wm))*(w + wm) + wm
-        y = Math.round((coords.ty - hm)/(h + hm))*(h + hm) + hm
+        x = Math.round((coords.tx + idDesktop.scrollLeft - wm)/(w + wm))*(w + wm) + wm
+        y = Math.round((coords.ty + idDesktop.scrollTop  - hm)/(h + hm))*(h + hm) + hm
         
         //get its spot in grid array
         tx = Math.round((x - wm)/(w + wm))
