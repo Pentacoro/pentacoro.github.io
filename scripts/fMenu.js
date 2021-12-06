@@ -613,20 +613,19 @@ drop.verDrop = function (tar) {
     drop.arr.push(new contextSection("file"))
     drop.arr.push(new contextSection("info"))
     
-    drop.arr[0].item.push(new contextOption("Grid","url('assets/svg/contextMenu/open.svg')",deskGrid))
-    drop.arr[0].item.push(new contextOption("Refresh","url('assets/svg/contextMenu/open.svg')",desktop.mem.refresh))
+    drop.arr[0].item.push(new contextOption("Grid","url('assets/svg/contextMenu/grid2.svg')",deskGrid))
+    drop.arr[0].item.push(new contextOption("Refresh","url('assets/svg/contextMenu/refresh.svg')",desktop.mem.refresh))
     
-    drop.arr[1].item.push(new contextSubmenu("New","url('assets/svg/contextMenu/maximize.svg')",     
+    drop.arr[1].item.push(new contextSubmenu("New","url('assets/svg/contextMenu/new2.svg')",     
         [                                                                            
-            new contextOption("Directory","url('assets/svg/contextMenu/maximize.svg')",deskNew),
-            new contextOption("Launcher","url('assets/svg/contextMenu/maximize.svg')",deskNew),
-            new contextOption("Metafile","url('assets/svg/contextMenu/maximize.svg')", deskNew),
+            new contextOption("Directory","url('assets/svg/contextMenu/directory.svg')",deskNew),
+            new contextOption("Metafile","url('assets/svg/contextMenu/metafile.svg')", deskNew),
         ]
     ))
     drop.arr[1].item.push(new contextOption("Paste","url('assets/svg/contextMenu/paste.svg')",deskPaste))
     
-    drop.arr[2].item.push(new contextOption("Settings","url('assets/svg/contextMenu/rename.svg')",deskSettings))
-    drop.arr[2].item.push(new contextOption("Info","url('assets/svg/contextMenu/properties.svg')",deskInfo))
+    drop.arr[2].item.push(new contextOption("Settings","url('assets/svg/contextMenu/settings2.svg')",deskSettings))
+    drop.arr[2].item.push(new contextOption("About","url('assets/svg/contextMenu/about.svg')",deskInfo))
 
     return drop.arr
 }
@@ -638,19 +637,18 @@ drop.expDrop = function (tar) {
     drop.arr.push(new contextSection("clip"))
     drop.arr.push(new contextSection("info"))
     
-    drop.arr[0].item.push(new contextOption("View","url('assets/svg/contextMenu/open.svg')",deskGrid))
-    drop.arr[0].item.push(new contextOption("Refresh","url('assets/svg/contextMenu/open.svg')",envfocus.mem.refresh))
+    drop.arr[0].item.push(new contextOption("View","url('assets/svg/contextMenu/grid.svg')",deskGrid))
+    drop.arr[0].item.push(new contextOption("Refresh","url('assets/svg/contextMenu/refresh.svg')",envfocus.mem.refresh))
     
-    drop.arr[1].item.push(new contextSubmenu("New","url('assets/svg/contextMenu/maximize.svg')",     
+    drop.arr[1].item.push(new contextSubmenu("New","url('assets/svg/contextMenu/new2.svg')",     
         [                                                                            
-            new contextOption("Directory","url('assets/svg/contextMenu/maximize.svg')",deskNew),
-            new contextOption("Launcher","url('assets/svg/contextMenu/maximize.svg')",deskNew),
-            new contextOption("Metafile","url('assets/svg/contextMenu/maximize.svg')", deskNew),
+            new contextOption("Directory","url('assets/svg/contextMenu/directory.svg')",deskNew),
+            new contextOption("Metafile","url('assets/svg/contextMenu/metafile.svg')", deskNew),
         ]
     ))
     drop.arr[1].item.push(new contextOption("Paste","url('assets/svg/contextMenu/paste.svg')",deskPaste))
     
-    drop.arr[2].item.push(new contextOption("Info","url('assets/svg/contextMenu/properties.svg')",deskInfo))
+    drop.arr[2].item.push(new contextOption("About","url('assets/svg/contextMenu/about.svg')",deskInfo))
     drop.arr[2].item.push(new contextOption("Properties","url('assets/svg/contextMenu/properties.svg')",deskSettings))
 
     return drop.arr
@@ -684,7 +682,7 @@ drop.dirDrop2 = function (tar) {
     drop.arr.push(new contextSection("prop"))
     
     drop.arr[0].item.push(new contextOption("Open","url('assets/svg/contextMenu/open.svg')",dirIconOpen))
-    drop.arr[0].item.push(new contextOption("Open in new window","url('assets/svg/contextMenu/maximize.svg')",iconOpen))
+    drop.arr[0].item.push(new contextOption("New window","url('assets/svg/contextMenu/maximize.svg')",iconOpen))
     
     drop.arr[1].item.push(new contextOption("Cut","url('assets/svg/contextMenu/cut.svg')",iconCut))
     drop.arr[1].item.push(new contextOption("Copy","url('assets/svg/contextMenu/copy.svg')",iconCopy))
