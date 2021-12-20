@@ -402,9 +402,9 @@ function evaluateIconGrid(
                 document.getElementsByClassName("grid_graph")[1].children[1].innerText = cfg.desk.grid.vLength
             }
         }
-
-        checkGridGap()
     }
+
+    checkGridGap()
 
     //graph array elements on the DOM
     function createGridNode(object) {
@@ -464,15 +464,39 @@ function gridExists(x, y){
     return false
 }
 
+
 function checkGridGap() {
     let w = cfg.desk.grid.width
     let h = cfg.desk.grid.height
-    let ewm = cfg.desk.grid.hMargin
-    let ehm = cfg.desk.grid.vMargin
+    let ewm = (cfg.desk.grid.modHmargin) ? cfg.desk.grid.modHmargin : cfg.desk.grid.hMargin
+    let ehm = (cfg.desk.grid.modVmargin) ? cfg.desk.grid.modVmargin : cfg.desk.grid.vMargin
     let wl = cfg.desk.grid.hLength
     let hl = cfg.desk.grid.vLength
 
-    //if vertical gap is needed (right)
+    if (gridLayer.getElementsByClassName("gap horizontalGap").length === 0) {
+        let newGap = document.createElement("div")
+        newGap.setAttribute("class","gap horizontalGap")
+        gridLayer.appendChild(newGap)
+    }
+    let gapH = gridLayer.getElementsByClassName("gap horizontalGap")[0]
+    
+    gapH.style.left   = (w + ewm) * wl + "px"
+    gapH.style.width  = ewm - 0.1 + "px"
+    gapH.style.height = (h + ehm) * hl + "px"
+
+    if (gridLayer.getElementsByClassName("gap verticalGap").length === 0) {
+        let newGap = document.createElement("div")
+        newGap.setAttribute("class","gap verticalGap")
+        gridLayer.appendChild(newGap)
+    }
+    let gapV = gridLayer.getElementsByClassName("gap verticalGap")[0]
+    
+    gapV.style.top    = (h + ehm) * hl + "px"
+    gapV.style.height = ehm - 0.1 + "px"
+    gapV.style.width  = (w + ewm) * wl + "px"    
+    
+    /*
+    //if column gap is needed (right)
     if ( (w + ewm*2) * wl > idDesktop.offsetWidth) {
         if (gridLayer.getElementsByClassName("gap horizontalGap").length === 0) {
             let newGap = document.createElement("div")
@@ -489,7 +513,7 @@ function checkGridGap() {
             gridLayer.removeChild(gridLayer.getElementsByClassName("gap horizontalGap")[0])
         }
     }
-    //if horizontal gap is needed (bottom)
+    //if row gap is needed (bottom)
     if ( (h + ehm*2) * hl > idDesktop.offsetHeight) {
         if (gridLayer.getElementsByClassName("gap verticalGap").length === 0) {
             let newGap = document.createElement("div")
@@ -506,6 +530,9 @@ function checkGridGap() {
             gridLayer.removeChild(gridLayer.getElementsByClassName("gap verticalGap")[0])
         }
     }
+    */
 }
 
+/*
 window.addEventListener("resize", checkGridGap)
+*/
