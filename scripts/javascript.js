@@ -126,9 +126,12 @@ function evalErrorPopup(code, desc, err) {
     coder = code.replace(/[<]/g, "&lt;")
     coder = coder.replace(/[>]/g, "&gt;")
     let script = coder.lines()
-    let colour = ""
+    let colour = "\n"
     for (y = 0; y < script.length; y++) {
-        colour += (y === (err.lineNumber - 1)) ? "<span style='color: red;'>"+script[y]+"</span> <span style='color: green;'>// <--- ¡PROBLEM HERE!</span><br>" : script[y]+"<br>"
+        colour += (y === (err.lineNumber - 1)) ?    "<span style='display:flex'><span style='color: red;display:inline; '>"
+                                                    +script[y]+
+                                                    "</span><span style='color: green;display:inline; '> // <---¡PROBLEM HERE!</span></span>" 
+                                                    : script[y]+"\n"
     }
 
     //add it to typeError stack
