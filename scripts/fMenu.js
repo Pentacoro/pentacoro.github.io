@@ -64,8 +64,8 @@ function findOutMenu(target) {
 
 let subMenus = 0
 
-function makeDropContext(e = null,_this, node) {
-    let contextArray = findOutMenu(_this)
+function makeDropContext(e = null, task, node) {
+    let contextArray = findOutMenu(task)
 
     buildMenu(contextArray, node)
 
@@ -104,7 +104,7 @@ function makeDropContext(e = null,_this, node) {
                     //no idea why it only worked like this, but it did 
                     //FUTURE ASCENDED SEBAS: because it catches variables in place with let declaration
                     let pls = [x,y]
-                    let arg = [e,_this]
+                    let arg = [e,task]
                     let sub = subMenus
                     newButton.onclick     = e => {
                         arr[pls[0]].item[pls[1]].func(arg[0], arg[1], arg[2])
@@ -143,7 +143,7 @@ function makeDropContext(e = null,_this, node) {
         
         function openSubOpt(opt, optPos, sub) {
             //check if submenu isn't open already
-            for (subM of document.getElementsByClassName("clickContext")) {
+            for (let subM of document.getElementsByClassName("clickContext")) {
                 if (subM.classList[1].match(/[sub_](\d+)/)) {
                     classInt = parseInt(subM.classList[1].match(/(\d+)/)[0])
                     if (classInt > sub) return
@@ -450,123 +450,6 @@ function deskGrid(e, _this){
         loadAPP("./apps/settings_deskGrid/deskGridOptions_lau.js");
     }
 }
-function deskNew(e, _this){
-    if(
-        !(e.target.classList.contains("cmcheck"))
-    ) {
-        //Make sure icon appears at center of initial right click-------|
-        let initialX = parseInt(window.getComputedStyle(document.getElementsByClassName("clickContext sub_0")[0],null).getPropertyValue("left"))
-        let initialY = parseInt(window.getComputedStyle(document.getElementsByClassName("clickContext sub_0")[0],null).getPropertyValue("top"))
-
-        let editFile = null
-        let editFrom = sys.vertex
-
-        let iconWidth = cfg.desk.grid.width/2
-        let iconHeight = cfg.desk.grid.height/2
-
-        let w = cfg.desk.grid.width; let h = cfg.desk.grid.height; let wm = cfg.desk.grid.hMargin; let hm = cfg.desk.grid.vMargin
-
-        let iconPosX = (Math.round((initialX-iconWidth)/(w + wm))*(w + wm) + wm)
-        let iconPosY = (Math.round((initialY-iconHeight)/(h + hm))*(h + hm) + hm)
-        //--------------------------------------------------------------|
-
-        let iconArray = desktop.mem.iconArr
-
-        iconArray.push(new Icon ("background-image: url('assets/svg/desktopIcons/folderPlaceholder.svg');", "¡Name me!", "dir", 1, iconPosX, iconPosY))
-        let createdIcon = iconArray[iconArray.length - 1]
-        repositionIcons([createdIcon],true,false)
-        createdIcon.createNode()
-
-        let iconText = document.getElementById("Icon: "+createdIcon.text).childNodes[1]
-        //make h3 editable --------------------|
-        iconText.setAttribute("contenteditable", "true")
-        iconText.setAttribute("spellcheck", "false")
-
-        //select h3 content --------------------|
-        selectText(iconText)
-
-        iconText.style.textShadow = "none"
-
-        //delete -> cancel icon creation
-        document.body.oncontextmenu = iconNamingDelete
-        window.onkeydown = (e) => {if(e.key == "Escape"){
-            iconNamingDelete()
-            return false
-        }};
-        function iconNamingDelete(){
-            system.mem.var.shSelect = true
-                
-            createdIcon.deleteNode()
-
-            nullifyOnEvents(_this)
-        }
-
-        setTimeout( () => {
-            document.body.onmousedown = iconNaming;
-            iconText.onkeydown = (e) => {if(e.key == "Enter" && e.shiftKey == false){
-                iconNaming();
-                return false;
-            }};
-
-            function iconNaming(){
-                if(
-                    !iconNameExists(iconText.textContent, createdIcon, editFrom) &&
-                    validIconName(iconText.textContent)
-                ) {
-                    //if the name is allowed --------------------|
-                    system.mem.var.shSelect = true
-        
-                    iconText.setAttribute("contenteditable", "false")
-                    document.getElementById("Icon: "+createdIcon.text).id = "Icon: "+iconText.textContent
-                    createdIcon.text = iconText.textContent
-                    iconText.style.backgroundColor = ""
-                    iconText.style.textShadow = ""
-
-                    //insert it into filesystem
-                    sys.vertex.new(Directory,iconText.textContent, 
-                        {
-                            icon : createdIcon, 
-                            from : sys.vertex.conf.icon.file, 
-                            type : "dir", 
-                            move : true
-                        }
-                    )
-
-                    createdIcon.statNode(1)
-                    desktop.pocket.push(createdIcon)
-
-                    //insert it into desktop mem
-                    //desktop.mem.iconArr.push(createdIcon)
-        
-                    iconText.blur()
-                    clearSelection()
-        
-                    nullifyOnEvents(_this)
-                } else {
-                    //if the name not allowed --------------------|
-                    system.mem.var.shSelect = false
-                    iconText.style.backgroundColor = "#c90000"
-        
-                    //insist -> keep only edited selected
-                    document.body.onclick = iconNamingInsist
-                    window.onkeyup = (e) => {if(e.key == "Enter" && e.shiftKey == false){
-                        iconNamingInsist()
-                        return false
-                    }}
-                    function iconNamingInsist(){
-                        for (icon of desktop.mem.iconArr){
-                            icon.statNode(0)
-                        }
-                        createdIcon.statNode(1)
-                        createdIcon.stat = 0
-
-                        selectText(iconText)
-                    }
-                }
-            }
-        }, 1);
-    }
-}
 function deskPaste(e, _this){
     if(
         !(e.target.classList.contains("cmcheck"))
@@ -605,9 +488,12 @@ function nullifyOnEvents(rawr) {
 //-------------------------------------------------------------------------------------|
 sys.reg.dropMenu = {arr: []}
 const drop = sys.reg.dropMenu
-//--------------------n
+//--------------------n //DESKTOP MENU
 drop.verDrop = function (tar) {
     let envfocus = system.mem.var.envfocus
+
+    let dropNewDIR = (e,task) => desktop.mem.new(e,task,Directory)
+    let dropNewMSF = (e,task) => desktop.mem.new(e,task,Metafile)
 
     drop.arr.push(new contextSection("view"))
     drop.arr.push(new contextSection("file"))
@@ -618,8 +504,8 @@ drop.verDrop = function (tar) {
     
     drop.arr[1].item.push(new contextSubmenu("New","url('assets/svg/contextMenu/new2.svg')",     
         [                                                                            
-            new contextOption("Directory","url('assets/svg/contextMenu/directory.svg')",deskNew),
-            new contextOption("Metafile","url('assets/svg/contextMenu/metafile.svg')", deskNew),
+            new contextOption("Directory","url('assets/svg/contextMenu/directory.svg')",dropNewDIR),
+            new contextOption("Metafile","url('assets/svg/contextMenu/metafile.svg')", dropNewMSF),
         ]
     ))
     drop.arr[1].item.push(new contextOption("Paste","url('assets/svg/contextMenu/paste.svg')",deskPaste))
@@ -629,7 +515,7 @@ drop.verDrop = function (tar) {
 
     return drop.arr
 }
-//--------------------n
+//--------------------n //EXPLORER MENU
 drop.expDrop = function (tar) {
     let envfocus = system.mem.var.envfocus
 
@@ -642,8 +528,8 @@ drop.expDrop = function (tar) {
     
     drop.arr[1].item.push(new contextSubmenu("New","url('assets/svg/contextMenu/new2.svg')",     
         [                                                                            
-            new contextOption("Directory","url('assets/svg/contextMenu/directory.svg')",deskNew),
-            new contextOption("Metafile","url('assets/svg/contextMenu/metafile.svg')", deskNew),
+            new contextOption("Directory","url('assets/svg/contextMenu/directory.svg')",desktop.mem.new),
+            new contextOption("Metafile","url('assets/svg/contextMenu/metafile.svg')", desktop.mem.new),
         ]
     ))
     drop.arr[1].item.push(new contextOption("Paste","url('assets/svg/contextMenu/paste.svg')",deskPaste))
@@ -653,9 +539,9 @@ drop.expDrop = function (tar) {
 
     return drop.arr
 }
-//--------------------n
+//--------------------n //ICON DESKTOP MENU
 drop.dirDrop1 = function(tar) {
-    let envfocus = system.mem.var.envfocus
+    let envfocus = system.mem.var.envfocus 
 
     drop.arr.push(new contextSection("open"))
     drop.arr.push(new contextSection("clip"))
@@ -673,7 +559,7 @@ drop.dirDrop1 = function(tar) {
 
     return drop.arr
 }
-//--------------------n
+//--------------------n //ICON EXPLORER MENU
 drop.dirDrop2 = function (tar) {
     let envfocus = system.mem.var.envfocus
 

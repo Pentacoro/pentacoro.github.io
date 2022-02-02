@@ -128,8 +128,8 @@ function evalErrorPopup(code, desc, err) {
     let script = coder.lines()
     let colour = "\n"
     for (y = 0; y < script.length; y++) {
-        colour += (y === (err.lineNumber - 1)) ?    "<span style='display:flex'><span style='color: red;display:inline; '>"
-                                                    +script[y]+
+        colour += (y === (err.lineNumber - 1)) ?    "<span style='display:flex'><span style='color: red;display:inline; '>"+
+                                                    script[y]+
                                                     "</span><span style='color: green;display:inline; '> // <---¡PROBLEM HERE!</span></span>" 
                                                     : script[y]+"\n"
     }
@@ -301,6 +301,19 @@ function selectText(node) {
 function clearSelection(){
     if (window.getSelection) {window.getSelection().removeAllRanges()}
     else if (document.selection) {document.selection.empty()}
+}
+
+function getFavicon(dom){
+    let favicon = null
+    let nodeList = dom.getElementsByTagName("link")
+    for (let i = 0; i < nodeList.length; i++)
+    {
+        if((nodeList[i].getAttribute("rel") == "icon")||(nodeList[i].getAttribute("rel") == "shortcut icon"))
+        {
+            favicon = nodeList[i].getAttribute("href")
+        }
+    }
+    return favicon
 }
 
 //-----------------------------------------------------------------|
