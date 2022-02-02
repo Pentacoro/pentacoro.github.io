@@ -1,13 +1,9 @@
 let arg = []
-//[0] window name
-//[1] popup type (true = details | false = buttons)
-//[2] popup title
-//[3] popup description
-//[4] popup taskid
-//[5] popup icon
+//[0] name
+//[1] addr
 let tid = ''
-let url = (arg[1]) ? "./apps/system_popup/popup.html" : "./apps/system_popup/popupB.html"
-let lau = "./apps/system_popup/popup_lau.html"
+let url = "./apps/media/iframer/iframer.html"
+let lau = "./apps/media/iframer/iframer_lau.js"
 
 //on app init
 function ini() {
@@ -18,9 +14,9 @@ function end() {
 
 }
 //check if instance allowed
-if (canInstance("Pupup")) {
+if (canInstance("Iframer")) {
     //task creation
-    sys.taskArr.push(new Task("Popup", true, end, null, "sys", tid))
+    sys.taskArr.push(new Task("Iframer", true, end, null, "plx", tid))
     let task = sys.taskArr[sys.taskArr.length - 1]
     let id = task.id
 
@@ -29,7 +25,7 @@ if (canInstance("Pupup")) {
     appHTML.then( data => {
         try {
             //window generation
-            sys.wndwArr.push(new Window(arg[0], id, false, 1, 1, 400, 170, 400, 170))
+            sys.wndwArr.push(new Window(arg[0], id, true, 1, 1, 700, 460, 192, 160))
             newWindow = sys.wndwArr[sys.wndwArr.length - 1]
             newWindow.createNode()
 
@@ -45,10 +41,6 @@ if (canInstance("Pupup")) {
             data = repTid(data,id)
             data = data.replace(/arg\[0\]/,stringifyArg(arg[0]))
             data = data.replace(/arg\[1\]/,stringifyArg(arg[1]))
-            data = data.replace(/arg\[2\]/,stringifyArg(arg[2]))
-            data = data.replace(/arg\[3\]/,stringifyArg(arg[3]))
-            data = data.replace(/arg\[4\]/,stringifyArg(arg[4]))
-            data = data.replace(/arg\[5\]/,stringifyArg(arg[5]))
 
             loadURL(data, document.getElementById("window_" + sys.wndwArr.indexOf(newWindow)).children[0].children[1])
         } catch (e) {
@@ -60,7 +52,6 @@ if (canInstance("Pupup")) {
             )
             findTask(id).end()
         }
-
     })
     appHTML.catch( e => {
         desktop.mem.var.error = e

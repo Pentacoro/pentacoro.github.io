@@ -4,42 +4,27 @@
 //fIconDir.js
 //fDesktop.js
 
-class Directory {
+class Directory extends File {
     constructor(name, conf = {}, cont = {}) {
+        super()
         this.name = name
         this.conf = conf
         this.cont = cont
     }
 
-    new(Type, childName, childConf = null, childCont = null) {
+    new
+    (   Type, 
+        childName, 
+        childIcon = null, 
+        childConf = null, 
+        childCont = null,
+    ) {
         let parent = this
 
-        let iconImag = null
-        let confType = null
-        let skeyName = null
-
-        switch (Type) {
-            case Directory:
-                iconImag = "background-image: url('assets/svg/desktopIcons/folderPlaceholder.svg');"
-                confType = "dir"
-                skeyName = "cont"
-                break
-            case Executable:
-                iconImag = "background-image: url('assets/svg/desktopIcons/folderPlaceholder.svg');"
-                confType = "lau"
-                skeyName = "lurl"
-                break 
-            case Metafile: 
-                iconImag = "background-image: url('assets/svg/desktopIcons/folderPlaceholder.svg');"
-                confType = "msf"
-                skeyName = "meta"
-                break
-            case JSobject:
-                iconImag = "background-image: url('assets/svg/desktopIcons/folderPlaceholder.svg');"
-                confType = "obj"
-                skeyName = "data"
-                break 
-        }
+        let defaults = filetypeDefaults(Type)
+        let iconImag = defaults.iconImag
+        let confType = defaults.confType
+        let skeyName = defaults.skeyName
 
         if (childConf) { 
             //if conf argument passed use it
@@ -53,12 +38,12 @@ class Directory {
                     from : "" + parent.conf["from"] + "/" + parent.name,
                     type : confType,
                     move : true,
-                    icon : new Icon (
-                                        iconImag, 
-                                        childName, 
-                                        confType, 
-                                        0  
-                                    ),
+                    icon : childIcon || new Icon (
+                                            iconImag, 
+                                            childName, 
+                                            confType, 
+                                            0  
+                                        ),
                 }
             )
         }
@@ -68,55 +53,6 @@ class Directory {
         if (childCont) {
             this.cont[childName][skeyName] = childCont
         }
-    }
-
-    delete() {
-        let parent = addrObj(this.conf.from)
-        let child = this
-
-        delete parent.cont[child.name]
-    }
-    moveMe(dest) {
-        
-    }
-    rename(rename) {
-        let parent  = addrObj(this.conf.from)
-        let newAddress = "" + parent.conf.icon.file + "/" + rename
-        let oldAddress = this.conf.icon.file
-
-        this.conf.addr = newAddress
-        this.conf.icon.file = newAddress
-
-        rerouteChildren(this)
-
-        function rerouteChildren(parent) {
-            for ([name, file] of Object.entries(parent.cont)) {
-                file.conf.addr = file.conf.addr.replace(oldAddress, newAddress)
-                file.conf.from = file.conf.from.replace(oldAddress, newAddress)
-                file.conf.icon.file = file.conf.icon.file.replace(oldAddress, newAddress)
-                rerouteChildren(file)
-            }
-        }
-
-        renameKey(parent.cont, this.name, rename)
-        parent.cont[rename].name = rename
-        //
-    }
-
-    render() {
-        if (addrObj(this.conf.from) === sys.vertex) { //if is on current vertex / render on desktop
-            repositionIcons([this.conf.icon],true,false)
-            desktop.mem.iconArr.push(this.conf.icon)
-            this.conf.icon.createNode()
-        } else if (isDirOpen(this.conf.from)) { //if is on any other directory / render on explorer
-            for (task of sys.taskArr) {
-                if (task.apps === "exp" && task.mem.directory === this.conf.from) task.mem.createExplorerIcons([this])
-            }
-        }
-    }
-
-    open() {
-        loadAPP(cfg.exec[this.conf.type], [this.name, this.conf.addr], system.mem.var.envfocus)
     }
 }
 

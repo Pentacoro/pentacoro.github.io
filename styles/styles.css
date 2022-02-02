@@ -80,23 +80,23 @@ body {
 }
 /*------------------------------------SELCT BOX*/
 
-/*PHONE*/
-@media (min-width: 400px){
-	.w1{
-		color: #FF0004;
+/*DESKTOP*/
+@media (max-width: 1024px){
+	.w3{
+		color: #0005FF;
 	}
 } /*----------------------*/
 
 /*TABLET*/
-@media (min-width: 768px){
+@media (max-width: 768px){
 	.w2{
 		color: #0AFF00;
 	}
 } /*----------------------*/
 
-/*DESKTOP*/
-@media (min-width: 1024px){
-	.w3{
-		color: #0005FF;
+/*PHONE*/
+@media (max-width: 400px){
+	.w1{
+		color: #FF0004;
 	}
 } /*----------------------*/

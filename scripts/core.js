@@ -71,7 +71,7 @@ if (storageAvailable('localStorage')) {
                 }
 
                 //recreate file object
-                newDir.new(Type,file.name,file.conf,file[Skey])
+                newDir.new(Type,file.name,null,file.conf,file[Skey])
                 let newFile = newDir.cont[file.name]
 
                 //recreate icon object
@@ -94,6 +94,7 @@ if (storageAvailable('localStorage')) {
         (
             Directory,
             "vertex",  
+            null,
             {
                 icon : new Icon ("background-image: url('assets/svg/desktopIcons/vertexPH.svg');", "vertex", "dir", 0),
                 from : "",
@@ -105,7 +106,8 @@ if (storageAvailable('localStorage')) {
         core.new   
         (
             Directory,
-            "trash",  
+            "trash",
+            null,
             {
                 icon : new Icon ("background-image: url('assets/svg/desktopIcons/trashPH.svg');", "trash", "dir", 0),
                 from : "",
@@ -117,7 +119,8 @@ if (storageAvailable('localStorage')) {
         core.new   
         (
             Directory,
-            "stash",  
+            "stash",
+            null,
             {
                 icon : new Icon ("background-image: url('assets/svg/desktopIcons/stashPH.svg');", "stash", "dir", 0),
                 from : "",
@@ -129,7 +132,8 @@ if (storageAvailable('localStorage')) {
         core.new   
         (
             Directory,
-            "config",  
+            "config",
+            null,
             {
                 icon : new Icon ("background-image: url('assets/svg/desktopIcons/systemPH.svg');", "config", "dir", 0),
                 from : "",
