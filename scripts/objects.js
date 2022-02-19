@@ -1,22 +1,23 @@
 class File {
     delete() {
-        let parent = addrObj(this.conf.from)
+        let parent = at(this.conf.from)
         let child = this
 
         delete parent.cont[child.name]
+        parent.checkCont()
     }
     moveMe(dest) {
         
     }
     rename(rename) {
-        let parent  = addrObj(this.conf.from)
+        let parent  = at(this.conf.from)
         let newAddress = "" + parent.conf.icon.file + "/" + rename
         let oldAddress = this.conf.icon.file
 
         this.conf.addr = newAddress
         this.conf.icon.file = newAddress
 
-        rerouteChildren(this)
+        if (this.cont) rerouteChildren(this)
 
         function rerouteChildren(parent) {
             for ([name, file] of Object.entries(parent.cont)) {
@@ -33,7 +34,7 @@ class File {
     }
 
     render() {
-        if (addrObj(this.conf.from) === sys.vertex) { //if is on current vertex / render on desktop
+        if (at(this.conf.from) === sys.vertex) { //if is on current vertex / render on desktop
             repositionIcons([this.conf.icon],true,false)
             desktop.mem.iconArr.push(this.conf.icon)
             this.conf.icon.createNode()
@@ -98,23 +99,27 @@ function filetypeDefaults(Type) {
     
     switch (Type) {
         case Directory:
-            defaults.iconImag = "background-image: url('assets/svg/desktopIcons/folderPlaceholder.svg');"
+            defaults.iconImag = "assets/svg/desktopIcons/defaultDIR.svg"
             defaults.confType = "dir"
+            defaults.appsExec = "exp"
             defaults.skeyName = "cont"
             break
         case Executable:
-            defaults.iconImag = "background-image: url('assets/svg/desktopIcons/folderPlaceholder.svg');"
+            defaults.iconImag = "assets/svg/desktopIcons/folderPlaceholder.svg"
             defaults.confType = "lau"
+            defaults.appsExec = "lau"
             defaults.skeyName = "lurl"
             break 
         case Metafile: 
-            defaults.iconImag = "background-image: url('assets/svg/desktopIcons/folderPlaceholder.svg');"
+            defaults.iconImag = "assets/svg/desktopIcons/defaultMSF.svg"
             defaults.confType = "msf"
+            defaults.appsExec = "ifr"
             defaults.skeyName = "meta"
             break
         case JSobject:
-            defaults.iconImag = "background-image: url('assets/svg/desktopIcons/folderPlaceholder.svg');"
+            defaults.iconImag = "assets/svg/desktopIcons/folderPlaceholder.svg"
             defaults.confType = "obj"
+            defaults.appsExec = "jse"
             defaults.skeyName = "data"
             break 
     }

@@ -108,7 +108,7 @@ class Window {
 	
 		document.getElementById("windowLayer").appendChild(newWindow)
 		
-		system.mem.focus(findTask(this.task))
+		system.mem.focus(task(this.task))
 	
 		//Getting minimum size to apply to the content,
 		//instead of the window node, by comparing the 
@@ -164,7 +164,7 @@ class Window {
 		//if the window was focused, shift focus behind it
 		if (thisIndex === 0) {
 			if (sys.wndwArr.length > 0) {
-				system.mem.focus(findTask(sys.wndwArr[0].task))
+				system.mem.focus(task(sys.wndwArr[0].task))
 			} else {
 				system.mem.focus(desktop)
 			}
@@ -253,13 +253,13 @@ class Window {
 			//if present, the header is where you move the window from:
 			wndw.getElementsByClassName("header")[0].onmousedown = dragMouseDown
 			wndw.onmousedown = e => {
-				system.mem.focus(findTask(this.task))
+				system.mem.focus(task(this.task))
 				this.statNode()
 			}
 		} else {
 			//otherwise, move the window from anywhere inside the DIV:
 			wndw.onmousedown = e => {
-				system.mem.focus(findTask(this.task))
+				system.mem.focus(task(this.task))
 				dragMouseDown
 			}
 		}

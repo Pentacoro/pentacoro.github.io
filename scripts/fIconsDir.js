@@ -16,7 +16,7 @@ class IconDir {
 
         let newIconImage = document.createElement("div")
         newIconImage.setAttribute("class", "explorerIconImage ID_"+this.task)
-        newIconImage.setAttribute("style", this.imag)
+        newIconImage.setAttribute("style", "background-image: url('"+this.imag+"');")
         newIcon.appendChild(newIconImage)
 
         let newIconText = document.createElement("span")
@@ -36,11 +36,11 @@ class IconDir {
     deleteNode(){
         this.node.parentNode.removeChild(this.node)
     
-        findTask(this.task).pocket = findTask(this.task).pocket.remove(this)
-        findTask(this.task).mem.iconArray = findTask(this.task).mem.iconArray.remove(this)
+        task(this.task).pocket = task(this.task).pocket.remove(this)
+        task(this.task).mem.iconArray = task(this.task).mem.iconArray.remove(this)
     
-        if (addrObj(addrObj(this.file).conf.from) === sys.vertex) { //delete desktop icon if file is from vertex
-            let rawr = addrObj(this.file).conf.icon
+        if (at(at(this.file).conf.from) === sys.vertex) { //delete desktop icon if file is from vertex
+            let rawr = at(this.file).conf.icon
             rawr.deleteNode()
         }
     }
@@ -73,7 +73,7 @@ class IconDir {
             //when mousedown on selected icon
             if (_this.stat === 1) {
                 //managing selected icons
-                for (icon of findTask(_this.task).pocket) {
+                for (icon of task(_this.task).pocket) {
                     //light up all hover border onmousedown:-|
                     highlight(icon.node)
                     //---------------------------------------|
@@ -85,16 +85,16 @@ class IconDir {
                     
                     //when mousedown on unselected icon
                     if(!keyPressCtrl) {
-                        for (icon of findTask(_this.task).pocket){
-                            findTask(_this.task).pocket = findTask(_this.task).pocket.remove(icon)
+                        for (icon of task(_this.task).pocket){
+                            task(_this.task).pocket = task(_this.task).pocket.remove(icon)
                             icon.statNode(0)
                             lowlight(icon.node)
                         }
-                        findTask(_this.task).pocket.push(_this)
+                        task(_this.task).pocket.push(_this)
                         _this.statNode(1)
                         highlight(node)
                     } else if(keyPressCtrl) {
-                        findTask(_this.task).pocket.push(_this)
+                        task(_this.task).pocket.push(_this)
                         _this.statNode(1)
                         highlight(node)
                     }
@@ -107,13 +107,13 @@ class IconDir {
             function dragMouseMove(e, node) {
                 e.preventDefault()
 
-                for (icon of findTask(_this.task).pocket){
+                for (icon of task(_this.task).pocket){
                     icon.statNode(2)
                 }
 
                 if (document.getElementById("godGrasp").children.length === 0) {
                     //make pocket representation on godGrasp--------||
-                    let pockImg = (findTask(_this.task).pocket.length > 3) ? 3 : findTask(_this.task).pocket.length
+                    let pockImg = (task(_this.task).pocket.length > 3) ? 3 : task(_this.task).pocket.length
     
                     let iconShip = document.createElement("div")
                     iconShip.setAttribute("class", "iconShip")
@@ -121,14 +121,14 @@ class IconDir {
                     let iconShipImg = document.createElement("div")
                     iconShipImg.setAttribute("class", "iconShipImg")
                     if (pockImg === 1) {
-                        iconShipImg.setAttribute("style", _this.imag+"; background-size: 68%;")
+                        iconShipImg.setAttribute("style", "background-image: url('"+_this.imag+"'); background-size: 68%;")
                     } else {
                         iconShipImg.setAttribute("style", "background-image: url('./assets/svg/miscUI/pocket_ship_"+pockImg+".svg')")
                     }
     
                     let iconShipSize = document.createElement("div")
                     iconShipSize.setAttribute("class", "iconShipSize")
-                    iconShipSize.innerHTML = "<span>" + findTask(_this.task).pocket.length + "</span>"
+                    iconShipSize.innerHTML = "<span>" + task(_this.task).pocket.length + "</span>"
     
                     iconShip.appendChild(iconShipSize)
                     iconShip.appendChild(iconShipImg)
@@ -155,15 +155,15 @@ class IconDir {
     
                 //unselect other folders on mouseup W/O drag UNLESS ctrl
                 if(keyPressCtrl == false && system.mem.var.dragging == false && e.button == 0) {
-                    for (icon of findTask(_this.task).pocket){
-                        findTask(_this.task).pocket = findTask(_this.task).pocket.remove(icon)
+                    for (icon of task(_this.task).pocket){
+                        task(_this.task).pocket = task(_this.task).pocket.remove(icon)
                         icon.statNode(0)
                         lowlight(icon.node)
                     }
                     _this.statNode(1)
-                    findTask(_this.task).pocket.push(_this)
+                    task(_this.task).pocket.push(_this)
                 } else {
-                    for (icon of findTask(_this.task).pocket){
+                    for (icon of task(_this.task).pocket){
                         icon.statNode(1)
                         lowlight(icon.node)
                     }
@@ -175,6 +175,12 @@ class IconDir {
     clic(){
         this.node.onmousedown = e => this.drag(e)
         this.node.oncontextmenu = e => openMenu(e,this)
-        this.node.ondblclick = e => findTask(this.task).mem.explorerInit(this.file, this.task)
+        this.node.ondblclick = e => {
+            if (this.apps == "dir") {
+                task(this.task).mem.explorerInit(this.file, this.task)
+            } else {
+                at(this.file).open()
+            }
+        }
     }
 }

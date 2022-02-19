@@ -20,9 +20,8 @@
     <iframe class="TASKID" src="" frameborder="0"></iframe>
     
     <script>
-        let url  = addrObj(arg[1]).meta.file
-        let task = findTask("TASKID")
-        let mem  = findTask("TASKID").mem
+        let url  = at(arg[1]).meta.file
+        let mem  = task("TASKID").mem
 
         mem.url  = url
 

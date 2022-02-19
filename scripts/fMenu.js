@@ -33,7 +33,7 @@ function findOutMenu(target) {
     let menu = []
     switch (target.apps) {
         default:
-        case "exe":
+        case "lau":
             //drop = exeDrop
             break
         case "ifr":
@@ -261,7 +261,7 @@ function iconOpen(e, _this){
     if(
         !(e.target.classList.contains("cmcheck"))
     ) {
-        addrObj(_this.file).open()
+        at(_this.file).open()
     }
 }
 function iconFullscreen(e, _this){
@@ -311,8 +311,8 @@ function iconRename(e, _this){
         !(e.target.classList.contains("cmcheck"))
     ) {
         let iconText = _this.node.childNodes[1]
-        let editFile = addrObj(_this.file)
-        let editFrom = addrObj(editFile.conf.from)
+        let editFile = at(_this.file)
+        let editFrom = at(editFile.conf.from)
         //make h3 editable --------------------|
         iconText.setAttribute("contenteditable", "true")
         iconText.setAttribute("spellcheck", "false")
@@ -373,10 +373,10 @@ function iconRename(e, _this){
                         editFile.rename(iconText.textContent)
                         if (_this.task) {
                             taskid = _this.task
-                            task   = findTask(taskid)
+                            task   = task(taskid)
                             task.mem.explorerInit(task.mem.directory, taskid)
 
-                            if (addrObj(task.mem.directory) === sys.vertex){
+                            if (at(task.mem.directory) === sys.vertex){
                                 desktop.mem.refresh()
                             }
 
@@ -408,9 +408,9 @@ function iconRename(e, _this){
                     }
                     function iconRenamingInsist(){
                         if (_this.task) {
-                            for (icon of findTask(_this.task).mem.iconArray){
+                            for (icon of task(_this.task).mem.iconArray){
                                 icon.statNode(0)
-                                findTask(_this.task).pocket = findTask(_this.task).pocket.remove(icon)
+                                task(_this.task).pocket = task(_this.task).pocket.remove(icon)
                             }
                         } else {
                             for (icon of desktop.mem.iconArr){
@@ -437,7 +437,7 @@ function iconProperties(e, _this){
 }
 //-------------------------------------------------------------------------------------|
 function dirIconOpen(e, _this){
-    findTask(_this.task).mem.explorerInit(_this.file, _this.task)
+    task(_this.task).mem.explorerInit(_this.file, _this.task)
 }
 function dirIconNewWindow(e, _this){
     explorerInit(_this.file, _this.task)
@@ -492,9 +492,6 @@ const drop = sys.reg.dropMenu
 drop.verDrop = function (tar) {
     let envfocus = system.mem.var.envfocus
 
-    let dropNewDIR = (e,task) => desktop.mem.new(e,task,Directory)
-    let dropNewMSF = (e,task) => desktop.mem.new(e,task,Metafile)
-
     drop.arr.push(new contextSection("view"))
     drop.arr.push(new contextSection("file"))
     drop.arr.push(new contextSection("info"))
@@ -504,8 +501,8 @@ drop.verDrop = function (tar) {
     
     drop.arr[1].item.push(new contextSubmenu("New","url('assets/svg/contextMenu/new2.svg')",     
         [                                                                            
-            new contextOption("Directory","url('assets/svg/contextMenu/directory.svg')",dropNewDIR),
-            new contextOption("Metafile","url('assets/svg/contextMenu/metafile.svg')", dropNewMSF),
+            new contextOption("Directory","url('assets/svg/contextMenu/directory.svg')",(e,task) => desktop.mem.new(e,task,Directory)),
+            new contextOption("Metafile","url('assets/svg/contextMenu/metafile.svg')", (e,task) => desktop.mem.new(e,task,Metafile)),
         ]
     ))
     drop.arr[1].item.push(new contextOption("Paste","url('assets/svg/contextMenu/paste.svg')",deskPaste))
@@ -528,8 +525,8 @@ drop.expDrop = function (tar) {
     
     drop.arr[1].item.push(new contextSubmenu("New","url('assets/svg/contextMenu/new2.svg')",     
         [                                                                            
-            new contextOption("Directory","url('assets/svg/contextMenu/directory.svg')",desktop.mem.new),
-            new contextOption("Metafile","url('assets/svg/contextMenu/metafile.svg')", desktop.mem.new),
+            new contextOption("Directory","url('assets/svg/contextMenu/directory.svg')",(e,task) => envfocus.mem.new(e,task,Directory)),
+            new contextOption("Metafile","url('assets/svg/contextMenu/metafile.svg')", (e,task) => envfocus.mem.new(e,task,Directory)),
         ]
     ))
     drop.arr[1].item.push(new contextOption("Paste","url('assets/svg/contextMenu/paste.svg')",deskPaste))
@@ -539,7 +536,7 @@ drop.expDrop = function (tar) {
 
     return drop.arr
 }
-//--------------------n //ICON DESKTOP MENU
+//--------------------n //DIR ICON DESKTOP MENU
 drop.dirDrop1 = function(tar) {
     let envfocus = system.mem.var.envfocus 
 
@@ -559,7 +556,7 @@ drop.dirDrop1 = function(tar) {
 
     return drop.arr
 }
-//--------------------n //ICON EXPLORER MENU
+//--------------------n //DIR ICON EXPLORER MENU
 drop.dirDrop2 = function (tar) {
     let envfocus = system.mem.var.envfocus
 
@@ -580,6 +577,28 @@ drop.dirDrop2 = function (tar) {
 
     return drop.arr
 }
-//--------------------n
+//--------------------n //MSF ICON DESKTOP MENU
+drop.msfDrop = function(tar) {
+    let envfocus = system.mem.var.envfocus 
+
+    drop.arr.push(new contextSection("open"))
+    drop.arr.push(new contextSection("clip"))
+    drop.arr.push(new contextSection("prop"))
+    
+    drop.arr[0].item.push(new contextOption("Open","url('assets/svg/contextMenu/open.svg')",iconOpen))
+    drop.arr[0].item.push(new contextOption("Open","url('assets/svg/contextMenu/open.svg')",iconOpen))
+    drop.arr[0].item.push(new contextOption("Open","url('assets/svg/contextMenu/open.svg')",iconOpen))
+    
+    drop.arr[1].item.push(new contextOption("Cut","url('assets/svg/contextMenu/cut.svg')",iconCut))
+    drop.arr[1].item.push(new contextOption("Copy","url('assets/svg/contextMenu/copy.svg')",iconCopy))
+    drop.arr[1].item.push(new contextOption("Paste","url('assets/svg/contextMenu/paste.svg')",iconPaste))
+    
+    drop.arr[2].item.push(new contextOption("Delete","url('assets/svg/contextMenu/delete.svg')",iconDelete))
+    drop.arr[2].item.push(new contextOption("Rename","url('assets/svg/contextMenu/rename.svg')",iconRename))
+    drop.arr[2].item.push(new contextOption("Properties","url('assets/svg/contextMenu/properties.svg')",iconProperties))
+
+    return drop.arr
+    //--------------------n
+}
 
 //-------------------------------------------------------------------------------------|

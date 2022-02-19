@@ -28,7 +28,7 @@ class Task {
                 sys.wndwArr[parseInt(document.getElementsByClassName("ID_"+thisid)[0].id.match(/(\d+)/)[0])].deleteNode()
             }
 
-            sys.taskArr = sys.taskArr.remove(findTask(thisid))
+            sys.taskArr = sys.taskArr.remove(task(thisid))
         }
     }
     loader(op) {
@@ -68,18 +68,18 @@ function canInstance(appName){
     return true
 }
 
-function findTask(id) {
+function task(id) {
     let find = sys.taskArr.filter(task => task.id === id)
     return find[0]
 }
 
 function endTask(taskid) {
-    findTask(taskid).end()
+    task(taskid).end()
 }
 
 function deleteSelectedNodes(pocket){
     for(icon of pocket){
-        let getFile = addrObj(icon.file)
+        let getFile = at(icon.file)
 
         icon.deleteNode()
 

@@ -48,7 +48,7 @@
                     "The application launcher at: <i>'" + lau + "'</i> failed evaluation.",
                     e
                 )
-                findTask(id).end()
+                task(id).end()
             }
         })
 
@@ -65,7 +65,7 @@
                     ""
                 ]
             )
-            findTask(id).end()
+            task(id).end()
         })
     } else {
         console.log("instanced")

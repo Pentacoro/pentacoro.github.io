@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>dump</title>
+	<style>
+		*{
+			box-sizing: content-box;
+		}
+		body{
+			background-color: #000;
+		}
+		#contextMenu {
+			width: 220px;
+			height: 256px;
+
+			background-color: #eeeeee;
+
+			display: grid;
+			grid-template-rows: auto auto auto;
+
+			/*image-rendering: crisp-edges;*/
+		}
+		.contextMenu{
+			border: #a1a1a1;
+			border-width: 1px;
+			border-style: solid;
+			border-bottom: 0;
+		}
+		.contextMenu>div{
+			display: grid;
+			grid-template-columns: 18px auto auto;
+			grid-template-rows: 18px;
+			padding: 5px;
+		}
+		.contextMenu>div>span{
+			font-family: Arial, Helvetica, sans-serif;
+			color: #2c2c2c;
+			padding-left: 5px;
+			margin: 0em;
+			cursor: default;
+			user-select: none;
+		}
+		.contextMenu>div>div{
+			background-size: auto;
+			background-position: center;
+			background-repeat: no-repeat;
+		}
+		.cmcheck{
+			float: inline-end;
+			margin: 0;
+			width: 18px;
+			height: 18px;
+		}
+		.contextMenu>div:hover{
+			background-color: #9ecbdf;
+		}
+	</style>
+</head>
+<body>
+	
+	<div id="contextMenu">
+
+		<div class="contextMenu">
+			<div>
+				<div style="background-image: url('assets/svg/contextMenu/open.svg');"></div>
+				<span>Open</span><div id="customRadio"><input type="radio" name="openCheck" class="cmcheck" id="openCheck"></div></div>
+			<div>
+				<div style="background-image: url('assets/svg/contextMenu/maximize.svg');"></div>
+				<span>Open maximized</span><div id="customRadio"><input type="radio" name="openCheck" class="cmcheck" id="maxiCheck"></div></div>
+			<div>
+				<div style="background-image: url('assets/svg/contextMenu/newtab.svg');"></div>
+				<span>Open in new tab</span><div id="customRadio"><input type="radio" name="openCheck" class="cmcheck" id="newtCheck"></div></div>
+		</div>
+
+		<div class="contextMenu">
+			<div><div style="background-image: url('assets/svg/contextMenu/cut.svg');"></div><span>Cut</span></div>
+			<div><div style="background-image: url('assets/svg/contextMenu/copy.svg');"></div><span>Copy</span></div>
+			<div><div style="background-image: url('assets/svg/contextMenu/paste.svg');"></div><span>Paste</span></div>
+		</div>
+
+		<div class="contextMenu">
+			<div><div style="background-image: url('assets/svg/contextMenu/delete.svg');"></div><span>Delete</span></div>
+			<div><div style="background-image: url('assets/svg/contextMenu/rename.svg');"></div><span>Rename</span></div>
+			<div><div style="background-image: url('assets/svg/contextMenu/properties.svg');"></div><span>Properties</span></div>
+		</div>
+
+		<div class="contextMenu" id="contestMenuBottomBorder"></div>
+
+    </div>
+	
+</body>
+</html>
+

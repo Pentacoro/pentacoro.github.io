@@ -28,7 +28,7 @@ class Icon {
         let newIconImage = document.createElement("div")
         let newIconFrame = document.createElement("div")
         newIconImage.setAttribute("class", "iconImage")
-        newIconImage.setAttribute("style", this.imag)
+        newIconImage.setAttribute("style", "background-image: url('"+this.imag+"');")
         newIconFrame.setAttribute("class", "iconFrame")
         
         newIconFrame.appendChild(newIconImage)
@@ -199,7 +199,7 @@ class Icon {
     clic(){
         this.node.oncontextmenu = e => openMenu(e,this)
         this.node.onmousedown = e => this.drag(e)
-        this.node.ondblclick = e => addrObj(this.file).open()
+        this.node.ondblclick = e => at(this.file).open()
     }
     drag(e){
         let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0
