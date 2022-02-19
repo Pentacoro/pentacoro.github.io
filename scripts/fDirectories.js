@@ -53,6 +53,20 @@ class Directory extends File {
         if (childCont) {
             this.cont[childName][skeyName] = childCont
         }
+
+        try {
+            parent.checkCont()
+        } catch (e) {
+            console.log(e)
+        }
+    }
+
+    checkCont(){ //this function swaps default dir icons whether it contains files or not
+        if (Object.keys(this.cont).length > 0 && this.conf.icon.imag == filetypeDefaults(Directory).iconImag) {
+            this.conf.icon.imag = filetypeDefaults(Directory).iconImag.replace("DIR", "DIRc")
+        } else if (this.conf.icon.imag == filetypeDefaults(Directory).iconImag.replace("DIR", "DIRc")) {
+            this.conf.icon.imag = filetypeDefaults(Directory).iconImag
+        }
     }
 }
 
@@ -64,7 +78,7 @@ function isDirOpen(addr) {
 }
 
 //--------------------------------------------------------------------------|
-function addrObj(addr = "") {
+function at(addr = "") {
     //string: where we'll devour addr one dir at a time as we build expression
     let string = addr
     //steps: where we'll store each of the dirs extracted from string (useless for now)

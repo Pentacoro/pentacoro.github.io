@@ -52,7 +52,7 @@ const loadURL = function(data, container, env = null){
             try {
                 eval(container.getElementsByTagName("script")[i].innerText)
 
-                system.mem.focus(findTask(taskid))
+                system.mem.focus(task(taskid))
             } catch (e) {
                 evalErrorPopup
                 (
@@ -60,7 +60,7 @@ const loadURL = function(data, container, env = null){
                     "The script number <i>"+i+"</i> from the application <i>"+taskid+"</i> failed evaluation.",
                     e
                 )
-                findTask(taskid).end()
+                task(taskid).end()
             }
         }
     }  

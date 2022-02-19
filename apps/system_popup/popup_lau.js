@@ -58,7 +58,7 @@ if (canInstance("Pupup")) {
                 "The application launcher at: <i>'" + lau + "'</i> failed evaluation.",
                 e
             )
-            findTask(id).end()
+            task(id).end()
         }
 
     })
@@ -75,7 +75,7 @@ if (canInstance("Pupup")) {
                 ""
             ]
         )
-        findTask(id).end()
+        task(id).end()
     })
 } else {
     console.log("instanced")

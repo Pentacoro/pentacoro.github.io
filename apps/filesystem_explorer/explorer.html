@@ -186,9 +186,8 @@
     </div>
 
     <script>  
-        let task = findTask("TASKID")
-        let mem  = findTask("TASKID").mem
-        task.apps = "exp"
+        let mem  = task("TASKID").mem
+        task("TASKID").apps = "exp"
         mem.var = {}
         mem.iconArray = []
         mem.dirObject = {}
@@ -209,22 +208,22 @@
         }
         mem.explorerInit = function (dir, id, act = null) {    
             try {       
-                let activeObj = addrObj(dir)
+                let activeObj = at(dir)
                 let dirList   = Object.entries(activeObj.cont)
 
                 let dirFolder = []
                 let dirFile   = []
                 let dirPlex   = []
 
-                for (icon of findTask(id).mem.iconArray){
+                for (icon of task(id).mem.iconArray){
                     document.getElementsByClassName("list ID_"+id)[0].removeChild(icon.node)
                 }
 
-                findTask(id).mem.iconArray = []
-                findTask(id).mem.directory = dir
-                findTask(id).mem.dirObject = addrObj(dir)
-                findTask(id).mem.var.dirname = activeObj.name
-                findTask(id).pocket = []
+                task(id).mem.iconArray = []
+                task(id).mem.directory = dir
+                task(id).mem.dirObject = at(dir)
+                task(id).mem.var.dirname = activeObj.name
+                task(id).pocket = []
 
                 for (item of dirList) {
                     if(item[1].conf.type === "dir" && !item[1].conf.plex) {
@@ -254,7 +253,7 @@
             } catch (e) {
                 mem.var.error = e
                 mem.var.errorB = [["Okay"]]
-                loadAPP("./apps/system_popup/popup_lau.html",["Error",false,"Couldn't load directory", "This directory seems to no longer exist. It might have been moved, or a parent directory been renamed","TASKID",""])
+                loadAPP("./apps/system_popup/popup_lau.js",["Error",false,"Couldn't load directory", "This directory seems to no longer exist. It might have been moved, or a parent directory been renamed","TASKID",""])
 
                 if (act === "refresh") mem.explorerInit("", "TASKID")
             }
@@ -280,7 +279,7 @@
                     } catch (e) {
                         mem.var.error  = e
                         mem.var.errorB = [["Okay"]]
-                        loadAPP("./apps/system_popup/popup_lau.html",["Error",false,"Couldn't load directory", "This directory seems to no longer exist. It might have been moved, or a parent directory been renamed","TASKID",""])
+                        loadAPP("./apps/system_popup/popup_lau.js",["Error",false,"Couldn't load directory", "This directory seems to no longer exist. It might have been moved, or a parent directory been renamed","TASKID",""])
 
                         mem.explorerInit("", "TASKID")
                     }
@@ -297,15 +296,15 @@
         //background click listeners
         document.getElementsByClassName("list ID_TASKID")[0].onmousedown = e => {
             if (e.target.classList.contains("list")) {
-                for (icon of task.pocket) {
+                for (icon of task("TASKID").pocket) {
                     icon.statNode(0)
-                    task.pocket = task.pocket.remove(icon)
+                    task("TASKID").pocket = task("TASKID").pocket.remove(icon)
                 }
             }
         }
         document.getElementsByClassName("list ID_TASKID")[0].oncontextmenu = e => {
             if (e.target.classList.contains("list")) {
-                openMenu(e, task)
+                openMenu(e, task("TASKID"))
             }
         }
     </script>

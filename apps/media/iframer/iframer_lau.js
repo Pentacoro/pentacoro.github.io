@@ -25,7 +25,7 @@ if (canInstance("Iframer")) {
     appHTML.then( data => {
         try {
             //window generation
-            sys.wndwArr.push(new Window(arg[0], id, true, 1, 1, 700, 460, 192, 160))
+            sys.wndwArr.push(new Window(arg[0], id, true, 1, 1, 850, 650, 192, 160))
             newWindow = sys.wndwArr[sys.wndwArr.length - 1]
             newWindow.createNode()
 
@@ -50,7 +50,7 @@ if (canInstance("Iframer")) {
                 "The application launcher at: <i>'" + lau + "'</i> failed evaluation.",
                 e
             )
-            findTask(id).end()
+            task(id).end()
         }
     })
     appHTML.catch( e => {
@@ -66,7 +66,7 @@ if (canInstance("Iframer")) {
                 ""
             ]
         )
-        findTask(id).end()
+        task(id).end()
     })
 } else {
     console.log("instanced")
