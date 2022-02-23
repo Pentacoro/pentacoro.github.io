@@ -198,7 +198,7 @@ class Icon {
     }
     clic(){
         this.node.oncontextmenu = e => openMenu(e,this)
-        this.node.onmousedown = e => this.drag(e)
+        this.node.onmousedown = e => this.drag(e);
         this.node.ondblclick = e => at(this.file).open()
     }
     drag(e){

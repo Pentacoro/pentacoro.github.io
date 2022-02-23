@@ -526,7 +526,7 @@ drop.expDrop = function (tar) {
     drop.arr[1].item.push(new contextSubmenu("New","url('assets/svg/contextMenu/new2.svg')",     
         [                                                                            
             new contextOption("Directory","url('assets/svg/contextMenu/directory.svg')",(e,task) => envfocus.mem.new(e,task,Directory)),
-            new contextOption("Metafile","url('assets/svg/contextMenu/metafile.svg')", (e,task) => envfocus.mem.new(e,task,Directory)),
+            new contextOption("Metafile","url('assets/svg/contextMenu/metafile.svg')", (e,task) => envfocus.mem.new(e,task,Metafile)),
         ]
     ))
     drop.arr[1].item.push(new contextOption("Paste","url('assets/svg/contextMenu/paste.svg')",deskPaste))
