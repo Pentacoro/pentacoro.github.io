@@ -307,6 +307,123 @@
                 openMenu(e, task("TASKID"))
             }
         }
+
+        mem.new = function(e, _this, Type){
+            if(
+                !(e.target.classList.contains("cmcheck"))
+            ) {
+                let editFile = null
+                let editFrom = mem.dirObject
+                let editAddr = mem.directory
+
+                //--------------------------------------------------------------|
+
+                let iconArray = mem.iconArray
+
+                let typeDefaults = filetypeDefaults(Type)
+
+                iconArray.push(new IconDir (typeDefaults.iconImag, "¡Name me!", "TASKID", typeDefaults.confType, ""))
+                let createdIcon = iconArray[iconArray.length - 1]
+                createdIcon.createNode()
+
+                createdIcon.statNode(1)
+                createdIcon.stat = 0
+
+                let iconText = createdIcon.node.childNodes[1]
+                //make h3 editable --------------------|
+                iconText.setAttribute("contenteditable", "true")
+                iconText.setAttribute("spellcheck", "false")
+
+                //select h3 content
+                selectText(iconText)
+
+                iconText.style.textShadow = "none"
+
+                //delete -> cancel icon creation
+                task("TASKID").wndw.node.addEventListener("dfocus", iconNamingDelete)
+                document.body.oncontextmenu = iconNamingDelete
+                window.onkeydown = e => {if(e.key == "Escape"){
+                    iconNamingDelete()
+                    return false
+                }};
+                function iconNamingDelete(){
+                    system.mem.var.shSelect = true
+                        
+                    createdIcon.deleteNode()
+
+                    nullifyOnEvents(_this)
+                    task("TASKID").wndw.node.removeEventListener("dfocus", iconNamingDelete)
+                }
+
+                setTimeout( () => { //TIMEOUT
+
+                    document.body.onmousedown = iconNaming
+                    iconText.onkeydown = (e) => {if(e.key == "Enter" && e.shiftKey == false){
+                        iconNaming()
+                        return false
+                    }}
+
+                    function iconNaming(){
+                        if(
+                            !iconNameExists(iconText.textContent, createdIcon, editFrom) &&
+                            validIconName(iconText.textContent)
+                        ) {
+                            //if the name is allowed --------------------|
+                            system.mem.var.shSelect = true
+
+                            iconText.setAttribute("contenteditable", "false")
+                            iconText.style.backgroundColor = ""
+                            iconText.style.textShadow = ""
+                            createdIcon.text = iconText.textContent
+                            createdIcon.file = editAddr + "/" + iconText.textContent
+
+                            //insert it into filesystem
+                            editFrom.new(Type,iconText.textContent)
+
+                            createdIcon.statNode(1)
+                            task("TASKID").pocket.push(createdIcon)
+
+                            //refresh desktop if explorer is on vertex
+                            if (editFrom === sys.vertex) {
+                                at(createdIcon.file).render()
+                            }
+
+                            iconText.blur()
+                            clearSelection()
+
+                            nullifyOnEvents(_this)
+                            task("TASKID").wndw.node.removeEventListener("dfocus", iconNamingDelete)
+                        } else {
+                            //if the name not allowed --------------------|
+                            system.mem.var.shSelect = false
+                            iconText.style.backgroundColor = "#c90000"
+
+                            //insist -> keep only edited selected
+                            document.body.onclick = iconNamingInsist
+                            window.onkeyup = (e) => {if(e.key == "Enter" && e.shiftKey == false){
+                                iconNamingInsist()
+                                return false
+                            }}
+                            function iconNamingInsist(){
+                                if (mem.dirObject.conf.addr == editAddr) {
+                                    for (icon of mem.iconArray){
+                                        icon.statNode(0)
+                                    }
+                                    createdIcon.statNode(1)
+                                    createdIcon.stat = 0
+
+                                    selectText(iconText)
+                                } else {
+                                    system.mem.var.shSelect = true
+                                    nullifyOnEvents(_this)
+                                    task("TASKID").wndw.node.removeEventListener("dfocus", iconNamingDelete)
+                                }
+                            }
+                        }
+                    }
+                }, 1) //TIMEOUT
+            }
+        }
     </script>
 </body>
 </html>

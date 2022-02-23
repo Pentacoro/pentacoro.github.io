@@ -45,10 +45,14 @@ class Task {
         if (this.wndw) {
             this.wndw.focus(true)
             this.wndw.statNode()
+            this.wndw.node.dispatchEvent(eventFocus)
         }
     }
     unfocus() {
-        if (this.wndw) this.wndw.focus(false)
+        if (this.wndw) {
+            this.wndw.focus(false)
+            this.wndw.node.dispatchEvent(eventDfocus)
+        }
     }
 }
 

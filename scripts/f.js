@@ -54,3 +54,11 @@ const classActive = document.getElementsByClassName("active");
 const classWindow = document.getElementsByClassName("window");
 
 //------------------------------------HTML element references|
+
+//Custom Events----------------------------------------------|
+
+const eventFocus = new Event ("focus")
+
+const eventDfocus = new Event ("dfocus")
+
+//----------------------------------------------Custom Events|
