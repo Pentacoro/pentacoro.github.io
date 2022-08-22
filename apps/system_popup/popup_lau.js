@@ -36,9 +36,6 @@ if (canInstance("Pupup")) {
             task.wndw = newWindow
             task.node = newWindow.cont
 
-            //X button
-            document.getElementsByClassName("ID_"+id)[0].children[0].children[0].getElementsByClassName("X")[0].addEventListener("mouseup", task.end)
-
             ini()
 
             data = repDir(data,url)

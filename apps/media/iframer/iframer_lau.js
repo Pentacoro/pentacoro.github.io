@@ -16,8 +16,8 @@ function end() {
 //check if instance allowed
 if (canInstance("Iframer")) {
     //task creation
-    sys.taskArr.push(new Task("Iframer", true, end, null, "plx", tid))
-    let task = sys.taskArr[sys.taskArr.length - 1]
+    let task = new Task("Iframer", true, end, null, "plx", tid)
+    sys.taskArr.push(task)
     let id = task.id
 
     //get the .html
@@ -25,15 +25,12 @@ if (canInstance("Iframer")) {
     appHTML.then( data => {
         try {
             //window generation
-            sys.wndwArr.push(new Window(arg[0], id, true, 1, 1, 850, 650, 192, 160))
-            newWindow = sys.wndwArr[sys.wndwArr.length - 1]
+            newWindow = new Window(arg[0], id, true, 1, 1, 850, 650, 192, 160)
+            sys.wndwArr.push(newWindow)
             newWindow.createNode()
 
             task.wndw = newWindow
             task.node = newWindow.cont
-
-            //X button
-            document.getElementsByClassName("ID_"+id)[0].children[0].children[0].getElementsByClassName("X")[0].addEventListener("mouseup", task.end)
 
             ini()
 

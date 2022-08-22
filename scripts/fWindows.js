@@ -146,6 +146,9 @@ class Window {
 				case "X": //console.log("X"); break;
 			}
 		}
+
+		//X button
+		document.getElementsByClassName("ID_"+this.task)[0].children[0].children[0].getElementsByClassName("X")[0].addEventListener("mouseup", task(this.task).end)
 	
 		this.node = newWindow
 		this.cont = newContent

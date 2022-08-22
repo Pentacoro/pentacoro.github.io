@@ -16,8 +16,8 @@
     //check if instance allowed
     if (canInstance("Explorer")) {
         //task creation
-        sys.taskArr.push(new Task("Explorer", true, end, null, "plx", tid))
-        let task = sys.taskArr[sys.taskArr.length - 1]
+        let task = new Task("Explorer", true, end, null, "plx", tid)
+        sys.taskArr.push(task)
         let id = task.id
 
         //get the .html
@@ -31,9 +31,6 @@
                 
                 task.wndw = newWindow 
                 task.node = newWindow.cont
-    
-                //X button
-                document.getElementsByClassName("ID_"+id)[0].children[0].children[0].getElementsByClassName("X")[0].addEventListener("mouseup", task.end)
     
                 ini()
     
