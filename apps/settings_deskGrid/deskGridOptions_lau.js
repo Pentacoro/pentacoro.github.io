@@ -34,9 +34,6 @@
                 task.wndw = newWindow
                 task.node = newWindow.cont
     
-                //X button
-                document.getElementsByClassName("ID_"+id)[0].children[0].children[0].getElementsByClassName("X")[0].addEventListener("click", task.end)
-    
                 ini()
     
                 loadURL(repDir(data,url), document.getElementById("window_" + sys.wndwArr.indexOf(newWindow)).children[0].children[1], task)
