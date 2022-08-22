@@ -25,7 +25,21 @@ if (canInstance("Iframer")) {
     appHTML.then( data => {
         try {
             //window generation
-            newWindow = new Window(arg[0], id, true, 1, 1, 850, 650, 192, 160)
+            let newWindow = new Window
+            (
+                {
+                    name : arg[0],
+                    task : id, 
+                    resizable : true, 
+                    bttns : 1, 
+                    state : 1, 
+                    w : 850, 
+                    h : 650, 
+                    mw : 192,
+                    mh : 160
+                }
+            )
+            
             sys.wndwArr.push(newWindow)
             newWindow.createNode()
 

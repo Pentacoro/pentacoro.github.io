@@ -181,115 +181,113 @@ desktop.unfocus = function() {
 }
 
 desktop.mem.new = function(e, _this, Type){
-    if(
-        !(e.target.classList.contains("cmcheck"))
-    ) {
-        //Make sure icon appears at center of initial right click-------|
-        let initialX = parseInt(window.getComputedStyle(document.getElementsByClassName("clickContext sub_0")[0],null).getPropertyValue("left"))
-        let initialY = parseInt(window.getComputedStyle(document.getElementsByClassName("clickContext sub_0")[0],null).getPropertyValue("top"))
+    if(!(e.target.classList.contains("cmcheck"))) return
+	
+	//Make sure icon appears at center of initial right click-------|
+	let initialX = parseInt(window.getComputedStyle(document.getElementsByClassName("clickContext sub_0")[0],null).getPropertyValue("left"))
+	let initialY = parseInt(window.getComputedStyle(document.getElementsByClassName("clickContext sub_0")[0],null).getPropertyValue("top"))
 
-        let editFile = null
-        let editFrom = sys.vertex
+	let editFile = null
+	let editFrom = sys.vertex
 
-        let iconWidth = cfg.desk.grid.width/2
-        let iconHeight = cfg.desk.grid.height/2
+	let iconWidth = cfg.desk.grid.width/2
+	let iconHeight = cfg.desk.grid.height/2
 
-        let w = cfg.desk.grid.width; let h = cfg.desk.grid.height; let wm = cfg.desk.grid.hMargin; let hm = cfg.desk.grid.vMargin
+	let w = cfg.desk.grid.width; let h = cfg.desk.grid.height; let wm = cfg.desk.grid.hMargin; let hm = cfg.desk.grid.vMargin
 
-        let iconPosX = (Math.round((initialX-iconWidth)/(w + wm))*(w + wm) + wm)
-        let iconPosY = (Math.round((initialY-iconHeight)/(h + hm))*(h + hm) + hm)
-        //--------------------------------------------------------------|
+	let iconPosX = (Math.round((initialX-iconWidth)/(w + wm))*(w + wm) + wm)
+	let iconPosY = (Math.round((initialY-iconHeight)/(h + hm))*(h + hm) + hm)
+	//--------------------------------------------------------------|
 
-        let iconArray = desktop.mem.iconArr
+	let iconArray = desktop.mem.iconArr
 
-		let typeDefaults = filetypeDefaults(Type)
+	let typeDefaults = filetypeDefaults(Type)
 
-        iconArray.push(new Icon (typeDefaults.iconImag, "¡Name me!", typeDefaults.confType, 1, iconPosX, iconPosY))
-        let createdIcon = iconArray[iconArray.length - 1]
-        repositionIcons([createdIcon],true,false)
-        createdIcon.createNode()
+	iconArray.push(new Icon (typeDefaults.iconImag, "¡Name me!", typeDefaults.confType, 1, iconPosX, iconPosY))
+	let createdIcon = iconArray[iconArray.length - 1]
+	repositionIcons([createdIcon],true,false)
+	createdIcon.createNode()
 
-        let iconText = document.getElementById("Icon: "+createdIcon.text).childNodes[1]
-        //make h3 editable --------------------|
-        iconText.setAttribute("contenteditable", "true")
-        iconText.setAttribute("spellcheck", "false")
+	let iconText = document.getElementById("Icon: "+createdIcon.text).childNodes[1]
+	//make h3 editable --------------------|
+	iconText.setAttribute("contenteditable", "true")
+	iconText.setAttribute("spellcheck", "false")
 
-        //select h3 content
-        selectText(iconText)
+	//select h3 content
+	selectText(iconText)
 
-        iconText.style.textShadow = "none"
+	iconText.style.textShadow = "none"
 
-        //delete -> cancel icon creation
-        document.body.oncontextmenu = iconNamingDelete
-        window.onkeydown = (e) => {if(e.key == "Escape"){
-            iconNamingDelete()
-            return false
-        }};
-        function iconNamingDelete(){
-            system.mem.var.shSelect = true
-                
-            createdIcon.deleteNode()
+	//delete -> cancel icon creation
+	document.body.oncontextmenu = iconNamingDelete
+	window.onkeydown = (e) => {if(e.key == "Escape"){
+		iconNamingDelete()
+		return false
+	}};
+	function iconNamingDelete(){
+		system.mem.var.shSelect = true
+			
+		createdIcon.deleteNode()
 
-            nullifyOnEvents(_this)
-        }
+		nullifyOnEvents(_this)
+	}
 
-        setTimeout( () => { //TIMEOUT
+	setTimeout( () => { //TIMEOUT
 
-			document.body.onmousedown = iconNaming;
-			iconText.onkeydown = (e) => {if(e.key == "Enter" && e.shiftKey == false){
-				iconNaming()
-				return false
-			}}
+		document.body.onmousedown = iconNaming;
+		iconText.onkeydown = (e) => {if(e.key == "Enter" && e.shiftKey == false){
+			iconNaming()
+			return false
+		}}
 
-			function iconNaming(){
-				if(
-					!iconNameExists(iconText.textContent, createdIcon, editFrom) &&
-					validIconName(iconText.textContent)
-				) {
-					//if the name is allowed --------------------|
-					system.mem.var.shSelect = true
+		function iconNaming(){
+			if(
+				!iconNameExists(iconText.textContent, createdIcon, editFrom) &&
+				validIconName(iconText.textContent)
+			) {
+				//if the name is allowed --------------------|
+				system.mem.var.shSelect = true
 
-					iconText.setAttribute("contenteditable", "false")
-					document.getElementById("Icon: "+createdIcon.text).id = "Icon: "+iconText.textContent
-					createdIcon.text = iconText.textContent
-					iconText.style.backgroundColor = ""
-					iconText.style.textShadow = ""
+				iconText.setAttribute("contenteditable", "false")
+				document.getElementById("Icon: "+createdIcon.text).id = "Icon: "+iconText.textContent
+				createdIcon.text = iconText.textContent
+				iconText.style.backgroundColor = ""
+				iconText.style.textShadow = ""
 
-					//insert it into filesystem
-					sys.vertex.new(Type,iconText.textContent,createdIcon)
+				//insert it into filesystem
+				sys.vertex.new(Type,iconText.textContent,createdIcon)
 
-					createdIcon.statNode(1)
-					desktop.pocket.push(createdIcon)
+				createdIcon.statNode(1)
+				desktop.pocket.push(createdIcon)
 
-					//insert it into desktop mem
-					//desktop.mem.iconArr.push(createdIcon)
+				//insert it into desktop mem
+				//desktop.mem.iconArr.push(createdIcon)
 
-					iconText.blur()
-					clearSelection()
+				iconText.blur()
+				clearSelection()
 
-					nullifyOnEvents(_this)
-				} else {
-					//if the name not allowed --------------------|
-					system.mem.var.shSelect = false
-					iconText.style.backgroundColor = "#c90000"
+				nullifyOnEvents(_this)
+			} else {
+				//if the name not allowed --------------------|
+				system.mem.var.shSelect = false
+				iconText.style.backgroundColor = "#c90000"
 
-					//insist -> keep only edited selected
-					document.body.onclick = iconNamingInsist
-					window.onkeyup = (e) => {if(e.key == "Enter" && e.shiftKey == false){
-						iconNamingInsist()
-						return false
-					}}
-					function iconNamingInsist(){
-						for (icon of desktop.mem.iconArr){
-							icon.statNode(0)
-						}
-						createdIcon.statNode(1)
-						createdIcon.stat = 0
-
-						selectText(iconText)
+				//insist -> keep only edited selected
+				document.body.onclick = iconNamingInsist
+				window.onkeyup = (e) => {if(e.key == "Enter" && e.shiftKey == false){
+					iconNamingInsist()
+					return false
+				}}
+				function iconNamingInsist(){
+					for (icon of desktop.mem.iconArr){
+						icon.statNode(0)
 					}
+					createdIcon.statNode(1)
+					createdIcon.stat = 0
+
+					selectText(iconText)
 				}
 			}
-        }, 1) //TIMEOUT
-    }
+		}
+	}, 1) //TIMEOUT
 }

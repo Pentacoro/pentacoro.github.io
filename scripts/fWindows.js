@@ -5,21 +5,25 @@
 //fDesktop.js
 
 class Window {
-    constructor(name, task, resizable, uiux = 3, state = 1, w, h, mw, mh, x = 200, y = 200){
-        this.stat = state // 0 => minimized | 1/2 => open/selected | 3/4 => maximized/selected
-        this.posX = x
-        this.posY = y
+	stat = 1
+	uiux = 3
+	x = 200
+	y = 200
+    constructor(p){
+        this.stat = p.state || this.stat // 0 => minimized | 1/2 => open/selected | 3/4 => maximized/selected
+        this.uiux = p.bttns || this.uiux // 0 => no button | 1 =>   only X button | 2 => X and minimize buttons | 3 => X, minimize and maximize buttons
+        this.posX = p.x || this.x
+        this.posY = p.y || this.y
         
-        this.widt = w
-        this.heig = h
-        this.minW = mw
-        this.minH = mh
+        this.widt = p.w
+        this.heig = p.h
+        this.minW = p.mw
+        this.minH = p.mh
         
-        this.task = task
+        this.task = p.task
         
-        this.name = name
-        this.resi = resizable
-        this.uiux = uiux
+        this.name = p.name
+        this.resi = p.resizable
     }
     createNode(){
 		let newWindow = document.createElement("div")

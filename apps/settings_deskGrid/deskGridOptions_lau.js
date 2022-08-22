@@ -27,7 +27,18 @@
             try {
     
                 //window generation
-                let newWindow = new Window("Desktop Grid Settings", id, false, 1, 1, 350, 560)
+                let newWindow = new Window
+                (
+                    {
+                        name : "Desktop Grid Settings",
+                        task : id, 
+                        resizable : false, 
+                        bttns : 1, 
+                        state : 1, 
+                        w : 350, 
+                        h : 560, 
+                    }
+                )
                 sys.wndwArr.push(newWindow)
                 newWindow.createNode()
                 
