@@ -20,8 +20,8 @@ function end() {
 //check if instance allowed
 if (canInstance("Pupup")) {
     //task creation
-    sys.taskArr.push(new Task("Popup", true, end, null, "sys", tid))
-    let task = sys.taskArr[sys.taskArr.length - 1]
+    let task = new Task("Popup", true, end, null, "sys", tid)
+    sys.taskArr.push(task)
     let id = task.id
 
     //get the .html
@@ -29,8 +29,21 @@ if (canInstance("Pupup")) {
     appHTML.then( data => {
         try {
             //window generation
-            sys.wndwArr.push(new Window(arg[0], id, false, 1, 1, 400, 170, 400, 170))
-            newWindow = sys.wndwArr[sys.wndwArr.length - 1]
+            let newWindow = new Window
+            (
+                {
+                    name : arg[0],
+                    task : id, 
+                    resizable : false, 
+                    bttns : 1, 
+                    state : 1, 
+                    w : 400, 
+                    h : 170, 
+                    mw : 400,
+                    mh : 170
+                }
+            )
+            sys.wndwArr.push(newWindow)
             newWindow.createNode()
 
             task.wndw = newWindow

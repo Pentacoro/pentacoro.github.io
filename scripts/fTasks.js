@@ -92,8 +92,8 @@ function deleteSelectedNodes(pocket){
     }
 }
 
-sys.taskArr.push(new Task("system", false, null, null, "sys"))
-const system = sys.taskArr[sys.taskArr.length - 1]
+const system = new Task("system", false, null, null, "sys")
+sys.taskArr.push(system)
 
 system.mem.lau = {}
 system.mem.var.dragging = false

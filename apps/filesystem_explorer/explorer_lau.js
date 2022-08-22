@@ -25,8 +25,20 @@
         appHTML.then( data => {
             try {
                 //window generation
-                sys.wndwArr.push(new Window(arg[0], id, true, 3, 1, 700, 460, 192, 160))
-                newWindow = sys.wndwArr[sys.wndwArr.length - 1]
+                let newWindow = new Window(
+                    {
+                        name : arg[0],
+                        task : id, 
+                        resizable : true, 
+                        bttns : 3, 
+                        state : 1, 
+                        w : 700, 
+                        h : 460, 
+                        mw : 192,
+                        mh : 160
+                    }
+                )
+                sys.wndwArr.push(newWindow)
                 newWindow.createNode()
                 
                 task.wndw = newWindow 
