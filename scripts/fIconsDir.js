@@ -1,11 +1,11 @@
 class IconDir {
-    constructor(imag, text, task, apps, file){
+    constructor(p){
         this.stat = 0
-        this.file = file
-        this.imag = imag
-        this.text = text
-        this.apps = apps
-        this.task = task
+        this.file = p.file
+        this.imag = p.imag
+        this.text = p.text
+        this.apps = p.apps
+        this.task = p.task
 
         this.drop = []
     }

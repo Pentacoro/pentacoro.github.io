@@ -4,14 +4,24 @@
 //fGrid.js
 
 class Icon {
-    constructor(image, name, program = null, state = 0, x = -1, y = -1, coords = null){
-        this.stat = state
-        this.coor = (coords === null) ? {px: x, py: y, tx: x, ty: y, ax: null, ay: null} : coords
+    stat = 0
+    coor = 
+    {
+        px : -1,
+        py : -1,
+        tx : -1,
+        ty : -1,
+        ax : null,
+        ay : null
+    }
+    constructor(p){
+        this.stat = p.stat || this.stat
+        this.coor = p.coor || this.coor
 
         this.file = ""
-        this.imag = image
-        this.text = name
-        this.apps = program
+        this.imag = p.imag
+        this.text = p.text
+        this.apps = p.apps
 
         this.drop = []
     }

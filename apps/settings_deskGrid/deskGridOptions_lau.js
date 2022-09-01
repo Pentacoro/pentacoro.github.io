@@ -32,11 +32,11 @@
                     {
                         name : "Desktop Grid Settings",
                         task : id, 
-                        resizable : false, 
-                        bttns : 1, 
-                        state : 1, 
-                        w : 350, 
-                        h : 560, 
+                        resi : false, 
+                        uiux : 1, 
+                        stat : 1, 
+                        widt : 350, 
+                        heig : 560, 
                     }
                 )
                 sys.wndwArr.push(newWindow)

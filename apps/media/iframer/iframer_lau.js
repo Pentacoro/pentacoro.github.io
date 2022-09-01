@@ -30,13 +30,13 @@ if (canInstance("Iframer")) {
                 {
                     name : arg[0],
                     task : id, 
-                    resizable : true, 
-                    bttns : 1, 
-                    state : 1, 
-                    w : 850, 
-                    h : 650, 
-                    mw : 192,
-                    mh : 160
+                    resi : true, 
+                    uiux : 1, 
+                    stat : 1, 
+                    widt : 850, 
+                    heig : 650, 
+                    minW : 192,
+                    minH : 160
                 }
             )
             

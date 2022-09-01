@@ -203,7 +203,22 @@ desktop.mem.new = function(e, _this, Type){
 
 	let typeDefaults = filetypeDefaults(Type)
 
-	iconArray.push(new Icon (typeDefaults.iconImag, "¡Name me!", typeDefaults.confType, 1, iconPosX, iconPosY))
+	iconArray.push(new Icon (
+		{
+			imag : typeDefaults.iconImag,
+			text : "¡Name me!",
+			apps : typeDefaults.confType,
+			stat : 1,
+			coor : {
+				px : iconPosX,
+				py : iconPosY,
+				tx : iconPosX,
+				ty : iconPosY,
+				ax : null,
+				ay : null,
+			} 
+		}
+	))
 	let createdIcon = iconArray[iconArray.length - 1]
 	repositionIcons([createdIcon],true,false)
 	createdIcon.createNode()

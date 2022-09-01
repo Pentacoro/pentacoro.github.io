@@ -34,13 +34,13 @@ if (canInstance("Pupup")) {
                 {
                     name : arg[0],
                     task : id, 
-                    resizable : false, 
-                    bttns : 1, 
-                    state : 1, 
-                    w : 400, 
-                    h : 170, 
-                    mw : 400,
-                    mh : 170
+                    rezi : false, 
+                    uiux : 1, 
+                    stat : 1, 
+                    widt : 400, 
+                    heig : 170, 
+                    minW : 400,
+                    minH : 170
                 }
             )
             sys.wndwArr.push(newWindow)
