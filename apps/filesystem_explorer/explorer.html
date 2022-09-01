@@ -197,7 +197,15 @@
         mem.createExplorerIcons = async function(array) {
             for(item of array) {
                 let itemIcon = item.conf.icon
-                let dirIcon  = new IconDir(itemIcon.imag, itemIcon.text, "TASKID", itemIcon.apps, itemIcon.file)
+                let dirIcon  = new IconDir(
+                    {           
+                        imag : itemIcon.imag,
+                        text : itemIcon.text,
+                        task : "TASKID",
+                        apps : itemIcon.apps,
+                        file : itemIcon.file
+                    }
+                )
                 mem.iconArray.push(dirIcon)
                 
                 dirIcon.createNode()
@@ -321,7 +329,15 @@
 
             let typeDefaults = filetypeDefaults(Type)
 
-            iconArray.push(new IconDir (typeDefaults.iconImag, "¡Name me!", "TASKID", typeDefaults.confType, ""))
+            iconArray.push(new IconDir (
+                {
+                    imag : typeDefaults.iconImag,
+                    text : "¡Name me!", 
+                    task : "TASKID", 
+                    apps : typeDefaults.confType, 
+                    file : ""
+                }
+            ))
             let createdIcon = iconArray[iconArray.length - 1]
             createdIcon.createNode()
 

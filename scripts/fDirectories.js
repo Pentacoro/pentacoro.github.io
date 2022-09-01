@@ -5,11 +5,13 @@
 //fDesktop.js
 
 class Directory extends File {
-    constructor(name, conf = {}, cont = {}) {
+    conf = {}
+    cont = {}
+    constructor(p) {
         super()
-        this.name = name
-        this.conf = conf
-        this.cont = cont
+        this.name = p.name
+        this.conf = p.conf || this.conf
+        this.cont = p.cont || this.cont
     }
 
     new
@@ -28,22 +30,25 @@ class Directory extends File {
 
         if (childConf) { 
             //if conf argument passed use it
-            this.cont[childName] = new Type(childName,childConf)
+            this.cont[childName] = new Type({name : childName, conf : childConf})
         } else { 
             //if no conf argument passed, create default filetype
             this.cont[childName] = new Type
             (
-                childName, 
                 {
-                    from : "" + parent.conf["from"] + "/" + parent.name,
-                    type : confType,
-                    move : true,
-                    icon : childIcon || new Icon (
-                                            iconImag, 
-                                            childName, 
-                                            confType, 
-                                            0  
-                                        ),
+                    name : childName, 
+                    conf :
+                    {
+                        from : "" + parent.conf["from"] + "/" + parent.name,
+                        type : confType,
+                        move : true,
+                        icon : childIcon || new Icon (
+                                                iconImag, 
+                                                childName, 
+                                                confType, 
+                                                0  
+                                            ),
+                    }
                 }
             )
         }

@@ -29,13 +29,13 @@
                     {
                         name : arg[0],
                         task : id, 
-                        resizable : true, 
-                        bttns : 3, 
-                        state : 1, 
-                        w : 700, 
-                        h : 460, 
-                        mw : 192,
-                        mh : 160
+                        resi : true, 
+                        uiux : 3, 
+                        stat : 1, 
+                        widt : 700, 
+                        heig : 460, 
+                        minW : 192,
+                        minH : 160
                     }
                 )
                 sys.wndwArr.push(newWindow)

@@ -7,23 +7,23 @@
 class Window {
 	stat = 1
 	uiux = 3
-	x = 200
-	y = 200
+	posX = 200
+	posY = 200
     constructor(p){
         this.stat = p.state || this.stat // 0 => minimized | 1/2 => open/selected | 3/4 => maximized/selected
         this.uiux = p.bttns || this.uiux // 0 => no button | 1 =>   only X button | 2 => X and minimize buttons | 3 => X, minimize and maximize buttons
-        this.posX = p.x || this.x
-        this.posY = p.y || this.y
+        this.posX = p.posX || this.posX
+        this.posY = p.posY || this.posY
         
-        this.widt = p.w
-        this.heig = p.h
-        this.minW = p.mw
-        this.minH = p.mh
+        this.widt = p.widt
+        this.heig = p.heig
+        this.minW = p.minW
+        this.minH = p.minH
         
         this.task = p.task
         
         this.name = p.name
-        this.resi = p.resizable
+        this.resi = p.resi
     }
     createNode(){
 		let newWindow = document.createElement("div")
