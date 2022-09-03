@@ -53,4 +53,11 @@
 .contextSection>div:hover , .contextSection>div.hover{
     background-color: #9ecbdf;
 }
-
+.subMenu{
+    width: max-content;
+}
+.dropOpt > span {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}

@@ -16,7 +16,16 @@
     //check if instance allowed
     if (canInstance("Explorer")) {
         //task creation
-        let task = new Task("Explorer", true, end, null, "plx", tid)
+        let task = new Task(
+            {
+                name : "Explorer",
+                inst : true,
+                appEnd : end,
+                node : null,
+                from : "plx",
+                id   : tid
+            }
+        )
         sys.taskArr.push(task)
         let id = task.id
 

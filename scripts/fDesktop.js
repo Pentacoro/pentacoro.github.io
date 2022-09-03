@@ -10,8 +10,16 @@ idDesktop.style.width = document.body.offsetWidth + "px"
 idDesktop.style.height = document.body.offsetHeight - cfg.desk.navB.height + "px"
 
 //desktop task reference
-sys.taskArr.push(new Task("desktop", false, null, idDesktop, "sys"))
-const desktop = sys.taskArr[sys.taskArr.length - 1]
+const desktop = new Task(
+	{
+		apps : "vtx",
+		inst : false,
+		appEnd : null,
+		node : idDesktop,
+		from : "sys"
+	}
+)
+sys.taskArr.push(desktop)
 
 desktop.mem.iconArr = []
 
@@ -40,7 +48,7 @@ desktop.mem.iconArr = []
 			pos1 = 0
 			pos2 = 0
 
-			selectBox()
+			desktop.mem.selectBox()
 		}
 	})
 
@@ -51,7 +59,7 @@ desktop.mem.iconArr = []
 //----------------------------------------------------------------------|
 
 //selectBox behavior----------------------------------------------------|
-function selectBox() {
+desktop.mem.selectBox = function() {
 	let pos1 = 0, pos2 = 0, posxIn = 0, posyIn = 0
 
 	let selectBox = document.createElement("div")
@@ -181,7 +189,7 @@ desktop.unfocus = function() {
 }
 
 desktop.mem.new = function(e, _this, Type){
-    if(!(e.target.classList.contains("cmcheck"))) return
+    if (e.target.classList.contains("cmcheck")) return
 	
 	//Make sure icon appears at center of initial right click-------|
 	let initialX = parseInt(window.getComputedStyle(document.getElementsByClassName("clickContext sub_0")[0],null).getPropertyValue("left"))

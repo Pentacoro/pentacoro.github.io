@@ -17,7 +17,16 @@
     //check if instance allowed
     if (canInstance("Settings")) {
         //task creation
-        let task = new Task("Settings", false, end, null, "plx", tid)
+        let task = new Task(
+            {
+                name : "Settings",
+                inst : false,
+                appEnd : end,
+                node : null,
+                from : "plx", 
+                id   : tid
+            }
+        )
         sys.taskArr.push(task)
         let id = task.id
 
