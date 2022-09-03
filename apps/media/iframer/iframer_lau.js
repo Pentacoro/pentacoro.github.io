@@ -16,7 +16,16 @@ function end() {
 //check if instance allowed
 if (canInstance("Iframer")) {
     //task creation
-    let task = new Task("Iframer", true, end, null, "plx", tid)
+    let task = new Task(
+        {
+            name : "Iframer",
+            inst : true,
+            appEnd : end,
+            node : null,
+            from : "plx",
+            id   : tid
+        }
+    )
     sys.taskArr.push(task)
     let id = task.id
 

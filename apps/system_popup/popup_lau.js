@@ -20,7 +20,16 @@ function end() {
 //check if instance allowed
 if (canInstance("Pupup")) {
     //task creation
-    let task = new Task("Popup", true, end, null, "sys", tid)
+    let task = new Task(
+        {
+            name : "Popup",
+            inst : true,
+            appEnd : end,
+            node : null,
+            from : "sys",
+            id   : tid
+        }
+    )
     sys.taskArr.push(task)
     let id = task.id
 

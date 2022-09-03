@@ -43,10 +43,12 @@ class Directory extends File {
                         type : confType,
                         move : true,
                         icon : childIcon || new Icon (
-                                                iconImag, 
-                                                childName, 
-                                                confType, 
-                                                0  
+                                                {
+                                                    imag : iconImag, 
+                                                    text : childName, 
+                                                    apps : confType, 
+                                                    stat : 0  
+                                                }
                                             ),
                     }
                 }
@@ -69,7 +71,7 @@ class Directory extends File {
     checkCont(){ //this function swaps default dir icons whether it contains files or not
         if (Object.keys(this.cont).length > 0 && this.conf.icon.imag == filetypeDefaults(Directory).iconImag) {
             this.conf.icon.imag = filetypeDefaults(Directory).iconImag.replace("DIR", "DIRc")
-        } else if (this.conf.icon.imag == filetypeDefaults(Directory).iconImag.replace("DIR", "DIRc")) {
+        } else if (Object.keys(this.cont).length == 0 && this.conf.icon.imag == filetypeDefaults(Directory).iconImag.replace("DIR", "DIRc")) {
             this.conf.icon.imag = filetypeDefaults(Directory).iconImag
         }
     }

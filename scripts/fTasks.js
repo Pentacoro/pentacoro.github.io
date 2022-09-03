@@ -3,25 +3,32 @@
 //fWindows.js
 
 class Task {
-    constructor(apps, inst = true, appEnd = null, node = null, from = null, id = null) {
-        this.apps = apps
-        this.from = from
+    appEnd = null 
+    inst = true
+    node = null
+    from = null 
+    id = null
+    constructor(p) {
+        this.apps = p.apps
+        this.from = p.from || this.from
 
-        this.inst = inst
-        this.node = node
+        this.inst = p.inst || this.inst
+        this.node = p.node || this.node
 
         this.load = 0
         this.pocket = []
 
-        this.mem = {var: {} }
-        this.id = (id !== null) ? id : genRanHex(16)
+        this.mem = {
+            var: {} 
+        }
+        this.id = (p.id !== null) ? p.id : genRanHex(16)
         checkUniqueID(this)
         
         //end task
         let thisid = this.id
         this.end = function() {
             
-            if (appEnd) appEnd()
+            if (p.appEnd) p.appEnd()
 
             //close window
             if (document.getElementsByClassName("ID_"+thisid).length > 0) {
@@ -92,7 +99,15 @@ function deleteSelectedNodes(pocket){
     }
 }
 
-const system = new Task("system", false, null, null, "sys")
+const system = new Task(
+    {
+		name : "system",
+		inst : false,
+		appEnd : null,
+		node : null,
+		from : "sys"
+	}
+)
 sys.taskArr.push(system)
 
 system.mem.lau = {}

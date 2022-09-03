@@ -28,7 +28,8 @@
 	.st22{font-size:334px;}
 	.st23{letter-spacing:-99;}
 	.st24{fill:#231F20;}
-	.st25{display:inline;fill:#231F20;stroke:#000000;stroke-miterlimit:10;}
+	.st25{fill:#00FF00;}
+	.st26{display:inline;fill:#231F20;stroke:#000000;stroke-miterlimit:10;}
 </style>
 <g id="background_w" class="st0">
 </g>
@@ -494,19 +495,47 @@
 			c125,0,229.4-88.3,254.2-205.9H452.3z"/>
 		<polygon class="st20" points="519.5,31.4 343.7,207.2 519.7,207.4 		"/>
 	</g>
-	<g id="Layer_29" class="st0">
+	<g id="Layer_43" class="st0">
+	</g>
+	<g id="Auto_Margin">
+		<rect x="0" y="0" class="st24" width="402.8" height="402.8"/>
+		<polygon class="st25" points="443.4,433.9 443.4,443.4 433.9,443.4 		"/>
+		<polygon class="st24" points="75.5,443.4 0,518.9 0,443.4 		"/>
+		<polygon class="st24" points="518.9,0 443.4,75.5 443.4,0 		"/>
+		<polygon class="st24" points="226.9,443.4 150.7,519.7 54.9,519.7 131.1,443.4 		"/>
+		<polygon class="st24" points="519.7,54.9 519.7,150.7 443.4,226.9 443.4,131.1 		"/>
+		<polygon class="st24" points="378.3,443.4 302.1,519.7 206.3,519.7 282.5,443.4 		"/>
+		<polygon class="st24" points="519.7,206.3 519.7,302.1 443.4,378.3 443.4,282.5 		"/>
+		<polygon class="st24" points="519.7,357.7 519.7,453.5 453.5,519.7 357.7,519.7 		"/>
+		<polygon class="st24" points="75.5,443.4 0,518.9 0,443.4 		"/>
+		<polygon class="st24" points="226.9,443.4 150.7,519.7 54.9,519.7 131.1,443.4 		"/>
+		<polygon class="st24" points="378.3,443.4 302.1,519.7 206.3,519.7 282.5,443.4 		"/>
+		<polygon class="st24" points="518.9,0 443.4,75.5 443.4,0 		"/>
+		<polygon class="st24" points="519.7,54.9 519.7,150.7 443.4,226.9 443.4,131.1 		"/>
+		<polygon class="st24" points="519.7,206.3 519.7,302.1 443.4,378.3 443.4,282.5 		"/>
+		<polygon class="st24" points="519.7,357.7 519.7,453.5 453.5,519.7 357.7,519.7 		"/>
+	</g>
+	<g id="Auto_Grid" class="st0">
+		<rect class="st20" width="181.1" height="181.1"/>
+		<rect x="221.7" class="st20" width="181.1" height="181.1"/>
+		<rect x="221.7" y="221.7" class="st20" width="181.1" height="181.1"/>
+		<polygon class="st20" points="444.4,126.2 519.6,201.5 444.4,276.7 		"/>
+		<polygon class="st20" points="277.6,443.4 202.3,518.7 127.1,443.4 		"/>
+		<rect x="0" y="221.7" class="st20" width="181.1" height="181.1"/>
+	</g>
+	<g id="Grid" class="st0">
 		<rect x="87.8" class="st20" width="67.8" height="519.7"/>
 		<rect x="364.1" class="st20" width="67.8" height="519.7"/>
 		<rect x="0" y="364.1" class="st20" width="519.7" height="67.8"/>
 		<rect x="0" y="87.8" class="st20" width="519.7" height="67.8"/>
 	</g>
-	<g id="Grid" class="st0">
-		<rect x="174.5" class="st25" width="345.1" height="345.1"/>
-		<rect class="st25" width="100.4" height="345.1"/>
+	<g id="View" class="st0">
+		<rect x="174.5" class="st26" width="345.1" height="345.1"/>
+		<rect class="st26" width="100.4" height="345.1"/>
 		
-			<rect x="296.9" y="296.9" transform="matrix(-1.836970e-16 1 -1 -1.836970e-16 816.5618 122.3824)" class="st25" width="100.4" height="345.1"/>
+			<rect x="296.9" y="296.9" transform="matrix(-1.836970e-16 1 -1 -1.836970e-16 816.5618 122.3824)" class="st26" width="100.4" height="345.1"/>
 		
-			<rect y="419.3" transform="matrix(-1.836970e-16 1 -1 -1.836970e-16 519.65 419.2941)" class="st25" width="100.4" height="100.4"/>
+			<rect y="419.3" transform="matrix(-1.836970e-16 1 -1 -1.836970e-16 519.65 419.2941)" class="st26" width="100.4" height="100.4"/>
 	</g>
 	<g id="Properties" class="st0">
 		<path class="st20" d="M519.7,156.1v363.5H308.9c52.6-41.7,83.2-105.1,83.2-172.2c0-121.4-98.4-219.9-219.9-219.9
@@ -561,9 +590,9 @@
 	<g id="FullScreen" class="st0">
 		<path class="st20" d="M0,0v519.6h519.6V0H0z M451.9,451.9H67.8V177.3h384.1V451.9z"/>
 	</g>
-	<g id="Open">
-		<polygon class="st24" points="137.8,0 519.7,0 519.7,381.8 		"/>
-		<polygon class="st24" points="381.8,519.7 0,519.7 0,137.8 		"/>
+	<g id="Open" class="st0">
+		<polygon class="st20" points="137.8,0 519.7,0 519.7,381.8 		"/>
+		<polygon class="st20" points="381.8,519.7 0,519.7 0,137.8 		"/>
 	</g>
 </g>
 </svg>
