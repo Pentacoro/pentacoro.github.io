@@ -226,13 +226,13 @@
 
                     new Function("cfg.desk." + value.id + " = " + inner)()
                     if(value.id == "grid.width" || value.id == "grid.height"){
-                        evaluateIconGrid(null,2);
+                        desktop.mem.grid.evaluateIconGrid(null,2);
                     }
                     if(value.id == "grid.hMargin"){
                         document.getElementById("deskGrid_marginCheckbox").checked = false;
                         cfg.desk.grid.autoHmargin = false;
                         cfg.desk.grid.modHmargin = 0;
-                        evaluateIconGrid(null,2);
+                        desktop.mem.grid.evaluateIconGrid(null,2);
 
                         deskGrid_UpdateGraphAuto(null,0);
                     }
@@ -240,19 +240,19 @@
                         document.getElementById("deskGrid_marginCheckbox").checked = false;
                         cfg.desk.grid.autoVmargin = false;
                         cfg.desk.grid.modVmargin = 0;
-                        evaluateIconGrid(null,2);
+                        desktop.mem.grid.evaluateIconGrid(null,2);
 
                         deskGrid_UpdateGraphAuto(null,1);
                     }
                     if(value.id == "grid.hLength"){
                         document.getElementById("deskGrid_lengthCheckbox").checked = false;
                         cfg.desk.grid.autoHlength = false;
-                        evaluateIconGrid(null,1);
+                        desktop.mem.grid.evaluateIconGrid(null,1);
                     }
                     if(value.id == "grid.vLength"){
                         document.getElementById("deskGrid_lengthCheckbox").checked = false;
                         cfg.desk.grid.autoVlength = false;
-                        evaluateIconGrid(null,1);
+                        desktop.mem.grid.evaluateIconGrid(null,1);
                     }
                     deskGrid_UpdateGraph();
 
@@ -316,7 +316,7 @@
             cfg.desk.grid.autoHmargin = true;
             cfg.desk.grid.autoVmargin = true;
             deskGrid_UpdateGraphAuto();
-            evaluateIconGrid(null,1)
+            desktop.mem.grid.evaluateIconGrid(null,1)
             cfg.desk.grid.autoHmargin = false;
             cfg.desk.grid.autoVmargin = false;
         }
@@ -325,24 +325,24 @@
                 cfg.desk.grid.autoHmargin = true;
                 cfg.desk.grid.autoVmargin = true;
                 deskGrid_UpdateGraphAuto();
-                realTimeGridEval();
+                desktop.mem.grid.realTimeGridEval();
 
-                evaluateIconGrid(null,1);
+                desktop.mem.grid.evaluateIconGrid(null,1);
             } else {
                 cfg.desk.grid.autoHmargin = false;
                 cfg.desk.grid.autoVmargin = false;
                 cfg.desk.grid.modHmargin = 0;
                 cfg.desk.grid.modVmargin = 0;
                 deskGrid_UpdateGraphAuto();
-                realTimeGridEval();
+                desktop.mem.grid.realTimeGridEval();
 
-                evaluateIconGrid(null,2);
+                desktop.mem.grid.evaluateIconGrid(null,2);
             }
         }
         document.getElementById("deskGrid_lengthButton").onclick = e => {
             cfg.desk.grid.autoHlength = true;
             cfg.desk.grid.autoVlength = true;
-            evaluateIconGrid(null,1);
+            desktop.mem.grid.evaluateIconGrid(null,1);
             deskGrid_UpdateGraph2();
             cfg.desk.grid.autoHlength = false;
             cfg.desk.grid.autoVlength = false;
@@ -351,14 +351,14 @@
             if(e.target.checked == true){
                 cfg.desk.grid.autoHlength = true;
                 cfg.desk.grid.autoVlength = true;
-                realTimeGridEval();
+                desktop.mem.grid.realTimeGridEval();
                 
-                evaluateIconGrid(null,1);
+                desktop.mem.grid.evaluateIconGrid(null,1);
                 deskGrid_UpdateGraph2();
             } else {
                 cfg.desk.grid.autoHlength = false;
                 cfg.desk.grid.autoVlength = false;
-                realTimeGridEval();
+                desktop.mem.grid.realTimeGridEval();
             }
         }
 

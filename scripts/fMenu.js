@@ -36,8 +36,8 @@ function findOutMenu(e, target) {
         case "lau":
             //drop = exeDrop
             break
-        case "ifr":
-            //drop = mfsDrop
+        case "msf":
+            menu = drop.msfDrop(e,target)
             break
         case "img":
             //drop = mfsDrop
@@ -419,8 +419,8 @@ drop.verDrop = function (e,target) {
     
     drop.arr[0].item.push(new contextSubmenu("Grid","url('assets/svg/contextMenu/grid2.svg')",     
         [                                                                            
-            new contextOption("Auto Grid","url('assets/svg/contextMenu/autogrid.svg')",() => loadAPP("./apps/settings_deskGrid/deskGridOptions_lau.js")),
-            new contextOption("Auto Margin","url('assets/svg/contextMenu/automargin.svg')",() => loadAPP("./apps/settings_deskGrid/deskGridOptions_lau.js")),
+            new contextOption("Auto Length","url('assets/svg/contextMenu/autogrid.svg')",() => desktop.mem.grid.autoLength()),
+            new contextOption("Auto Margin","url('assets/svg/contextMenu/automargin.svg')",() => desktop.mem.grid.autoMargin()),
             new contextOption("Grid Settings","url('assets/svg/contextMenu/gridsettings.svg')",() => loadAPP("./apps/settings_deskGrid/deskGridOptions_lau.js")),
         ]
     ))
@@ -512,9 +512,7 @@ drop.msfDrop = function(e,target) {
     drop.arr.push(new contextSection("clip"))
     drop.arr.push(new contextSection("prop"))
     
-    drop.arr[0].item.push(new contextOption("Open","url('assets/svg/contextMenu/open.svg')",() => iconOpen(e)))
-    drop.arr[0].item.push(new contextOption("Open","url('assets/svg/contextMenu/open.svg')",() => iconOpen(e)))
-    drop.arr[0].item.push(new contextOption("Open","url('assets/svg/contextMenu/open.svg')",() => iconOpen(e)))
+    drop.arr[0].item.push(new contextOption("Open","url('assets/svg/contextMenu/open.svg')",() => at(target.file).open()))
     
     drop.arr[1].item.push(new contextOption("Cut","url('assets/svg/contextMenu/cut.svg')",() => iconCut(e)))
     drop.arr[1].item.push(new contextOption("Copy","url('assets/svg/contextMenu/copy.svg')",() => iconCopy(e)))

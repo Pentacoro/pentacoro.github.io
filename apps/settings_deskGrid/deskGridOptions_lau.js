@@ -6,12 +6,12 @@
     //on app init
     function ini() {
         cfg.desk.grid.visibleNodes = true
-        evaluateIconGrid(null, 2)
+        desktop.mem.grid.evaluateIconGrid(null, 2)
     }
     //on app end
     function end() {
         cfg.desk.grid.visibleNodes = false
-        evaluateIconGrid(null, 2)
+        desktop.mem.grid.evaluateIconGrid(null, 2)
     }
 
     //check if instance allowed
@@ -42,7 +42,7 @@
                         name : "Desktop Grid Settings",
                         task : id, 
                         resi : false, 
-                        uiux : 1, 
+                        uiux : 2, 
                         stat : 1, 
                         widt : 350, 
                         heig : 560, 

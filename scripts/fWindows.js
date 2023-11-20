@@ -10,8 +10,8 @@ class Window {
 	posX = 200
 	posY = 200
     constructor(p){
-        this.stat = p.state || this.stat // 0 => minimized | 1/2 => open/selected | 3/4 => maximized/selected
-        this.uiux = p.bttns || this.uiux // 0 => no button | 1 =>   only X button | 2 => X and minimize buttons | 3 => X, minimize and maximize buttons
+        this.stat = p.stat || this.stat // 0 => minimized | 1/2 => open/selected | 3/4 => maximized/selected
+        this.uiux = p.uiux || this.uiux // 0 => no button | 1 =>   only X button | 2 => X and minimize buttons | 3 => X, minimize and maximize buttons
         this.posX = p.posX || this.posX
         this.posY = p.posY || this.posY
         

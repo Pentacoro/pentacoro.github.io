@@ -62,8 +62,8 @@ class Icon {
         this.node.parentNode.removeChild(this.node);
         
         if (fromGrid == false) {
-            iconGridArray[this.coor.ax][this.coor.ay].used = false;
-            iconGridArray[this.coor.ax][this.coor.ay].icon = null;
+            desktop.mem.grid.gridArr[this.coor.ax][this.coor.ay].used = false;
+            desktop.mem.grid.gridArr[this.coor.ax][this.coor.ay].icon = null;
         }
         desktop.mem.iconArr = desktop.mem.iconArr.remove(this)
         desktop.pocket = desktop.pocket.remove(this)
@@ -288,8 +288,8 @@ class Icon {
                 //set position for selected icons:------------|
                 icon.coor.tx = (icon.coor.tx - pos1)
                 icon.coor.ty = (icon.coor.ty - pos2)
-                iconGridArray[icon.coor.ax][icon.coor.ay].used = false
-                iconGridArray[icon.coor.ax][icon.coor.ay].icon = null
+                desktop.mem.grid.gridArr[icon.coor.ax][icon.coor.ay].used = false
+                desktop.mem.grid.gridArr[icon.coor.ax][icon.coor.ay].icon = null
                 //--------------------------------------------|
                 
                 icon.statNode(2)
@@ -359,7 +359,7 @@ function repositionIcons(icons, mustSet = false, hasPrev = true){
     let h = cfg.desk.grid.height
     let wm = (cfg.desk.grid.modHmargin == 0) ? cfg.desk.grid.hMargin : cfg.desk.grid.modHmargin
     let hm = (cfg.desk.grid.modVmargin == 0) ? cfg.desk.grid.vMargin : cfg.desk.grid.modVmargin
-
+    
     let invalidIcons = []
     let iconAmount   = icons.length
 
@@ -367,7 +367,8 @@ function repositionIcons(icons, mustSet = false, hasPrev = true){
 
     function validateIconPosition(icon){
         let coords = icon.coor
-    
+
+        
         //find closest grid for its tPos
         x = Math.round((coords.tx + idDesktop.scrollLeft - wm)/(w + wm))*(w + wm) + wm
         y = Math.round((coords.ty + idDesktop.scrollTop  - hm)/(h + hm))*(h + hm) + hm
@@ -375,10 +376,10 @@ function repositionIcons(icons, mustSet = false, hasPrev = true){
         //get its spot in grid array
         tx = Math.round((x - wm)/(w + wm))
         ty = Math.round((y - hm)/(h + hm))
-    
-        if(gridAvailable(tx, ty)) {
+
+        if(desktop.mem.grid.gridAvailable(tx, ty)) {
             //if object exists and is not used (valid position)
-            let newGrid = iconGridArray[tx][ty]
+            let newGrid = desktop.mem.grid.gridArr[tx][ty]
     
             if(mustSet) {
                 newGrid.used = true
@@ -393,6 +394,7 @@ function repositionIcons(icons, mustSet = false, hasPrev = true){
             }
         } else {
             //if the position is invalid
+            console.log(desktop.mem.grid.gridArr[tx][ty])
             invalidIcons.push(icon)
         }
     }
@@ -408,9 +410,9 @@ function repositionIcons(icons, mustSet = false, hasPrev = true){
 
         let oldGrid = {used: true}
 
-        if (iconGridArray[px]) {
-             if(iconGridArray[px][py]) {
-                oldGrid = iconGridArray[px][py]
+        if (desktop.mem.grid.gridArr[px]) {
+             if(desktop.mem.grid.gridArr[px][py]) {
+                oldGrid = desktop.mem.grid.gridArr[px][py]
             }
         }
 
@@ -446,10 +448,10 @@ function repositionIcons(icons, mustSet = false, hasPrev = true){
 }
 
 function orderIconPosition(){
-    for (x = 0; x < iconGridArray.length; x++){
-        for(y = 0; y < iconGridArray[x].length; y++){
-            if (iconGridArray[x][y].used == false){
-                return [iconGridArray[x][y],x,y]
+    for (x = 0; x < desktop.mem.grid.gridArr.length; x++){
+        for(y = 0; y < desktop.mem.grid.gridArr[x].length; y++){
+            if (desktop.mem.grid.gridArr[x][y].used == false){
+                return [desktop.mem.grid.gridArr[x][y],x,y]
             }
         }
     }
