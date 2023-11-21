@@ -1,6 +1,6 @@
     let arg = []
     let tid = ''
-    let lau = "./apps/settings_deskGrid/deskGridOptions_lau.html"
+    let lau = "./apps/settings_deskGrid/deskGridOptions_lau.js"
     let url = "./apps/settings_deskGrid/deskGridOptions.html"
 
     //on app init
@@ -55,8 +55,14 @@
                 task.node = newWindow.cont
     
                 ini()
-    
-                loadURL(repDir(data,url), document.getElementById("window_" + sys.wndwArr.indexOf(newWindow)).children[0].children[1], task)
+
+                loadURL({
+                    url:url,
+                    taskid:id,
+                    data:data,
+                    container:document.getElementById("window_" + sys.wndwArr.indexOf(newWindow)).children[0].children[1],
+                    env:task
+                })
             } catch (e) {
                 evalErrorPopup
                 (

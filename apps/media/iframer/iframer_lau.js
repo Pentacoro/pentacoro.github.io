@@ -57,12 +57,18 @@ if (canInstance("Iframer")) {
 
             ini()
 
-            data = repDir(data,url)
-            data = repTid(data,id)
-            data = data.replace(/arg\[0\]/,stringifyArg(arg[0]))
-            data = data.replace(/arg\[1\]/,stringifyArg(arg[1]))
+            let replacementPairs = [
+                {regex:/arg\[0\]/,text:stringifyArg(arg[0])},
+                {regex:/arg\[1\]/,text:stringifyArg(arg[1])},
+            ]
 
-            loadURL(data, document.getElementById("window_" + sys.wndwArr.indexOf(newWindow)).children[0].children[1])
+            loadURL({
+                url:url,
+                taskid:id,
+                data:data,
+                replacementPairs:replacementPairs,
+                container:document.getElementById("window_" + sys.wndwArr.indexOf(newWindow)).children[0].children[1]
+            })
         } catch (e) {
             evalErrorPopup
             (

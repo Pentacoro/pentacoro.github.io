@@ -396,10 +396,13 @@ desktop.mem.grid.evaluateIconGrid = function (
             })
         }
 
-        if (document.getElementsByClassName("grid_graph")) {
-            if (document.getElementsByClassName("grid_graph")[1]) {
-                document.getElementsByClassName("grid_graph")[1].children[0].children[0].innerText = cfg.desk.grid.hLength
-                document.getElementsByClassName("grid_graph")[1].children[1].innerText = cfg.desk.grid.vLength
+        if (openInstance("Settings")) {
+            let task = openInstance("Settings")
+            task.mem.UpdateGraph2()
+            
+            if (document.getElementsByClassName(task.id+".grid_graph")[1]) {
+                document.getElementsByClassName(task.id+".grid_graph")[1].children[0].children[0].innerText = cfg.desk.grid.hLength
+                document.getElementsByClassName(task.id+".grid_graph")[1].children[1].innerText = cfg.desk.grid.vLength
             }
         }
     }

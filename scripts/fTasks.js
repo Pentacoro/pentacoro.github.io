@@ -4,15 +4,17 @@
 
 class Task {
     appEnd = null 
-    inst = true
+    name = null
+    inst = null
     node = null
     from = null 
     id = null
     constructor(p) {
+        this.name = p.name
         this.apps = p.apps
         this.from = p.from || this.from
 
-        this.inst = p.inst || this.inst
+        this.inst = (p.inst===null) ? true : p.inst
         this.node = p.node || this.node
 
         this.load = 0
@@ -74,9 +76,16 @@ function checkUniqueID(_this){
 
 function canInstance(appName){
     for (i = 0; i < sys.taskArr.length; i++){
-        if (sys.taskArr[i].inst === false && sys.taskArr[i].apps === appName) return false
+        if (sys.taskArr[i].inst === false && sys.taskArr[i].name === appName) return false
     }
     return true
+}
+
+function openInstance(appName){
+    for (i = 0; i < sys.taskArr.length; i++){
+        if (sys.taskArr[i].name === appName) return sys.taskArr[i]
+    }
+    return null
 }
 
 function task(id) {

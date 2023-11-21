@@ -39,7 +39,7 @@ var cfg = {
     exec: {
         dir: "./apps/filesystem_explorer/explorer_lau.js",
         msf: "./apps/media/iframer/iframer_lau.js",
-        ifr: "./apps/media/iframer/iframer_lau.js",
+        txt: "./apps/plexos_notepad/notepad_lau.js",
         img: "./apps/media/gallery/gallery_lau.js",
         vid: "./apps/media/player/player_lau.js",
     }

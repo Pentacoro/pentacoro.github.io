@@ -41,29 +41,99 @@ const ajaxReturn = function(method, url) {
 
 const genRanHex = size => [...Array(size)].map(() => Math.floor(Math.random() * 16).toString(16)).join('');
 
-const loadURL = function(data, container, env = null){
-    taskid = container.parentElement.parentElement.classList[1].splice(0, 3)[0]
+const loadURL = async function({url, taskid, data, replacementPairs = [], container, env = null}){
+    data = repDir(data,url)
+    data = repTid(data,taskid)
+    if (replacementPairs.length > 0) data = repArr(data,replacementPairs)
+    async function stylizeData() {
+        return new Promise (async (resolve, reject) => {
+            let promiseStyleArray = []
+            let cont = document.createElement("div")
+            cont.innerHTML = data
 
-    if (env) env.loader(true)
-    container.innerHTML = data
-    
-    if (container.getElementsByTagName("script")){
-        for(i = 0; i < container.getElementsByTagName("script").length; i++){
-            try {
-                eval(container.getElementsByTagName("script")[i].innerText)
-
-                system.mem.focus(task(taskid))
-            } catch (e) {
-                evalErrorPopup
-                (
-                    container.getElementsByTagName("script")[i].innerText,
-                    "The script number <i>"+i+"</i> from the application <i>"+taskid+"</i> failed evaluation.",
-                    e
-                )
-                task(taskid).end()
+            function getStyleContent (link) {
+                return new Promise ((resolve, reject) => {
+                    if (link.getAttribute("rel")=="stylesheet") {
+                        let stylesheet = ajaxReturn("get", link.getAttribute("href"))
+                        stylesheet.then( css => resolve("/*" + link.getAttribute("href") + "*/" + css))
+                        link.remove()
+                    } 
+                })
             }
-        }
-    }  
+
+            if (cont.getElementsByTagName("link").length > 0){
+                for(i = 0; i < cont.getElementsByTagName("link").length; i++){
+                    try {
+                        promiseStyleArray.push(getStyleContent(cont.getElementsByTagName("link")[i]))
+                    } catch (e) {
+                        loadAPP("./apps/system_popup/popup_lau.js",
+                            [
+                                "Error",
+                                false,
+                                "Launcher: " + e.statusText, 
+                                "The style number <i>"+i+"</i> from the application <i>"+taskid+"</i> failed to load.",
+                                system.id,
+                                ""
+                            ]
+                        )
+                    }
+                }
+            }
+            
+            let styleContents = await Promise.all(promiseStyleArray)
+            
+            if (cont.getElementsByTagName("style").length == 0) {
+                let style = document.createElement("style")
+                cont.appendChild(style)
+            }
+            for(css of styleContents) {
+                css = repTid(css,taskid)
+                css = repDir(css,url)
+                if (replacementPairs) css = repArr(css, replacementPairs)
+                cont.getElementsByTagName("style")[0].innerHTML = cont.getElementsByTagName("style")[0].innerText + css
+            }
+            resolve(cont)
+        })
+    }
+    if (env) env.loader(true)
+
+    let promise = stylizeData()
+
+    promise.then(cont => {
+        container.innerHTML = cont.innerHTML
+        
+        if (container.getElementsByTagName("script")){
+            for(i = 0; i < container.getElementsByTagName("script").length; i++){
+                try {
+                    if (container.getElementsByTagName("script")[i].innerText) {
+                        let js = container.getElementsByTagName("script")[i].innerText
+                        js = repDir(js,url)
+                        js = repTid(js,taskid)
+                        js = repArr(js,replacementPairs)
+                        eval(js)
+                    } else if (container.getElementsByTagName("script")[i].getAttribute("src")) {
+                        let script = ajaxReturn("get", container.getElementsByTagName("script")[i].getAttribute("src"))
+                        script.then( js => {
+                            js = repDir(js,url)
+                            js = repTid(js,taskid)
+                            js = repArr(js,replacementPairs)
+                            eval(js)
+                        })
+                    }
+    
+                    system.mem.focus(task(taskid))
+                } catch (e) {
+                    evalErrorPopup
+                    (
+                        container.getElementsByTagName("script")[i].innerText,
+                        "The script number <i>"+i+"</i> from the application <i>"+taskid+"</i> failed evaluation.",
+                        e
+                    )
+                    task(taskid).end()
+                }
+            }
+        }  
+    })
     if (env) env.loader(false)
 }
 
@@ -236,12 +306,20 @@ function stringifyArg(arg) {
     return string
 }
 
-function repDir(sonDir, parDir){ //replace asset directory for local apps
-    let newData = sonDir.replace(/\.\/assets/g, parDir.substr(0, parDir.lastIndexOf("/")) + "/assets");
+function repDir(data, parDir){ //replace asset directory for local apps
+    let newData = data.replace(/\.\/assets/g, parDir.substr(0, parDir.lastIndexOf("/")) + "/assets");
+    newData     = newData.replace(/\.\/res/g, parDir.substr(0, parDir.lastIndexOf("/")) + "/res");
     return newData;
 }
 function repTid(data, taskId){ //place the task id on element classList for apps that allow multiple windows
     let newData = data.replace(/TASKID/g, taskId);
+    return newData;
+}
+function repArr(data, replacementPairs) { //replace all required instances listed as regex and text pairs
+    let newData = data
+    for (pair of replacementPairs) {
+        newData = newData.replace(pair.regex,pair.text)
+    }
     return newData;
 }
 
