@@ -54,11 +54,11 @@
 
             document.getElementsByClassName("details ID_TASKID")[0].appendChild(newDetails)
             document.getElementsByClassName("details ID_TASKID")[0].children[0].innerHTML  = ""
-            document.getElementsByClassName("details ID_TASKID")[0].children[0].innerHTML += "<b>message: </b>" + task(taskid).mem.var.error.message + "<br>"
-            document.getElementsByClassName("details ID_TASKID")[0].children[0].innerHTML += "<b>columnNumber: </b>" + task(taskid).mem.var.error.columnNumber + "<br>"
-            document.getElementsByClassName("details ID_TASKID")[0].children[0].innerHTML += "<b>fileName: </b>" + task(taskid).mem.var.error.fileName + "<br>"
-            document.getElementsByClassName("details ID_TASKID")[0].children[0].innerHTML += "<b>lineNumber: </b>" + task(taskid).mem.var.error.lineNumber + "<br><br><hr><br>"
-            document.getElementsByClassName("details ID_TASKID")[0].children[0].innerHTML += "<b>stack: </b><br>" + task(taskid).mem.var.error.stack + "<br><hr><br>"
+            document.getElementsByClassName("details ID_TASKID")[0].children[0].innerHTML += "<b>message: </b>" + system.mem.task(taskid).mem.var.error.message + "<br>"
+            document.getElementsByClassName("details ID_TASKID")[0].children[0].innerHTML += "<b>columnNumber: </b>" + system.mem.task(taskid).mem.var.error.columnNumber + "<br>"
+            document.getElementsByClassName("details ID_TASKID")[0].children[0].innerHTML += "<b>fileName: </b>" + system.mem.task(taskid).mem.var.error.fileName + "<br>"
+            document.getElementsByClassName("details ID_TASKID")[0].children[0].innerHTML += "<b>lineNumber: </b>" + system.mem.task(taskid).mem.var.error.lineNumber + "<br><br><hr><br>"
+            document.getElementsByClassName("details ID_TASKID")[0].children[0].innerHTML += "<b>stack: </b><br>" + system.mem.task(taskid).mem.var.error.stack + "<br><hr><br>"
             document.getElementsByClassName("details ID_TASKID")[0].appendChild(newButton)
         }
 
@@ -78,7 +78,7 @@
             }
         }
         document.getElementsByClassName("warn ID_TASKID")[0].onclick = e => {
-            console.log(task(taskid).mem.var.error)
+            console.log(system.mem.task(taskid).mem.var.error)
             document.getElementsByClassName("warn ID_TASKID")[0].onclick = null
         }
     </script>

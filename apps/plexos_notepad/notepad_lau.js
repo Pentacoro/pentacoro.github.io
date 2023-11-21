@@ -54,7 +54,7 @@ if (canInstance("Notepad")) {
             task.node = newWindow.cont
 
             ini()
-            
+
             let replacementPairs = [{regex:/ARG_TEXTDATA/g,text:at(arg[1]).data}]
 
             loadURL({
@@ -70,7 +70,7 @@ if (canInstance("Notepad")) {
                 "The application launcher at: <i>'" + lau + "'</i> failed evaluation.",
                 e
             )
-            task(id).end()
+            task.end()
         }
     })
 
@@ -87,7 +87,7 @@ if (canInstance("Notepad")) {
                 ""
             ]
         )
-        task(id).end()
+        system.mem.task(id).end()
     })
 } else {
     console.log("instanced")

@@ -21,7 +21,7 @@
     
     <script>
         let url  = at(arg[1]).meta.file
-        let mem  = task("TASKID").mem
+        let mem  = system.mem.task("TASKID").mem
 
         mem.url  = url
 

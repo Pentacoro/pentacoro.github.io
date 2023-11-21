@@ -39,7 +39,7 @@ class Directory extends File {
                     name : childName, 
                     conf :
                     {
-                        from : "" + parent.conf["from"] + "/" + parent.name,
+                        from : (parent===core) ? "" : "" + parent.conf["from"] + "/" + parent.name,
                         type : confType,
                         move : true,
                         icon : childIcon || new Icon (

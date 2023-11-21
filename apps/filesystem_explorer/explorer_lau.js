@@ -70,7 +70,7 @@ if (canInstance("Explorer")) {
                 "The application launcher at: <i>'" + lau + "'</i> failed evaluation.",
                 e
             )
-            task(id).end()
+            task.end()
         }
     })
 
@@ -87,7 +87,7 @@ if (canInstance("Explorer")) {
                 ""
             ]
         )
-        task(id).end()
+        system.mem.task(id).end()
     })
 } else {
     console.log("instanced")

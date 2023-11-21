@@ -1,5 +1,5 @@
-let mem  = task("TASKID").mem
-task("TASKID").apps = "exp"
+let mem  = system.mem.task("TASKID").mem
+system.mem.task("TASKID").apps = "exp"
 mem.var = {}
 mem.iconArray = []
 mem.dirObject = {}
@@ -44,8 +44,8 @@ class IconDir {
     deleteNode(){
         this.node.parentNode.removeChild(this.node)
     
-        task(this.task).pocket = task(this.task).pocket.remove(this)
-        task(this.task).mem.iconArray = task(this.task).mem.iconArray.remove(this)
+        system.mem.task(this.task).pocket = system.mem.task(this.task).pocket.remove(this)
+        system.mem.task(this.task).mem.iconArray = system.mem.task(this.task).mem.iconArray.remove(this)
     
         if (at(at(this.file).conf.from) === sys.vertex) { //delete desktop icon if file is from vertex
             let rawr = at(this.file).conf.icon
@@ -81,7 +81,7 @@ class IconDir {
             //when mousedown on selected icon
             if (_this.stat === 1) {
                 //managing selected icons
-                for (icon of task(_this.task).pocket) {
+                for (icon of system.mem.task(_this.task).pocket) {
                     //light up all hover border onmousedown:-|
                     highlight(icon.node)
                     //---------------------------------------|
@@ -93,16 +93,16 @@ class IconDir {
                     
                     //when mousedown on unselected icon
                     if(!keyPressCtrl) {
-                        for (icon of task(_this.task).pocket){
-                            task(_this.task).pocket = task(_this.task).pocket.remove(icon)
+                        for (icon of system.mem.task(_this.task).pocket){
+                            system.mem.task(_this.task).pocket = system.mem.task(_this.task).pocket.remove(icon)
                             icon.statNode(0)
                             lowlight(icon.node)
                         }
-                        task(_this.task).pocket.push(_this)
+                        system.mem.task(_this.task).pocket.push(_this)
                         _this.statNode(1)
                         highlight(node)
                     } else if(keyPressCtrl) {
-                        task(_this.task).pocket.push(_this)
+                        system.mem.task(_this.task).pocket.push(_this)
                         _this.statNode(1)
                         highlight(node)
                     }
@@ -115,13 +115,13 @@ class IconDir {
             function dragMouseMove(e, node) {
                 e.preventDefault()
 
-                for (icon of task(_this.task).pocket){
+                for (icon of system.mem.task(_this.task).pocket){
                     icon.statNode(2)
                 }
 
                 if (document.getElementById("godGrasp").children.length === 0) {
                     //make pocket representation on godGrasp--------||
-                    let pockImg = (task(_this.task).pocket.length > 3) ? 3 : task(_this.task).pocket.length
+                    let pockImg = (system.mem.task(_this.task).pocket.length > 3) ? 3 : system.mem.task(_this.task).pocket.length
     
                     let iconShip = document.createElement("div")
                     iconShip.setAttribute("class", "iconShip")
@@ -131,12 +131,12 @@ class IconDir {
                     if (pockImg === 1) {
                         iconShipImg.setAttribute("style", "background-image: url('"+_this.imag+"'); background-size: 68%;")
                     } else {
-                        iconShipImg.setAttribute("style", "background-image: url('../assets/svg/miscUI/pocket_ship_"+pockImg+".svg')")
+                        iconShipImg.setAttribute("style", "background-image: url('/assets/svg/miscUI/pocket_ship_"+pockImg+".svg')")
                     }
     
                     let iconShipSize = document.createElement("div")
                     iconShipSize.setAttribute("class", "iconShipSize")
-                    iconShipSize.innerHTML = "<span>" + task(_this.task).pocket.length + "</span>"
+                    iconShipSize.innerHTML = "<span>" + system.mem.task(_this.task).pocket.length + "</span>"
     
                     iconShip.appendChild(iconShipSize)
                     iconShip.appendChild(iconShipImg)
@@ -163,15 +163,15 @@ class IconDir {
     
                 //unselect other folders on mouseup W/O drag UNLESS ctrl
                 if(keyPressCtrl == false && system.mem.var.dragging == false && e.button == 0) {
-                    for (icon of task(_this.task).pocket){
-                        task(_this.task).pocket = task(_this.task).pocket.remove(icon)
+                    for (icon of system.mem.task(_this.task).pocket){
+                        system.mem.task(_this.task).pocket = system.mem.task(_this.task).pocket.remove(icon)
                         icon.statNode(0)
                         lowlight(icon.node)
                     }
                     _this.statNode(1)
-                    task(_this.task).pocket.push(_this)
+                    system.mem.task(_this.task).pocket.push(_this)
                 } else {
-                    for (icon of task(_this.task).pocket){
+                    for (icon of system.mem.task(_this.task).pocket){
                         icon.statNode(1)
                         lowlight(icon.node)
                     }
@@ -187,7 +187,7 @@ class IconDir {
     }
     open(){
         if (this.apps == "dir") {
-            task(this.task).mem.explorerInit(this.file, this.task)
+            system.mem.task(this.task).mem.explorerInit(this.file, this.task)
         } else {
             at(this.file).open()
         }
@@ -224,15 +224,15 @@ mem.explorerInit = function (dir, id, act = null) {
         let dirFile   = []
         let dirPlex   = []
 
-        for (icon of task(id).mem.iconArray){
+        for (icon of system.mem.task(id).mem.iconArray){
             document.getElementsByClassName("list ID_"+id)[0].removeChild(icon.node)
         }
 
-        task(id).mem.iconArray = []
-        task(id).mem.directory = dir
-        task(id).mem.dirObject = at(dir)
-        task(id).mem.var.dirname = activeObj.name
-        task(id).pocket = []
+        system.mem.task(id).mem.iconArray = []
+        system.mem.task(id).mem.directory = dir
+        system.mem.task(id).mem.dirObject = at(dir)
+        system.mem.task(id).mem.var.dirname = activeObj.name
+        system.mem.task(id).pocket = []
 
         for (item of dirList) {
             if(item[1].conf.type === "dir" && !item[1].conf.plex) {
@@ -305,15 +305,15 @@ document.getElementsByClassName("refresh ID_TASKID")[0].onclick = e => {
 //background click listeners
 document.getElementsByClassName("list ID_TASKID")[0].onmousedown = e => {
     if (e.target.classList.contains("list")) {
-        for (icon of task("TASKID").pocket) {
+        for (icon of system.mem.task("TASKID").pocket) {
             icon.statNode(0)
-            task("TASKID").pocket = task("TASKID").pocket.remove(icon)
+            system.mem.task("TASKID").pocket = system.mem.task("TASKID").pocket.remove(icon)
         }
     }
 }
 document.getElementsByClassName("list ID_TASKID")[0].oncontextmenu = e => {
     if (e.target.classList.contains("list")) {
-        openMenu(e, task("TASKID"))
+        openMenu(e, system.mem.task("TASKID"))
     }
 }
 
@@ -356,7 +356,7 @@ mem.new = function(e, _this, Type){
     iconText.style.textShadow = "none"
 
     //delete -> cancel icon creation
-    task("TASKID").wndw.node.addEventListener("dfocus", iconNamingDelete)
+    system.mem.task("TASKID").wndw.node.addEventListener("dfocus", iconNamingDelete)
     document.body.oncontextmenu = iconNamingDelete
     window.onkeydown = e => {if(e.key == "Escape"){
         iconNamingDelete()
@@ -368,7 +368,7 @@ mem.new = function(e, _this, Type){
         createdIcon.deleteNode()
 
         nullifyOnEvents(_this)
-        task("TASKID").wndw.node.removeEventListener("dfocus", iconNamingDelete)
+        system.mem.task("TASKID").wndw.node.removeEventListener("dfocus", iconNamingDelete)
     }
 
     setTimeout( () => { //TIMEOUT
@@ -397,7 +397,7 @@ mem.new = function(e, _this, Type){
                 editFrom.new(Type,iconText.textContent)
 
                 createdIcon.statNode(1)
-                task("TASKID").pocket.push(createdIcon)
+                system.mem.task("TASKID").pocket.push(createdIcon)
 
                 //refresh desktop if explorer is on vertex
                 if (editFrom === sys.vertex) {
@@ -408,7 +408,7 @@ mem.new = function(e, _this, Type){
                 clearSelection()
 
                 nullifyOnEvents(_this)
-                task("TASKID").wndw.node.removeEventListener("dfocus", iconNamingDelete)
+                system.mem.task("TASKID").wndw.node.removeEventListener("dfocus", iconNamingDelete)
             } else {
                 //if the name not allowed --------------------|
                 system.mem.var.shSelect = false
@@ -432,7 +432,7 @@ mem.new = function(e, _this, Type){
                     } else {
                         system.mem.var.shSelect = true
                         nullifyOnEvents(_this)
-                        task("TASKID").wndw.node.removeEventListener("dfocus", iconNamingDelete)
+                        system.mem.task("TASKID").wndw.node.removeEventListener("dfocus", iconNamingDelete)
                     }
                 }
             }

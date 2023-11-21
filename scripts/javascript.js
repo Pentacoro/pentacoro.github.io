@@ -121,7 +121,7 @@ const loadURL = async function({url, taskid, data, replacementPairs = [], contai
                         })
                     }
     
-                    system.mem.focus(task(taskid))
+                    system.mem.focus(system.mem.task(taskid))
                 } catch (e) {
                     evalErrorPopup
                     (
@@ -129,7 +129,7 @@ const loadURL = async function({url, taskid, data, replacementPairs = [], contai
                         "The script number <i>"+i+"</i> from the application <i>"+taskid+"</i> failed evaluation.",
                         e
                     )
-                    task(taskid).end()
+                    system.mem.task(taskid).end()
                 }
             }
         }  
@@ -200,7 +200,7 @@ function evalErrorPopup(code, desc, err) {
     for (y = 0; y < script.length; y++) {
         colour += (y === (err.lineNumber - 1)) ?    "<span style='display:flex'><span style='color: red;display:inline; '>"+
                                                     script[y]+
-                                                    "</span><span style='color: green;display:inline; '> // <---¡PROBLEM HERE!</span></span>" 
+                                                    "</span><span style='color: green;display:inline; '> // <b>← ERROR !</b></span></span>" 
                                                     : script[y]+"\n"
     }
 

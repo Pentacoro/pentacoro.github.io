@@ -133,7 +133,9 @@
 
 /*5---------*/ /*small*/
 .icon.style5{
-	grid-template-rows: auto 1.30em;
+	display: grid;
+	grid-template-rows: auto 2.30em;
+	row-gap: 2px;
 }
 .icon.style5>.iconFrame{
 	padding: 2px;
@@ -174,6 +176,7 @@
 
 	display: flex;
 	align-items: center;
+	justify-content: center;
 
 	pointer-events: none;
 }
@@ -191,12 +194,12 @@
 	background-repeat: no-repeat;
 	background-position: center;
 
-	background-color: rgba(0, 119, 199, 0.7);
+	background-color: rgba(0, 119, 199, 0.8);
 	border-radius: 2px;
 	opacity: 0.6;
 }
 .iconShip>.iconShipSize{
-	width: 100%;
+	width: 1.4em;
 	height: auto;
 
 	text-align: center;

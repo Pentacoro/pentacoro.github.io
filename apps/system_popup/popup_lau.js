@@ -53,10 +53,10 @@ if (canInstance("Popup")) {
                 }
             )
             sys.wndwArr.push(newWindow)
-            newWindow.createNode()
-
             task.wndw = newWindow
+            newWindow.createNode()
             task.node = newWindow.cont
+                
 
             ini()
 
@@ -83,7 +83,7 @@ if (canInstance("Popup")) {
                 "The application launcher at: <i>'" + lau + "'</i> failed evaluation.",
                 e
             )
-            task(id).end()
+            task.end()
         }
 
     })
@@ -100,7 +100,7 @@ if (canInstance("Popup")) {
                 ""
             ]
         )
-        task(id).end()
+        system.mem.task(id).end()
     })
 } else {
     console.log("instanced")
