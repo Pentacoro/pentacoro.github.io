@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 25.3.1, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 340 431.9" style="enable-background:new 0 0 340 431.9;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:url(#SVGID_1_);}
+	.st1{fill:#CCCCCC;}
+	.st2{fill:#E6E6E6;stroke:#808080;stroke-width:14;stroke-miterlimit:10;}
+</style>
+<g id="icons">
+</g>
+<g id="Layer_2">
+</g>
+<g id="Layer_3">
+	<g>
+		<linearGradient id="SVGID_1_" gradientUnits="userSpaceOnUse" x1="43.8408" y1="60.6992" x2="359.2082" y2="542.7169">
+			<stop  offset="0" style="stop-color:#F8F8F8"/>
+			<stop  offset="0.474" style="stop-color:#F6F6F6"/>
+			<stop  offset="0.6447" style="stop-color:#EFEFEF"/>
+			<stop  offset="0.7665" style="stop-color:#E4E4E4"/>
+			<stop  offset="0.8649" style="stop-color:#D3D3D3"/>
+			<stop  offset="0.9481" style="stop-color:#BDBDBD"/>
+			<stop  offset="1" style="stop-color:#ABABAB"/>
+		</linearGradient>
+		<polygon class="st0" points="340,75.2 340,431.9 0,431.9 0,0 264.8,0 		"/>
+		<g>
+			
+				<image style="overflow:visible;opacity:0.3;" width="94" height="94" xlink:href="FB992D5E.png"  transform="matrix(1 0 0 1 253.17 -7.13)">
+			</image>
+			<g>
+				<polygon class="st1" points="264.8,0 340,75.2 264.8,75.2 				"/>
+			</g>
+		</g>
+		<line class="st2" x1="44.7" y1="124.3" x2="295.3" y2="124.3"/>
+		<line class="st2" x1="44.7" y1="168.5" x2="295.3" y2="168.5"/>
+		<line class="st2" x1="44.7" y1="212.8" x2="295.3" y2="212.8"/>
+		<line class="st2" x1="44.7" y1="257" x2="295.3" y2="257"/>
+		<line class="st2" x1="44.7" y1="301.2" x2="295.3" y2="301.2"/>
+		<line class="st2" x1="44.7" y1="345.5" x2="295.3" y2="345.5"/>
+		<line class="st2" x1="44.7" y1="389.7" x2="295.3" y2="389.7"/>
+	</g>
+</g>
+</svg>

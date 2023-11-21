@@ -394,7 +394,6 @@ function repositionIcons(icons, mustSet = false, hasPrev = true){
             }
         } else {
             //if the position is invalid
-            console.log(desktop.mem.grid.gridArr[tx][ty])
             invalidIcons.push(icon)
         }
     }

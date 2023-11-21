@@ -105,6 +105,16 @@ class JSobject extends File {
     }
 }
 
+class Text extends File {
+    data = {}
+    constructor(p) {
+        super()
+        this.name = p.name
+        this.conf = p.conf
+        this.data = p.data || ""
+    }
+}
+
 function filetypeDefaults(Type) {
     let defaults = {
         iconImag : null,
@@ -116,27 +126,27 @@ function filetypeDefaults(Type) {
         case Directory:
             defaults.iconImag = "assets/svg/desktopIcons/defaultDIR.svg"
             defaults.confType = "dir"
-            defaults.appsExec = "exp"
             defaults.skeyName = "cont"
             break
         case Executable:
-            defaults.iconImag = "assets/svg/desktopIcons/folderPlaceholder.svg"
+            defaults.iconImag = "assets/svg/desktopIcons/defaultLAU.svg"
             defaults.confType = "lau"
-            defaults.appsExec = "lau"
             defaults.skeyName = "lurl"
             break 
         case Metafile: 
             defaults.iconImag = "assets/svg/desktopIcons/defaultMSF.svg"
             defaults.confType = "msf"
-            defaults.appsExec = "ifr"
             defaults.skeyName = "meta"
             break
         case JSobject:
-            defaults.iconImag = "assets/svg/desktopIcons/folderPlaceholder.svg"
+            defaults.iconImag = "assets/svg/desktopIcons/defaultOBJ.svg"
             defaults.confType = "obj"
-            defaults.appsExec = "jse"
             defaults.skeyName = "data"
             break 
+        case Text:
+            defaults.iconImag = "assets/svg/desktopIcons/defaultTXT.svg"
+            defaults.confType = "txt"
+            defaults.skeyName = "data"
     }
 
     return defaults

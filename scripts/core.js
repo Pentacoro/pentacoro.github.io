@@ -86,6 +86,10 @@ if (storageAvailable('localStorage')) {
                         Type = JSobject 
                         Skey = "data"
                         break
+                    case "txt":
+                        Type = Text 
+                        Skey = "data"
+                        break
                 }
 
                 //recreate file object
