@@ -111,9 +111,9 @@ class Window {
 	
 	
 		document.getElementById("windowLayer").appendChild(newWindow)
+
+		system.mem.focus(system.mem.task(this.task))
 		
-		system.mem.focus(task(this.task))
-	
 		//Getting minimum size to apply to the content,
 		//instead of the window node, by comparing the 
 		//size of the window to that of the content.
@@ -124,7 +124,7 @@ class Window {
 		this.heig += diffH
 		this.minW += diffW
 		this.minH += diffH
-		
+
 		newWindow.setAttribute  ("style", 
 									"left:"+this.posX+"px;"+
 									"top:"+this.posY+"px;"+
@@ -152,8 +152,8 @@ class Window {
 		}
 
 		//X button
-		document.getElementsByClassName("ID_"+this.task)[0].children[0].children[0].getElementsByClassName("X")[0].addEventListener("mouseup", task(this.task).end)
-	
+		document.getElementsByClassName("ID_"+this.task)[0].children[0].children[0].getElementsByClassName("X")[0].addEventListener("mouseup", system.mem.task(this.task).end)
+		
 		this.node = newWindow
 		this.cont = newContent
 	
@@ -171,7 +171,7 @@ class Window {
 		//if the window was focused, shift focus behind it
 		if (thisIndex === 0) {
 			if (sys.wndwArr.length > 0) {
-				system.mem.focus(task(sys.wndwArr[0].task))
+				system.mem.focus(system.mem.task(sys.wndwArr[0].task))
 			} else {
 				system.mem.focus(desktop)
 			}
@@ -260,13 +260,13 @@ class Window {
 			//if present, the header is where you move the window from:
 			wndw.getElementsByClassName("header")[0].onmousedown = dragMouseDown
 			wndw.onmousedown = e => {
-				system.mem.focus(task(this.task))
+				system.mem.focus(system.mem.task(this.task))
 				this.statNode()
 			}
 		} else {
 			//otherwise, move the window from anywhere inside the DIV:
 			wndw.onmousedown = e => {
-				system.mem.focus(task(this.task))
+				system.mem.focus(system.mem.task(this.task))
 				dragMouseDown
 			}
 		}

@@ -29,8 +29,8 @@ for (option of document.getElementsByClassName("optionValue")){
     option.parentElement.children[2].children[0].onclick = (e) => mem.editContent(e.target.parentElement.parentElement);
 }
 
-let mem  = task("TASKID").mem
-task("TASKID").apps = "exp"
+let mem  = system.mem.task("TASKID").mem
+mem.apps = "exp"
 mem.var = {}
 
 mem.editContent = function(option){

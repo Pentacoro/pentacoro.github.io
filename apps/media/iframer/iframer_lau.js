@@ -76,7 +76,7 @@ if (canInstance("Iframer")) {
                 "The application launcher at: <i>'" + lau + "'</i> failed evaluation.",
                 e
             )
-            task(id).end()
+            task.end()
         }
     })
     appHTML.catch( e => {
@@ -92,7 +92,7 @@ if (canInstance("Iframer")) {
                 ""
             ]
         )
-        task(id).end()
+        system.mem.task(id).end()
     })
 } else {
     console.log("instanced")

@@ -37,7 +37,7 @@ class Task {
                 sys.wndwArr[parseInt(document.getElementsByClassName("ID_"+thisid)[0].id.match(/(\d+)/)[0])].deleteNode()
             }
 
-            sys.taskArr = sys.taskArr.remove(task(thisid))
+            sys.taskArr = sys.taskArr.remove(system.mem.task(thisid))
         }
     }
     loader(op) {
@@ -88,13 +88,8 @@ function openInstance(appName){
     return null
 }
 
-function task(id) {
-    let find = sys.taskArr.filter(task => task.id === id)
-    return find[0]
-}
-
 function endTask(taskid) {
-    task(taskid).end()
+    system.mem.task(taskid).end()
 }
 
 function deleteSelectedNodes(pocket){
@@ -129,4 +124,8 @@ system.mem.focus = function (env) {
         system.mem.var.envfocus = env
         system.mem.var.envfocus.focus()
     }
+}
+system.mem.task = function(id) {
+    let find = sys.taskArr.filter(task => task.id === id)
+    return find[0]
 }

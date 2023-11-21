@@ -324,7 +324,7 @@ function iconRename(e, _this){
                         editFile.rename(iconText.textContent)
                         if (_this.task) {
                             taskid = _this.task
-                            task   = task(taskid)
+                            task   = system.mem.task(taskid)
                             task.mem.explorerInit(task.mem.directory, taskid)
 
                             if (at(task.mem.directory) === sys.vertex){
@@ -359,9 +359,9 @@ function iconRename(e, _this){
                     }
                     function iconRenamingInsist(){
                         if (_this.task) {
-                            for (icon of task(_this.task).mem.iconArray){
+                            for (icon of system.mem.task(_this.task).mem.iconArray){
                                 icon.statNode(0)
-                                task(_this.task).pocket = task(_this.task).pocket.remove(icon)
+                                system.mem.task(_this.task).pocket = system.mem.task(_this.task).pocket.remove(icon)
                             }
                         } else {
                             for (icon of desktop.mem.iconArr){
@@ -426,7 +426,7 @@ drop.verDrop = function (e,target) {
         [                                                                            
             new contextOption("Directory","url('assets/svg/contextMenu/directory.svg')",() => desktop.mem.new(e,target,Directory)),
             new contextOption("Metafile","url('assets/svg/contextMenu/metafile.svg')", () => desktop.mem.new(e,target,Metafile)),
-            new contextOption("Text Document","url('assets/svg/contextMenu/textfile.svg')", () => desktop.mem.new(e,task(target.task),Text)),
+            new contextOption("Text Document","url('assets/svg/contextMenu/textfile.svg')", () => desktop.mem.new(e,system.mem.task(target.task),Text)),
         ]
     ))
     drop.arr[1].item.push(new contextOption("Paste","url('assets/svg/contextMenu/paste.svg')",(e) => {return}))
@@ -449,9 +449,9 @@ drop.expDrop = function (e,target) {
     
     drop.section("clip").item.push(new contextSubmenu("New","url('assets/svg/contextMenu/new2.svg')",     
         [                                                                            
-            new contextOption("Directory","url('assets/svg/contextMenu/directory.svg')",() => envfocus.mem.new(e,task(target.task),Directory)),
-            new contextOption("Metafile","url('assets/svg/contextMenu/metafile.svg')", () => envfocus.mem.new(e,task(target.task),Metafile)),
-            new contextOption("Text Document","url('assets/svg/contextMenu/textfile.svg')", () => envfocus.mem.new(e,task(target.task),Text)),
+            new contextOption("Directory","url('assets/svg/contextMenu/directory.svg')",() => envfocus.mem.new(e,system.mem.task(target.task),Directory)),
+            new contextOption("Metafile","url('assets/svg/contextMenu/metafile.svg')", () => envfocus.mem.new(e,system.mem.task(target.task),Metafile)),
+            new contextOption("Text Document","url('assets/svg/contextMenu/textfile.svg')", () => envfocus.mem.new(e,system.mem.task(target.task),Text)),
         ]
     ))
     drop.section("clip").item.push(new contextOption("Paste","url('assets/svg/contextMenu/paste.svg')", (e) => {return}))
