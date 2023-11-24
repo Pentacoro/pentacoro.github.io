@@ -65,13 +65,13 @@
         document.getElementsByClassName("expand ID_TASKID")[0].onclick = e => {
             if (document.getElementsByClassName("details ID_TASKID")[0].style.display === "none") {
                 document.getElementsByClassName("details ID_TASKID")[0].style.display = "block"
-                document.getElementsByClassName("appcontent ID_TASKID")[0].style.height = "470px"
+                document.getElementsByClassName("appcontent ID_TASKID")[0].style.height = "450px"
 
                 window.heig += 300
                 window.poseNode()
             } else {
                 document.getElementsByClassName("details ID_TASKID")[0].style.display = "none"
-                document.getElementsByClassName("appcontent ID_TASKID")[0].style.height = "170px"
+                document.getElementsByClassName("appcontent ID_TASKID")[0].style.height = "150px"
 
                 window.heig += -300
                 window.poseNode()

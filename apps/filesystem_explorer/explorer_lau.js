@@ -1,10 +1,10 @@
-let arg = []
+let params = {}
 //[0] directory name
 //[1] address
 //[2] explorer instance type
 //[3] manipulated file
-let tid = ''
-let url = (arg[2]) ? "./apps/filesystem_explorer/explorer"+arg[2]+".html" : "./apps/filesystem_explorer/explorer.html"
+let taskid = ''
+let url = (params.type) ? "./apps/filesystem_explorer/explorer"+params.type+".html" : "./apps/filesystem_explorer/explorer.html"
 let lau = "./apps/filesystem_explorer/explorer_lau.html"
 
 //on app init
@@ -25,8 +25,8 @@ if (canInstance("Explorer")) {
             inst : true,
             appEnd : end,
             node : null,
-            from : "plx",
-            id   : tid
+            from : "Plexus",
+            id   : taskid
         }
     )
     sys.taskArr.push(task)
@@ -39,7 +39,7 @@ if (canInstance("Explorer")) {
             //window generation
             let newWindow = new Window(
                 {
-                    name : arg[0],
+                    name : params.name,
                     task : id, 
                     resi : true, 
                     uiux : 3, 
@@ -58,7 +58,7 @@ if (canInstance("Explorer")) {
 
             ini()
 
-            let replacementPairs = [{regex:/xcorex/g,text:arg[1]}]
+            let replacementPairs = [{regex:/xcorex/g,text:params.addr}]
 
             loadURL({
                 url:url,
