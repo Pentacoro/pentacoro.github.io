@@ -269,36 +269,36 @@ mem.UpdateGraph2 = function(num = false){
     mem.var.vLengthHTML.innerText = cfg.desk.grid.vLength
 
     if (chk.checked === false) {
-        if (dot.offsetLeft > 170) {
+        if (dot.offsetLeft > 174) {
             img.style.backgroundImage = "url('./assets/deskIconGridGraph2/deskIconGridGraph2_00.svg')";
             dir.innerText = "+0";
         }
-        if (dot.offsetLeft <= 170 && dot.offsetLeft > 137) {
+        if (dot.offsetLeft <= 174 && dot.offsetLeft > 141) {
             img.style.backgroundImage = (cfg.desk.grid.sendBorder) ? "url('./assets/deskIconGridGraph2/deskIconGridGraph2_02-1.svg')" : "url('./assets/deskIconGridGraph2/deskIconGridGraph2_02-2.svg')";
             dir.innerText = "+0"
         }
-        if (dot.offsetLeft <= 137 && dot.offsetLeft > 103) {
+        if (dot.offsetLeft <= 141 && dot.offsetLeft > 107) {
             img.style.backgroundImage = (cfg.desk.grid.sendBorder) ? "url('./assets/deskIconGridGraph2/deskIconGridGraph2_03-1.svg')" : "url('./assets/deskIconGridGraph2/deskIconGridGraph2_03-2.svg')";
             dir.innerText = "+1"
         }
-        if (dot.offsetLeft === 103) {
+        if (dot.offsetLeft === 107) {
             img.style.backgroundImage = "url('./assets/deskIconGridGraph2/deskIconGridGraph2_01.svg')";
             dir.innerText = "+4"
         }
     } else {
-        if (dot.offsetLeft > 170) {
+        if (dot.offsetLeft > 174) {
             img.style.backgroundImage = "url('./assets/deskIconGridGraph2/deskIconGridGraph2_00.svg')";
             dir.innerText = "+0";
         }
-        if (dot.offsetLeft <= 170 && dot.offsetLeft > 137) {
+        if (dot.offsetLeft <= 174 && dot.offsetLeft > 141) {
             img.style.backgroundImage = "url('./assets/deskIconGridGraph2/deskIconGridGraph2_02-3.svg')";
             dir.innerText = "+3"
         }
-        if (dot.offsetLeft <= 137 && dot.offsetLeft > 103) {
+        if (dot.offsetLeft <= 141 && dot.offsetLeft > 107) {
             img.style.backgroundImage = "url('./assets/deskIconGridGraph2/deskIconGridGraph2_03-3.svg')";
             dir.innerText = "+3"
         }
-        if (dot.offsetLeft === 103) {
+        if (dot.offsetLeft === 107) {
             img.style.backgroundImage = "url('./assets/deskIconGridGraph2/deskIconGridGraph2_01.svg')";
             dir.innerText = "+4"
         }
@@ -314,7 +314,7 @@ document.getElementsByClassName("ID_TASKID grid_graph")[1].children[9].firstChil
 }
 document.getElementsByClassName("ID_TASKID grid_graph")[1].children[7].onmousedown = e => {
     let pX = e.target.offsetLeft
-    let mX = e.clientX;
+    let mX = Math.round((e.clientX)/33)*33 + 8
     let dot = e.target;
     let line = document.getElementsByClassName("ID_TASKID grid_graph")[1].children[6];
 
@@ -329,13 +329,13 @@ document.getElementsByClassName("ID_TASKID grid_graph")[1].children[7].onmousedo
 
         let nX = pX + e.clientX - mX;
         
-        if(nX >= 103 && nX <= 202) dot.style.left = nX + "px";
-        if(nX <= 103) dot.style.left = 103 + "px";
-        if(nX >= 202) dot.style.left = 202 + "px";
+        if(nX >= 107 && nX <= 206) dot.style.left = nX + "px";
+        if(nX <= 107) dot.style.left = 107 + "px";
+        if(nX >= 206) dot.style.left = 206 + "px";
         
-        dot.style.left = (Math.round((dot.offsetLeft)/33)*33 + 4) + "px";
+        dot.style.left = (Math.round((dot.offsetLeft)/33)*33 + 8) + "px";
 
-        line.style.width = 202 - dot.offsetLeft + "px";
+        line.style.width = 206 - dot.offsetLeft + "px";
         line.style.left = dot.offsetLeft + 5 + "px";
 
         mem.UpdateGraph2();

@@ -1,5 +1,6 @@
-let mem  = system.mem.task("TASKID").mem
-system.mem.task("TASKID").apps = "exp"
+let task = system.mem.task("TASKID")
+let mem  = task.mem
+task.apps = "exp"
 mem.var = {}
 mem.iconArray = []
 mem.dirObject = {}
@@ -305,15 +306,34 @@ document.getElementsByClassName("refresh ID_TASKID")[0].onclick = e => {
 //background click listeners
 document.getElementsByClassName("list ID_TASKID")[0].onmousedown = e => {
     if (e.target.classList.contains("list")) {
-        for (icon of system.mem.task("TASKID").pocket) {
+        for (icon of task.pocket) {
             icon.statNode(0)
-            system.mem.task("TASKID").pocket = system.mem.task("TASKID").pocket.remove(icon)
+            task.pocket = task.pocket.remove(icon)
         }
     }
 }
 document.getElementsByClassName("list ID_TASKID")[0].oncontextmenu = e => {
     if (e.target.classList.contains("list")) {
-        openMenu(e, system.mem.task("TASKID"))
+        let envfocus = system.mem.var.envfocus
+
+        let menuSections = [
+            {name:"icon"},
+            {name:"file"},
+            {name:"info"}
+        ]
+        let menuOptions  = [
+            {section:"icon", name:"View",icon:"url('assets/svg/contextMenu/grid.svg')",func: () => envfocus.mem.refresh},
+            {section:"icon", name:"Refresh",icon:"url('assets/svg/contextMenu/refresh.svg')",func: () => envfocus.mem.refresh},
+            {section:"file", name:"New",icon:"url('assets/svg/contextMenu/new2.svg')",func:[
+                {name:"Directory",icon:"url('assets/svg/contextMenu/directory.svg')",func:() => envfocus.mem.new(e,task,Directory)},
+                {name:"Metafile",icon:"url('assets/svg/contextMenu/metafile.svg')",func:() => envfocus.mem.new(e,task,Metafile)},
+                {name:"Text Document",icon:"url('assets/svg/contextMenu/textfile.svg')",func:() => envfocus.mem.new(e,task,Text)},
+            ]},
+            {section:"file", name:"Paste",icon:"url('assets/svg/contextMenu/paste.svg')",func: () => {return} },
+            {section:"info", name:"About",icon:"url('assets/svg/contextMenu/about.svg')",func: () => {return} },
+            {section:"info", name:"Properties",icon:"url('assets/svg/contextMenu/properties.svg')",func: () => {return} }
+        ]
+        openMenu(e, task,menuSections,menuOptions)
     }
 }
 
@@ -356,7 +376,7 @@ mem.new = function(e, _this, Type){
     iconText.style.textShadow = "none"
 
     //delete -> cancel icon creation
-    system.mem.task("TASKID").wndw.node.addEventListener("dfocus", iconNamingDelete)
+    task.wndw.node.addEventListener("dfocus", iconNamingDelete)
     document.body.oncontextmenu = iconNamingDelete
     window.onkeydown = e => {if(e.key == "Escape"){
         iconNamingDelete()
@@ -368,7 +388,7 @@ mem.new = function(e, _this, Type){
         createdIcon.deleteNode()
 
         nullifyOnEvents(_this)
-        system.mem.task("TASKID").wndw.node.removeEventListener("dfocus", iconNamingDelete)
+        task.wndw.node.removeEventListener("dfocus", iconNamingDelete)
     }
 
     setTimeout( () => { //TIMEOUT
@@ -397,7 +417,7 @@ mem.new = function(e, _this, Type){
                 editFrom.new(Type,iconText.textContent)
 
                 createdIcon.statNode(1)
-                system.mem.task("TASKID").pocket.push(createdIcon)
+                task.pocket.push(createdIcon)
 
                 //refresh desktop if explorer is on vertex
                 if (editFrom === sys.vertex) {
@@ -408,7 +428,7 @@ mem.new = function(e, _this, Type){
                 clearSelection()
 
                 nullifyOnEvents(_this)
-                system.mem.task("TASKID").wndw.node.removeEventListener("dfocus", iconNamingDelete)
+                task.wndw.node.removeEventListener("dfocus", iconNamingDelete)
             } else {
                 //if the name not allowed --------------------|
                 system.mem.var.shSelect = false
@@ -432,7 +452,7 @@ mem.new = function(e, _this, Type){
                     } else {
                         system.mem.var.shSelect = true
                         nullifyOnEvents(_this)
-                        system.mem.task("TASKID").wndw.node.removeEventListener("dfocus", iconNamingDelete)
+                        task.wndw.node.removeEventListener("dfocus", iconNamingDelete)
                     }
                 }
             }

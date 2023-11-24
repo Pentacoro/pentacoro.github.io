@@ -24,21 +24,26 @@ function storageAvailable(type) {
 }
 
 if (storageAvailable('localStorage')) {
+    
     // Yippee! We can use localStorage awesomeness
-    window.addEventListener("keypress", e => {
-        if (e.key === "+") {
+    window.addEventListener("keydown", e => {
+        if (e.key === "," && e.ctrlKey) {  
             e.preventDefault()
             window.localStorage.core = JSON.stringify(core)
-            console.log("rawr")
-        }
+            console.log("Saved to localStorage")
+        } 
     })
-    window.addEventListener("keypress", e => {
-        if (e.key === "-") {
+    window.addEventListener("keydown", e => {
+        if (e.key === "." && e.ctrlKey) {  
             e.preventDefault()
             delete window.localStorage.core
-            console.log("roar")
-        }
+            console.log("Cleared localStorage")
+        } 
     })
+    window.addEventListener("keyrelease", e => {
+        if (e.ctrlKey) window.onkeydown = null
+    })
+    
     if(window.localStorage.getItem("core")) {
         let jsonCore = JSON.parse(window.localStorage.core)
         let newCore  = new Directory(

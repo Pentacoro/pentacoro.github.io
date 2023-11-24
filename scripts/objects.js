@@ -101,7 +101,7 @@ class JSobject extends File {
         super()
         this.name = p.name
         this.conf = p.conf
-        this.data = p.data || this.data
+        this.data = p.data || ""
     }
 }
 

@@ -45,7 +45,7 @@
                         uiux : 2, 
                         stat : 1, 
                         widt : 350, 
-                        heig : 560, 
+                        heig : 490, 
                     }
                 )
                 sys.wndwArr.push(newWindow)

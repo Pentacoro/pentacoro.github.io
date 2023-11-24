@@ -29,47 +29,29 @@ class contextSection {
 }
 
 //DROP MENU----------------------------------------------------------------------------|
-function findOutMenu(e, target) {
+function createMenu(e, target, sections, options) {
     let menu = []
-    switch (target.apps) {
-        case "lau":
-            //drop = exeDrop
+    switch (target.constructor.name) {
+        case "Icon":
+            menu = drop.fileDrop(e,target,sections,options)
             break
-        case "msf":
-            menu = drop.fileDrop(e,target)
+        case "IconDir":
+            menu = drop.dirDrop(e,target,sections,options)
             break
-        case "img":
-            //drop = mfsDrop
+        case "Task":
+            menu = drop.taskDrop(e,target,sections,options)
             break
-        case "vid":
-            //drop = mfsDrop
-            break
-        case "snd":
-            //drop = mfsDrop
-            break
-        case "exp":
-            menu = drop.expDrop(e,target)
-            break
-        case "dir":
-            if(!target.task ) menu = drop.fileDrop(e,target)
-            if( target.task ) menu = drop.dirDrop(e,target)
-            break
-        case "vtx":
-            if( target.from === "sys" ) menu = drop.verDrop(e,target)
-            break
-        default: menu = drop.fileDrop(e,target)
+        default: menu = drop.taskDrop(e,target,sections,options)
     }
     return menu
 }
 
 let subMenus = 0
 
-function makeDropContext(e = null, task, node) {
-    let contextArray = findOutMenu(e, task)
+function makeDropContext(e = null, task, node, contextArray) {
+    drawMenu(contextArray, node)
 
-    buildMenu(contextArray, node)
-
-    function buildMenu(arr, node) {
+    function drawMenu(arr, node) {
         //id-number-magic
         let x = 0
         let z = 1
@@ -169,7 +151,7 @@ function makeDropContext(e = null, task, node) {
             newSub.style.top   = rect2.top - 1 + "px"
             newSub.style.minWidth = main.offsetWidth - main.offsetWidth / 3 + "px"
 
-            buildMenu(opt.cont, newSub, true)
+            drawMenu(opt.cont, newSub, true)
         }
 
         function closeSubOpt(trigger) {
@@ -233,23 +215,34 @@ window.addEventListener("mousedown", (e) => {
 });
 
 //open context menu
-function openMenu(e, obj) {
-	e.preventDefault()
+function openMenu(e, obj, sections, options) {
+	if (e.preventDefault) e.preventDefault()
+    closeMenu()
 
-	closeMenu()
-
+    let contextVar = e.contextVar || null
+    
     let newMenu = document.createElement("div")
-    newMenu.setAttribute("class", "clickContext sub_0")
+    newMenu.setAttribute("class", "clickContext sub_0 shadow")
     document.getElementById("contextLayer").appendChild(newMenu)
 
     newMenu.style.top  = e.clientY + "px"
     newMenu.style.left = e.clientX + "px"
 
-	makeDropContext(e, obj, newMenu)
+    if (contextVar) {
+        drop.var.contextVar = contextVar
+        contextVar.continuousContext = true
+    }
+
+    let contextArray = createMenu(e, obj, sections, options)
+	makeDropContext(e, obj, newMenu, contextArray)
 }
 
 //close all context menus
 function closeMenu() {
+    if (drop.var.contextVar) {
+        drop.var.contextVar.continuousContext = false
+        drop.var = {}
+    }
     document.getElementById("contextLayer").innerHTML = ""
     subMenus = 0
     drop.arr = []
@@ -400,120 +393,94 @@ function nullifyOnEvents(rawr) {
 }
 
 //-------------------------------------------------------------------------------------|
-sys.reg.dropMenu = {arr: []}
+sys.reg.dropMenu = {}
 const drop = sys.reg.dropMenu
+drop.var = {}
+drop.arr = []
 drop.section = function (name) {
     return this.arr[this.arr.findIndex(obj => obj.name == name)]
 }
-//--------------------n //DESKTOP MENU
-drop.verDrop = function (e,target) {
-    let envfocus = system.mem.var.envfocus
-
-    drop.arr.push(new contextSection("view"))
-    drop.arr.push(new contextSection("file"))
-    drop.arr.push(new contextSection("info"))
-    
-    drop.arr[0].item.push(new contextSubmenu("Grid","url('assets/svg/contextMenu/grid2.svg')",     
-        [                                                                            
-            new contextOption("Auto Length","url('assets/svg/contextMenu/autogrid.svg')",() => desktop.mem.grid.autoLength()),
-            new contextOption("Auto Margin","url('assets/svg/contextMenu/automargin.svg')",() => desktop.mem.grid.autoMargin()),
-            new contextOption("Grid Settings","url('assets/svg/contextMenu/gridsettings.svg')",() => loadAPP("./apps/settings_deskGrid/deskGridOptions_lau.js")),
-        ]
-    ))
-    drop.arr[0].item.push(new contextOption("Refresh","url('assets/svg/contextMenu/refresh.svg')",desktop.mem.refresh))
-    
-    drop.arr[1].item.push(new contextSubmenu("New","url('assets/svg/contextMenu/new2.svg')",     
-        [                                                                            
-            new contextOption("Directory","url('assets/svg/contextMenu/directory.svg')",() => desktop.mem.new(e,target,Directory)),
-            new contextOption("Metafile","url('assets/svg/contextMenu/metafile.svg')", () => desktop.mem.new(e,target,Metafile)),
-            new contextOption("Text Document","url('assets/svg/contextMenu/textfile.svg')", () => desktop.mem.new(e,system.mem.task(target.task),Text)),
-        ]
-    ))
-    drop.arr[1].item.push(new contextOption("Paste","url('assets/svg/contextMenu/paste.svg')",(e) => {return}))
-    
-    drop.arr[2].item.push(new contextOption("Settings","url('assets/svg/contextMenu/settings2.svg')",(e) => {return}))
-    drop.arr[2].item.push(new contextOption("About","url('assets/svg/contextMenu/about.svg')",(e) => {return}))
-
-    return drop.arr
-}
-//--------------------n //EXPLORER MENU
-drop.expDrop = function (e,target) {
-    let envfocus = system.mem.var.envfocus
-
-    drop.arr.push(new contextSection("icon"))
-    drop.arr.push(new contextSection("clip"))
-    drop.arr.push(new contextSection("info"))
-    
-    drop.section("icon").item.push(new contextOption("View","url('assets/svg/contextMenu/grid.svg')",envfocus.mem.refresh))
-    drop.section("icon").item.push(new contextOption("Refresh","url('assets/svg/contextMenu/refresh.svg')",envfocus.mem.refresh))
-    
-    drop.section("clip").item.push(new contextSubmenu("New","url('assets/svg/contextMenu/new2.svg')",     
-        [                                                                            
-            new contextOption("Directory","url('assets/svg/contextMenu/directory.svg')",() => envfocus.mem.new(e,system.mem.task(target.task),Directory)),
-            new contextOption("Metafile","url('assets/svg/contextMenu/metafile.svg')", () => envfocus.mem.new(e,system.mem.task(target.task),Metafile)),
-            new contextOption("Text Document","url('assets/svg/contextMenu/textfile.svg')", () => envfocus.mem.new(e,system.mem.task(target.task),Text)),
-        ]
-    ))
-    drop.section("clip").item.push(new contextOption("Paste","url('assets/svg/contextMenu/paste.svg')", (e) => {return}))
-    
-    drop.section("info").item.push(new contextOption("About","url('assets/svg/contextMenu/about.svg')", (e) => {return}))
-    drop.section("info").item.push(new contextOption("Properties","url('assets/svg/contextMenu/properties.svg')",(e) => {return}))
-
-    return drop.arr
+//--------------------n //UNVERSAL TASK CUSTOM MENU
+drop.taskDrop = function (e,target,sectionList=null,optionList=null) {
+    if (sectionList && optionList) { 
+        for (section of sectionList) {
+            this.arr.push(new contextSection(section.name))
+        }
+        this.buildMenu(sectionList, optionList)
+    } else {
+        this.arr.push(new contextSection("info"))
+        this.section("info").item.push(new contextOption("Settings","url('assets/svg/contextMenu/settings2.svg')",(e) => {return}))
+        this.section("info").item.push(new contextOption("About","url('assets/svg/contextMenu/about.svg')",(e) => {return}))
+    }
+    return this.arr
 }
 //--------------------n //DIR ICON EXPLORER MENU
-drop.dirDrop = function (e,target) {
+drop.dirDrop = function (e,target,sectionList,optionList) {
     let envfocus = system.mem.var.envfocus
 
-    drop.arr.push(new contextSection("open"))
-    drop.arr.push(new contextSection("clip"))
-    drop.arr.push(new contextSection("prop"))
+    this.arr.push(new contextSection("open"))
+    if (sectionList) { for (section of sectionList) {
+        drop.arr.push(new contextSection(section.name))
+    }}
+    this.arr.push(new contextSection("clip"))
+    this.arr.push(new contextSection("prop"))
     
-    drop.section("open").item.push(new contextOption("Open","url('assets/svg/contextMenu/open.svg')",() => target.open()))
-    drop.section("open").item.push(new contextOption("New window","url('assets/svg/contextMenu/maximize.svg')",e => at(target.file).open()))
-    
-    drop.section("clip").item.push(new contextOption("Cut","url('assets/svg/contextMenu/cut.svg')",() => iconCut(e)))
-    drop.section("clip").item.push(new contextOption("Copy","url('assets/svg/contextMenu/copy.svg')",() => iconCopy(e)))
-    drop.section("clip").item.push(new contextOption("Paste","url('assets/svg/contextMenu/paste.svg')",() => iconPaste(e)))
-    
-    drop.section("prop").item.push(new contextOption("Delete","url('assets/svg/contextMenu/delete.svg')",() => deleteSelectedNodes(system.mem.var.envfocus.pocket)))
-    drop.section("prop").item.push(new contextOption("Rename","url('assets/svg/contextMenu/rename.svg')",() => iconRename(e,target)))
-    drop.section("prop").item.push(new contextOption("Properties","url('assets/svg/contextMenu/properties.svg')",e => iconProperties(e)))
+    this.section("open").item.push(new contextOption("Open","url('assets/svg/contextMenu/open.svg')",() => target.open()))
+    this.section("open").item.push(new contextOption("New window","url('assets/svg/contextMenu/maximize.svg')",e => at(target.file).open()))
 
-    return drop.arr
+    if (optionList) this.buildMenu(sectionList, optionList)
+    
+    this.section("clip").item.push(new contextOption("Cut","url('assets/svg/contextMenu/cut.svg')",() => iconCut(e)))
+    this.section("clip").item.push(new contextOption("Copy","url('assets/svg/contextMenu/copy.svg')",() => iconCopy(e)))
+    this.section("clip").item.push(new contextOption("Paste","url('assets/svg/contextMenu/paste.svg')",() => iconPaste(e)))
+    
+    this.section("prop").item.push(new contextOption("Delete","url('assets/svg/contextMenu/delete.svg')",() => deleteSelectedNodes(system.mem.var.envfocus.pocket)))
+    this.section("prop").item.push(new contextOption("Rename","url('assets/svg/contextMenu/rename.svg')",() => iconRename(e,target)))
+    this.section("prop").item.push(new contextOption("Properties","url('assets/svg/contextMenu/properties.svg')",e => iconProperties(e)))
+
+    return this.arr
 }
 //--------------------n //UNIVERSAL FILE MENU
 drop.fileDrop = function(e,target,sectionList,optionList) {
     sectionList = sectionList || null
     let envfocus = system.mem.var.envfocus 
 
-    drop.arr.push(new contextSection("open"))
-    if (sectionList) {
-        for (section of sectionList) {
-            drop.arr.push(new contextSection(section.name))
-        }
-    }
-    drop.arr.push(new contextSection("clip"))
-    drop.arr.push(new contextSection("prop"))
+    this.arr.push(new contextSection("open"))
+    if (sectionList) { for (section of sectionList) {
+        drop.arr.push(new contextSection(section.name))
+    }}
+    this.arr.push(new contextSection("clip"))
+    this.arr.push(new contextSection("prop"))
 
-    drop.section("open").item.push(new contextOption("Open","url('assets/svg/contextMenu/open.svg')",() => at(target.file).open()))
+    this.section("open").item.push(new contextOption("Open","url('assets/svg/contextMenu/open.svg')",() => at(target.file).open()))
 
-    if (optionList) {
-        for (option of optionList) {
-            drop.arr.push(new contextOption(option.name, option.icon, option.func(e)))
-        }
-    }
+    if (optionList) this.buildMenu(sectionList, optionList)
+
+    this.section("clip").item.push(new contextOption("Cut","url('assets/svg/contextMenu/cut.svg')",() => iconCut(e)))
+    this.section("clip").item.push(new contextOption("Copy","url('assets/svg/contextMenu/copy.svg')",() => iconCopy(e)))
+    this.section("clip").item.push(new contextOption("Paste","url('assets/svg/contextMenu/paste.svg')",() => iconPaste(e)))
     
-    drop.section("clip").item.push(new contextOption("Cut","url('assets/svg/contextMenu/cut.svg')",() => iconCut(e)))
-    drop.section("clip").item.push(new contextOption("Copy","url('assets/svg/contextMenu/copy.svg')",() => iconCopy(e)))
-    drop.section("clip").item.push(new contextOption("Paste","url('assets/svg/contextMenu/paste.svg')",() => iconPaste(e)))
-    
-    drop.section("prop").item.push(new contextOption("Delete","url('assets/svg/contextMenu/delete.svg')",() => deleteSelectedNodes(system.mem.var.envfocus.pocket)))
-    drop.section("prop").item.push(new contextOption("Rename","url('assets/svg/contextMenu/rename.svg')",() => iconRename(e,target)))
-    drop.section("prop").item.push(new contextOption("Properties","url('assets/svg/contextMenu/properties.svg')",() => iconProperties(e)))
+    this.section("prop").item.push(new contextOption("Delete","url('assets/svg/contextMenu/delete.svg')",() => deleteSelectedNodes(system.mem.var.envfocus.pocket)))
+    this.section("prop").item.push(new contextOption("Rename","url('assets/svg/contextMenu/rename.svg')",() => iconRename(e,target)))
+    this.section("prop").item.push(new contextOption("Properties","url('assets/svg/contextMenu/properties.svg')",() => iconProperties(e)))
 
-    return drop.arr
+    return this.arr
     //--------------------n
+}
+drop.buildMenu = function (sectionList, optionList) {
+    for (option of optionList) { for (section of sectionList) { if (section.name === option.section) {
+        this.section(section.name).item.push(this.buildContextObject(option))
+    }}}
+}
+drop.buildContextObject = function (option) {
+    //Check wether it's an option or a submenu
+            if (typeof option.func === "function") {
+        let contextOpt = new contextOption(option.name, option.icon, option.func)
+        return contextOpt
+    }  else if (Array.isArray(option.func)) {
+        let contextSub = new contextSubmenu(option.name, option.icon, option.func.map(opt=> this.buildContextObject(opt)))
+        return contextSub
+    }
 }
 
 //-------------------------------------------------------------------------------------|

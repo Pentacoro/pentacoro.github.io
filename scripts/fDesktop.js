@@ -54,7 +54,32 @@ desktop.mem.iconArr = []
 
 	//open desk menu on right click background
 	idDesktop.oncontextmenu = e => {
-		if(e.target == idDesktop) openMenu(e,desktop)
+		if(e.target == idDesktop) {
+			let envfocus = system.mem.var.envfocus
+
+			let menuSections = [
+				{name:"view"},
+				{name:"file"},
+				{name:"info"}
+			]
+			let menuOptions  = [
+				{section:"view", name:"Grid",icon:"url('assets/svg/contextMenu/grid2.svg')",func:[
+					{name:"Auto Length",icon:"url('assets/svg/contextMenu/autogrid.svg')",func:() => desktop.mem.grid.autoLength()},
+					{name:"Auto Margin",icon:"url('assets/svg/contextMenu/automargin.svg')",func:() => desktop.mem.grid.autoMargin()},
+					{name:"Grid Settings",icon:"url('assets/svg/contextMenu/gridsettings.svg')",func:() => loadAPP("./apps/settings_deskGrid/deskGridOptions_lau.js",[],envfocus)},
+				]},
+				{section:"view", name:"Refresh",icon:"url('assets/svg/contextMenu/refresh.svg')",func: () => desktop.mem.refresh},
+				{section:"file", name:"New",icon:"url('assets/svg/contextMenu/new2.svg')",func:[
+					{name:"Directory",icon:"url('assets/svg/contextMenu/directory.svg')",func:() => desktop.mem.new(e,desktop,Directory)},
+					{name:"Metafile",icon:"url('assets/svg/contextMenu/metafile.svg')",func:() => desktop.mem.new(e,desktop,Metafile)},
+					{name:"Text Document",icon:"url('assets/svg/contextMenu/textfile.svg')",func:() => desktop.mem.new(e,desktop,Text)},
+				]},
+				{section:"file", name:"Paste",icon:"url('assets/svg/contextMenu/paste.svg')",func: () => {return} },
+				{section:"info", name:"Settings",icon:"url('assets/svg/contextMenu/settings2.svg')",func: () => {return} },
+				{section:"info", name:"About",icon:"url('assets/svg/contextMenu/about.svg')",func: () => {return} }
+			]
+			openMenu(e, desktop,menuSections,menuOptions)
+		}
 	}
 //----------------------------------------------------------------------|
 
