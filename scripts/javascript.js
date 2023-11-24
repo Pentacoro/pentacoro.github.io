@@ -99,7 +99,7 @@ const loadURL = async function({url, taskid, data, replacementPairs = [], contai
 
     let promise = stylizeData()
 
-    promise.then(cont => {
+    promise.then(async cont => {
         container.innerHTML = cont.innerHTML
         
         if (container.getElementsByTagName("script")){
@@ -112,13 +112,21 @@ const loadURL = async function({url, taskid, data, replacementPairs = [], contai
                         js = repArr(js,replacementPairs)
                         eval(js)
                     } else if (container.getElementsByTagName("script")[i].getAttribute("src")) {
-                        let script = ajaxReturn("get", container.getElementsByTagName("script")[i].getAttribute("src"))
-                        script.then( js => {
+                        let index = i
+                        let js = await ajaxReturn("get", container.getElementsByTagName("script")[index].getAttribute("src"))
+                        try {
                             js = repDir(js,url)
                             js = repTid(js,taskid)
                             js = repArr(js,replacementPairs)
                             eval(js)
-                        })
+                        } catch (e) {
+                            evalErrorPopup
+                            (
+                                js,
+                                "The script number <i>"+index+"</i> from the application <i>"+taskid+"</i> failed evaluation.",
+                                e
+                            )
+                        }
                     }
     
                     system.mem.focus(system.mem.task(taskid))
@@ -137,7 +145,7 @@ const loadURL = async function({url, taskid, data, replacementPairs = [], contai
     })
 }
 
-async function loadAPP(url, arg = [], env = null){
+async function loadAPP(url, args = {}, env = null){
     //add to env workload
     if (env) env.loader(true)
 
@@ -146,14 +154,14 @@ async function loadAPP(url, arg = [], env = null){
     checkUniqueID(appID)
 
     //place arguments on system task
-    system.mem.lau[appID.id] = arg
+    system.mem.lau[appID.id] = args
 
     //get _lau file
     let appLauncher = ajaxReturn("get", url)
 
     appLauncher.then( oData => {
-        nData = oData.replace("let arg = []", "let arg = system.mem.lau['"+appID.id+"']")
-        nData = nData.replace("let tid = ''", "let tid = '"+appID.id+"'")
+        nData = oData.replace("let params = {}", "let params = system.mem.lau['"+appID.id+"']")
+        nData = nData.replace("let taskid = ''", "let taskid = '"+appID.id+"'")
 
         //put launcher code here to later be referenced
         document.getElementById("appLauncher").innerHTML = "<script>"+nData+"</script>"
@@ -198,9 +206,9 @@ function evalErrorPopup(code, desc, err) {
     let script = coder.lines()
     let colour = "\n"
     for (y = 0; y < script.length; y++) {
-        colour += (y === (err.lineNumber - 1)) ?    "<span style='display:flex'><span style='color: red;display:inline; '>"+
+        colour += (y === (err.lineNumber - 1)) ?    "<span style='display:flex'><span style='color:red;display:inline;font-size:10px'>"+
                                                     script[y]+
-                                                    "</span><span style='color: green;display:inline; '> // <b>← ERROR !</b></span></span>" 
+                                                    "</span><span style='color:green;display:inline;font-size:10px'> // <b style='font-size:10px'>← ERROR !</b></span></span>" 
                                                     : script[y]+"\n"
     }
 
@@ -208,14 +216,14 @@ function evalErrorPopup(code, desc, err) {
     err.stack = err.stack + "<br><br><hr><br> <b>script:</b>" + colour
     system.mem.var.error = err
     loadAPP("./apps/system_popup/popup_lau.js",
-        [
-            "Error",
-            true,
-            "Evaluation Failed", 
-            desc,
-            system.id,
-            ""
-        ]
+        {
+            name:"Error",
+            type:true,
+            title:"Evaluation Failed", 
+            description:desc,
+            taskid:system.id,
+            icon:""
+        }
     )
 }
 

@@ -46,7 +46,7 @@ class File {
     }
 
     open() {
-        loadAPP(cfg.exec[this.conf.type], [this.name, this.conf.addr], system.mem.var.envfocus)
+        loadAPP(cfg.exec[this.conf.type], {name:this.name, addr:this.conf.addr}, system.mem.var.envfocus)
     }
 }
 

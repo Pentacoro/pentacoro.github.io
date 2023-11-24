@@ -168,14 +168,14 @@ body{
     font-size: 16px;
 }
 .ID_TASKID.grid_graph.n2>span:nth-child(5){
-    top: 66px;
+    top: 60px;
     left: 220px;
     color: #888888;
 }
 .ID_TASKID.grid_graph.n2>div:nth-child(6){
     position: absolute;
     display: block;
-    top: 85px;
+    top: 77px;
     left: 214px;
     width: 30px;
     height: 30px;
@@ -185,14 +185,14 @@ body{
     top: 153px;
     left: 107px;
     width: 0px;
-    height: 5px;;
+    height: 6px;;
     background-color: #888888;
     z-index: 1;
 }
 .ID_TASKID.grid_graph.n2>div:nth-child(8){
     position: absolute;
     transform: rotate(45deg);
-    top: 149px;
+    top: 150px;
     left: 206px;
     width: 12px;
     height: 12px;;
@@ -204,7 +204,7 @@ body{
     position: absolute;
     top: 151px;
     width: 5px;
-    height: 9px;;
+    height: 10px;;
     background-color: #888888;
     z-index: 1;
 }
@@ -222,8 +222,8 @@ body{
 }
 .ID_TASKID.grid_graph.n2>div:nth-child(10){
     position: absolute;
-    top: 114px;
-    left: 221px;
+    top: 110px;
+    left: 222px;
     width: 4px;
     height: 9px;;
     z-index: 1;
@@ -233,7 +233,7 @@ body{
     top: 153px;
     left: 115px;
     width: 96px;
-    height: 5px;;
+    height: 6px;;
     background-color: #C7C7C7;
     z-index: 0;
 }
@@ -316,7 +316,7 @@ h5{
 }
 .ID_TASKID.optbool>.optbool_box>span{
     text-align: center;
-    transform: scale(.65);
+    transform: scale(.75);
     text-transform: uppercase;
 }
 .ID_TASKID.optbool>.optbool_box:hover{
@@ -332,7 +332,7 @@ h5{
 }
 .ID_TASKID.optbool_input:checked + .optbool_box>span{
     transition: font-weight .075s, transform .075s;
-    transform: scale(.8);
+    transform: scale(1);
 }
 /*-------------------------------custom bool button*/
     
@@ -384,8 +384,9 @@ h5{
     background-color: #ad2651;
 }
 .ID_TASKID.optionValue{
-    padding: .4em;
-    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     background-color: white;
     border: solid 1px #969696;
     border-right: none;

@@ -177,7 +177,7 @@ class Window {
 			}
 		}
 
-		this.node.parentNode.removeChild(this.node)
+		if (this.node) this.node.parentNode.removeChild(this.node)
 
 		//make DOM elements's IDs and zIndex match new object arrangement
 		for(let wndw of document.getElementsByClassName("window")){ 

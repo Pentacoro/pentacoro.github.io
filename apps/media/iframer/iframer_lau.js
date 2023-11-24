@@ -1,7 +1,7 @@
-let arg = []
+let params = {}
 //[0] name
 //[1] addr
-let tid = ''
+let taskid = ''
 let url = "./apps/media/iframer/iframer.html"
 let lau = "./apps/media/iframer/iframer_lau.js"
 
@@ -22,8 +22,8 @@ if (canInstance("Iframer")) {
             inst : true,
             appEnd : end,
             node : null,
-            from : "plx",
-            id   : tid
+            from : "Plexus",
+            id   : taskid
         }
     )
     sys.taskArr.push(task)
@@ -37,7 +37,7 @@ if (canInstance("Iframer")) {
             let newWindow = new Window
             (
                 {
-                    name : arg[0],
+                    name : params.name,
                     task : id, 
                     resi : true, 
                     uiux : 1, 
@@ -58,8 +58,8 @@ if (canInstance("Iframer")) {
             ini()
 
             let replacementPairs = [
-                {regex:/arg\[0\]/,text:stringifyArg(arg[0])},
-                {regex:/arg\[1\]/,text:stringifyArg(arg[1])},
+                {regex:/arg\[0\]/,text:JSON.stringify(params.name)},
+                {regex:/arg\[1\]/,text:JSON.stringify(params.addr)},
             ]
 
             loadURL({

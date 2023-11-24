@@ -1,5 +1,5 @@
-    let arg = []
-    let tid = ''
+    let params = {}
+    let taskid = ''
     let lau = "./apps/settings_deskGrid/deskGridOptions_lau.js"
     let url = "./apps/settings_deskGrid/deskGridOptions.html"
 
@@ -24,7 +24,7 @@
                 appEnd : end,
                 node : null,
                 from : "plx", 
-                id   : tid
+                id   : taskid
             }
         )
         sys.taskArr.push(task)

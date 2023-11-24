@@ -1,6 +1,6 @@
-let arg = []
+let params = {}
 //[1] file address
-let tid = ''
+let taskid = ''
 let url = "./apps/plexos_notepad/notepad.html"
 let lau = "./apps/plexos_notepad/notepad_lau.js"
 
@@ -22,8 +22,8 @@ if (canInstance("Notepad")) {
             inst : true,
             appEnd : end,
             node : null,
-            from : "plx",
-            id   : tid
+            from : "Plexus",
+            id   : taskid
         }
     )
     sys.taskArr.push(task)
@@ -36,7 +36,7 @@ if (canInstance("Notepad")) {
             //window generation
             let newWindow = new Window(
                 {
-                    name : at(arg[1]).name+" - Notepad",
+                    name : at(params.addr).name+" - Notepad",
                     task : id, 
                     resi : true, 
                     uiux : 3, 
@@ -56,8 +56,8 @@ if (canInstance("Notepad")) {
             ini()
 
             let replacementPairs = [
-                {regex:/ARG_TEXTDATA/g,text:at(arg[1]).data},
-                {regex:/ARG_FILEADDR/g,text:arg[1]},
+                {regex:/ARG_TEXTDATA/g,text:at(params.addr).data},
+                {regex:/ARG_FILEADDR/g,text:params.addr},
             ]
 
             loadURL({

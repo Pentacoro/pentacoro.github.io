@@ -10,16 +10,16 @@ body{
 .appcontent.ID_TASKID{
     position: relative;
     display: grid;
-    grid-template-rows: 120px 30px 50px;
+    grid-template-rows: 100px 30px 50px;
 
     width: 400px;
-    height: 170px;
+    height: 100%;
 
     background-color: #e8e8e8;
 }
 .container.ID_TASKID {
     display: grid;
-    grid-template-columns: 80px auto;
+    grid-template-columns: 60px auto;
     padding: 20px;
 }
 .message.ID_TASKID {
@@ -65,7 +65,7 @@ body{
     overflow: scroll;
 }
 .details.ID_TASKID>p, .details.ID_TASKID>span{
-    font-size: .6em;
+    font-size: 10px;
     cursor: text;
     user-select: text;
 }
