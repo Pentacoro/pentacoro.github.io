@@ -1,5 +1,5 @@
 let arg = []
-//[1] directory name
+//[1] file address
 let tid = ''
 let url = "./apps/plexos_notepad/notepad.html"
 let lau = "./apps/plexos_notepad/notepad_lau.js"
@@ -55,7 +55,10 @@ if (canInstance("Notepad")) {
 
             ini()
 
-            let replacementPairs = [{regex:/ARG_TEXTDATA/g,text:at(arg[1]).data}]
+            let replacementPairs = [
+                {regex:/ARG_TEXTDATA/g,text:at(arg[1]).data},
+                {regex:/ARG_FILEADDR/g,text:arg[1]},
+            ]
 
             loadURL({
                 url:url,

@@ -6,7 +6,7 @@
 .container.ID_TASKID {
     position: absolute;
     display: grid;
-    grid-template-rows: 40px auto;
+    grid-template-rows: 30px auto;
     height: 100%;
     width: 100%;
     overflow: hidden;
@@ -14,7 +14,7 @@
 .nav.ID_TASKID {
     position: sticky;
     top: 0px;
-    height: 40px;
+    height: 100%;
     width: 100%;
 
     display: grid;

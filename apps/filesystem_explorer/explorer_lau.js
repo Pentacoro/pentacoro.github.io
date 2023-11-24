@@ -1,7 +1,10 @@
 let arg = []
-//[1] directory name
+//[0] directory name
+//[1] address
+//[2] explorer instance type
+//[3] manipulated file
 let tid = ''
-let url = "./apps/filesystem_explorer/explorer.html"
+let url = (arg[2]) ? "./apps/filesystem_explorer/explorer"+arg[2]+".html" : "./apps/filesystem_explorer/explorer.html"
 let lau = "./apps/filesystem_explorer/explorer_lau.html"
 
 //on app init

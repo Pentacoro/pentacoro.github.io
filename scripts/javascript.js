@@ -133,8 +133,8 @@ const loadURL = async function({url, taskid, data, replacementPairs = [], contai
                 }
             }
         }  
+        if (env) env.loader(false)
     })
-    if (env) env.loader(false)
 }
 
 async function loadAPP(url, arg = [], env = null){

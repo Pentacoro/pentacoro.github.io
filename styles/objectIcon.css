@@ -147,6 +147,7 @@
 /*6---------*/ /*medium*/
 .icon.style6{
 	grid-template-rows: auto 2.60em;
+	font-size: 16px;
 }
 .icon.style6>.iconFrame{
 	padding: 7px;
@@ -158,6 +159,7 @@
 /*7---------*/ /*big*/
 .icon.style7{
 	grid-template-rows: auto 3.90em;
+	font-size: 16px;
 }
 .icon.style7>.iconFrame{
 	padding: 8px;
