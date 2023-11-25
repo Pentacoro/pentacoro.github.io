@@ -28,6 +28,8 @@ class Directory extends File {
         let confType = defaults.confType
         let skeyName = defaults.skeyName
 
+        childName = childName + (((confType!="Directory") && !childName.includes(".")) ? "." + childName.match(/(?:.(?<!\.))+$/s)[0] : "")
+
         if (childConf) { 
             //if conf argument passed use it
             this.cont[childName] = new Type({name : childName, conf : childConf})
@@ -36,17 +38,19 @@ class Directory extends File {
             this.cont[childName] = new Type
             (
                 {
-                    name : childName, 
+                    name : childName,
                     conf :
                     {
                         from : (parent===core) ? "" : "" + parent.conf["from"] + "/" + parent.name,
                         type : confType,
                         move : true,
+                        exte : (confType=="Directory") ? "dir" : childName.match(/(?:.(?<!\.))+$/s)[0],
                         icon : childIcon || new Icon (
                                                 {
                                                     imag : iconImag, 
-                                                    text : childName, 
-                                                    apps : confType, 
+                                                    name : childName, 
+                                                    type : confType, 
+                                                    exte : childName.match(/(?:.(?<!\.))+$/s)[0],
                                                     stat : 0  
                                                 }
                                             ),
@@ -79,7 +83,7 @@ class Directory extends File {
 
 function isDirOpen(addr) {
     for (task of sys.taskArr) {
-        if (task.apps === "exp" && task.mem.directory === addr) return true
+        if (task.apps === "exp" && task.mem.address === addr) return true
     }
     return false
 }
@@ -142,7 +146,7 @@ function at(addr = "") {
 
 function validIconName(string) {
     if (
-        string != "¡Name me!" &&
+        string.slice(-1) != "." &&
         string != "" &&
         string.match(/[\/"]/g) === null
     ) {return true}

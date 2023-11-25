@@ -4,7 +4,7 @@ task.apps = "exp"
 mem.var = {}
 mem.iconArray = []
 mem.dirObject = {}
-mem.directory = "xcorex"
+mem.address = "xcorex"
 
 //IconDir class
 class IconDir {
@@ -12,8 +12,8 @@ class IconDir {
         this.stat = 0
         this.file = p.file
         this.imag = p.imag
-        this.text = p.text
-        this.apps = p.apps
+        this.name = p.name
+        this.exte = p.exte
         this.task = p.task
 
         this.drop = []
@@ -30,11 +30,11 @@ class IconDir {
 
         let newIconText = document.createElement("span")
         newIconText.setAttribute("class", "explorerIconText ID_"+this.task)
-        let newIconTextNode = document.createTextNode(this.text)
+        let newIconTextNode = document.createTextNode(this.name)
         newIconText.appendChild(newIconTextNode)
         newIcon.appendChild(newIconText)
 
-        document.getElementsByClassName("list ID_"+this.task)[0].appendChild(newIcon)
+        document.getElementsByClassName("list ID_TASKID")[0].appendChild(newIcon)
         //------------------------|
 
         this.node = newIcon
@@ -47,8 +47,8 @@ class IconDir {
     
         system.mem.task(this.task).pocket = system.mem.task(this.task).pocket.remove(this)
         system.mem.task(this.task).mem.iconArray = system.mem.task(this.task).mem.iconArray.remove(this)
-    
-        if (at(at(this.file).conf.from) === sys.vertex) { //delete desktop icon if file is from vertex
+        
+        if (at(at(this.file)?.conf.from) === sys.vertex) { //delete desktop icon if file is from vertex
             let rawr = at(this.file).conf.icon
             rawr.deleteNode()
         }
@@ -65,6 +65,7 @@ class IconDir {
             case 1:
                 this.node.classList.remove("moving")
                 if(!this.node.classList.contains("active")) this.node.className += " active"
+                if(!system.mem.task(this.task).pocket.includes(this)) system.mem.task(this.task).pocket.push(this)
                 break
             case 2: 
                 if(!this.node.classList.contains("moving")) this.node.className += " moving"
@@ -149,8 +150,6 @@ class IconDir {
                     iconShip.style.top  = e.clientY - iconShip.offsetHeight/2 + "px"
                     iconShip.style.left = e.clientX - iconShip.offsetWidth/2  + "px"
                 }
-
-    
                 system.mem.var.dragging = true
             }
     
@@ -170,7 +169,6 @@ class IconDir {
                         lowlight(icon.node)
                     }
                     _this.statNode(1)
-                    system.mem.task(_this.task).pocket.push(_this)
                 } else {
                     for (icon of system.mem.task(_this.task).pocket){
                         icon.statNode(1)
@@ -187,7 +185,7 @@ class IconDir {
         this.node.ondblclick = e => this.open()
     }
     open(){
-        if (this.apps == "dir") {
+        if (this.exte == "dir") {
             system.mem.task(this.task).mem.explorerInit(this.file, this.task)
         } else {
             at(this.file).open()
@@ -202,9 +200,9 @@ mem.createExplorerIcons = async function(array) {
         let dirIcon  = new IconDir(
             {           
                 imag : itemIcon.imag,
-                text : itemIcon.text,
+                name : itemIcon.name,
                 task : "TASKID",
-                apps : itemIcon.apps,
+                exte : itemIcon.exte,
                 file : itemIcon.file
             }
         )
@@ -230,18 +228,18 @@ mem.explorerInit = function (dir, id, act = null) {
         }
 
         system.mem.task(id).mem.iconArray = []
-        system.mem.task(id).mem.directory = dir
+        system.mem.task(id).mem.address = dir
         system.mem.task(id).mem.dirObject = at(dir)
         system.mem.task(id).mem.var.dirname = activeObj.name
         system.mem.task(id).pocket = []
 
         for (item of dirList) {
-            if(item[1].conf.type === "dir" && !item[1].conf.plex) {
+            if(item[1].conf.type === "Directory" && !item[1].conf.plex) {
                 dirFolder.push(item[1])
             }
         }
         for (item of dirList) {
-            if(item[1].conf.type !=  "dir") {
+            if(item[1].conf.type !=  "Directory") {
                 dirFile.push(item[1])
             }
         }
@@ -263,7 +261,16 @@ mem.explorerInit = function (dir, id, act = null) {
     } catch (e) {
         mem.var.error = e
         mem.var.errorB = [["Okay"]]
-        loadAPP("./apps/system_popup/popup_lau.js",["Error",false,"Couldn't load directory", "This directory seems to no longer exist. It might have been moved, or a parent directory been renamed","TASKID",""])
+        loadAPP("./apps/system_popup/popup_lau.js",
+            {
+             name:"Error",
+             type:false,
+             title:"Couldn't load directory",
+             description:"This directory seems to no longer exist. It might have been moved, or a parent directory been renamed",
+             taskid:"TASKID",
+             icon:""
+            }
+        )
 
         if (act === "refresh") mem.explorerInit("", "TASKID")
     }
@@ -279,12 +286,12 @@ document.getElementsByClassName("back ID_TASKID")[0].onclick = e => {
 }
 //parent dir
 document.getElementsByClassName("parent ID_TASKID")[0].onclick = e => {
-    if (mem.directory !== "") {
+    if (mem.address !== "") {
         try {
             mem.explorerInit(mem.dirObject.conf.from, "TASKID")
         } catch (e1) {
             try {
-                let newDir = mem.directory.replace(/\/(?:.(?!\/))+$/gim, "")
+                let newDir = mem.address.replace(/\/(?:.(?!\/))+$/gim, "")
                 mem.explorerInit(newDir, "TASKID")
             } catch (e) {
                 mem.var.error  = e
@@ -295,7 +302,7 @@ document.getElementsByClassName("parent ID_TASKID")[0].onclick = e => {
             }
         }
     } else {
-        mem.explorerInit(mem.directory, "TASKID")
+        mem.explorerInit(mem.address, "TASKID")
     }
 }
 //refresh
@@ -322,12 +329,12 @@ document.getElementsByClassName("list ID_TASKID")[0].oncontextmenu = e => {
             {name:"info"}
         ]
         let menuOptions  = [
-            {section:"icon", name:"View",icon:"url('assets/svg/contextMenu/grid.svg')",func: () => envfocus.mem.refresh},
-            {section:"icon", name:"Refresh",icon:"url('assets/svg/contextMenu/refresh.svg')",func: () => envfocus.mem.refresh},
+            {section:"icon", name:"View",icon:"url('assets/svg/contextMenu/grid.svg')",func:envfocus.mem.refresh},
+            {section:"icon", name:"Refresh",icon:"url('assets/svg/contextMenu/refresh.svg')",func:envfocus.mem.refresh},
             {section:"file", name:"New",icon:"url('assets/svg/contextMenu/new2.svg')",func:[
-                {name:"Directory",icon:"url('assets/svg/contextMenu/directory.svg')",func:() => envfocus.mem.new(e,task,Directory)},
-                {name:"Metafile",icon:"url('assets/svg/contextMenu/metafile.svg')",func:() => envfocus.mem.new(e,task,Metafile)},
-                {name:"Text Document",icon:"url('assets/svg/contextMenu/textfile.svg')",func:() => envfocus.mem.new(e,task,Text)},
+                {name:"Directory",icon:"url('assets/svg/contextMenu/directory.svg')",func:() => envfocus.mem.new(e,task,Directory,"New Folder")},
+                {name:"Metafile",icon:"url('assets/svg/contextMenu/metafile.svg')",func:() => envfocus.mem.new(e,task,Metafile,"New Metafile.msf")},
+                {name:"Text Document",icon:"url('assets/svg/contextMenu/textfile.svg')",func:() => envfocus.mem.new(e,task,String,"New Text Document.txt")},
             ]},
             {section:"file", name:"Paste",icon:"url('assets/svg/contextMenu/paste.svg')",func: () => {return} },
             {section:"info", name:"About",icon:"url('assets/svg/contextMenu/about.svg')",func: () => {return} },
@@ -337,12 +344,12 @@ document.getElementsByClassName("list ID_TASKID")[0].oncontextmenu = e => {
     }
 }
 
-mem.new = function(e, _this, Type){
+mem.new = function(e, _this, Type, name){
     if((e.target.classList.contains("cmcheck"))) return
     
     let editFile = null
     let editFrom = mem.dirObject
-    let editAddr = mem.directory
+    let editAddr = mem.address
 
     //--------------------------------------------------------------|
 
@@ -350,112 +357,34 @@ mem.new = function(e, _this, Type){
 
     let typeDefaults = filetypeDefaults(Type)
 
-    iconArray.push(new IconDir (
-        {
-            imag : typeDefaults.iconImag,
-            text : "¡Name me!", 
-            task : "TASKID", 
-            apps : typeDefaults.confType, 
-            file : ""
-        }
-    ))
-    let createdIcon = iconArray[iconArray.length - 1]
-    createdIcon.createNode()
-
-    createdIcon.statNode(1)
-    createdIcon.stat = 0
-
-    let iconText = createdIcon.node.childNodes[1]
-    //make h3 editable --------------------|
-    iconText.setAttribute("contenteditable", "true")
-    iconText.setAttribute("spellcheck", "false")
-
-    //select h3 content
-    selectText(iconText)
-
-    iconText.style.textShadow = "none"
-
-    //delete -> cancel icon creation
-    task.wndw.node.addEventListener("dfocus", iconNamingDelete)
-    document.body.oncontextmenu = iconNamingDelete
-    window.onkeydown = e => {if(e.key == "Escape"){
-        iconNamingDelete()
-        return false
-    }};
-    function iconNamingDelete(){
-        system.mem.var.shSelect = true
-            
-        createdIcon.deleteNode()
-
-        nullifyOnEvents(_this)
-        task.wndw.node.removeEventListener("dfocus", iconNamingDelete)
-    }
-
-    setTimeout( () => { //TIMEOUT
-
-        document.body.onmousedown = iconNaming
-        iconText.onkeydown = (e) => {if(e.key == "Enter" && e.shiftKey == false){
-            iconNaming()
-            return false
-        }}
-
-        function iconNaming(){
-            if(
-                !iconNameExists(iconText.textContent, createdIcon, editFrom) &&
-                validIconName(iconText.textContent)
-            ) {
-                //if the name is allowed --------------------|
-                system.mem.var.shSelect = true
-
-                iconText.setAttribute("contenteditable", "false")
-                iconText.style.backgroundColor = ""
-                iconText.style.textShadow = ""
-                createdIcon.text = iconText.textContent
-                createdIcon.file = editAddr + "/" + iconText.textContent
-
-                //insert it into filesystem
-                editFrom.new(Type,iconText.textContent)
-
-                createdIcon.statNode(1)
-                task.pocket.push(createdIcon)
-
-                //refresh desktop if explorer is on vertex
-                if (editFrom === sys.vertex) {
-                    at(createdIcon.file).render()
-                }
-
-                iconText.blur()
-                clearSelection()
-
-                nullifyOnEvents(_this)
-                task.wndw.node.removeEventListener("dfocus", iconNamingDelete)
-            } else {
-                //if the name not allowed --------------------|
-                system.mem.var.shSelect = false
-                iconText.style.backgroundColor = "#c90000"
-
-                //insist -> keep only edited selected
-                document.body.onclick = iconNamingInsist
-                window.onkeyup = (e) => {if(e.key == "Enter" && e.shiftKey == false){
-                    iconNamingInsist()
-                    return false
-                }}
-                function iconNamingInsist(){
-                    if (mem.dirObject.conf.addr == editAddr) {
-                        for (icon of mem.iconArray){
-                            icon.statNode(0)
-                        }
-                        createdIcon.statNode(1)
-                        createdIcon.stat = 0
-
-                        selectText(iconText)
-                    } else {
-                        system.mem.var.shSelect = true
-                        nullifyOnEvents(_this)
-                        task.wndw.node.removeEventListener("dfocus", iconNamingDelete)
-                    }
-                }
-            }
-        }
-    }, 1) //TIMEOUT
+    function createExplorerFile(name) {
+		if(!iconNameExists(name, null, editFrom)) {
+            let newFileIcon = new Icon (
+                {
+                    imag : typeDefaults.iconImag,
+					name : name,
+					type : typeDefaults.confType,
+					stat : 0
+				}
+            )
+			editFrom.new(Type,name,newFileIcon)
+            editFrom.cont[name].render("TASKID")
+            return newFileIcon
+		} else {
+			let exte = name.match(/\.(?:.(?<!\.))+$/s)
+			exte = (exte!=null && exte.length > 0) ? exte[0] : ""
+			name = name.replace(exte,"")
+			let amnt = name.match(/(?<!\w)\d+$/)
+			amnt = (amnt!=null && amnt.length > 0) ? parseInt(amnt[0],10) : ""
+			let dgts = (amnt!="") ? (""+amnt).length : 1
+			name = (amnt!="") ? name.slice(0,(name.length)-dgts) + (amnt+1) : name + " 2"
+			name = name + exte
+			return createExplorerFile(name)
+		}
+	}
+    
+    let newFileIcon = createExplorerFile(name)
+    //mem.createExplorerIcons([at(newFileIcon.file)])
+    let createdIcon = mem.iconArray[mem.iconArray.length - 1]
+    iconRename(e, createdIcon)
 }

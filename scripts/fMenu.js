@@ -86,9 +86,14 @@ function makeDropContext(e = null, task, node, contextArray) {
                     let index = [x,y]
                     let nbttn = arr[index[0]].item[index[1]]
                     let subms = subMenus
-                    newButton.onclick     = e => {
-                        nbttn.func()
-                        closeMenu()
+                    if (nbttn.able){
+                        newButton.onclick = e => {
+                            nbttn.func()
+                            closeMenu()
+                        }
+                    } else {
+                        newButton.onclick = null
+                        newButton.classList.add("disabled")
                     }
                     newButton.onmouseover = e => closeSubOpt(subms)
                 } else if (arr[x].item[y].cont != undefined) {
@@ -251,133 +256,134 @@ function closeMenu() {
 //-------------------------------------------------------------------------------------|
 
 function iconRename(e, _this){
-    if(
-        !(e.target.classList.contains("cmcheck"))
-    ) {
-        let iconText = _this.node.childNodes[1]
-        let editFile = at(_this.file)
-        let editFrom = at(editFile.conf.from)
-        //make h3 editable --------------------|
-        iconText.setAttribute("contenteditable", "true")
-        iconText.setAttribute("spellcheck", "false")
+    let iconText = _this.node.childNodes[1]
+    let editFile = at(_this.file)
+    let editFrom = at(editFile.conf.from)
+    //make h3 editable --------------------|
+    iconText.setAttribute("contenteditable", "true")
+    iconText.setAttribute("spellcheck", "false")
+    
+    //select h3 content --------------------|
+    let exte = iconText.innerText.match(/\.(?:.(?<!\.))+$/s)
+    exte = (exte!=null && exte.length > 0) ? exte[0] : ""
+    _this.statNode(1)
+    _this.stat = 0
+    selectText(iconText,0, iconText.innerText.replace(exte,"").length)
+
+    iconText.style.textShadow = "none"
+    iconText.style.display = "block"
+
+    //restore -> leave icon unmodified
+    document.body.oncontextmenu = iconRenamingRestore
+    window.onkeydown = (e) => {if(e.key == "Escape"){
+        iconRenamingRestore()
+        return false
+    }}
+    function iconRenamingRestore(){
+        system.mem.var.shSelect = true
         
-        //select h3 content --------------------|
-        selectText(iconText)
+        _this.statNode()
 
-        iconText.style.textShadow = "none"
-        iconText.style.display = "block"
+        iconText.textContent = _this.name
+        iconText.setAttribute("contenteditable", "false");
+        iconText.style.backgroundColor = ""
+        iconText.style.textShadow = ""
 
-        //restore -> leave icon unmodified
-        document.body.oncontextmenu = iconRenamingRestore
-        window.onkeydown = (e) => {if(e.key == "Escape"){
-            iconRenamingRestore()
+        iconText.blur();
+        clearSelection();
+
+        nullifyOnEvents(iconText)
+    }
+
+    setTimeout( () => {
+    document.body.onmousedown = iconRenaming
+    iconText.onkeydown = (e) => {
+        if(e.key == "Enter" && e.shiftKey == false){
+            iconRenaming()
             return false
-        }}
-        function iconRenamingRestore(){
-            system.mem.var.shSelect = true
-            
-            _this.statNode()
+        }
+    }
+    function iconRenaming(){
+        if(
+            !iconNameExists(iconText.textContent, editFile.conf.icon, editFrom) &&
+            validIconName(iconText.textContent)
+        ) {
+            //if the name is allowed --------------------|
+            system.mem.var.shSelect = true;
 
-            iconText.textContent = _this.text
-            iconText.setAttribute("contenteditable", "false");
+            if (editFrom === sys.vertex) _this.node.id = "Icon: "+iconText.textContent
+            
+            iconText.setAttribute("contenteditable", "false")
+            editFile.conf.icon.name = iconText.textContent
             iconText.style.backgroundColor = ""
             iconText.style.textShadow = ""
 
-            iconText.blur();
-            clearSelection();
+            //insert into fylesystem
+            if (iconText.textContent != editFile.name) { //if the name changed
+                editFile.rename(iconText.textContent)
+                if (_this.task) {
+                    taskid = _this.task
+                    task   = system.mem.task(taskid)
+                    task.mem.iconArray = task.mem.iconArray.remove(_this)
+                    document.getElementsByClassName("list ID_"+taskid)[0].removeChild(_this.node)
+
+                    editFile.render(taskid)
+                    _this = task.mem.iconArray[task.mem.iconArray.length-1]
+
+                    if (at(task.mem.address) === sys.vertex){
+                        desktop.mem.refresh()
+                    }
+
+                    for (icon of task.mem.iconArray) {
+                        if (icon.name == iconText.textContent) {
+                            icon.statNode(1)
+                            task.pocket.push(icon)
+                        }
+                    }
+                }
+            }
+
+            _this.statNode(1)
+            iconText.blur()
+            clearSelection()
 
             nullifyOnEvents(iconText)
-        }
+        } else {
+            //if the name not allowed --------------------|
+            system.mem.var.shSelect = false
+            iconText.style.backgroundColor = "#c90000"
 
-        setTimeout( () => {
-            document.body.onmousedown = iconRenaming
-            iconText.onkeydown = (e) => {
-                if(e.key == "Enter" && e.shiftKey == false){
-                    iconRenaming()
+            //insist -> keep only edited selected
+            document.body.onclick = iconRenamingInsist
+            window.onkeyup = (e) => {
+                if(e.key == "Enter"){
+                    iconRenamingInsist()
                     return false
                 }
             }
-            function iconRenaming(){
-                if(
-                    !iconNameExists(iconText.textContent, editFile.conf.icon, editFrom) &&
-                    validIconName(iconText.textContent)
-                ) {
-                    //if the name is allowed --------------------|
-                    system.mem.var.shSelect = true;
-
-                    if (editFrom === sys.vertex) _this.node.id = "Icon: "+iconText.textContent
-
-                    iconText.setAttribute("contenteditable", "false")
-                    editFile.conf.icon.text = iconText.textContent
-                    iconText.style.backgroundColor = ""
-                    iconText.style.textShadow = ""
-
-                    //insert into fylesystem
-                    if (iconText.textContent != editFile.name) { //if the name changed
-                        editFile.rename(iconText.textContent)
-                        if (_this.task) {
-                            taskid = _this.task
-                            task   = system.mem.task(taskid)
-                            task.mem.explorerInit(task.mem.directory, taskid)
-
-                            if (at(task.mem.directory) === sys.vertex){
-                                desktop.mem.refresh()
-                            }
-
-                            for (icon of task.mem.iconArray) {
-                                if (icon.text == iconText.textContent) {
-                                    icon.statNode(1)
-                                    task.pocket.push(icon)
-                                }
-                            }
-                        }
+            function iconRenamingInsist(){
+                if (_this.task) {
+                    for (icon of system.mem.task(_this.task).mem.iconArray){
+                        icon.statNode(0)
+                        system.mem.task(_this.task).pocket = system.mem.task(_this.task).pocket.remove(icon)
                     }
-
-                    iconText.blur()
-                    clearSelection()
-
-                    nullifyOnEvents(iconText)
                 } else {
-                    //if the name not allowed --------------------|
-                    system.mem.var.shSelect = false
-                    iconText.style.backgroundColor = "#c90000"
-
-                    //insist -> keep only edited selected
-                    document.body.onclick = iconRenamingInsist
-                    window.onkeyup = (e) => {
-                        if(e.key == "Enter"){
-                            iconRenamingInsist()
-                            return false
-                        }
-                    }
-                    function iconRenamingInsist(){
-                        if (_this.task) {
-                            for (icon of system.mem.task(_this.task).mem.iconArray){
-                                icon.statNode(0)
-                                system.mem.task(_this.task).pocket = system.mem.task(_this.task).pocket.remove(icon)
-                            }
-                        } else {
-                            for (icon of desktop.mem.iconArr){
-                                icon.statNode(0)
-                                desktop.pocket = desktop.pocket.remove(icon)
-                            }
-                        }
-                        _this.statNode(1)
-                        _this.stat = 0
-        
-                        selectText(iconText)
+                    for (icon of desktop.mem.iconArr){
+                        icon.statNode(0)
+                        desktop.pocket = desktop.pocket.remove(icon)
                     }
                 }
+                _this.statNode(1)
+                _this.stat = 0
+
+                selectText(iconText)
             }
-        }, 0)
+        }
     }
+    }, 0) //TIMEOUT
 }
 function iconProperties(e, _this){
-    if(
-        !(e.target.classList.contains("cmcheck"))
-    ) {
 
-    }
 }
 //-------------------------------------------------------------------------------------|
 
@@ -426,17 +432,17 @@ drop.dirDrop = function (e,target,sectionList,optionList) {
     this.arr.push(new contextSection("prop"))
     
     this.section("open").item.push(new contextOption("Open","url('assets/svg/contextMenu/open.svg')",() => target.open()))
-    this.section("open").item.push(new contextOption("New window","url('assets/svg/contextMenu/maximize.svg')",e => at(target.file).open()))
+    this.section("open").item.push(new contextOption("New window","url('assets/svg/contextMenu/maximize.svg')",e => at(target.file).open(),at(target.file)!=undefined))
 
     if (optionList) this.buildMenu(sectionList, optionList)
     
-    this.section("clip").item.push(new contextOption("Cut","url('assets/svg/contextMenu/cut.svg')",() => iconCut(e)))
-    this.section("clip").item.push(new contextOption("Copy","url('assets/svg/contextMenu/copy.svg')",() => iconCopy(e)))
-    this.section("clip").item.push(new contextOption("Paste","url('assets/svg/contextMenu/paste.svg')",() => iconPaste(e)))
+    this.section("clip").item.push(new contextOption("Cut","url('assets/svg/contextMenu/cut.svg')",() => iconCut(e),at(target.file)!=undefined))
+    this.section("clip").item.push(new contextOption("Copy","url('assets/svg/contextMenu/copy.svg')",() => iconCopy(e),at(target.file)!=undefined))
+    this.section("clip").item.push(new contextOption("Paste","url('assets/svg/contextMenu/paste.svg')",() => iconPaste(e),at(target.file)!=undefined))
     
     this.section("prop").item.push(new contextOption("Delete","url('assets/svg/contextMenu/delete.svg')",() => deleteSelectedNodes(system.mem.var.envfocus.pocket)))
-    this.section("prop").item.push(new contextOption("Rename","url('assets/svg/contextMenu/rename.svg')",() => iconRename(e,target)))
-    this.section("prop").item.push(new contextOption("Properties","url('assets/svg/contextMenu/properties.svg')",e => iconProperties(e)))
+    this.section("prop").item.push(new contextOption("Rename","url('assets/svg/contextMenu/rename.svg')",() => iconRename(e,target),at(target.file)!=undefined))
+    this.section("prop").item.push(new contextOption("Properties","url('assets/svg/contextMenu/properties.svg')",e => iconProperties(e),at(target.file)!=undefined))
 
     return this.arr
 }
@@ -452,17 +458,17 @@ drop.fileDrop = function(e,target,sectionList,optionList) {
     this.arr.push(new contextSection("clip"))
     this.arr.push(new contextSection("prop"))
 
-    this.section("open").item.push(new contextOption("Open","url('assets/svg/contextMenu/open.svg')",() => at(target.file).open()))
+    this.section("open").item.push(new contextOption("Open","url('assets/svg/contextMenu/open.svg')",() => at(target.file).open()!=undefined))
 
     if (optionList) this.buildMenu(sectionList, optionList)
 
-    this.section("clip").item.push(new contextOption("Cut","url('assets/svg/contextMenu/cut.svg')",() => iconCut(e)))
-    this.section("clip").item.push(new contextOption("Copy","url('assets/svg/contextMenu/copy.svg')",() => iconCopy(e)))
-    this.section("clip").item.push(new contextOption("Paste","url('assets/svg/contextMenu/paste.svg')",() => iconPaste(e)))
+    this.section("clip").item.push(new contextOption("Cut","url('assets/svg/contextMenu/cut.svg')",() => iconCut(e),at(target.file)!=undefined))
+    this.section("clip").item.push(new contextOption("Copy","url('assets/svg/contextMenu/copy.svg')",() => iconCopy(e),at(target.file)!=undefined))
+    this.section("clip").item.push(new contextOption("Paste","url('assets/svg/contextMenu/paste.svg')",() => iconPaste(e),at(target.file)!=undefined))
     
     this.section("prop").item.push(new contextOption("Delete","url('assets/svg/contextMenu/delete.svg')",() => deleteSelectedNodes(system.mem.var.envfocus.pocket)))
-    this.section("prop").item.push(new contextOption("Rename","url('assets/svg/contextMenu/rename.svg')",() => iconRename(e,target)))
-    this.section("prop").item.push(new contextOption("Properties","url('assets/svg/contextMenu/properties.svg')",() => iconProperties(e)))
+    this.section("prop").item.push(new contextOption("Rename","url('assets/svg/contextMenu/rename.svg')",() => iconRename(e,target),at(target.file)!=undefined))
+    this.section("prop").item.push(new contextOption("Properties","url('assets/svg/contextMenu/properties.svg')",() => iconProperties(e),at(target.file)!=undefined))
 
     return this.arr
     //--------------------n
@@ -475,7 +481,8 @@ drop.buildMenu = function (sectionList, optionList) {
 drop.buildContextObject = function (option) {
     //Check wether it's an option or a submenu
             if (typeof option.func === "function") {
-        let contextOpt = new contextOption(option.name, option.icon, option.func)
+        option.able = option.able!=undefined ? option.able : true
+        let contextOpt = new contextOption(option.name, option.icon, option.func, option.able)
         return contextOpt
     }  else if (Array.isArray(option.func)) {
         let contextSub = new contextSubmenu(option.name, option.icon, option.func.map(opt=> this.buildContextObject(opt)))

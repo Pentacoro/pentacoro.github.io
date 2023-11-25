@@ -20,20 +20,29 @@ class Icon {
 
         this.file = ""
         this.imag = p.imag
-        this.text = p.text
-        this.apps = p.apps
+        this.name = p.name
+        this.type = p.type
+        this.exte = p.exte || (this.type==="Directory") ? "dir" : (this.name.match(/\.(?:.(?<!\.))+$/s)!=null) ? this.name.match(/(?:.(?<!\.))+$/s)[0] : ""
+        console.log(this.exte)
 
         this.drop = []
     }
     createNode(){
         //Icon HTML structure-----|
+        if (desktop.mem.iconArr.includes(this)) return
+        if (this.coor.ax==null||this.coor.ay==null) {
+            repositionIcons([this],true,false)
+        } else {
+            repositionIcons([this],true,true)
+        }
+
         let newIcon = document.createElement("div")
         newIcon.setAttribute("class", "icon")
-        newIcon.setAttribute("id", "Icon: "+this.text)
+        newIcon.setAttribute("id", "Icon: "+this.name)
         newIcon.setAttribute("style",   "left:"+this.coor.px+"px;"+
                                         "top:"+this.coor.py+"px;"+
-                                        "width:"+cfg.desk.grid.width+"px;"+
-                                        "height:"+cfg.desk.grid.height+"px;")
+                                        "width:"+cfg.desktop.grid.width+"px;"+
+                                        "height:"+cfg.desktop.grid.height+"px;")
 
         let newIconImage = document.createElement("div")
         let newIconFrame = document.createElement("div")
@@ -45,14 +54,17 @@ class Icon {
         newIcon.appendChild(newIconFrame)
 
         let newIconText = document.createElement("h3")
-        let newIconTextNode = document.createTextNode(this.text)
+        let newIconTextNode = document.createTextNode(this.name)
         newIconText.appendChild(newIconTextNode)
         newIcon.appendChild(newIconText)
 
         document.getElementById("iconLayer").appendChild(newIcon)
+
+        desktop.mem.iconArr.push(this)
         //------------------------|
 
-        this.node = document.getElementById("Icon: "+this.text)
+        this.node = document.getElementById("Icon: "+this.name)
+        if (system.mem.var.envfocus!=desktop) this.node.classList.add("dfocus")
 
         this.statNode()
         this.poseNode()
@@ -83,6 +95,7 @@ class Icon {
                 break
             case 1:
                 if(!this.node.classList.contains("active")) this.node.className += " active"
+                if(!desktop.pocket.includes(this)) desktop.pocket.push(this)
                 this.node.classList.remove("moving")
                 this.node.style.backgroundColor = ''
 
@@ -103,8 +116,8 @@ class Icon {
 
         node.style.left = this.coor.tx + "px";
         node.style.top = this.coor.ty + "px";
-        node.style.width = cfg.desk.grid.width + "px";
-        node.style.height = cfg.desk.grid.height + "px";
+        node.style.width = cfg.desktop.grid.width + "px";
+        node.style.height = cfg.desktop.grid.height + "px";
     
         function rawr(px, dem = 2.35, dpx = 44) {
             let per = px/dpx * 100
@@ -159,12 +172,12 @@ class Icon {
                 }
                 if (div > 1.5) {
                     stylize(node, "style3")
-                    node.children[1].style.fontSize = (h === 50) ? "" : rawr(node.children[1].offsetHeight, 2.35, 44) + "em"
+                    node.children[1].style.fontSize = (h === 50) ? "" : rawr(node.children[1].offsetHeight, 37.6, 44) + "px"
                 }
                 if (div > 3.5) {
                     stylize(node, "style4")
                     node.style.gridTemplateColumns = node.children[0].offsetHeight + "px auto"
-                    node.children[1].style.fontSize = (h === 50) ? "" : rawr(node.children[1].offsetHeight, 2.35, 44) + "em"
+                    node.children[1].style.fontSize = (h === 50) ? "" : rawr(node.children[1].offsetHeight, 37.6, 44) + "px"
                 }
                 return
             }
@@ -178,7 +191,7 @@ class Icon {
                 if (div > 2.5) {
                     stylize(node, "style4")
                     node.style.gridTemplateColumns = node.children[0].offsetHeight + "px auto"
-                    node.children[1].style.fontSize = rawr(node.children[1].offsetHeight, 1.2, 44) + "em"
+                    node.children[1].style.fontSize = rawr(node.children[1].offsetHeight, 19.2, 44) + "px"
                 }
                 if (div > 6) {
                     stylize(node, "style2")
@@ -197,7 +210,7 @@ class Icon {
             if (w > 200 || h > 200) {
                 if (isBetween(div, 0.5, 1.5)) {
                     stylize(node, "style7")
-                    node.children[1].style.fontSize = rawr(node.children[1].offsetHeight, 1.2, 44) + "em"
+                    node.children[1].style.fontSize = rawr(node.children[1].offsetHeight, 19.2, 44) + "px"
                 }
                 if (div < 0.5 || div > 1.5) {
                     stylize(node, "style2")
@@ -220,8 +233,6 @@ class Icon {
         function dragMouseDown(e) {
             e = e || window.event
             e.preventDefault()
-    
-            //if(e.button == 0) {}
             
             //get initial cursor position:
             pos3 = e.clientX + idDesktop.scrollLeft
@@ -258,7 +269,7 @@ class Icon {
                 }
             }
     
-            if(cfg.ssfx.icons && !system.mem.var.dragging) {
+            if(cfg.audio.icons && !system.mem.var.dragging) {
                 sys.audiArr[0].volume = 0.5
                 sys.audiArr[0].play()
             }
@@ -307,7 +318,7 @@ class Icon {
     
             //send all icons to position evaluation
             for (icon of desktop.pocket){
-                if (cfg.desk.grid.enabled && icon.stat == 2) {
+                if (cfg.desktop.grid.enabled && icon.stat == 2) {
                     iconsToValidate.push(icon)
                 }
             }
@@ -355,10 +366,10 @@ function lowlight(hIcon) {
 } 
 
 function repositionIcons(icons, mustSet = false, hasPrev = true){
-    let w = cfg.desk.grid.width
-    let h = cfg.desk.grid.height
-    let wm = (cfg.desk.grid.modHmargin == 0) ? cfg.desk.grid.hMargin : cfg.desk.grid.modHmargin
-    let hm = (cfg.desk.grid.modVmargin == 0) ? cfg.desk.grid.vMargin : cfg.desk.grid.modVmargin
+    let w = cfg.desktop.grid.width
+    let h = cfg.desktop.grid.height
+    let wm = (cfg.desktop.grid.modHmargin == 0) ? cfg.desktop.grid.hMargin : cfg.desktop.grid.modHmargin
+    let hm = (cfg.desktop.grid.modVmargin == 0) ? cfg.desktop.grid.vMargin : cfg.desktop.grid.modVmargin
     
     let invalidIcons = []
     let iconAmount   = icons.length
@@ -367,8 +378,6 @@ function repositionIcons(icons, mustSet = false, hasPrev = true){
 
     function validateIconPosition(icon){
         let coords = icon.coor
-
-        
         //find closest grid for its tPos
         x = Math.round((coords.tx + idDesktop.scrollLeft - wm)/(w + wm))*(w + wm) + wm
         y = Math.round((coords.ty + idDesktop.scrollTop  - hm)/(h + hm))*(h + hm) + hm
@@ -435,7 +444,7 @@ function repositionIcons(icons, mustSet = false, hasPrev = true){
         }
     }
 
-    if(cfg.ssfx.icons && system.mem.var.dragging) {
+    if(cfg.audio.icons && system.mem.var.dragging) {
         if(invalidIcons.length == iconAmount) {
             sys.audiArr[1].play()
         } else if (invalidIcons.length == 0) {

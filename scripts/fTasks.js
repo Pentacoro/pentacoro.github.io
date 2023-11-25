@@ -94,12 +94,9 @@ function endTask(taskid) {
 
 function deleteSelectedNodes(pocket){
     for(icon of pocket){
-        let getFile = at(icon.file)
-
         icon.deleteNode()
-
         //delete from filesystem
-        getFile.delete()
+        if(at(icon.file)!=undefined) at(icon.file).delete()
     }
 }
 

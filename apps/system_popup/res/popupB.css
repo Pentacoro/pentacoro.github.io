@@ -60,7 +60,7 @@ body{
     height: 300px;
     background-color: white;
     
-    overflow: scroll;
+    overflow-y: scroll;
 }
 .details.ID_TASKID>p{
     font-size: .6em;

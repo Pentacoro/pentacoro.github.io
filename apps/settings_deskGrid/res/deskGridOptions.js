@@ -68,34 +68,34 @@ mem.editContent = function(option){
             let inner = parseInt(value.innerText);
             value.style.backgroundColor = "";
 
-            new Function("cfg.desk." + value.id.replace("ID_TASKID.","") + " = " + inner)()
+            new Function("cfg.desktop." + value.id.replace("ID_TASKID.","") + " = " + inner)()
             if(value.id == "ID_TASKID.grid.width" || value.id == "ID_TASKID.grid.height"){
                 desktop.mem.grid.evaluateIconGrid(null,2);
             }
             if(value.id == "ID_TASKID.grid.hMargin"){
                 document.getElementById("ID_TASKID.marginCheckbox").checked = false;
-                cfg.desk.grid.autoHmargin = false;
-                cfg.desk.grid.modHmargin = 0;
+                cfg.desktop.grid.autoHmargin = false;
+                cfg.desktop.grid.modHmargin = 0;
                 desktop.mem.grid.evaluateIconGrid(null,2);
 
                 mem.UpdateGraphAuto(null,0);
             }
             if (value.id == "ID_TASKID.grid.vMargin"){
                 document.getElementById("ID_TASKID.marginCheckbox").checked = false;
-                cfg.desk.grid.autoVmargin = false;
-                cfg.desk.grid.modVmargin = 0;
+                cfg.desktop.grid.autoVmargin = false;
+                cfg.desktop.grid.modVmargin = 0;
                 desktop.mem.grid.evaluateIconGrid(null,2);
 
                 mem.UpdateGraphAuto(null,1);
             }
             if(value.id == "ID_TASKID.grid.hLength"){
                 document.getElementById("ID_TASKID.lengthCheckbox").checked = false;
-                cfg.desk.grid.autoHlength = false;
+                cfg.desktop.grid.autoHlength = false;
                 desktop.mem.grid.evaluateIconGrid(null,1);
             }
             if(value.id == "ID_TASKID.grid.vLength"){
                 document.getElementById("ID_TASKID.lengthCheckbox").checked = false;
-                cfg.desk.grid.autoVlength = false;
+                cfg.desktop.grid.autoVlength = false;
                 desktop.mem.grid.evaluateIconGrid(null,1);
             }
             mem.UpdateGraph();
@@ -121,7 +121,7 @@ mem.editContent = function(option){
         button.children[1].classList.add("hidden");
         button.children[2].classList.add("hidden");
 
-        new Function("document.getElementById('" + value.id + "').innerText = cfg.desk." + value.id.replace("ID_TASKID.",""))()
+        new Function("document.getElementById('" + value.id + "').innerText = cfg.desktop." + value.id.replace("ID_TASKID.",""))()
     }
 }
 
@@ -134,11 +134,11 @@ mem.editBoolean = function(option){
     if(bool.name != undefined) {
         switch (bool.parentElement.classList.contains("1")){
             case true:
-                new Function("cfg.desk.grid." + bool.name + " = true")();
+                new Function("cfg.desktop.grid." + bool.name + " = true")();
                 mem.UpdateGraph2();
                 break;
             case false:
-                new Function("cfg.desk.grid." + bool.name + " = false")();
+                new Function("cfg.desktop.grid." + bool.name + " = false")();
                 mem.UpdateGraph2();
                 break;
         }
@@ -157,26 +157,26 @@ for(i = 0; i < document.getElementsByClassName("ID_TASKID optbool_box").length; 
 
 //footer buttons funcitonality
 document.getElementById("ID_TASKID.marginButton").onclick = e => {
-    cfg.desk.grid.autoHmargin = true;
-    cfg.desk.grid.autoVmargin = true;
+    cfg.desktop.grid.autoHmargin = true;
+    cfg.desktop.grid.autoVmargin = true;
     mem.UpdateGraphAuto();
     desktop.mem.grid.evaluateIconGrid(null,1)
-    cfg.desk.grid.autoHmargin = false;
-    cfg.desk.grid.autoVmargin = false;
+    cfg.desktop.grid.autoHmargin = false;
+    cfg.desktop.grid.autoVmargin = false;
 }
 document.getElementById("ID_TASKID.marginCheckbox").onclick = e => {
     if(e.target.checked == true){
-        cfg.desk.grid.autoHmargin = true;
-        cfg.desk.grid.autoVmargin = true;
+        cfg.desktop.grid.autoHmargin = true;
+        cfg.desktop.grid.autoVmargin = true;
         mem.UpdateGraphAuto();
         desktop.mem.grid.realTimeGridEval();
 
         desktop.mem.grid.evaluateIconGrid(null,1);
     } else {
-        cfg.desk.grid.autoHmargin = false;
-        cfg.desk.grid.autoVmargin = false;
-        cfg.desk.grid.modHmargin = 0;
-        cfg.desk.grid.modVmargin = 0;
+        cfg.desktop.grid.autoHmargin = false;
+        cfg.desktop.grid.autoVmargin = false;
+        cfg.desktop.grid.modHmargin = 0;
+        cfg.desktop.grid.modVmargin = 0;
         mem.UpdateGraphAuto();
         desktop.mem.grid.realTimeGridEval();
 
@@ -184,24 +184,24 @@ document.getElementById("ID_TASKID.marginCheckbox").onclick = e => {
     }
 }
 document.getElementById("ID_TASKID.lengthButton").onclick = e => {
-    cfg.desk.grid.autoHlength = true;
-    cfg.desk.grid.autoVlength = true;
+    cfg.desktop.grid.autoHlength = true;
+    cfg.desktop.grid.autoVlength = true;
     desktop.mem.grid.evaluateIconGrid(null,1);
     mem.UpdateGraph2();
-    cfg.desk.grid.autoHlength = false;
-    cfg.desk.grid.autoVlength = false;
+    cfg.desktop.grid.autoHlength = false;
+    cfg.desktop.grid.autoVlength = false;
 }
 document.getElementById("ID_TASKID.lengthCheckbox").onclick = e => {
     if(e.target.checked == true){
-        cfg.desk.grid.autoHlength = true;
-        cfg.desk.grid.autoVlength = true;
+        cfg.desktop.grid.autoHlength = true;
+        cfg.desktop.grid.autoVlength = true;
         desktop.mem.grid.realTimeGridEval();
         
         desktop.mem.grid.evaluateIconGrid(null,1);
         mem.UpdateGraph2();
     } else {
-        cfg.desk.grid.autoHlength = false;
-        cfg.desk.grid.autoVlength = false;
+        cfg.desktop.grid.autoHlength = false;
+        cfg.desktop.grid.autoVlength = false;
         desktop.mem.grid.realTimeGridEval();
     }
 }
@@ -215,12 +215,12 @@ mem.var.hLengthHTML = document.getElementById("ID_TASKID.grid.hLength")
 mem.var.vLengthHTML = document.getElementById("ID_TASKID.grid.vLength")
 
 //set values to html
-mem.var.widthHTML.innerText = cfg.desk.grid.width
-mem.var.heightHTML.innerText = cfg.desk.grid.height
-mem.var.hMarginHTML.innerText = cfg.desk.grid.hMargin
-mem.var.vMarginHTML.innerText = cfg.desk.grid.vMargin
-mem.var.hLengthHTML.innerText = cfg.desk.grid.hLength
-mem.var.vLengthHTML.innerText = cfg.desk.grid.vLength
+mem.var.widthHTML.innerText = cfg.desktop.grid.width
+mem.var.heightHTML.innerText = cfg.desktop.grid.height
+mem.var.hMarginHTML.innerText = cfg.desktop.grid.hMargin
+mem.var.vMarginHTML.innerText = cfg.desktop.grid.vMargin
+mem.var.hLengthHTML.innerText = cfg.desktop.grid.hLength
+mem.var.vLengthHTML.innerText = cfg.desktop.grid.vLength
 
 //preload graph2 images
 mem.var.graph2images = 
@@ -242,31 +242,31 @@ for (image of mem.var.graph2images){
 
 //set values to graph html
 mem.UpdateGraph = function(){
-    document.getElementsByClassName("ID_TASKID grid_graph")[0].children[0].children[0].innerText = cfg.desk.grid.width;
-    document.getElementsByClassName("ID_TASKID grid_graph")[0].children[1].innerText = cfg.desk.grid.height;
-    document.getElementsByClassName("ID_TASKID grid_graph")[0].children[2].innerText = cfg.desk.grid.hMargin;
-    document.getElementsByClassName("ID_TASKID grid_graph")[0].children[3].innerText = cfg.desk.grid.vMargin;
-    mem.var.widthHTML.innerText = cfg.desk.grid.width
-    mem.var.heightHTML.innerText = cfg.desk.grid.height
-    mem.var.hMarginHTML.innerText = cfg.desk.grid.hMargin
-    mem.var.vMarginHTML.innerText = cfg.desk.grid.vMargin
+    document.getElementsByClassName("ID_TASKID grid_graph")[0].children[0].children[0].innerText = cfg.desktop.grid.width;
+    document.getElementsByClassName("ID_TASKID grid_graph")[0].children[1].innerText = cfg.desktop.grid.height;
+    document.getElementsByClassName("ID_TASKID grid_graph")[0].children[2].innerText = cfg.desktop.grid.hMargin;
+    document.getElementsByClassName("ID_TASKID grid_graph")[0].children[3].innerText = cfg.desktop.grid.vMargin;
+    mem.var.widthHTML.innerText = cfg.desktop.grid.width
+    mem.var.heightHTML.innerText = cfg.desktop.grid.height
+    mem.var.hMarginHTML.innerText = cfg.desktop.grid.hMargin
+    mem.var.vMarginHTML.innerText = cfg.desktop.grid.vMargin
 }
 mem.UpdateGraphAuto = function(arg = null, which = 2){
-    if (which == 0 || which == 2)document.getElementsByClassName("ID_TASKID grid_graph")[0].children[4].innerText = (cfg.desk.grid.modHmargin != 0 || arg) ? parseFloat(cfg.desk.grid.modHmargin).toFixed(2) : "";
-    if (which == 1 || which == 2)document.getElementsByClassName("ID_TASKID grid_graph")[0].children[5].innerText = (cfg.desk.grid.modVmargin != 0 || arg) ? parseFloat(cfg.desk.grid.modVmargin).toFixed(2) : "";
+    if (which == 0 || which == 2)document.getElementsByClassName("ID_TASKID grid_graph")[0].children[4].innerText = (cfg.desktop.grid.modHmargin != 0 || arg) ? parseFloat(cfg.desktop.grid.modHmargin).toFixed(2) : "";
+    if (which == 1 || which == 2)document.getElementsByClassName("ID_TASKID grid_graph")[0].children[5].innerText = (cfg.desktop.grid.modVmargin != 0 || arg) ? parseFloat(cfg.desktop.grid.modVmargin).toFixed(2) : "";
 }
 mem.UpdateGraph2 = function(num = false){
-    document.getElementsByClassName("ID_TASKID grid_graph")[1].children[0].children[0].innerText = cfg.desk.grid.hLength;
-    document.getElementsByClassName("ID_TASKID grid_graph")[1].children[1].innerText = cfg.desk.grid.vLength;
-    document.getElementsByClassName("ID_TASKID grid_graph")[1].children[5].style.backgroundImage = (cfg.desk.grid.sendStash) ? "url('./assets/deskIconGrid_stash.svg')" : "url('./assets/deskIconGrid_bin.svg')";
+    document.getElementsByClassName("ID_TASKID grid_graph")[1].children[0].children[0].innerText = cfg.desktop.grid.hLength;
+    document.getElementsByClassName("ID_TASKID grid_graph")[1].children[1].innerText = cfg.desktop.grid.vLength;
+    document.getElementsByClassName("ID_TASKID grid_graph")[1].children[5].style.backgroundImage = (cfg.desktop.grid.sendStash) ? "url('./assets/deskIconGrid_stash.svg')" : "url('./assets/deskIconGrid_bin.svg')";
 
     let chk = document.getElementsByClassName("ID_TASKID grid_graph")[1].children[9].firstChild;
     let dot = document.getElementsByClassName("ID_TASKID grid_graph")[1].children[7];
     let dir = document.getElementsByClassName("ID_TASKID grid_graph")[1].children[4];
     let img = document.getElementsByClassName("ID_TASKID grid_graph")[1];
 
-    mem.var.hLengthHTML.innerText = cfg.desk.grid.hLength
-    mem.var.vLengthHTML.innerText = cfg.desk.grid.vLength
+    mem.var.hLengthHTML.innerText = cfg.desktop.grid.hLength
+    mem.var.vLengthHTML.innerText = cfg.desktop.grid.vLength
 
     if (chk.checked === false) {
         if (dot.offsetLeft > 174) {
@@ -274,11 +274,11 @@ mem.UpdateGraph2 = function(num = false){
             dir.innerText = "+0";
         }
         if (dot.offsetLeft <= 174 && dot.offsetLeft > 141) {
-            img.style.backgroundImage = (cfg.desk.grid.sendBorder) ? "url('./assets/deskIconGridGraph2/deskIconGridGraph2_02-1.svg')" : "url('./assets/deskIconGridGraph2/deskIconGridGraph2_02-2.svg')";
+            img.style.backgroundImage = (cfg.desktop.grid.sendBorder) ? "url('./assets/deskIconGridGraph2/deskIconGridGraph2_02-1.svg')" : "url('./assets/deskIconGridGraph2/deskIconGridGraph2_02-2.svg')";
             dir.innerText = "+0"
         }
         if (dot.offsetLeft <= 141 && dot.offsetLeft > 107) {
-            img.style.backgroundImage = (cfg.desk.grid.sendBorder) ? "url('./assets/deskIconGridGraph2/deskIconGridGraph2_03-1.svg')" : "url('./assets/deskIconGridGraph2/deskIconGridGraph2_03-2.svg')";
+            img.style.backgroundImage = (cfg.desktop.grid.sendBorder) ? "url('./assets/deskIconGridGraph2/deskIconGridGraph2_03-1.svg')" : "url('./assets/deskIconGridGraph2/deskIconGridGraph2_03-2.svg')";
             dir.innerText = "+1"
         }
         if (dot.offsetLeft === 107) {
@@ -348,25 +348,25 @@ document.getElementsByClassName("ID_TASKID grid_graph")[1].children[7].onmousedo
 }
 
 //set values to booleans
-if (cfg.desk.grid.sendStash === true) {
+if (cfg.desktop.grid.sendStash === true) {
     document.getElementById("ID_TASKID.optboolStash").checked = true;
 } else {
     document.getElementById("ID_TASKID.optboolBin").checked = true;
 }
 
-if (cfg.desk.grid.sendBorder === true) {
+if (cfg.desktop.grid.sendBorder === true) {
     document.getElementById("ID_TASKID.optboolBorder").checked = true;
 } else {
     document.getElementById("ID_TASKID.optboolOrder").checked = true;
 }
 
-if (cfg.desk.grid.autoHmargin && cfg.desk.grid.autoVmargin) {
+if (cfg.desktop.grid.autoHmargin && cfg.desktop.grid.autoVmargin) {
     document.getElementById("ID_TASKID.marginCheckbox").checked = true;
 } else {
     document.getElementById("ID_TASKID.marginCheckbox").checked = false;
 }
 
-if (cfg.desk.grid.autoHlength && cfg.desk.grid.autoVlength) {
+if (cfg.desktop.grid.autoHlength && cfg.desktop.grid.autoVlength) {
     document.getElementById("ID_TASKID.lengthCheckbox").checked = true;
 } else {
     document.getElementById("ID_TASKID.lengthCheckbox").checked = false;
