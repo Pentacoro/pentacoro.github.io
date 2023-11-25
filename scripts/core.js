@@ -54,7 +54,7 @@ if (storageAvailable('localStorage')) {
                     icon : new Icon(
                         {
                             imag : "assets/svg/desktopIcons/vertexPH.svg", 
-                            text : "core", 
+                            name : "core", 
                             apps : "dir", 
                             stat : 0  
                         }
@@ -75,26 +75,22 @@ if (storageAvailable('localStorage')) {
                 let Skey = null
 
                 switch (file.conf.type) {
-                    case "dir":
+                    case "Directory":
                         Type = Directory
                         Skey = "cont"
                         break
-                    case "msf":
+                    case "Metafile":
                         Type = Metafile
                         Skey = "meta"
                         break
-                    case "lau":
-                        Type = Executable
-                        Skey = "lurl"
+                    case "String":
+                        Type = String
+                        Skey = "data"
                         break 
-                    case "obj":
-                        Type = JSobject 
+                    default:
+                        Type = String
                         Skey = "data"
-                        break
-                    case "txt":
-                        Type = Text 
-                        Skey = "data"
-                        break
+                        break 
                 }
 
                 //recreate file object
@@ -106,7 +102,7 @@ if (storageAvailable('localStorage')) {
                 newFile.conf.icon = new Icon (
                     {
                         imag : oldIcon.imag, 
-                        text : oldIcon.text, 
+                        name : oldIcon.name, 
                         apps : oldIcon.apps, 
                         stat : 0,
                         coor : oldIcon.coor
@@ -128,9 +124,9 @@ if (storageAvailable('localStorage')) {
                 name : "core",
                 conf : 
                 {
-                    icon : new Icon ({imag:"assets/svg/desktopIcons/vertexPH.svg", text:"core", apps:"dir", stat:0}),
+                    icon : new Icon ({imag:"assets/svg/desktopIcons/vertexPH.svg", name:"core", type:"Directory", stat:0}),
                     from : "",
-                    type : "dir",
+                    type : "Directory",
                     vert : true,
                     move : false
                 }
@@ -143,9 +139,9 @@ if (storageAvailable('localStorage')) {
             "vertex",  
             null,
             {
-                icon : new Icon ({imag:"assets/svg/desktopIcons/vertexPH.svg", text:"vertex", apps:"dir", stat:0}),
+                icon : new Icon ({imag:"assets/svg/desktopIcons/vertexPH.svg", name:"vertex", type:"Directory", stat:0}),
                 from : "",
-                type : "dir",
+                type : "Directory",
                 vert : true,
                 move : false
             }
@@ -156,9 +152,9 @@ if (storageAvailable('localStorage')) {
             "trash",
             null,
             {
-                icon : new Icon ({imag:"assets/svg/desktopIcons/trashPH.svg", text:"trash", apps:"dir", stat:0}),
+                icon : new Icon ({imag:"assets/svg/desktopIcons/trashPH.svg", name:"trash", type:"Directory", stat:0}),
                 from : "",
-                type : "dir",
+                type : "Directory",
                 plex : true,
                 move : false
             }
@@ -169,9 +165,9 @@ if (storageAvailable('localStorage')) {
             "stash",
             null,
             {
-                icon : new Icon ({imag:"assets/svg/desktopIcons/stashPH.svg", text:"stash", apps:"dir", stat:0}),
+                icon : new Icon ({imag:"assets/svg/desktopIcons/stashPH.svg", name:"stash", type:"Directory", stat:0}),
                 from : "",
-                type : "dir",
+                type : "Directory",
                 plex : true,
                 move : false
             }
@@ -182,9 +178,9 @@ if (storageAvailable('localStorage')) {
             "config",
             null,
             {
-                icon : new Icon ({imag:"assets/svg/desktopIcons/systemPH.svg", text:"config", apps:"dir", stat:0}),
+                icon : new Icon ({imag:"assets/svg/desktopIcons/systemPH.svg", name:"config", type:"Directory", stat:0}),
                 from : "",
-                type : "dir",
+                type : "Directory",
                 plex : true,
                 move : false
             }

@@ -63,20 +63,7 @@ const loadURL = async function({url, taskid, data, replacementPairs = [], contai
 
             if (cont.getElementsByTagName("link").length > 0){
                 for(i = 0; i < cont.getElementsByTagName("link").length; i++){
-                    try {
-                        promiseStyleArray.push(getStyleContent(cont.getElementsByTagName("link")[i]))
-                    } catch (e) {
-                        loadAPP("./apps/system_popup/popup_lau.js",
-                            [
-                                "Error",
-                                false,
-                                "Launcher: " + e.statusText, 
-                                "The style number <i>"+i+"</i> from the application <i>"+taskid+"</i> failed to load.",
-                                system.id,
-                                ""
-                            ]
-                        )
-                    }
+                    promiseStyleArray.push(getStyleContent(cont.getElementsByTagName("link")[i]))
                 }
             }
             
@@ -115,9 +102,11 @@ const loadURL = async function({url, taskid, data, replacementPairs = [], contai
                         let index = i
                         let js = await ajaxReturn("get", container.getElementsByTagName("script")[index].getAttribute("src"))
                         try {
-                            js = repDir(js,url)
-                            js = repTid(js,taskid)
-                            js = repArr(js,replacementPairs)
+                            if (!container.getElementsByTagName("script")[i].classList.contains("imported")) {
+                                js = repDir(js,url)
+                                js = repTid(js,taskid)
+                                js = repArr(js,replacementPairs)
+                            }
                             eval(js)
                         } catch (e) {
                             evalErrorPopup
@@ -183,14 +172,14 @@ async function loadAPP(url, args = {}, env = null){
         system.mem.var.errorB = [["Okay"]]
         
         loadAPP("./apps/system_popup/popup_lau.js",
-            [
-                e.status,
-                false,
-                "Launcher: " + e.statusText, 
-                "Couldn't load launcher at: <i>'" + url + "'</i>.",
-                system.id,
-                ""
-            ]
+            {
+                name:e.status,
+                type:false,
+                title:"Launcher: " + e.statusText, 
+                description:"Couldn't load launcher at: <i>'" + url + "'</i>.",
+                taskid:system.id,
+                icon:""
+            }
         )
     })
     appLauncher.finally( e => {
@@ -258,62 +247,6 @@ function renameKey(obj, oldName, newName) {
     return true;
 }
 
-function stringifyArrayArg(arr) {
-    let loop   = 0
-    let string = "["
-    for (item of arr) {
-        if (loop > 0) string += ","
-        string += stringifyArg(item)
-        loop++
-    }
-    string += "]"
-    return string
-}
-function stringifyObjectArg(obj) {
-    let loop   = 0
-    let string = "{"
-    for([key, value] of Object.entries(obj)) {
-        if (loop > 0) string += ","
-        string += "" + key + ":" + stringifyArg(value)
-        loop++
-    }
-    string += "}"
-    return string
-}
-function stringifyArg(arg) {
-    string = ""
-    switch (typeof(arg)) {
-        case "number":
-        case "boolean":
-        case "undefined":
-            string = arg
-            break
-
-        case "string":
-            string = "\""+arg+"\""
-            break
- 
-        case "function":
-            string = arg.name
-            break
-
-        case "object":
-            if (Array.isArray(arg)) {
-                string = stringifyArrayArg(arg)
-
-            } else if (arg === null) {
-                string = "null"
-            } else {
-                string = stringifyObjectArg(arg)
-            }
-            break
-
-        default: 
-            string = "undefined"
-    }
-    return string
-}
-
 function repDir(data, parDir){ //replace asset directory for local apps
     let newData = data.replace(/\.\/assets/g, parDir.substr(0, parDir.lastIndexOf("/")) + "/assets");
     newData     = newData.replace(/\.\/res/g, parDir.substr(0, parDir.lastIndexOf("/")) + "/res");
@@ -368,17 +301,21 @@ function iframeAntiHover (coin) {
     }
 }
 
-function selectText(node) {
-    if (document.body.createTextRange) {
-        const range = document.body.createTextRange()
-        range.moveToElementText(node)
-        range.select()
-    } else if (window.getSelection) {
+function selectText(node,from=null,to=null) {
+    if (window.getSelection) {
         const selection = window.getSelection()
         const range = document.createRange()
         range.selectNodeContents(node)
+        if (from!=null && to!=null) {
+            range.setStart(node.firstChild,from)
+            range.setEnd  (node.firstChild,to)
+        }
         selection.removeAllRanges()
         selection.addRange(range)
+    } else if (document.body.createTextRange) {
+        const range = document.body.createTextRange()
+        range.moveToElementText(node)
+        range.select()
     } else {
         console.warn("Could not select text in node: Unsupported browser.")
     }

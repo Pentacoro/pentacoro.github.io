@@ -55,6 +55,15 @@
 .contextSection>div:hover , .contextSection>div.hover{
     background-color: #9ecbdf;
 }
+.contextSection>div.disabled{
+    background-color: #dbdbdb;
+}
+.contextSection>div.disabled:hover{
+    background-color: #cccccc;
+}
+.contextSection>div.disabled>*{
+    opacity: .4;
+}
 .subMenu{
     width: max-content;
 }

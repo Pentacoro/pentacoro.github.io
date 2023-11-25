@@ -5,12 +5,12 @@
 
     //on app init
     function ini() {
-        cfg.desk.grid.visibleNodes = true
+        cfg.desktop.grid.visibleNodes = true
         desktop.mem.grid.evaluateIconGrid(null, 2)
     }
     //on app end
     function end() {
-        cfg.desk.grid.visibleNodes = false
+        cfg.desktop.grid.visibleNodes = false
         desktop.mem.grid.evaluateIconGrid(null, 2)
     }
 

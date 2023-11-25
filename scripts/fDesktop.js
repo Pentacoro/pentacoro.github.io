@@ -2,17 +2,17 @@
 
 window.addEventListener("resize", e => {
 	idDesktop.style.width = document.body.offsetWidth + "px"
-    idDesktop.style.height = document.body.offsetHeight - cfg.desk.navB.height + "px"
+    idDesktop.style.height = document.body.offsetHeight - cfg.desktop.taskbar.height + "px"
 })
 
 //set background size
 idDesktop.style.width = document.body.offsetWidth + "px"
-idDesktop.style.height = document.body.offsetHeight - cfg.desk.navB.height + "px"
+idDesktop.style.height = document.body.offsetHeight - cfg.desktop.taskbar.height + "px"
 
 //desktop task reference
 const desktop = new Task(
 	{
-		apps : "vtx",
+		apps : "Vertex",
 		inst : false,
 		appEnd : null,
 		node : idDesktop,
@@ -70,9 +70,9 @@ desktop.mem.iconArr = []
 				]},
 				{section:"view", name:"Refresh",icon:"url('assets/svg/contextMenu/refresh.svg')",func: () => desktop.mem.refresh},
 				{section:"file", name:"New",icon:"url('assets/svg/contextMenu/new2.svg')",func:[
-					{name:"Directory",icon:"url('assets/svg/contextMenu/directory.svg')",func:() => desktop.mem.new(e,desktop,Directory)},
-					{name:"Metafile",icon:"url('assets/svg/contextMenu/metafile.svg')",func:() => desktop.mem.new(e,desktop,Metafile)},
-					{name:"Text Document",icon:"url('assets/svg/contextMenu/textfile.svg')",func:() => desktop.mem.new(e,desktop,Text)},
+					{name:"Directory",icon:"url('assets/svg/contextMenu/directory.svg')",func:() => desktop.mem.new(e,desktop,Directory,"New Folder")},
+					{name:"Metafile",icon:"url('assets/svg/contextMenu/metafile.svg')",func:() => desktop.mem.new(e,desktop,Metafile, "New Metafile.msf")},
+					{name:"Text Document",icon:"url('assets/svg/contextMenu/textfile.svg')",func:() => desktop.mem.new(e,desktop,String, "New Text Document.txt")},
 				]},
 				{section:"file", name:"Paste",icon:"url('assets/svg/contextMenu/paste.svg')",func: () => {return} },
 				{section:"info", name:"Settings",icon:"url('assets/svg/contextMenu/settings2.svg')",func: () => {return} },
@@ -213,9 +213,7 @@ desktop.unfocus = function() {
 	}
 }
 
-desktop.mem.new = function(e, _this, Type){
-    if (e.target.classList.contains("cmcheck")) return
-	
+desktop.mem.new = function(e, _this, Type, name){
 	//Make sure icon appears at center of initial right click-------|
 	let initialX = parseInt(window.getComputedStyle(document.getElementsByClassName("clickContext sub_0")[0],null).getPropertyValue("left"))
 	let initialY = parseInt(window.getComputedStyle(document.getElementsByClassName("clickContext sub_0")[0],null).getPropertyValue("top"))
@@ -223,119 +221,50 @@ desktop.mem.new = function(e, _this, Type){
 	let editFile = null
 	let editFrom = sys.vertex
 
-	let iconWidth = cfg.desk.grid.width/2
-	let iconHeight = cfg.desk.grid.height/2
+	let iconWidth = cfg.desktop.grid.width/2
+	let iconHeight = cfg.desktop.grid.height/2
 
-	let w = cfg.desk.grid.width; let h = cfg.desk.grid.height; let wm = cfg.desk.grid.hMargin; let hm = cfg.desk.grid.vMargin
+	let w = cfg.desktop.grid.width; let h = cfg.desktop.grid.height; let wm = cfg.desktop.grid.hMargin; let hm = cfg.desktop.grid.vMargin
 
 	let iconPosX = (Math.round((initialX-iconWidth)/(w + wm))*(w + wm) + wm)
 	let iconPosY = (Math.round((initialY-iconHeight)/(h + hm))*(h + hm) + hm)
 	//--------------------------------------------------------------|
-
-	let iconArray = desktop.mem.iconArr
-
 	let typeDefaults = filetypeDefaults(Type)
 
-	iconArray.push(new Icon (
-		{
-			imag : typeDefaults.iconImag,
-			text : "¡Name me!",
-			apps : typeDefaults.confType,
-			stat : 1,
-			coor : {
-				px : iconPosX,
-				py : iconPosY,
-				tx : iconPosX,
-				ty : iconPosY,
-				ax : null,
-				ay : null,
-			} 
+	function createDesktopFile(name) {
+		if(!iconNameExists(name, null, editFrom)) {
+			let newFileIcon = new Icon (
+				{
+					imag : typeDefaults.iconImag,
+					name : name,
+					type : typeDefaults.confType,
+					stat : 0,
+					coor : {
+						px : iconPosX,
+						py : iconPosY,
+						tx : iconPosX,
+						ty : iconPosY,
+						ax : null,
+						ay : null,
+					} 
+				}
+			)
+			editFrom.new(Type,name,newFileIcon)
+			editFrom.cont[name].render()
+
+			return newFileIcon
+		} else {
+			let exte = name.match(/\.(?:.(?<!\.))+$/s)
+			exte = (exte!=null && exte.length > 0) ? exte[0] : ""
+			name = name.replace(exte,"")
+			let amnt = name.match(/(?<!\w)\d+$/)
+			amnt = (amnt!=null && amnt.length > 0) ? parseInt(amnt[0],10) : ""
+			let dgts = (amnt!="") ? (""+amnt).length : 1
+			name = (amnt!="") ? name.slice(0,(name.length)-dgts) + (amnt+1) : name + " 2"
+			name = name + exte
+			return createDesktopFile(name)
 		}
-	))
-	let createdIcon = iconArray[iconArray.length - 1]
-	repositionIcons([createdIcon],true,false)
-	createdIcon.createNode()
-
-	let iconText = document.getElementById("Icon: "+createdIcon.text).childNodes[1]
-	//make h3 editable --------------------|
-	iconText.setAttribute("contenteditable", "true")
-	iconText.setAttribute("spellcheck", "false")
-
-	//select h3 content
-	selectText(iconText)
-
-	iconText.style.textShadow = "none"
-
-	//delete -> cancel icon creation
-	document.body.oncontextmenu = iconNamingDelete
-	window.onkeydown = (e) => {if(e.key == "Escape"){
-		iconNamingDelete()
-		return false
-	}};
-	function iconNamingDelete(){
-		system.mem.var.shSelect = true
-			
-		createdIcon.deleteNode()
-
-		nullifyOnEvents(_this)
 	}
 
-	setTimeout( () => { //TIMEOUT
-
-		document.body.onmousedown = iconNaming;
-		iconText.onkeydown = (e) => {if(e.key == "Enter" && e.shiftKey == false){
-			iconNaming()
-			return false
-		}}
-
-		function iconNaming(){
-			if(
-				!iconNameExists(iconText.textContent, createdIcon, editFrom) &&
-				validIconName(iconText.textContent)
-			) {
-				//if the name is allowed --------------------|
-				system.mem.var.shSelect = true
-
-				iconText.setAttribute("contenteditable", "false")
-				document.getElementById("Icon: "+createdIcon.text).id = "Icon: "+iconText.textContent
-				createdIcon.text = iconText.textContent
-				iconText.style.backgroundColor = ""
-				iconText.style.textShadow = ""
-
-				//insert it into filesystem
-				sys.vertex.new(Type,iconText.textContent,createdIcon)
-
-				createdIcon.statNode(1)
-				desktop.pocket.push(createdIcon)
-
-				//insert it into desktop mem
-				//desktop.mem.iconArr.push(createdIcon)
-
-				iconText.blur()
-				clearSelection()
-
-				nullifyOnEvents(_this)
-			} else {
-				//if the name not allowed --------------------|
-				system.mem.var.shSelect = false
-				iconText.style.backgroundColor = "#c90000"
-
-				//insist -> keep only edited selected
-				document.body.onclick = iconNamingInsist
-				window.onkeyup = (e) => {if(e.key == "Enter" && e.shiftKey == false){
-					iconNamingInsist()
-					return false
-				}}
-				function iconNamingInsist(){
-					for (icon of desktop.mem.iconArr){
-						icon.statNode(0)
-					}
-					createdIcon.statNode(1)
-					createdIcon.stat = 0
-
-					selectText(iconText)
-				}
-			}
-		}
-	}, 1) //TIMEOUT
+	iconRename(e,createDesktopFile(name))
 }

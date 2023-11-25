@@ -115,11 +115,15 @@
 .icon.style3>.iconFrame{
 	display: none;
 }
+.icon.style3>h3{
+	font-size: 18px;
+}
 
 /*4---------*/ /*icon left text right*/
 .icon.style4{
 	grid-template-rows: 100%;
 	grid-template-columns: auto auto; /*js*/
+	/*font-size: 1px; js*/
 }
 .icon.style4>.iconFrame{
 	padding: 2px;
@@ -128,7 +132,6 @@
 	text-align: left;
 	margin-left: 8px;
 	width: auto;
-	/*font-size: 1px; js*/
 }
 
 /*5---------*/ /*small*/

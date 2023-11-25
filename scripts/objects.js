@@ -30,23 +30,22 @@ class File {
 
         renameKey(parent.cont, this.name, rename)
         parent.cont[rename].name = rename
+        parent.cont[rename].conf.exte = rename.match(/(?:.(?<!\.))+$/s)[0]
+        parent.cont[rename].conf.icon.exte = rename.match(/(?:.(?<!\.))+$/s)[0]
         //
     }
 
-    render() {
+    render(taskid=null) {
         if (at(this.conf.from) === sys.vertex) { //if is on current vertex / render on desktop
-            repositionIcons([this.conf.icon],true,false)
-            desktop.mem.iconArr.push(this.conf.icon)
             this.conf.icon.createNode()
-        } else if (isDirOpen(this.conf.from)) { //if is on any other directory / render on explorer
-            for (task of sys.taskArr) {
-                if (task.apps === "exp" && task.mem.directory === this.conf.from) task.mem.createExplorerIcons([this])
-            }
+        }
+        if (taskid) { //if is on any other directory / render on explorer
+            system.mem.task(taskid).mem.createExplorerIcons([this])
         }
     }
 
     open() {
-        loadAPP(cfg.exec[this.conf.type], {name:this.name, addr:this.conf.addr}, system.mem.var.envfocus)
+        loadAPP(cfg.apps[this.conf.exte], {name:this.name, addr:this.conf.addr}, system.mem.var.envfocus)
     }
 }
 
@@ -85,27 +84,7 @@ class Metafile extends File {
     }
 }
 
-class Executable extends File {
-    lurl = ""
-    constructor(p) {
-        super()
-        this.name = p.name
-        this.conf = p.conf
-        this.lurl = p.lurl || this.lurl
-    }
-}
-
-class JSobject extends File {
-    data = {}
-    constructor(p) {
-        super()
-        this.name = p.name
-        this.conf = p.conf
-        this.data = p.data || ""
-    }
-}
-
-class Text extends File {
+class String extends File {
     data = {}
     constructor(p) {
         super()
@@ -125,27 +104,17 @@ function filetypeDefaults(Type) {
     switch (Type) {
         case Directory:
             defaults.iconImag = "assets/svg/desktopIcons/defaultDIR.svg"
-            defaults.confType = "dir"
+            defaults.confType = "Directory"
             defaults.skeyName = "cont"
             break
-        case Executable:
-            defaults.iconImag = "assets/svg/desktopIcons/defaultLAU.svg"
-            defaults.confType = "lau"
-            defaults.skeyName = "lurl"
-            break 
         case Metafile: 
             defaults.iconImag = "assets/svg/desktopIcons/defaultMSF.svg"
-            defaults.confType = "msf"
+            defaults.confType = "Metafile"
             defaults.skeyName = "meta"
             break
-        case JSobject:
-            defaults.iconImag = "assets/svg/desktopIcons/defaultOBJ.svg"
-            defaults.confType = "obj"
-            defaults.skeyName = "data"
-            break 
-        case Text:
+        case String:
             defaults.iconImag = "assets/svg/desktopIcons/defaultTXT.svg"
-            defaults.confType = "txt"
+            defaults.confType = "String"
             defaults.skeyName = "data"
     }
 

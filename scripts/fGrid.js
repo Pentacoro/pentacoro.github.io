@@ -23,36 +23,36 @@ desktop.mem.grid.evaluateIconGrid = function (
     des = null
 ){
     //take existing config values if null arguments
-    if(w == null) w = cfg.desk.grid.width 
-    if(h == null) h = cfg.desk.grid.height
-    if(wm == null) wm = cfg.desk.grid.hMargin
-    if(hm == null) hm = cfg.desk.grid.vMargin
-    if(wl == null) wl = cfg.desk.grid.hLength
-    if(hl == null) hl = cfg.desk.grid.vLength
-    if(autowm == null) autowm = cfg.desk.grid.autoHmargin
-    if(autohm == null) autohm = cfg.desk.grid.autoVmargin
-    if(autowl == null) autowl = cfg.desk.grid.autoHlength
-    if(autohl == null) autohl = cfg.desk.grid.autoVlength
+    if(w == null) w = cfg.desktop.grid.width 
+    if(h == null) h = cfg.desktop.grid.height
+    if(wm == null) wm = cfg.desktop.grid.hMargin
+    if(hm == null) hm = cfg.desktop.grid.vMargin
+    if(wl == null) wl = cfg.desktop.grid.hLength
+    if(hl == null) hl = cfg.desktop.grid.vLength
+    if(autowm == null) autowm = cfg.desktop.grid.autoHmargin
+    if(autohm == null) autohm = cfg.desktop.grid.autoVmargin
+    if(autowl == null) autowl = cfg.desktop.grid.autoHlength
+    if(autohl == null) autohl = cfg.desktop.grid.autoVlength
 
     //get some useful booleans
-    let wChanged = cfg.desk.grid.width  !== w
-    let hChanged = cfg.desk.grid.height !== h
-    let wmChanged = cfg.desk.grid.hMargin !== wm
-    let hmChanged = cfg.desk.grid.vMargin !== hm
-    let wlChanged = cfg.desk.grid.hLength !== wl
-    let hlChanged = cfg.desk.grid.vLength !== hl
+    let wChanged = cfg.desktop.grid.width  !== w
+    let hChanged = cfg.desktop.grid.height !== h
+    let wmChanged = cfg.desktop.grid.hMargin !== wm
+    let hmChanged = cfg.desktop.grid.vMargin !== hm
+    let wlChanged = cfg.desktop.grid.hLength !== wl
+    let hlChanged = cfg.desktop.grid.vLength !== hl
 
     //set new values to config
-    cfg.desk.grid.width  = w
-    cfg.desk.grid.height = h
-    cfg.desk.grid.hMargin = wm
-    cfg.desk.grid.vMargin = hm
-    cfg.desk.grid.hLength = wl
-    cfg.desk.grid.vLength = hl
-    cfg.desk.grid.autoHmargin = autowm
-    cfg.desk.grid.autoVmargin = autohm
-    cfg.desk.grid.autoHlength = autowl
-    cfg.desk.grid.autoVlength = autohl
+    cfg.desktop.grid.width  = w
+    cfg.desktop.grid.height = h
+    cfg.desktop.grid.hMargin = wm
+    cfg.desktop.grid.vMargin = hm
+    cfg.desktop.grid.hLength = wl
+    cfg.desktop.grid.vLength = hl
+    cfg.desktop.grid.autoHmargin = autowm
+    cfg.desktop.grid.autoVmargin = autohm
+    cfg.desktop.grid.autoHlength = autowl
+    cfg.desktop.grid.autoVlength = autohl
     
     let windowW = idDesktop.offsetWidth
     let windowH = idDesktop.offsetHeight
@@ -62,17 +62,17 @@ desktop.mem.grid.evaluateIconGrid = function (
     let gridVertical = Math.round((windowH-(h+hm*3)/2)/(h+hm))
     
     //evaluate optimal margin if enabled
-    if(autowm || cfg.desk.grid.modHmargin > 0){
+    if(autowm || cfg.desktop.grid.modHmargin > 0){
         ewm = (autowl) ? Math.round(windowW - w * gridHorizontal) / (gridHorizontal+1) : Math.round(windowW - w * wl) / (wl+1)
         if (ewm < wm) ewm = wm
-        if (autowm) cfg.desk.grid.modHmargin = ewm
+        if (autowm) cfg.desktop.grid.modHmargin = ewm
     } else {
         ewm = wm
     }
-    if(autohm || cfg.desk.grid.modVmargin > 0){
+    if(autohm || cfg.desktop.grid.modVmargin > 0){
         ehm = (autohl) ? Math.round(windowH - h * gridVertical) / (gridVertical+1) : Math.round(windowH - h * hl) / (hl+1)
         if (ehm < hm) ehm = hm
-        if (autohm) cfg.desk.grid.modVmargin = ehm
+        if (autohm) cfg.desktop.grid.modVmargin = ehm
     } else {
         ehm = hm
     }
@@ -84,8 +84,8 @@ desktop.mem.grid.evaluateIconGrid = function (
             desktop.mem.grid.gridArr[i] = new Array(gridVertical);
         }
 
-        cfg.desk.grid.hLength = gridHorizontal;
-        cfg.desk.grid.vLength = gridVertical;
+        cfg.desktop.grid.hLength = gridHorizontal;
+        cfg.desktop.grid.vLength = gridVertical;
         
         //fill each coordinate with an object
         for (x = 0; x < desktop.mem.grid.gridArr.length; x++){
@@ -107,8 +107,8 @@ desktop.mem.grid.evaluateIconGrid = function (
         //if the grid app is open update graph
         if (document.getElementsByClassName("grid_graph")) {
             if (document.getElementsByClassName("grid_graph")[0]) {
-                if (cfg.desk.grid.autoHmargin) document.getElementsByClassName("grid_graph")[0].children[4].innerText = parseFloat(cfg.desk.grid.modHmargin).toFixed(2)
-                if (cfg.desk.grid.autoVmargin) document.getElementsByClassName("grid_graph")[0].children[5].innerText = parseFloat(cfg.desk.grid.modVmargin).toFixed(2)
+                if (cfg.desktop.grid.autoHmargin) document.getElementsByClassName("grid_graph")[0].children[4].innerText = parseFloat(cfg.desktop.grid.modHmargin).toFixed(2)
+                if (cfg.desktop.grid.autoVmargin) document.getElementsByClassName("grid_graph")[0].children[5].innerText = parseFloat(cfg.desktop.grid.modVmargin).toFixed(2)
             }
         }
         
@@ -138,12 +138,12 @@ desktop.mem.grid.evaluateIconGrid = function (
         if(desktop.mem.grid.gridArr) gridArrX = desktop.mem.grid.gridArr.length
         if(desktop.mem.grid.gridArr[0]) gridArrY = desktop.mem.grid.gridArr[0].length
 
-        if (cfg.desk.grid.modHmargin > 0){
-            ewm = cfg.desk.grid.modHmargin - 0.001
+        if (cfg.desktop.grid.modHmargin > 0){
+            ewm = cfg.desktop.grid.modHmargin - 0.001
             gridHorizontal = Math.round((windowW*1-(w+ewm*3)/2)/(w+ewm))
         }
-        if (cfg.desk.grid.modVmargin > 0){
-            ehm = cfg.desk.grid.modVmargin - 0.001
+        if (cfg.desktop.grid.modVmargin > 0){
+            ehm = cfg.desktop.grid.modVmargin - 0.001
             gridVertical = Math.round((windowH*1-(h+ehm*3)/2)/(h+ehm)); 
         }
 
@@ -181,7 +181,7 @@ desktop.mem.grid.evaluateIconGrid = function (
         }
 
         function handleShorterRow(){
-            cfg.desk.grid.hLength = gridHFinal;
+            cfg.desktop.grid.hLength = gridHFinal;
 
             let iconsForShiftLate = []
 
@@ -193,7 +193,7 @@ desktop.mem.grid.evaluateIconGrid = function (
                         objectNode.parentElement.removeChild(objectNode)
 
                         /*if(object.icon){*/
-                        if(object.icon && cfg.desk.grid.sendBorder){
+                        if(object.icon && cfg.desktop.grid.sendBorder){
                             iconsForShift = []
 
                             iconsForShift.push(object.icon)
@@ -239,7 +239,7 @@ desktop.mem.grid.evaluateIconGrid = function (
             }
         }
         function handleLongerRow(){
-            cfg.desk.grid.hLength = gridHFinal
+            cfg.desktop.grid.hLength = gridHFinal
             for (x = desktop.mem.grid.gridArr.length; x < gridHFinal; x++){
                 desktop.mem.grid.gridArr.push(new Array(gridVFinal))
                 for(y = 0; y < desktop.mem.grid.gridArr[x].length; y++){
@@ -255,7 +255,7 @@ desktop.mem.grid.evaluateIconGrid = function (
             }
 
             desktop.mem.grid.gridArr[gridHFinal - gridHdiff - 1].forEach(object => {
-                if(object.icon && cfg.desk.grid.sendBorder){
+                if(object.icon && cfg.desktop.grid.sendBorder){
                     iconsForShift = []
 
                     iconsForShift.push(object.icon)
@@ -287,7 +287,7 @@ desktop.mem.grid.evaluateIconGrid = function (
             })
         }
         function handleShorterColumn(){
-            cfg.desk.grid.vLength = gridVFinal
+            cfg.desktop.grid.vLength = gridVFinal
 
             let iconsForShiftLate = []
 
@@ -303,7 +303,7 @@ desktop.mem.grid.evaluateIconGrid = function (
                         /*if(object.icon){
                             dlteIconNode(object.icon, true)
                         }*/
-                        if(object.icon && cfg.desk.grid.sendBorder){
+                        if(object.icon && cfg.desktop.grid.sendBorder){
                             iconsForShift = []
 
                             iconsForShift.push(object.icon)
@@ -349,7 +349,7 @@ desktop.mem.grid.evaluateIconGrid = function (
             }
         }
         function handleLongerColumn(){
-            cfg.desk.grid.vLength = gridVFinal
+            cfg.desktop.grid.vLength = gridVFinal
             for (x = 0; x < desktop.mem.grid.gridArr.length; x++){
                 for(y = desktop.mem.grid.gridArr[x].length; y < gridVFinal; y++){
                     desktop.mem.grid.gridArr[x].push({
@@ -364,7 +364,7 @@ desktop.mem.grid.evaluateIconGrid = function (
             }
             desktop.mem.grid.gridArr.forEach(column => {
                 let object = column[gridVFinal - gridVdiff - 1]
-                if(object.icon && cfg.desk.grid.sendBorder){
+                if(object.icon && cfg.desktop.grid.sendBorder){
                     iconsForShift = []
 
                     iconsForShift.push(object.icon)
@@ -401,8 +401,8 @@ desktop.mem.grid.evaluateIconGrid = function (
             task.mem.UpdateGraph2()
             
             if (document.getElementsByClassName(task.id+".grid_graph")[1]) {
-                document.getElementsByClassName(task.id+".grid_graph")[1].children[0].children[0].innerText = cfg.desk.grid.hLength
-                document.getElementsByClassName(task.id+".grid_graph")[1].children[1].innerText = cfg.desk.grid.vLength
+                document.getElementsByClassName(task.id+".grid_graph")[1].children[0].children[0].innerText = cfg.desktop.grid.hLength
+                document.getElementsByClassName(task.id+".grid_graph")[1].children[1].innerText = cfg.desktop.grid.vLength
             }
         }
     }
@@ -425,9 +425,9 @@ desktop.mem.grid.evaluateIconGrid = function (
         newGrid.style.zIndex = "-980"
         newGrid.style.pointerEvents = "none"
 
-        newGrid.style.borderRadius = cfg.desk.grid.borderRadius + "px"
-        if (cfg.desk.grid.visibleNodes === true) newGrid.style.backgroundColor = "rgba(127,127,127,0.5)"
-        if (cfg.desk.grid.visibleNodes === false)newGrid.style.backgroundColor = "rgba(127,127,127,0)"
+        newGrid.style.borderRadius = cfg.desktop.grid.borderRadius + "px"
+        if (cfg.desktop.grid.visibleNodes === true) newGrid.style.backgroundColor = "rgba(127,127,127,0.5)"
+        if (cfg.desktop.grid.visibleNodes === false)newGrid.style.backgroundColor = "rgba(127,127,127,0)"
 
         gridLayer.appendChild(newGrid)
     }
@@ -437,14 +437,14 @@ desktop.mem.grid.evaluateIconGrid = function (
         updGrid.style.top = object.posY + "px"
         updGrid.style.width = object.widt + "px"
         updGrid.style.height = object.heig + "px"
-        if (cfg.desk.grid.visibleNodes === true) updGrid.style.backgroundColor = "rgba(127,127,127,0.5)"
-        if (cfg.desk.grid.visibleNodes === false)updGrid.style.backgroundColor = "rgba(127,127,127,0)"
+        if (cfg.desktop.grid.visibleNodes === true) updGrid.style.backgroundColor = "rgba(127,127,127,0.5)"
+        if (cfg.desktop.grid.visibleNodes === false)updGrid.style.backgroundColor = "rgba(127,127,127,0)"
     }
 }
 
 desktop.mem.grid.realTimeGridEval = function(margin = null, length = null){
-    if(margin == null) margin = cfg.desk.grid.autoHmargin
-    if(length == null) length = cfg.desk.grid.autoHlength
+    if(margin == null) margin = cfg.desktop.grid.autoHmargin
+    if(length == null) length = cfg.desktop.grid.autoHlength
 
     if(margin || length){
         desktop.mem.grid.evaluateIconGrid()
@@ -468,12 +468,12 @@ desktop.mem.grid.gridExists = function(x, y){
 }
 
 desktop.mem.grid.checkGridGap = function() {
-    let w = cfg.desk.grid.width
-    let h = cfg.desk.grid.height
-    let ewm = (cfg.desk.grid.modHmargin) ? cfg.desk.grid.modHmargin : cfg.desk.grid.hMargin
-    let ehm = (cfg.desk.grid.modVmargin) ? cfg.desk.grid.modVmargin : cfg.desk.grid.vMargin
-    let wl = cfg.desk.grid.hLength
-    let hl = cfg.desk.grid.vLength
+    let w = cfg.desktop.grid.width
+    let h = cfg.desktop.grid.height
+    let ewm = (cfg.desktop.grid.modHmargin) ? cfg.desktop.grid.modHmargin : cfg.desktop.grid.hMargin
+    let ehm = (cfg.desktop.grid.modVmargin) ? cfg.desktop.grid.modVmargin : cfg.desktop.grid.vMargin
+    let wl = cfg.desktop.grid.hLength
+    let hl = cfg.desktop.grid.vLength
 
     if (gridLayer.getElementsByClassName("gap horizontalGap").length === 0) {
         let newGap = document.createElement("div")
@@ -499,18 +499,18 @@ desktop.mem.grid.checkGridGap = function() {
 }
 
 desktop.mem.grid.autoLength = function() {
-    cfg.desk.grid.autoHlength = true
-    cfg.desk.grid.autoVlength = true
+    cfg.desktop.grid.autoHlength = true
+    cfg.desktop.grid.autoVlength = true
     desktop.mem.grid.evaluateIconGrid(null,1)
     //deskGrid_UpdateGraph2()
-    cfg.desk.grid.autoHlength = false
-    cfg.desk.grid.autoVlength = false
+    cfg.desktop.grid.autoHlength = false
+    cfg.desktop.grid.autoVlength = false
 }
 desktop.mem.grid.autoMargin = function() {
-    cfg.desk.grid.autoHmargin = true
-    cfg.desk.grid.autoVmargin = true
+    cfg.desktop.grid.autoHmargin = true
+    cfg.desktop.grid.autoVmargin = true
     //deskGrid_UpdateGraphAuto()
     desktop.mem.grid.evaluateIconGrid(null,1)
-    cfg.desk.grid.autoHmargin = false
-    cfg.desk.grid.autoVmargin = false
+    cfg.desktop.grid.autoHmargin = false
+    cfg.desktop.grid.autoVmargin = false
 }

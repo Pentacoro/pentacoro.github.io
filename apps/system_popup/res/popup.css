@@ -24,8 +24,15 @@ body{
 }
 .message.ID_TASKID {
     margin-left: 20px;
-    display: grid;
-    grid-template-rows: auto auto;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+
+    word-wrap: break-word;
+    overflow: hidden;
+}
+.message.ID_TASKID>p{
+    width: 100%;
 }
 .buttons.ID_TASKID{
     display: flex;
@@ -71,4 +78,20 @@ body{
 }
 .details.ID_TASKID>p>b{
     color: blue;
+}
+.option.ID_TASKID{
+    width: 100%;
+    height: 100%;
+    border: 0;
+    border-radius: 0;
+    background-color: #cfcfcf;
+
+    cursor: pointer;
+}
+.option.ID_TASKID:active{
+    width: 100%;
+    height: 100%;
+    border: 0;
+    border-radius: 0;
+    background-color: #b6b6b6;
 }
