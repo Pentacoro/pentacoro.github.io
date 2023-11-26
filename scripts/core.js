@@ -83,12 +83,12 @@ if (storageAvailable('localStorage')) {
                         Type = Metafile
                         Skey = "meta"
                         break
-                    case "String":
-                        Type = String
+                    case "JsString":
+                        Type = JsString
                         Skey = "data"
                         break 
                     default:
-                        Type = String
+                        Type = JsString
                         Skey = "data"
                         break 
                 }
