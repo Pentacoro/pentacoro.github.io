@@ -100,6 +100,7 @@ if (storageAvailable('localStorage')) {
 
                 //recreate icon object
                 let oldIcon = newFile.conf.icon
+                oldIcon.exte = newFile.exte
                 newFile.conf.icon = new Icon (oldIcon)
 
                 if (Type === Directory) {

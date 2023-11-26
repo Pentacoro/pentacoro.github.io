@@ -41,30 +41,38 @@ const ajaxReturn = function(method, url) {
 
 const genRanHex = size => [...Array(size)].map(() => Math.floor(Math.random() * 16).toString(16)).join('');
 
+const loadComponent = async function({url, taskid, container}){
+    let data = await ajaxReturn("get", url)
+    await loadURL({
+        url:url,
+        taskid:taskid,
+        data:data,
+        container:container
+    })
+}
 const loadURL = async function({url, taskid, data, replacementPairs = [], container, env = null}){
     data = repDir(data,url)
     data = repTid(data,taskid)
     if (replacementPairs.length > 0) data = repArr(data,replacementPairs)
-    async function stylizeData() {
+    async function stylizeData(data) {
         return new Promise (async (resolve, reject) => {
             let promiseStyleArray = []
             let cont = document.createElement("div")
             cont.innerHTML = data
+            let linkArray = cont.getElementsByTagName("link")
 
-            function getStyleContent (link) {
-                return new Promise ((resolve, reject) => {
+            function getStyleContent(link) {
+                return new Promise (async (resolve, reject) => {
                     if (link.getAttribute("rel")=="stylesheet") {
-                        let stylesheet = ajaxReturn("get", link.getAttribute("href"))
-                        stylesheet.then( css => resolve("/*" + link.getAttribute("href") + "*/" + css))
                         link.remove()
+                        let stylesheet = await ajaxReturn("get", link.getAttribute("href"))
+                        resolve("/*" + link.getAttribute("href") + "*/" + stylesheet)
                     } 
                 })
             }
 
-            if (cont.getElementsByTagName("link").length > 0){
-                for(i = 0; i < cont.getElementsByTagName("link").length; i++){
-                    promiseStyleArray.push(getStyleContent(cont.getElementsByTagName("link")[i]))
-                }
+            for(i = 0; i < linkArray.length; i++){
+                promiseStyleArray.push(getStyleContent(linkArray[i]))
             }
             
             let styleContents = await Promise.all(promiseStyleArray)
@@ -73,68 +81,81 @@ const loadURL = async function({url, taskid, data, replacementPairs = [], contai
                 let style = document.createElement("style")
                 cont.appendChild(style)
             }
-            for(css of styleContents) {
+            for(let css of styleContents) {
                 css = repTid(css,taskid)
                 css = repDir(css,url)
                 if (replacementPairs) css = repArr(css, replacementPairs)
                 cont.getElementsByTagName("style")[0].innerHTML = cont.getElementsByTagName("style")[0].innerText + css
             }
             resolve(cont)
-        })
-    }
-    if (env) env.loader(true)
+    })}
+    async function runScripts(data) {
+        return new Promise (async (resolve, reject) => {
+            let promiseScriptArray = []
+            let scriptArray = data.getElementsByTagName("script")
 
-    let promise = stylizeData()
-
-    promise.then(async cont => {
-        container.innerHTML = cont.innerHTML
-        
-        if (container.getElementsByTagName("script")){
-            for(i = 0; i < container.getElementsByTagName("script").length; i++){
-                try {
-                    if (container.getElementsByTagName("script")[i].innerText) {
-                        let js = container.getElementsByTagName("script")[i].innerText
-                        js = repDir(js,url)
-                        js = repTid(js,taskid)
-                        js = repArr(js,replacementPairs)
-                        eval(js)
-                    } else if (container.getElementsByTagName("script")[i].getAttribute("src")) {
-                        let index = i
-                        let js = await ajaxReturn("get", container.getElementsByTagName("script")[index].getAttribute("src"))
-                        try {
-                            if (!container.getElementsByTagName("script")[i].classList.contains("imported")) {
-                                js = repDir(js,url)
-                                js = repTid(js,taskid)
-                                js = repArr(js,replacementPairs)
-                            }
-                            eval(js)
-                        } catch (e) {
-                            evalErrorPopup
-                            (
-                                js,
-                                "The script number <i>"+index+"</i> from the application <i>"+taskid+"</i> failed evaluation.",
-                                e
-                            )
+            function getScriptContent(script) {
+                return new Promise (async (resolve, reject) => {
+                    let js = null
+                    if (script.innerText) {
+                        js = script.innerText
+                        if (!script.classList.contains("imported")) {
+                            js = repDir(js,url)
+                            js = repTid(js,taskid)
+                            js = repArr(js,replacementPairs)
                         }
+                        //await eval("const runScript = async function(){return new Promise (async (resolve, reject)=>{\n"+js+"\nresolve()})}; runScript();console.log('wow')")
+                    } else if (script.getAttribute("src")) {
+                        js = await ajaxReturn("get", script.getAttribute("src"))
+                        if (!script.classList.contains("imported")) {
+                            js = repDir(js,url)
+                            js = repTid(js,taskid)
+                            js = repArr(js,replacementPairs)
+                        }
+                        //await eval("const runScript = async function(){return new Promise (async (resolve, reject)=>{\n"+js+"\nresolve()})}; runScript();console.log('wow')")
                     }
-    
+                    resolve(js)
+                })
+            }
+
+            for(i = 0; i < scriptArray.length; i++){
+                promiseScriptArray.push(getScriptContent(scriptArray[i]))
+            }
+
+            let scriptContents = await Promise.all(promiseScriptArray)
+
+            for(js of scriptContents){
+                let count = 0
+                try {
+                    await eval("const runScript = async function(){return new Promise (async (resolve, reject)=>{"+js+"\nresolve('wow')})}; runScript();")
                     system.mem.focus(system.mem.task(taskid))
                 } catch (e) {
                     evalErrorPopup
                     (
-                        container.getElementsByTagName("script")[i].innerText,
-                        "The script number <i>"+i+"</i> from the application <i>"+taskid+"</i> failed evaluation.",
+                        js,
+                        "The script number <i>"+count+"</i> from the application <i>"+taskid+"</i> failed evaluation.",
                         e
                     )
                     system.mem.task(taskid).end()
+                    reject("The script number <i>"+count+"</i> from the application <i>"+taskid+"</i> failed evaluation.")
+                } finally {
+                    count++
                 }
             }
-        }  
-        if (env) env.loader(false)
-    })
-}
+            resolve("Success")
+    })}
 
-async function loadAPP(url, args = {}, env = null){
+    if (env) env.loader(true)
+    container.style.opacity = 0
+
+    let cont = await stylizeData(data)
+    container.innerHTML = cont.innerHTML
+    await runScripts(container)
+
+    container.style.opacity = 1
+    if (env) env.loader(false)
+}
+const loadAPP = async function(url, args = {}, env = null){
     //add to env workload
     if (env) env.loader(true)
 

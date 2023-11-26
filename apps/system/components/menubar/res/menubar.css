@@ -1,0 +1,32 @@
+.menubar_component.ID_TASKID {
+    top: 0px;
+    height: fit-content;
+    width: 100%;
+
+    display: flex;
+    flex-wrap: wrap;
+    background-color: rgb(195, 203, 221);
+    z-index: 100;
+}
+.menubar_component.ID_TASKID>button{
+    background-color: rgb(195, 203, 221);
+    height: 20px;
+    border: 0px;
+    font-size: 1em;
+    color: rgb(90, 108, 126);
+    cursor: pointer;
+    padding-left:  .5em;
+    padding-right: .5em;
+}
+.menubar_component.ID_TASKID>button:active{
+    color: rgb(123, 140, 156);
+}
+.menubar_component.ID_TASKID>button:hover{
+    background-color: rgb(162, 166, 177);
+}
+
+/*>>>>>>> Anything that changes on unfocus goes here <<<<<<<*/
+.content.dfocus>.container.ID_TASKID{
+    opacity: 1;
+}
+/*>>>>>>>--------------------------------------------<<<<<<<*/

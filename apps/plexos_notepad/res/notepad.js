@@ -4,6 +4,7 @@ task.apps = "plx"
 mem.fileAddress = "ARG_FILEADDR"
 mem.var = {}
 mem.var.continuousContext = false
+mem.var.menubarButtons = ["File","Edit","Format","View","Help"]
 mem.var.contextOptions = function (button) {
     let envfocus = system.mem.var.envfocus
     switch (button.innerText) {
@@ -33,9 +34,9 @@ mem.var.contextOptions = function (button) {
                 ],
                 menuOptions :[
                     {section:"undo", name:"Undo",icon:"url('')",func: () => {return}},
-                    {section:"clip", name:"Cut",icon:"url('')",func: () => {return}},
-                    {section:"clip", name:"Copy",icon:"url('')",func: () => {return} },
-                    {section:"clip", name:"Paste",icon:"url('')",func: () => {return} },
+                    {section:"clip", name:"Cut",icon:"url('')",func: () => {document.execCommand("cut")}},
+                    {section:"clip", name:"Copy",icon:"url('')",func: () => {document.execCommand("copy")} },
+                    {section:"clip", name:"Paste",icon:"url('')",func: () => {document.execCommand("paste")} },
                     {section:"clip", name:"Delete",icon:"url('')",func: () => {return} },
                     {section:"find", name:"Find...",icon:"url('')",func: () => {return} },
                     {section:"find", name:"Find Next",icon:"url('')",func: () => {return} },
@@ -93,23 +94,4 @@ mem.var.contextOptions = function (button) {
             }
     }
 }
-
-for (const button of task.node.getElementsByClassName("toolbar")[0].children) {
-    function buttonMenu() {
-        let bound = button.getBoundingClientRect()
-        let param = {
-            clientY:bound.bottom,
-            clientX:bound.left,
-            contextVar:mem.var
-        }
-        let menuSections = mem.var.contextOptions(button).menuSections
-        let menuOptions  = mem.var.contextOptions(button).menuOptions
-        openMenu(param,button,menuSections,menuOptions)
-    }
-    button.onclick = e => {
-        buttonMenu()
-    }
-    button.onmouseover = e => {
-        if (mem.var.continuousContext) buttonMenu()
-    }
-}
+await loadComponent({url:"/apps/system/components/menubar/menubar.html",taskid:task.id,container:document.getElementsByClassName("menubar ID_TASKID")[0]})
