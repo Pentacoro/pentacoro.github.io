@@ -17,10 +17,13 @@ let proxy = URL.createObjectURL(new Blob([`
 `], { type: 'text/javascript' }));
 
 require(["vs/editor/editor.main"], function () {
-	let editor = monaco.editor.create(document.getElementsByClassName('editor ID_TASKID')[0], {
+	mem.editor = monaco.editor.create(document.getElementsByClassName('editor ID_TASKID')[0], {
 		value: mem.fileData,
 		language: 'javascript',
 		theme: 'vs-dark',
         automaticLayout: true,
-	});
-});
+	})
+
+	
+
+}) //require ["vs/editor/editor.main"]
