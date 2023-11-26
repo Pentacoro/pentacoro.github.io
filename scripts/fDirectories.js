@@ -8,7 +8,7 @@ class Configuration {
         this.type = p.type
         this.addr = p.addr || ""
         this.from = p.from || ""
-        this.exte = p.exte || (p.type=="Directory") ? "dir" : ""
+        this.exte = (p.exte!=undefined) ? p.exte : (p.type==="Directory") ? "dir" : ""
         this.icon = (p.icon!=undefined) ? p.icon : null
         this.move = (p.move!=undefined) ? p.move : true
         this.vert = (p.vert!=undefined) ? p.vert : false
