@@ -209,7 +209,8 @@ window.addEventListener("mousedown", (e) => {
 	if (e.target.parentElement.parentElement){
 		if(
 			e.target.parentElement.classList.contains("contextSection") == false && 
-			e.target.parentElement.parentElement.classList.contains("contextSection") == false
+			e.target.parentElement.parentElement.classList.contains("contextSection") == false &&
+            !e.target.contextMenu
 		) {
 			closeMenu()
 			clearSelection()
