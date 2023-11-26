@@ -18,7 +18,7 @@ class Icon {
         this.stat = p.stat || this.stat
         this.coor = p.coor || this.coor
 
-        this.file = ""
+        this.file = p.file || ""
         this.imag = p.imag
         this.name = p.name
         this.type = p.type
