@@ -3,6 +3,18 @@
 //fIcon.js
 //fIconDir.js
 //fDesktop.js
+class Configuration {
+    constructor(p){
+        this.type = p.type
+        this.addr = p.addr || ""
+        this.from = p.from || ""
+        this.exte = p.exte || (p.type=="Directory") ? "dir" : ""
+        this.icon = (p.icon!=undefined) ? p.icon : null
+        this.move = (p.move!=undefined) ? p.move : true
+        this.vert = (p.vert!=undefined) ? p.vert : false
+        this.plex = (p.plex!=undefined) ? p.plex : false
+    }
+}
 
 class Directory extends File {
     conf = {}
@@ -32,14 +44,14 @@ class Directory extends File {
 
         if (childConf) { 
             //if conf argument passed use it
-            this.cont[childName] = new Type({name : childName, conf : childConf})
+            this.cont[childName] = new Type({name : childName, conf : (new Configuration (childConf))})
         } else { 
             //if no conf argument passed, create default filetype
             this.cont[childName] = new Type
             (
                 {
                     name : childName,
-                    conf :
+                    conf : new Configuration (
                     {
                         from : (parent===core) ? "" : "" + parent.conf["from"] + "/" + parent.name,
                         type : confType,
@@ -54,7 +66,7 @@ class Directory extends File {
                                                     stat : 0  
                                                 }
                                             ),
-                    }
+                    })
                 }
             )
         }

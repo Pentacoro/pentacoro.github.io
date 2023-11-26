@@ -49,7 +49,7 @@ if (storageAvailable('localStorage')) {
         let newCore  = new Directory(
             {
                 name : "core",
-                conf : 
+                conf : new Configuration (
                 {
                     icon : new Icon(
                         {
@@ -60,10 +60,11 @@ if (storageAvailable('localStorage')) {
                         }
                     ),
                     from : "",
-                    type : "dir",
+                    type : "Directory",
                     vert : true,
+                    plex : true,
                     move : false
-                }
+                })
             }
         )
 
@@ -99,16 +100,7 @@ if (storageAvailable('localStorage')) {
 
                 //recreate icon object
                 let oldIcon = newFile.conf.icon
-                newFile.conf.icon = new Icon (
-                    {
-                        imag : oldIcon.imag, 
-                        name : oldIcon.name, 
-                        apps : oldIcon.apps, 
-                        stat : 0,
-                        coor : oldIcon.coor
-                    }
-                )
-                newFile.conf.icon.file = newFile.conf.addr
+                newFile.conf.icon = new Icon (oldIcon)
 
                 if (Type === Directory) {
                     newFile.cont = {}
@@ -122,14 +114,14 @@ if (storageAvailable('localStorage')) {
         var core = new Directory(
             {
                 name : "core",
-                conf : 
+                conf : new Configuration (
                 {
                     icon : new Icon ({imag:"assets/svg/desktopIcons/vertexPH.svg", name:"core", type:"Directory", stat:0}),
                     from : "",
                     type : "Directory",
                     vert : true,
                     move : false
-                }
+                })
             }
         )
 
@@ -138,52 +130,52 @@ if (storageAvailable('localStorage')) {
             Directory,
             "vertex",  
             null,
-            {
+            new Configuration ({
                 icon : new Icon ({imag:"assets/svg/desktopIcons/vertexPH.svg", name:"vertex", type:"Directory", stat:0}),
                 from : "",
                 type : "Directory",
                 vert : true,
                 move : false
-            }
+            })
         )
         core.new   
         (
             Directory,
             "trash",
             null,
-            {
+            new Configuration ({
                 icon : new Icon ({imag:"assets/svg/desktopIcons/trashPH.svg", name:"trash", type:"Directory", stat:0}),
                 from : "",
                 type : "Directory",
                 plex : true,
                 move : false
-            }
+            })
         )
         core.new   
         (
             Directory,
             "stash",
             null,
-            {
+            new Configuration ({
                 icon : new Icon ({imag:"assets/svg/desktopIcons/stashPH.svg", name:"stash", type:"Directory", stat:0}),
                 from : "",
                 type : "Directory",
                 plex : true,
                 move : false
-            }
+            })
         )
         core.new   
         (
             Directory,
             "config",
             null,
-            {
+            new Configuration ({
                 icon : new Icon ({imag:"assets/svg/desktopIcons/systemPH.svg", name:"config", type:"Directory", stat:0}),
                 from : "",
                 type : "Directory",
                 plex : true,
                 move : false
-            }
+            })
         )
     
         core.cont["vertex"].new(Directory, "Folder 1")
