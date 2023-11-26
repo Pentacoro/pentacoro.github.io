@@ -23,7 +23,6 @@ class Icon {
         this.name = p.name
         this.type = p.type
         this.exte = p.exte || (this.type==="Directory") ? "dir" : (this.name.match(/\.(?:.(?<!\.))+$/s)!=null) ? this.name.match(/(?:.(?<!\.))+$/s)[0] : ""
-        console.log(this.exte)
 
         this.drop = []
     }

@@ -29,10 +29,11 @@ class File {
         }
 
         renameKey(parent.cont, this.name, rename)
-        parent.cont[rename].name = rename
-        parent.cont[rename].conf.exte = rename.match(/(?:.(?<!\.))+$/s)[0]
-        parent.cont[rename].conf.icon.exte = rename.match(/(?:.(?<!\.))+$/s)[0]
-        //
+        let renamedFile = parent.cont[rename]
+        let extension = (this.conf.type==="Directory") ? "dir" : (rename.match(/\.(?:.(?<!\.))+$/s)!=null) ? rename.match(/(?:.(?<!\.))+$/s)[0] : ""
+        renamedFile.name = rename
+        renamedFile.conf.exte = extension
+        renamedFile.conf.icon.exte = extension
     }
 
     render(taskid=null) {
@@ -84,7 +85,7 @@ class Metafile extends File {
     }
 }
 
-class String extends File {
+class JsString extends File {
     data = {}
     constructor(p) {
         super()
@@ -112,9 +113,9 @@ function filetypeDefaults(Type) {
             defaults.confType = "Metafile"
             defaults.skeyName = "meta"
             break
-        case String:
+        case JsString:
             defaults.iconImag = "assets/svg/desktopIcons/defaultTXT.svg"
-            defaults.confType = "String"
+            defaults.confType = "JsString"
             defaults.skeyName = "data"
     }
 

@@ -72,7 +72,7 @@ desktop.mem.iconArr = []
 				{section:"file", name:"New",icon:"url('assets/svg/contextMenu/new2.svg')",func:[
 					{name:"Directory",icon:"url('assets/svg/contextMenu/directory.svg')",func:() => desktop.mem.new(e,desktop,Directory,"New Folder")},
 					{name:"Metafile",icon:"url('assets/svg/contextMenu/metafile.svg')",func:() => desktop.mem.new(e,desktop,Metafile, "New Metafile.msf")},
-					{name:"Text Document",icon:"url('assets/svg/contextMenu/textfile.svg')",func:() => desktop.mem.new(e,desktop,String, "New Text Document.txt")},
+					{name:"Text Document",icon:"url('assets/svg/contextMenu/textfile.svg')",func:() => desktop.mem.new(e,desktop,JsString, "New Text Document.txt")},
 				]},
 				{section:"file", name:"Paste",icon:"url('assets/svg/contextMenu/paste.svg')",func: () => {return} },
 				{section:"info", name:"Settings",icon:"url('assets/svg/contextMenu/settings2.svg')",func: () => {return} },

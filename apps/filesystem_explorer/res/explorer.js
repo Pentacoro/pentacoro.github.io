@@ -334,7 +334,7 @@ document.getElementsByClassName("list ID_TASKID")[0].oncontextmenu = e => {
             {section:"file", name:"New",icon:"url('assets/svg/contextMenu/new2.svg')",func:[
                 {name:"Directory",icon:"url('assets/svg/contextMenu/directory.svg')",func:() => envfocus.mem.new(e,task,Directory,"New Folder")},
                 {name:"Metafile",icon:"url('assets/svg/contextMenu/metafile.svg')",func:() => envfocus.mem.new(e,task,Metafile,"New Metafile.msf")},
-                {name:"Text Document",icon:"url('assets/svg/contextMenu/textfile.svg')",func:() => envfocus.mem.new(e,task,String,"New Text Document.txt")},
+                {name:"Text Document",icon:"url('assets/svg/contextMenu/textfile.svg')",func:() => envfocus.mem.new(e,task,JsString,"New Text Document.txt")},
             ]},
             {section:"file", name:"Paste",icon:"url('assets/svg/contextMenu/paste.svg')",func: () => {return} },
             {section:"info", name:"About",icon:"url('assets/svg/contextMenu/about.svg')",func: () => {return} },
