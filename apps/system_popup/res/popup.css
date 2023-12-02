@@ -1,11 +1,8 @@
-*{
+*.ID_TASKID{
     font-family: Arial, Helvetica, sans-serif;
     margin: 0;
     box-sizing: border-box;
     cursor: default;
-}
-body{
-    background-color: #000000;
 }
 .appcontent.ID_TASKID{
     position: relative;
@@ -45,7 +42,7 @@ body{
     width: 100%;
     height: 100%;
 }
-.expand.ID_TASKID{
+.option.ID_TASKID{
     width: 100%;
     height: 100%;
     border: 0;
@@ -54,7 +51,7 @@ body{
 
     cursor: pointer;
 }
-.expand.ID_TASKID:active{
+.option.ID_TASKID:active{
     width: 100%;
     height: 100%;
     border: 0;
@@ -77,9 +74,10 @@ body{
     user-select: text;
 }
 .details.ID_TASKID>p>b{
+    font-size: 10px;
     color: blue;
 }
-.option.ID_TASKID{
+.expand.ID_TASKID{
     width: 100%;
     height: 100%;
     border: 0;
@@ -88,7 +86,7 @@ body{
 
     cursor: pointer;
 }
-.option.ID_TASKID:active{
+.expand.ID_TASKID:active{
     width: 100%;
     height: 100%;
     border: 0;

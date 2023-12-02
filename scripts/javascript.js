@@ -81,11 +81,15 @@ const loadURL = async function({url, taskid, data, replacementPairs = [], contai
                 let style = document.createElement("style")
                 cont.appendChild(style)
             }
+            //let newStyleElement = document.createElement("style")
+            //newStyleElement.classList.add("ID_"+taskid)
+            //document.head.appendChild(newStyleElement)
             for(let css of styleContents) {
                 css = repTid(css,taskid)
                 css = repDir(css,url)
                 if (replacementPairs) css = repArr(css, replacementPairs)
                 cont.getElementsByTagName("style")[0].innerHTML = cont.getElementsByTagName("style")[0].innerText + css
+                //newStyleElement.innerHTML = cont.getElementsByTagName("style")[0].innerText
             }
             resolve(cont)
     })}
@@ -97,9 +101,11 @@ const loadURL = async function({url, taskid, data, replacementPairs = [], contai
             function getScriptContent(script) {
                 return new Promise (async (resolve, reject) => {
                     let js = null
+                    let imported = true
                     if (script.innerText) {
                         js = script.innerText
                         if (!script.classList.contains("imported")) {
+                            imported = false
                             js = repDir(js,url)
                             js = repTid(js,taskid)
                             js = repArr(js,replacementPairs)
@@ -108,13 +114,14 @@ const loadURL = async function({url, taskid, data, replacementPairs = [], contai
                     } else if (script.getAttribute("src")) {
                         js = await ajaxReturn("get", script.getAttribute("src"))
                         if (!script.classList.contains("imported")) {
+                            imported = false
                             js = repDir(js,url)
                             js = repTid(js,taskid)
                             js = repArr(js,replacementPairs)
                         }
                         //await eval("const runScript = async function(){return new Promise (async (resolve, reject)=>{\n"+js+"\nresolve()})}; runScript();console.log('wow')")
                     }
-                    resolve(js)
+                    resolve({js,imported})
                 })
             }
 
@@ -124,20 +131,24 @@ const loadURL = async function({url, taskid, data, replacementPairs = [], contai
 
             let scriptContents = await Promise.all(promiseScriptArray)
 
-            for(js of scriptContents){
+            for({js,imported} of scriptContents){
                 let count = 0
                 try {
-                    await eval("const runScript = async function(){return new Promise (async (resolve, reject)=>{"+js+"\nresolve('wow')})}; runScript();")
-                    system.mem.focus(system.mem.task(taskid))
+                    if (!imported) {
+                        await eval("const runScript = async function(){return new Promise (async (resolve, reject)=>{"+js+";resolve('wow')})}; runScript();")
+                    } else {
+                        await eval(js)
+                    }
+                    if (system.mem.task(taskid)) system.mem.focus(system.mem.task(taskid))
                 } catch (e) {
+                    e.taskId = taskid
                     evalErrorPopup
                     (
                         js,
-                        "The script number <i>"+count+"</i> from the application <i>"+taskid+"</i> failed evaluation.",
+                        "The script number <i>"+count+"</i> from the <i>"+system.mem.task(taskid).name+"</i> application failed evaluation.",
                         e
                     )
-                    system.mem.task(taskid).end()
-                    reject("The script number <i>"+count+"</i> from the application <i>"+taskid+"</i> failed evaluation.")
+                    if (system.mem.task(taskid)) system.mem.task(taskid).end()
                 } finally {
                     count++
                 }
@@ -223,7 +234,7 @@ function evalErrorPopup(code, desc, err) {
     }
 
     //add it to typeError stack
-    err.stack = err.stack + "<br><br><hr><br> <b>script:</b>" + colour
+    err.script = colour
     system.mem.var.error = err
     loadAPP("./apps/system_popup/popup_lau.js",
         {
@@ -322,6 +333,11 @@ function iframeAntiHover (coin) {
     }
 }
 
+function selectRange(range) {
+    const selection = window.getSelection()
+    selection.removeAllRanges()
+    selection.addRange(range)
+}
 function selectText(node,from=null,to=null) {
     if (window.getSelection) {
         const selection = window.getSelection()
@@ -376,3 +392,5 @@ function areRectanglesOverlap(div1, div2) {
 	return true;
 }
 //-----------------------------------------------------------------|
+
+//document.onselectionchange = () => {console.log("New selection made");selection = document.getSelection();console.log(selection);};

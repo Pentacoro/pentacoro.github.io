@@ -6,7 +6,7 @@ class File {
         delete parent.cont[child.name]
         parent.checkCont()
     }
-    moveMe(dest) {
+    move(dest) {
         
     }
     rename(rename) {

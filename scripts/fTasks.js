@@ -1,7 +1,3 @@
-//javascript.js
-//f.js
-//fWindows.js
-
 class Task {
     appEnd = null 
     name = null
@@ -27,18 +23,20 @@ class Task {
         checkUniqueID(this)
         
         //end task
-        let thisid = this.id
-        this.end = function() {
-            
-            if (p.appEnd) p.appEnd()
+        this.appEnd = p.appEnd || null
+    }
+    end () {
+        if (this.appEnd) this.appEnd()
 
-            //close window
-            if (document.getElementsByClassName("ID_"+thisid).length > 0) {
-                sys.wndwArr[parseInt(document.getElementsByClassName("ID_"+thisid)[0].id.match(/(\d+)/)[0])].deleteNode()
-            }
-
-            sys.taskArr = sys.taskArr.remove(system.mem.task(thisid))
+        //delete style tags
+        for (let styleTag of document.head.getElementsByClassName("ID_"+this.id)) {
+            styleTag.parentElement.removeChild(styleTag)
         }
+        //close window
+        if (document.getElementsByClassName("ID_"+this.id).length > 0) {
+            sys.wndwArr[parseInt(document.getElementsByClassName("ID_"+this.id)[0].id.match(/(\d+)/)[0])].deleteNode()
+        }
+        sys.taskArr = sys.taskArr.remove(system.mem.task(this.id))
     }
     loader(op) {
         (op) ? this.load++ : this.load--
@@ -51,16 +49,35 @@ class Task {
         }
     }
     focus() {
+        window.getSelection().removeAllRanges()
         if (this.wndw) {
             this.wndw.focus(true)
             this.wndw.statNode()
-            this.wndw.node.dispatchEvent(eventFocus)
+            //restore select ranges
+			let taskRange = this.mem.selectionRange
+			if (taskRange && taskRange.commonAncestorContainer instanceof HTMLElement) {
+				taskRange.commonAncestorContainer.focus()
+				//selectRange(taskRange)
+			} else {
+				taskRange = null
+			}
         }
+        if (this.node) this.node.focus()
+        if (this.node?.onfocus) this.node.onfocus()
     }
-    unfocus() {
+    blur() {
         if (this.wndw) {
+            //store select ranges
+			if (window.getSelection().rangeCount) {
+				this.mem.selectionRange = window.getSelection().getRangeAt(0).cloneRange()
+			}
+			if (this.mem.selectionRange && this.mem.selectionRange.commonAncestorContainer instanceof HTMLElement) {
+				this.mem.selectionRange.commonAncestorContainer.blur()
+				//selectRange(taskRange)
+			}
             this.wndw.focus(false)
-            this.wndw.node.dispatchEvent(eventDfocus)
+			this.node.blur()
+            if (this.node?.onblur) this.node.onblur()
         }
     }
 }
@@ -114,13 +131,13 @@ sys.taskArr.push(system)
 system.mem.lau = {}
 system.mem.var.dragging = false
 system.mem.var.shSelect = true
-system.mem.var.envfocus = {}
+system.mem.var.envfocus = null
 system.mem.focus = function (env) {
-    if (env != system.mem.var.envfocus){
-        if (system.mem.var.envfocus.mem) system.mem.var.envfocus.unfocus()
-        system.mem.var.envfocus = env
-        system.mem.var.envfocus.focus()
+    if (system.mem.var.envfocus && env != system.mem.var.envfocus){
+        system.mem.var.envfocus.blur()
     }
+    system.mem.var.envfocus = env
+    system.mem.var.envfocus.focus()
 }
 system.mem.task = function(id) {
     let find = sys.taskArr.filter(task => task.id === id)

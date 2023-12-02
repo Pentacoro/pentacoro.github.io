@@ -152,7 +152,7 @@ class Window {
 		}
 
 		//X button
-		document.getElementsByClassName("ID_"+this.task)[0].children[0].children[0].getElementsByClassName("X")[0].addEventListener("mouseup", system.mem.task(this.task).end)
+		document.getElementsByClassName("ID_"+this.task)[0].children[0].children[0].getElementsByClassName("X")[0].addEventListener("mouseup", e => system.mem.task(this.task).end())
 		
 		this.node = newWindow
 		this.cont = newContent
@@ -161,6 +161,7 @@ class Window {
 		this.poseNode()
 		this.drag()
 		this.size()
+		this.focus(true)
 		/*this.menu();*/
     }
     deleteNode(){
@@ -404,13 +405,18 @@ class Window {
 			iframeAntiHover (false)
 		}
     }
-	focus(coin){
-		if (coin) {
-			this.node.classList.remove("dfocus")
-			this.cont.classList.remove("dfocus")
+	focus(bool){
+
+		if (bool) {
+			this.node.classList.remove("blur")
+			this.cont.classList.remove("blur")
+			this.node.focus()
+			if (this.node.onfocus) this.node.onfocus()
 		} else {
-			this.node.classList.add("dfocus")
-			this.cont.classList.add("dfocus")
+			this.node.classList.add("blur")
+			this.cont.classList.add("blur")
+			this.node.blur()
+			if (this.node.onblur) this.node.onblur()
 		}
 	}
 }

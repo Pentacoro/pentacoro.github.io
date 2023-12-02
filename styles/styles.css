@@ -1,11 +1,12 @@
 * {
 	box-sizing: border-box;
-	font-family: "Gotham", "Helvetica Neue", Helvetica, Arial, "sans-serif";
-	font-size: 12px;
 	margin: 0;
 }
 
 body {
+	font-family: "Gotham", "Helvetica Neue", Helvetica, Arial, "sans-serif";
+	font-size: 12px;
+	
 	background: #444444 url("../assets/norrum/Desktop/fondoB.png") no-repeat fixed center center / cover;
 
 	position: fixed;
@@ -13,6 +14,7 @@ body {
 	height: 100%;
 
 	z-index: -999;
+
 }
 
 #desktop {

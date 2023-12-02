@@ -1,4 +1,4 @@
-//javascript.js //f.js //fMenu.js //fTasks.js //fIcons.js
+const idDesktop = document.getElementById("desktop")
 
 window.addEventListener("resize", e => {
 	idDesktop.style.width = document.body.offsetWidth + "px"
@@ -25,12 +25,12 @@ desktop.mem.iconArr = []
 
 //when desktop click:---------------------------------------------------|
 	//when desktop click-------------------|
-	idDesktop.addEventListener("mousedown", e => {
+	desktop.node.addEventListener("mousedown", e => {
 		system.mem.focus(desktop)
 		//if not clicking folder or window--------------|
 		if(
 			e.target.id == "desktop" &&
-			keyPressCtrl == false &&
+			e.ctrlKey == false &&
 			!system.mem.var.dragging
 		) {
 			for (icon of desktop.pocket){
@@ -39,7 +39,7 @@ desktop.mem.iconArr = []
 			}
 		} 
 	})
-	idDesktop.addEventListener("mousedown", e => {
+	desktop.node.addEventListener("mousedown", e => {
 		//if not clicking folder or window--------------|
 		if(
 			e.target.id == "desktop" &&
@@ -53,8 +53,8 @@ desktop.mem.iconArr = []
 	})
 
 	//open desk menu on right click background
-	idDesktop.oncontextmenu = e => {
-		if(e.target == idDesktop) {
+	desktop.node.oncontextmenu = e => {
+		if(e.target == desktop.node) {
 			let envfocus = system.mem.var.envfocus
 
 			let menuSections = [
@@ -89,7 +89,7 @@ desktop.mem.selectBox = function() {
 
 	let selectBox = document.createElement("div")
 	selectBox.setAttribute("id", "selectBox")
-	idDesktop.appendChild(selectBox)
+	desktop.node.appendChild(selectBox)
 	
 	pos1 = 0
 	pos2 = 0
@@ -102,10 +102,10 @@ desktop.mem.selectBox = function() {
 		e.preventDefault()
 		
 		//get click position:
-		posxIn = e.clientX + idDesktop.scrollLeft
-		posyIn = e.clientY + idDesktop.scrollTop
+		posxIn = e.clientX + desktop.node.scrollLeft
+		posyIn = e.clientY + desktop.node.scrollTop
 
-		wasCtrl = (keyPressCtrl == true)
+		wasCtrl = (e.ctrlKey == true)
 		
 		selectBox.style.top = posyIn + "px"
 		selectBox.style.left = posxIn + "px"
@@ -121,8 +121,8 @@ desktop.mem.selectBox = function() {
 		e.preventDefault()
 		
 		//get cursor position:
-		pos1 = e.clientX + idDesktop.scrollLeft
-		pos2 = e.clientY + idDesktop.scrollTop
+		pos1 = e.clientX + desktop.node.scrollLeft
+		pos2 = e.clientY + desktop.node.scrollTop
 		
 		//show selectBox:
 		selectBox.style.opacity = '1'
@@ -202,12 +202,12 @@ desktop.mem.refresh = function() {
 		file[1].render()
 	}
 }
-desktop.focus = function() {
+desktop.node.onfocus = e => {
 	for (icon of desktop.mem.iconArr) {
 		icon.gray(false)
 	}
 }
-desktop.unfocus = function() {
+desktop.node.onblur = e => {
 	for (icon of desktop.mem.iconArr) {
 		icon.gray(true)
 	}

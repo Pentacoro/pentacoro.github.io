@@ -51,7 +51,7 @@
 	cursor: default;
 }
 
-.window.dfocus>.windowInner>.header{
+.window.blur>.windowInner>.header{
 	background-color: #6e8a9b;
 
 	border-bottom-color: #526c7a;

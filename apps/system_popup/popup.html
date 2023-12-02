@@ -5,7 +5,6 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="./res/popup.css">
-    <style></style>
     <title>Popup Message</title>
 </head>
 <body>
@@ -23,11 +22,10 @@
         </div>
 
         <div class="details ID_TASKID" style="display: none">
-            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Ad ipsam alias adipisci reiciendis, atque deleniti. Illo quidem ratione sunt ut amet voluptatem assumenda, maxime est, magni eligendi cupiditate. Suscipit, voluptas repudiandae. Fuga minima dolore corporis tenetur nostrum sint neque fugiat quia sed sequi asperiores modi voluptatum soluta, officia cupiditate in ducimus eaque qui eveniet dolor vel expedita laudantium. Quae nam, fuga maxime debitis dicta ratione? Vitae, in? Omnis, id. Minus sapiente vel modi aliquid quasi hic rem omnis at! Ipsam harum recusandae qui provident rem incidunt cupiditate totam repellat aliquid illo adipisci accusamus facere, distinctio dicta ullam doloremque hic! Adipisci.</p>
+            <p></p>
             <br>
             <hr>
             <br>
-            <button class="warn ID_TASKID">console.log()</button>
         </div>
 
     </div>
@@ -45,21 +43,28 @@
         if (title       != "") document.getElementsByClassName("message ID_TASKID")[0].children[0].innerHTML = title
         if (description != "") document.getElementsByClassName("message ID_TASKID")[0].children[1].innerHTML = description
         if (image       != "") document.getElementsByClassName("container ID_TASKID")[0].children[0].setAttribute("src", image)
-        if (taskid     != "") {
+        if (taskid      != "") {
             document.getElementsByClassName("details ID_TASKID")[0].innerHTML  = ""
             let newDetails = document.createElement("p")
             let newButton = document.createElement("button")
-            newButton.setAttribute("class", "warn ID_TASKID")
-            newButton.innerHTML = "console.log()"
+            newButton.setAttribute("class", "error ID_TASKID")
+            newButton.innerHTML = "console.error()"
 
             document.getElementsByClassName("details ID_TASKID")[0].appendChild(newDetails)
             document.getElementsByClassName("details ID_TASKID")[0].children[0].innerHTML  = ""
             document.getElementsByClassName("details ID_TASKID")[0].children[0].innerHTML += "<b>message: </b>" + system.mem.task(taskid).mem.var.error.message + "<br>"
             document.getElementsByClassName("details ID_TASKID")[0].children[0].innerHTML += "<b>columnNumber: </b>" + system.mem.task(taskid).mem.var.error.columnNumber + "<br>"
             document.getElementsByClassName("details ID_TASKID")[0].children[0].innerHTML += "<b>fileName: </b>" + system.mem.task(taskid).mem.var.error.fileName + "<br>"
+            if (system.mem.task(taskid).mem.var.error.taskId){
+                document.getElementsByClassName("details ID_TASKID")[0].children[0].innerHTML+="<b>taskId: </b>" + system.mem.task(taskid).mem.var.error.taskId + "<br>"
+            }
             document.getElementsByClassName("details ID_TASKID")[0].children[0].innerHTML += "<b>lineNumber: </b>" + system.mem.task(taskid).mem.var.error.lineNumber + "<br><br><hr><br>"
-            document.getElementsByClassName("details ID_TASKID")[0].children[0].innerHTML += "<b>stack: </b><br>" + system.mem.task(taskid).mem.var.error.stack + "<br><hr><br>"
-            document.getElementsByClassName("details ID_TASKID")[0].appendChild(newButton)
+            document.getElementsByClassName("details ID_TASKID")[0].children[0].innerHTML += "<b>stack: </b><br>" + system.mem.task(taskid).mem.var.error.stack + "<br>"
+            document.getElementsByClassName("details ID_TASKID")[0].children[0].innerHTML += "<button class='error ID_TASKID'>console.error()</button><br>"
+            document.getElementsByClassName("details ID_TASKID")[0].children[0].innerHTML += "<br><hr><br>"
+            if (system.mem.task(taskid).mem.var.error.script){
+                document.getElementsByClassName("details ID_TASKID")[0].children[0].innerHTML+="<b>script: </b>" + system.mem.task(taskid).mem.var.error.script + "<br><hr><br>"
+            }
         }
 
         document.getElementsByClassName("expand ID_TASKID")[0].onclick = e => {
@@ -77,9 +82,9 @@
                 window.poseNode()
             }
         }
-        document.getElementsByClassName("warn ID_TASKID")[0].onclick = e => {
-            console.log(system.mem.task(taskid).mem.var.error)
-            document.getElementsByClassName("warn ID_TASKID")[0].onclick = null
+        document.getElementsByClassName("error ID_TASKID")[0].onclick = e => {
+            console.error(system.mem.task(taskid).mem.var.error)
+            document.getElementsByClassName("error ID_TASKID")[0].onclick = null
         }
     </script>
 </body>
