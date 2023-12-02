@@ -54,8 +54,8 @@ desktop.mem.grid.evaluateIconGrid = function (
     cfg.desktop.grid.autoHlength = autowl
     cfg.desktop.grid.autoVlength = autohl
     
-    let windowW = idDesktop.offsetWidth
-    let windowH = idDesktop.offsetHeight
+    let windowW = desktop.node.offsetWidth
+    let windowH = desktop.node.offsetHeight
     
     //optimal number of icons that can fit in a row / column
     let gridHorizontal = Math.round((windowW-(w+wm*3)/2)/(w+wm))
@@ -398,7 +398,7 @@ desktop.mem.grid.evaluateIconGrid = function (
 
         if (openInstance("Settings")) {
             let task = openInstance("Settings")
-            task.mem.UpdateGraph2()
+            if (task.mem.UpdateGraph2) task.mem.UpdateGraph2()
             
             if (document.getElementsByClassName(task.id+".grid_graph")[1]) {
                 document.getElementsByClassName(task.id+".grid_graph")[1].children[0].children[0].innerText = cfg.desktop.grid.hLength

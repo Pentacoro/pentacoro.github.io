@@ -63,7 +63,7 @@ class Icon {
         //------------------------|
 
         this.node = document.getElementById("Icon: "+this.name)
-        if (system.mem.var.envfocus!=desktop) this.node.classList.add("dfocus")
+        if (system.mem.var.envfocus!=desktop) this.node.classList.add("blur")
 
         this.statNode()
         this.poseNode()
@@ -234,8 +234,8 @@ class Icon {
             e.preventDefault()
             
             //get initial cursor position:
-            pos3 = e.clientX + idDesktop.scrollLeft
-            pos4 = e.clientY + idDesktop.scrollTop
+            pos3 = e.clientX + desktop.node.scrollLeft
+            pos4 = e.clientY + desktop.node.scrollTop
             
             //when mousedown on selected icon
             if (_this.stat == 1) {
@@ -252,7 +252,7 @@ class Icon {
                     node.style.backgroundColor = 'rgb(0,0,0,0)'
                     
                     //when mousedown on unselected icon
-                    if(!keyPressCtrl) {
+                    if(!e.ctrlKey) {
                         for (icon of desktop.pocket){
                             desktop.pocket = desktop.pocket.remove(icon)
                             icon.statNode(0)
@@ -260,7 +260,7 @@ class Icon {
                         desktop.pocket.push(_this)
                         _this.stat = 1
                         highlight(node)
-                    } else if(keyPressCtrl) {
+                    } else if(e.ctrlKey) {
                         desktop.pocket.push(_this)
                         _this.stat = 1
                         highlight(node)
@@ -330,7 +330,7 @@ class Icon {
             }
             
             //unselect other folders on mouseup W/O drag UNLESS ctrl
-            if(keyPressCtrl == false && system.mem.var.dragging == false && e.button == 0) {
+            if(e.ctrlKey == false && system.mem.var.dragging == false && e.button == 0) {
                 for (icon of desktop.pocket){
                     if (icon != _this) desktop.pocket = desktop.pocket.remove(icon)
                     icon.statNode(0)
@@ -349,9 +349,9 @@ class Icon {
     }
     gray(coin){
         if ( coin ) {
-            this.node.classList.add("dfocus")
+            this.node.classList.add("blur")
         } else {
-            this.node.classList.remove("dfocus")      
+            this.node.classList.remove("blur")      
         }
     }
 }
@@ -378,8 +378,8 @@ function repositionIcons(icons, mustSet = false, hasPrev = true){
     function validateIconPosition(icon){
         let coords = icon.coor
         //find closest grid for its tPos
-        x = Math.round((coords.tx + idDesktop.scrollLeft - wm)/(w + wm))*(w + wm) + wm
-        y = Math.round((coords.ty + idDesktop.scrollTop  - hm)/(h + hm))*(h + hm) + hm
+        x = Math.round((coords.tx + desktop.node.scrollLeft - wm)/(w + wm))*(w + wm) + wm
+        y = Math.round((coords.ty + desktop.node.scrollTop  - hm)/(h + hm))*(h + hm) + hm
         
         //get its spot in grid array
         tx = Math.round((x - wm)/(w + wm))

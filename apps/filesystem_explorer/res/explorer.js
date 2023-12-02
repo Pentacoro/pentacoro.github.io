@@ -94,7 +94,7 @@ class IconDir {
                     highlight(node)
                     
                     //when mousedown on unselected icon
-                    if(!keyPressCtrl) {
+                    if(!e.ctrlKey) {
                         for (icon of system.mem.task(_this.task).pocket){
                             system.mem.task(_this.task).pocket = system.mem.task(_this.task).pocket.remove(icon)
                             icon.statNode(0)
@@ -103,7 +103,7 @@ class IconDir {
                         system.mem.task(_this.task).pocket.push(_this)
                         _this.statNode(1)
                         highlight(node)
-                    } else if(keyPressCtrl) {
+                    } else if(e.ctrlKey) {
                         system.mem.task(_this.task).pocket.push(_this)
                         _this.statNode(1)
                         highlight(node)
@@ -162,7 +162,7 @@ class IconDir {
                 document.getElementById("godGrasp").innerHTML = ""
     
                 //unselect other folders on mouseup W/O drag UNLESS ctrl
-                if(keyPressCtrl == false && system.mem.var.dragging == false && e.button == 0) {
+                if(e.ctrlKey == false && system.mem.var.dragging == false && e.button == 0) {
                     for (icon of system.mem.task(_this.task).pocket){
                         system.mem.task(_this.task).pocket = system.mem.task(_this.task).pocket.remove(icon)
                         icon.statNode(0)

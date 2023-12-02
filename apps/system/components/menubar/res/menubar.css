@@ -1,4 +1,4 @@
-.menubar_component.ID_TASKID {
+.menubar_container.ID_TASKID {
     top: 0px;
     height: fit-content;
     width: 100%;
@@ -7,8 +7,10 @@
     flex-wrap: wrap;
     background-color: rgb(195, 203, 221);
     z-index: 100;
+
+    user-select: none;
 }
-.menubar_component.ID_TASKID>button{
+.menubar_container.ID_TASKID>button{
     background-color: rgb(195, 203, 221);
     height: 20px;
     border: 0px;
@@ -17,16 +19,18 @@
     cursor: pointer;
     padding-left:  .5em;
     padding-right: .5em;
+
+    user-select: none;
 }
-.menubar_component.ID_TASKID>button:active{
+.menubar_container.ID_TASKID>button:active{
     color: rgb(123, 140, 156);
 }
-.menubar_component.ID_TASKID>button:hover{
+.menubar_container.ID_TASKID>button:hover{
     background-color: rgb(162, 166, 177);
 }
 
-/*>>>>>>> Anything that changes on unfocus goes here <<<<<<<*/
-.content.dfocus>.container.ID_TASKID{
+/*>>>>>>> Anything that changes on blur goes here <<<<<<<*/
+.content.blur>.container.ID_TASKID{
     opacity: 1;
 }
 /*>>>>>>>--------------------------------------------<<<<<<<*/

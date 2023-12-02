@@ -28,11 +28,11 @@
 	background-color: rgba(0, 119, 199, 0.7);
 	border: 3px solid rgb(255,255,255,0.10);
 }
-.icon.active.dfocus{
+.icon.active.blur{
 	background-color: rgba(104, 104, 104, 0.438);
 	border: 3px solid rgb(255,255,255,0.10);
 }
-.icon:hover, .icon.dfocus:hover{
+.icon:hover, .icon.blur:hover{
 	border: 3px dotted rgb(255,255,255,0.15);
 }
 .icon.highlight{
@@ -139,6 +139,7 @@
 	display: grid;
 	grid-template-rows: auto 2.30em;
 	row-gap: 2px;
+	font-size: 12px;
 }
 .icon.style5>.iconFrame{
 	padding: 2px;
@@ -178,6 +179,8 @@
 	position: absolute;
 	width: 86px;
 	height: 86px;
+
+	transform: translate(0px, -38px);
 
 	display: flex;
 	align-items: center;

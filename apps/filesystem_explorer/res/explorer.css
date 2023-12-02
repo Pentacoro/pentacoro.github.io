@@ -1,4 +1,4 @@
-* {
+*.ID_TASKID {
     box-sizing: border-box;
     font-family: "Gotham", "Helvetica Neue", Helvetica, Arial, "sans-serif";
     margin: 0;
@@ -116,8 +116,8 @@
 }
 /*---------------------------------------*/
 
-/*>>>>>>> Anything that changes on unfocus goes here <<<<<<<*/
-.content.dfocus>.container.ID_TASKID>div>div>.explorerIcon.active{
+/*>>>>>>> Anything that changes on blur goes here <<<<<<<*/
+.content.blur>.container.ID_TASKID>div>div>.explorerIcon.active{
     background-color: rgba(138, 138, 138, 0.425);
 }
 

@@ -50,11 +50,11 @@ if (canInstance("Notepad")) {
             sys.wndwArr.push(newWindow)
             newWindow.createNode()
             
-            task.wndw = newWindow 
+            task.wndw = newWindow
             task.node = newWindow.cont
 
             ini()
-
+            
             let replacementPairs = [
                 {regex:/ARG_TEXTDATA/g,text:at(params.addr).data},
                 {regex:/ARG_FILEADDR/g,text:params.addr},

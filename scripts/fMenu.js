@@ -1,10 +1,3 @@
-//javascript.js
-//f.js
-//fIcons.js
-//fIconsDir.js
-//fDirectories.js
-//fWindows.js
-
 class contextOption {
     constructor(name, icon, func, able = true){
         this.name = name
@@ -82,17 +75,18 @@ function makeDropContext(e = null, task, node, contextArray) {
 
                 newSection.appendChild(newButton)
 
+                newButton.onclick = e => e.preventDefault()
                 if (arr[x].item[y].func != undefined) {
                     let index = [x,y]
                     let nbttn = arr[index[0]].item[index[1]]
                     let subms = subMenus
                     if (nbttn.able){
                         newButton.onclick = e => {
+                            e.preventDefault()
                             nbttn.func()
                             closeMenu()
                         }
                     } else {
-                        newButton.onclick = null
                         newButton.classList.add("disabled")
                     }
                     newButton.onmouseover = e => closeSubOpt(subms)
@@ -101,8 +95,10 @@ function makeDropContext(e = null, task, node, contextArray) {
                     let nbttn = arr[index[0]].item[index[1]]
                     let subms = subMenus
                     let arg = x+y+z
-                    newButton.onmouseover = e => openSubOpt(nbttn, arg, subms)
-
+                    newButton.onmouseover = e => {
+                        closeSubOpt(subms)
+                        openSubOpt(nbttn, arg, subms)
+                    }
                     let newLast = document.createElement("span")
                     newLast.setAttribute("class", "last")
                     //newLast.setAttribute("style", "font-weight: bold")
@@ -110,7 +106,7 @@ function makeDropContext(e = null, task, node, contextArray) {
                     newLast.innerHTML = "❯"
                     newButton.appendChild(newLast)
                 }
-
+                newButton.onmousedown = e => e.preventDefault()
                 //id-number-magic
                 y++
             }
@@ -217,6 +213,7 @@ window.addEventListener("mousedown", (e) => {
 		}
 	} else{
 		closeMenu()
+        clearSelection()
 	}
 });
 
@@ -235,8 +232,9 @@ function openMenu(e, obj, sections, options) {
     newMenu.style.left = e.clientX + "px"
 
     if (contextVar) {
-        drop.var.contextVar = contextVar
-        contextVar.continuousContext = true
+        if (contextVar.continuousContext!=undefined) contextVar.continuousContext = true
+        contextVar.targetElement.dispatchEvent(eventMenuOpen)
+        drop.contextVar = contextVar
     }
 
     let contextArray = createMenu(e, obj, sections, options)
@@ -245,9 +243,10 @@ function openMenu(e, obj, sections, options) {
 
 //close all context menus
 function closeMenu() {
-    if (drop.var.contextVar) {
-        drop.var.contextVar.continuousContext = false
-        drop.var = {}
+    if (drop.contextVar) {
+        if (drop.contextVar.continuousContext!=undefined) drop.contextVar.continuousContext = false
+        drop.contextVar.targetElement.dispatchEvent(eventMenuClose)
+        drop.contextVar = null
     }
     document.getElementById("contextLayer").innerHTML = ""
     subMenus = 0
@@ -344,7 +343,7 @@ function iconRename(e, _this){
                 }
             }
 
-            _this.statNode(1)
+            _this.statNode(0)
             iconText.blur()
             clearSelection()
 

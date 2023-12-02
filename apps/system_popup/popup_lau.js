@@ -76,6 +76,7 @@ if (canInstance("Popup")) {
                 container:document.getElementById("window_" + sys.wndwArr.indexOf(newWindow)).children[0].children[1]
             })
         } catch (e) {
+            console.error(e)
             /*
             evalErrorPopup
             (
@@ -89,6 +90,7 @@ if (canInstance("Popup")) {
 
     })
     appHTML.catch( e => {
+        console.error(e)
         /*
         desktop.mem.var.error = e
         desktop.mem.var.errorB = [["Okay"]]
