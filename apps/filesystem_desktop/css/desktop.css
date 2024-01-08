@@ -1,0 +1,9 @@
+#desktop {
+	display: block;
+	position: relative;
+	z-index: -998;
+
+	background: #444444 url("../assets/norrum/Desktop/fondoB.png") no-repeat fixed center center / cover;
+
+	overflow: auto;
+}

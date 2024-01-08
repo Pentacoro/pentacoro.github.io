@@ -1,4 +1,4 @@
-let task = system.mem.task("TASKID")
+let task = Task.id("TASKID")
 let mem  = task.mem
 
 mem.menubarRender = function () {

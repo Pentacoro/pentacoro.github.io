@@ -221,7 +221,7 @@ class Icon {
     clic(){
         this.node.oncontextmenu = e => openMenu(e,this)
         this.node.onmousedown = e => this.drag(e);
-        this.node.ondblclick = e => at(this.file).open()
+        this.node.ondblclick = e => File.at(this.file).open()
     }
     drag(e){
         let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0
@@ -269,13 +269,13 @@ class Icon {
             }
     
             if(cfg.audio.icons && !system.mem.var.dragging) {
-                sys.audiArr[0].volume = 0.5
-                sys.audiArr[0].play()
+                plexos.Sound[0].volume = 0.5
+                plexos.Sound[0].play()
             }
             
             document.onmouseup = closeDragIcon
             if(e.button == 0) document.onmousemove = iconDrag
-            iframeAntiHover (true)
+            jsc.iframeAntiHover(true)
         }								 
     
         function iconDrag(e) {
@@ -311,7 +311,7 @@ class Icon {
             //stop moving when mouse button is released:
             document.onmouseup = null
             document.onmousemove = null
-            iframeAntiHover (false)
+            jsc.iframeAntiHover(false)
             
             let iconsToValidate = []
     
@@ -445,11 +445,11 @@ function repositionIcons(icons, mustSet = false, hasPrev = true){
 
     if(cfg.audio.icons && system.mem.var.dragging) {
         if(invalidIcons.length == iconAmount) {
-            sys.audiArr[1].play()
+            plexos.Sound[1].play()
         } else if (invalidIcons.length == 0) {
-            sys.audiArr[2].play()
+            plexos.Sound[2].play()
         } else {
-            sys.audiArr[3].play()
+            plexos.Sound[3].play()
         }
     }
 }

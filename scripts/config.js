@@ -1,4 +1,4 @@
-var cfg = {
+cfg = {
     audio: {
         icons: false,
     },

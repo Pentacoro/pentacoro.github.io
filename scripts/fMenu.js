@@ -186,20 +186,6 @@ function hideDropContext() {
 }
 //----------------------------------------------------------------------------DROP MENU|
 
-/* 
-<div class="contextSection">
-<div id="iconCM1" class="iMenuOption"><div style="background-image: url('assets/svg/contextMenu/open.svg');"></div><span>Open</span>
-<input type="radio" name="openCheck" class="cmcheck" id="openCheck">
-</div>
-<div id="iconCM2" class="iMenuOption"><div style="background-image: url('assets/svg/contextMenu/maximize.svg');"></div><span>Open maximized</span>
-<input type="radio" name="openCheck" class="cmcheck" id="maxiCheck">
-</div>
-<div id="iconCM3" class="iMenuOption"><div style="background-image: url('assets/svg/contextMenu/newtab.svg');"></div><span>Open in new tab</span>
-<input type="radio" name="openCheck" class="cmcheck" id="newtCheck">
-</div>
-</div>
-*/
-
 //close context menu on mousedown anywhere
 window.addEventListener("mousedown", (e) => {
 	if (e.target.parentElement.parentElement){
@@ -209,11 +195,11 @@ window.addEventListener("mousedown", (e) => {
             !e.target.contextMenu
 		) {
 			closeMenu()
-			clearSelection()
+			jsc.clearSelection()
 		}
 	} else{
 		closeMenu()
-        clearSelection()
+        jsc.clearSelection()
 	}
 });
 
@@ -257,8 +243,8 @@ function closeMenu() {
 
 function iconRename(e, _this){
     let iconText = _this.node.childNodes[1]
-    let editFile = at(_this.file)
-    let editFrom = at(editFile.conf.from)
+    let editFile = File.at(_this.file)
+    let editFrom = File.at(editFile.conf.from)
     //make h3 editable --------------------|
     iconText.setAttribute("contenteditable", "true")
     iconText.setAttribute("spellcheck", "false")
@@ -268,7 +254,7 @@ function iconRename(e, _this){
     exte = (exte!=null && exte.length > 0) ? exte[0] : ""
     _this.statNode(1)
     _this.stat = 0
-    selectText(iconText,0, iconText.innerText.replace(exte,"").length)
+    jsc.selectText(iconText,0, iconText.innerText.replace(exte,"").length)
 
     iconText.style.textShadow = "none"
     iconText.style.display = "block"
@@ -290,7 +276,7 @@ function iconRename(e, _this){
         iconText.style.textShadow = ""
 
         iconText.blur();
-        clearSelection();
+        jsc.clearSelection();
 
         nullifyOnEvents(iconText)
     }
@@ -305,13 +291,13 @@ function iconRename(e, _this){
     }
     function iconRenaming(){
         if(
-            !iconNameExists(iconText.textContent, editFile.conf.icon, editFrom) &&
-            validIconName(iconText.textContent)
+            !jsc.iconNameExists(iconText.textContent, editFile.conf.icon, editFrom) &&
+            jsc.validIconName(iconText.textContent)
         ) {
             //if the name is allowed --------------------|
             system.mem.var.shSelect = true;
 
-            if (editFrom === sys.vertex) _this.node.id = "Icon: "+iconText.textContent
+            if (editFrom === plexos.vtx) _this.node.id = "Icon: "+iconText.textContent
             
             iconText.setAttribute("contenteditable", "false")
             editFile.conf.icon.name = iconText.textContent
@@ -323,14 +309,14 @@ function iconRename(e, _this){
                 editFile.rename(iconText.textContent)
                 if (_this.task) {
                     taskid = _this.task
-                    task   = system.mem.task(taskid)
+                    task   = Task.id(taskid)
                     task.mem.iconArray = task.mem.iconArray.remove(_this)
                     document.getElementsByClassName("list ID_"+taskid)[0].removeChild(_this.node)
 
                     editFile.render(taskid)
                     _this = task.mem.iconArray[task.mem.iconArray.length-1]
 
-                    if (at(task.mem.address) === sys.vertex){
+                    if (File.at(task.mem.address) === plexos.vtx){
                         desktop.mem.refresh()
                     }
 
@@ -345,7 +331,7 @@ function iconRename(e, _this){
 
             _this.statNode(0)
             iconText.blur()
-            clearSelection()
+            jsc.clearSelection()
 
             nullifyOnEvents(iconText)
         } else {
@@ -363,9 +349,9 @@ function iconRename(e, _this){
             }
             function iconRenamingInsist(){
                 if (_this.task) {
-                    for (icon of system.mem.task(_this.task).mem.iconArray){
+                    for (icon of Task.id(_this.task).mem.iconArray){
                         icon.statNode(0)
-                        system.mem.task(_this.task).pocket = system.mem.task(_this.task).pocket.remove(icon)
+                        Task.id(_this.task).pocket = Task.id(_this.task).pocket.remove(icon)
                     }
                 } else {
                     for (icon of desktop.mem.iconArr){
@@ -376,7 +362,7 @@ function iconRename(e, _this){
                 _this.statNode(1)
                 _this.stat = 0
 
-                selectText(iconText)
+                jsc.selectText(iconText)
             }
         }
     }
@@ -399,8 +385,8 @@ function nullifyOnEvents(rawr) {
 }
 
 //-------------------------------------------------------------------------------------|
-sys.reg.dropMenu = {}
-const drop = sys.reg.dropMenu
+plexos.reg.dropMenu = {}
+const drop = plexos.reg.dropMenu
 drop.var = {}
 drop.arr = []
 drop.section = function (name) {
@@ -432,17 +418,17 @@ drop.dirDrop = function (e,target,sectionList,optionList) {
     this.arr.push(new contextSection("prop"))
     
     this.section("open").item.push(new contextOption("Open","url('assets/svg/contextMenu/open.svg')",() => target.open()))
-    this.section("open").item.push(new contextOption("New window","url('assets/svg/contextMenu/maximize.svg')",e => at(target.file).open(),at(target.file)!=undefined))
+    this.section("open").item.push(new contextOption("New window","url('assets/svg/contextMenu/maximize.svg')",e => File.at(target.file).open(),File.at(target.file)!=undefined))
 
     if (optionList) this.buildMenu(sectionList, optionList)
     
-    this.section("clip").item.push(new contextOption("Cut","url('assets/svg/contextMenu/cut.svg')",() => iconCut(e),at(target.file)!=undefined))
-    this.section("clip").item.push(new contextOption("Copy","url('assets/svg/contextMenu/copy.svg')",() => iconCopy(e),at(target.file)!=undefined))
-    this.section("clip").item.push(new contextOption("Paste","url('assets/svg/contextMenu/paste.svg')",() => iconPaste(e),at(target.file)!=undefined))
+    this.section("clip").item.push(new contextOption("Cut","url('assets/svg/contextMenu/cut.svg')",() => iconCut(e),File.at(target.file)!=undefined))
+    this.section("clip").item.push(new contextOption("Copy","url('assets/svg/contextMenu/copy.svg')",() => iconCopy(e),File.at(target.file)!=undefined))
+    this.section("clip").item.push(new contextOption("Paste","url('assets/svg/contextMenu/paste.svg')",() => iconPaste(e),File.at(target.file)!=undefined))
     
-    this.section("prop").item.push(new contextOption("Delete","url('assets/svg/contextMenu/delete.svg')",() => deleteSelectedNodes(system.mem.var.envfocus.pocket)))
-    this.section("prop").item.push(new contextOption("Rename","url('assets/svg/contextMenu/rename.svg')",() => iconRename(e,target),at(target.file)!=undefined))
-    this.section("prop").item.push(new contextOption("Properties","url('assets/svg/contextMenu/properties.svg')",e => iconProperties(e),at(target.file)!=undefined))
+    this.section("prop").item.push(new contextOption("Delete","url('assets/svg/contextMenu/delete.svg')",() => Task.deleteSelectedNodes(system.mem.var.envfocus.pocket)))
+    this.section("prop").item.push(new contextOption("Rename","url('assets/svg/contextMenu/rename.svg')",() => iconRename(e,target),File.at(target.file)!=undefined))
+    this.section("prop").item.push(new contextOption("Properties","url('assets/svg/contextMenu/properties.svg')",e => iconProperties(e),File.at(target.file)!=undefined))
 
     return this.arr
 }
@@ -458,17 +444,17 @@ drop.fileDrop = function(e,target,sectionList,optionList) {
     this.arr.push(new contextSection("clip"))
     this.arr.push(new contextSection("prop"))
 
-    this.section("open").item.push(new contextOption("Open","url('assets/svg/contextMenu/open.svg')",() => at(target.file).open()!=undefined))
+    this.section("open").item.push(new contextOption("Open","url('assets/svg/contextMenu/open.svg')",() => File.at(target.file).open()!=undefined))
 
     if (optionList) this.buildMenu(sectionList, optionList)
 
-    this.section("clip").item.push(new contextOption("Cut","url('assets/svg/contextMenu/cut.svg')",() => iconCut(e),at(target.file)!=undefined))
-    this.section("clip").item.push(new contextOption("Copy","url('assets/svg/contextMenu/copy.svg')",() => iconCopy(e),at(target.file)!=undefined))
-    this.section("clip").item.push(new contextOption("Paste","url('assets/svg/contextMenu/paste.svg')",() => iconPaste(e),at(target.file)!=undefined))
+    this.section("clip").item.push(new contextOption("Cut","url('assets/svg/contextMenu/cut.svg')",() => iconCut(e),File.at(target.file)!=undefined))
+    this.section("clip").item.push(new contextOption("Copy","url('assets/svg/contextMenu/copy.svg')",() => iconCopy(e),File.at(target.file)!=undefined))
+    this.section("clip").item.push(new contextOption("Paste","url('assets/svg/contextMenu/paste.svg')",() => iconPaste(e),File.at(target.file)!=undefined))
     
-    this.section("prop").item.push(new contextOption("Delete","url('assets/svg/contextMenu/delete.svg')",() => deleteSelectedNodes(system.mem.var.envfocus.pocket)))
-    this.section("prop").item.push(new contextOption("Rename","url('assets/svg/contextMenu/rename.svg')",() => iconRename(e,target),at(target.file)!=undefined))
-    this.section("prop").item.push(new contextOption("Properties","url('assets/svg/contextMenu/properties.svg')",() => iconProperties(e),at(target.file)!=undefined))
+    this.section("prop").item.push(new contextOption("Delete","url('assets/svg/contextMenu/delete.svg')",() => Task.deleteSelectedNodes(system.mem.var.envfocus.pocket)))
+    this.section("prop").item.push(new contextOption("Rename","url('assets/svg/contextMenu/rename.svg')",() => iconRename(e,target),File.at(target.file)!=undefined))
+    this.section("prop").item.push(new contextOption("Properties","url('assets/svg/contextMenu/properties.svg')",() => iconProperties(e),File.at(target.file)!=undefined))
 
     return this.arr
     //--------------------n

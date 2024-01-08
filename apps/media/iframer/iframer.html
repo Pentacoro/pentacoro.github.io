@@ -20,8 +20,8 @@
     <iframe class="TASKID" src="" frameborder="0"></iframe>
     
     <script>
-        let url  = at(arg[1]).meta.file
-        let mem  = system.mem.task("TASKID").mem
+        let url  = File.at(arg[1]).meta.file
+        let mem  = Task.id("TASKID").mem
 
         mem.url  = url
 

@@ -1,4 +1,4 @@
-let task = system.mem.task("TASKID")
+let task = Task.id("TASKID")
 let mem  = task.mem
 task.apps = "exp"
 mem.var = {}
@@ -45,11 +45,11 @@ class IconDir {
     deleteNode(){
         this.node.parentNode.removeChild(this.node)
     
-        system.mem.task(this.task).pocket = system.mem.task(this.task).pocket.remove(this)
-        system.mem.task(this.task).mem.iconArray = system.mem.task(this.task).mem.iconArray.remove(this)
+        Task.id(this.task).pocket = Task.id(this.task).pocket.remove(this)
+        Task.id(this.task).mem.iconArray = Task.id(this.task).mem.iconArray.remove(this)
         
-        if (at(at(this.file)?.conf.from) === sys.vertex) { //delete desktop icon if file is from vertex
-            let rawr = at(this.file).conf.icon
+        if (File.at(File.at(this.file)?.conf.from) === plexos.vtx) { //delete desktop icon if file is from vertex
+            let rawr = File.at(this.file).conf.icon
             rawr.deleteNode()
         }
     }
@@ -65,7 +65,7 @@ class IconDir {
             case 1:
                 this.node.classList.remove("moving")
                 if(!this.node.classList.contains("active")) this.node.className += " active"
-                if(!system.mem.task(this.task).pocket.includes(this)) system.mem.task(this.task).pocket.push(this)
+                if(!Task.id(this.task).pocket.includes(this)) Task.id(this.task).pocket.push(this)
                 break
             case 2: 
                 if(!this.node.classList.contains("moving")) this.node.className += " moving"
@@ -83,7 +83,7 @@ class IconDir {
             //when mousedown on selected icon
             if (_this.stat === 1) {
                 //managing selected icons
-                for (icon of system.mem.task(_this.task).pocket) {
+                for (icon of Task.id(_this.task).pocket) {
                     //light up all hover border onmousedown:-|
                     highlight(icon.node)
                     //---------------------------------------|
@@ -95,16 +95,16 @@ class IconDir {
                     
                     //when mousedown on unselected icon
                     if(!e.ctrlKey) {
-                        for (icon of system.mem.task(_this.task).pocket){
-                            system.mem.task(_this.task).pocket = system.mem.task(_this.task).pocket.remove(icon)
+                        for (icon of Task.id(_this.task).pocket){
+                            Task.id(_this.task).pocket = Task.id(_this.task).pocket.remove(icon)
                             icon.statNode(0)
                             lowlight(icon.node)
                         }
-                        system.mem.task(_this.task).pocket.push(_this)
+                        Task.id(_this.task).pocket.push(_this)
                         _this.statNode(1)
                         highlight(node)
                     } else if(e.ctrlKey) {
-                        system.mem.task(_this.task).pocket.push(_this)
+                        Task.id(_this.task).pocket.push(_this)
                         _this.statNode(1)
                         highlight(node)
                     }
@@ -117,13 +117,13 @@ class IconDir {
             function dragMouseMove(e, node) {
                 e.preventDefault()
 
-                for (icon of system.mem.task(_this.task).pocket){
+                for (icon of Task.id(_this.task).pocket){
                     icon.statNode(2)
                 }
 
                 if (document.getElementById("godGrasp").children.length === 0) {
                     //make pocket representation on godGrasp--------||
-                    let pockImg = (system.mem.task(_this.task).pocket.length > 3) ? 3 : system.mem.task(_this.task).pocket.length
+                    let pockImg = (Task.id(_this.task).pocket.length > 3) ? 3 : Task.id(_this.task).pocket.length
     
                     let iconShip = document.createElement("div")
                     iconShip.setAttribute("class", "iconShip")
@@ -138,7 +138,7 @@ class IconDir {
     
                     let iconShipSize = document.createElement("div")
                     iconShipSize.setAttribute("class", "iconShipSize")
-                    iconShipSize.innerHTML = "<span>" + system.mem.task(_this.task).pocket.length + "</span>"
+                    iconShipSize.innerHTML = "<span>" + Task.id(_this.task).pocket.length + "</span>"
     
                     iconShip.appendChild(iconShipSize)
                     iconShip.appendChild(iconShipImg)
@@ -163,14 +163,14 @@ class IconDir {
     
                 //unselect other folders on mouseup W/O drag UNLESS ctrl
                 if(e.ctrlKey == false && system.mem.var.dragging == false && e.button == 0) {
-                    for (icon of system.mem.task(_this.task).pocket){
-                        system.mem.task(_this.task).pocket = system.mem.task(_this.task).pocket.remove(icon)
+                    for (icon of Task.id(_this.task).pocket){
+                        Task.id(_this.task).pocket = Task.id(_this.task).pocket.remove(icon)
                         icon.statNode(0)
                         lowlight(icon.node)
                     }
                     _this.statNode(1)
                 } else {
-                    for (icon of system.mem.task(_this.task).pocket){
+                    for (icon of Task.id(_this.task).pocket){
                         icon.statNode(1)
                         lowlight(icon.node)
                     }
@@ -186,9 +186,9 @@ class IconDir {
     }
     open(){
         if (this.exte == "dir") {
-            system.mem.task(this.task).mem.explorerInit(this.file, this.task)
+            Task.id(this.task).mem.explorerInit(this.file, this.task)
         } else {
-            at(this.file).open()
+            File.at(this.file).open()
         }
     }
 }
@@ -216,22 +216,22 @@ mem.refresh = function () {
 }
 mem.explorerInit = function (dir, id, act = null) {    
     try {       
-        let activeObj = at(dir)
+        let activeObj = File.at(dir)
         let dirList   = Object.entries(activeObj.cont)
 
         let dirFolder = []
         let dirFile   = []
         let dirPlex   = []
 
-        for (icon of system.mem.task(id).mem.iconArray){
+        for (icon of Task.id(id).mem.iconArray){
             document.getElementsByClassName("list ID_"+id)[0].removeChild(icon.node)
         }
 
-        system.mem.task(id).mem.iconArray = []
-        system.mem.task(id).mem.address = dir
-        system.mem.task(id).mem.dirObject = at(dir)
-        system.mem.task(id).mem.var.dirname = activeObj.name
-        system.mem.task(id).pocket = []
+        Task.id(id).mem.iconArray = []
+        Task.id(id).mem.address = dir
+        Task.id(id).mem.dirObject = File.at(dir)
+        Task.id(id).mem.var.dirname = activeObj.name
+        Task.id(id).pocket = []
 
         for (item of dirList) {
             if(item[1].conf.type === "Directory" && !item[1].conf.plex) {
@@ -261,7 +261,7 @@ mem.explorerInit = function (dir, id, act = null) {
     } catch (e) {
         mem.var.error = e
         mem.var.errorB = [["Okay"]]
-        loadAPP("./apps/system_popup/popup_lau.js",
+        jsc.runLauncher("./apps/system_popup/popup_lau.js",
             {
              name:"Error",
              type:false,
@@ -296,7 +296,7 @@ document.getElementsByClassName("parent ID_TASKID")[0].onclick = e => {
             } catch (e) {
                 mem.var.error  = e
                 mem.var.errorB = [["Okay"]]
-                loadAPP("./apps/system_popup/popup_lau.js",["Error",false,"Couldn't load directory", "This directory seems to no longer exist. It might have been moved, or a parent directory been renamed","TASKID",""])
+                jsc.runLauncher("./apps/system_popup/popup_lau.js",{name:"Error",type:false,title:"Couldn't load directory", description:"This directory seems to no longer exist. It might have been moved, or a parent directory been renamed",taskid:"TASKID",icon:""})
 
                 mem.explorerInit("", "TASKID")
             }
@@ -355,10 +355,10 @@ mem.new = function(e, _this, Type, name){
 
     let iconArray = mem.iconArray
 
-    let typeDefaults = filetypeDefaults(Type)
+    let typeDefaults = File.typeDefaults(Type)
 
     function createExplorerFile(name) {
-		if(!iconNameExists(name, null, editFrom)) {
+		if(!jsc.iconNameExists(name, null, editFrom)) {
             let newFileIcon = new Icon (
                 {
                     imag : typeDefaults.iconImag,
@@ -384,7 +384,7 @@ mem.new = function(e, _this, Type, name){
 	}
     
     let newFileIcon = createExplorerFile(name)
-    //mem.createExplorerIcons([at(newFileIcon.file)])
+    //mem.createExplorerIcons([File.at(newFileIcon.file)])
     let createdIcon = mem.iconArray[mem.iconArray.length - 1]
     iconRename(e, createdIcon)
 }

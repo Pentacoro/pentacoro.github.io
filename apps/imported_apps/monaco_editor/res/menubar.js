@@ -1,4 +1,4 @@
-let task = system.mem.task("TASKID")
+let task = Task.id("TASKID")
 let mem  = task.mem
 
 mem.menubar = {}
@@ -17,7 +17,7 @@ mem.menubar.contextOptions = function (button) {
                     {section:"file", name:"New",icon:"url('')",func: () => {return}},
                     {section:"file", name:"New Window",icon:"url('')",func: () => {return}},
                     {section:"file", name:"Open...",icon:"url('')",func: () => {return} },
-                    {section:"file", name:"Save",icon:"url('')",func: () => at(mem.fileAddress).data = document.getElementById("ID_TASKID.textarea").value },
+                    {section:"file", name:"Save",icon:"url('')",func: () => File.at(mem.fileAddress).data = document.getElementById("ID_TASKID.textarea").value },
                     {section:"file", name:"Save As...",icon:"url('')",func: () => {return} },
                     {section:"exit", name:"Exit",icon:"url('')",func: () => {return} },
                 ]
@@ -93,7 +93,7 @@ mem.menubar.contextOptions = function (button) {
             }
     }
 }
-await loadComponent({
+await jsc.displayComponent({
     url:"/apps/system/components/menubar/menubar.html",
     taskid:task.id,
     container:document.getElementsByClassName("component_menubar ID_TASKID")[0]

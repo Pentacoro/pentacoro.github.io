@@ -6,8 +6,6 @@
 body {
 	font-family: "Gotham", "Helvetica Neue", Helvetica, Arial, "sans-serif";
 	font-size: 12px;
-	
-	background: #444444 url("../assets/norrum/Desktop/fondoB.png") no-repeat fixed center center / cover;
 
 	position: fixed;
 	width: 100%;
@@ -21,6 +19,8 @@ body {
 	display: block;
 	position: relative;
 	z-index: -998;
+
+	background: #444444 url("../assets/norrum/Desktop/fondoB.png") no-repeat fixed center center / cover;
 
 	overflow: auto;
 }

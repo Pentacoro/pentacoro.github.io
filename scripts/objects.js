@@ -1,6 +1,88 @@
 class File {
+    static at(addr = "") {
+        //string: where we'll devour addr one dir at a time as we build expression
+        let string = addr
+        //steps: where we'll store each of the dirs extracted from string (useless for now)
+        let steps = []
+        //expression: where we'll build the object reference from the core to later be eval()
+        let expression = "core"
+        
+        //find first "/"
+        let to = string.indexOf("/")
+    
+        iterate(to)
+    
+        function iterate(to){
+            if (to > 0) { //if "/" is not the first char
+                let nextDir = string.splice(0, to)[1] //get clean dir name
+    
+                string = string.splice(0, to - 1)[0] //repeat splice for return
+                string = string.splice(0,1)[0] //razor out "/"
+    
+                steps.push(nextDir)
+    
+                expression += ".cont[\""+nextDir+"\"]"
+    
+                if (string.length > 0) {
+                    to = string.indexOf("/")
+                    iterate(to)
+                } else { 
+                    return expression 
+                }
+    
+            } else if (to == 0) { //if "/" is the first char
+                string = string.splice(0,1)[0] //razor out "/"
+                if (string.length > 0) {
+                    to = string.indexOf("/")
+                    iterate(to)
+                } else { 
+                    return expression 
+                }
+    
+            } else if (to < 0){ //if there's no "/" char
+                if (string.length > 0) {
+                    expression += ".cont[\""+string+"\"]"
+                    steps.push(string)
+                    return expression
+                } else if (string === ""){ 
+                    return expression 
+                }
+    
+            }
+        }
+    
+        return eval(expression)
+    }
+
+    static typeDefaults(Type) {
+        let defaults = {
+            iconImag : null,
+            confType : null,
+            skeyName : null,
+        }
+        
+        switch (Type) {
+            case Directory:
+                defaults.iconImag = "assets/svg/desktopIcons/defaultDIR.svg"
+                defaults.confType = "Directory"
+                defaults.skeyName = "cont"
+                break
+            case Metafile: 
+                defaults.iconImag = "assets/svg/desktopIcons/defaultMSF.svg"
+                defaults.confType = "Metafile"
+                defaults.skeyName = "meta"
+                break
+            case JsString:
+                defaults.iconImag = "assets/svg/desktopIcons/defaultTXT.svg"
+                defaults.confType = "JsString"
+                defaults.skeyName = "data"
+        }
+    
+        return defaults
+    }
+
     delete() {
-        let parent = at(this.conf.from)
+        let parent = File.at(this.conf.from)
         let child = this
 
         delete parent.cont[child.name]
@@ -10,7 +92,7 @@ class File {
         
     }
     rename(rename) {
-        let parent  = at(this.conf.from)
+        let parent  = File.at(this.conf.from)
         let newAddress = "" + parent.conf.icon.file + "/" + rename
         let oldAddress = this.conf.icon.file
 
@@ -28,7 +110,7 @@ class File {
             }
         }
 
-        renameKey(parent.cont, this.name, rename)
+        jsc.renameKey(parent.cont, this.name, rename)
         let renamedFile = parent.cont[rename]
         let extension = (this.conf.type==="Directory") ? "dir" : (rename.match(/\.(?:.(?<!\.))+$/s)!=null) ? rename.match(/(?:.(?<!\.))+$/s)[0] : ""
         renamedFile.name = rename
@@ -37,16 +119,16 @@ class File {
     }
 
     render(taskid=null) {
-        if (at(this.conf.from) === sys.vertex) { //if is on current vertex / render on desktop
+        if (File.at(this.conf.from) === plexos.vtx) { //if is on current vertex / render on desktop
             this.conf.icon.createNode()
         }
         if (taskid) { //if is on any other directory / render on explorer
-            system.mem.task(taskid).mem.createExplorerIcons([this])
+            Task.id(taskid).mem.createExplorerIcons([this])
         }
     }
 
     open() {
-        loadAPP(cfg.apps[this.conf.exte], {name:this.name, addr:this.conf.addr}, system.mem.var.envfocus)
+        jsc.runLauncher(cfg.apps[this.conf.exte], {name:this.name, addr:this.conf.addr}, system.mem.var.envfocus)
     }
 }
 
@@ -94,39 +176,3 @@ class JsString extends File {
         this.data = p.data || ""
     }
 }
-
-function filetypeDefaults(Type) {
-    let defaults = {
-        iconImag : null,
-        confType : null,
-        skeyName : null,
-    }
-    
-    switch (Type) {
-        case Directory:
-            defaults.iconImag = "assets/svg/desktopIcons/defaultDIR.svg"
-            defaults.confType = "Directory"
-            defaults.skeyName = "cont"
-            break
-        case Metafile: 
-            defaults.iconImag = "assets/svg/desktopIcons/defaultMSF.svg"
-            defaults.confType = "Metafile"
-            defaults.skeyName = "meta"
-            break
-        case JsString:
-            defaults.iconImag = "assets/svg/desktopIcons/defaultTXT.svg"
-            defaults.confType = "JsString"
-            defaults.skeyName = "data"
-    }
-
-    return defaults
-}
-
-/*
-sys.wndwArr.push(new Window ("Settings", "settingsExe", true, true, 3, 1, 300, 300, 500, 500));
-sys.wndwArr.push(new Window ("Settings", "settingsExe", true, true, 3, 1, 420, 420, 500, 500));
-sys.wndwArr.push(new Window ("Explorer ONE", "explorerExe", true, true, 3, 1, 420, 420, 500, 500));
-sys.wndwArr.push(new Window ("Explorer TWO", "explorerExe", true, true, 3, 1, 420, 420, 500, 500));
-*/
-
-//------------------------------------------------------------------------------------------------------------//

@@ -1,4 +1,4 @@
-let task = system.mem.task("TASKID")
+let task = Task.id("TASKID")
 let mem = task.mem
 
 task.apps = ""
@@ -39,6 +39,6 @@ require(["vs/editor/editor.main"], function () {
 		task.node.getElementsByClassName("editor ID_TASKID")[0]?.getElementsByClassName("view-overlays focused")[0]?.classList.remove("focused")
 	}
 })
-system.mem.task("TASKID").appEnd = e => {
+Task.id("TASKID").appEnd = e => {
 	mem.editor.dispose()
 }

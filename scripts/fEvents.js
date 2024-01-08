@@ -2,7 +2,7 @@
 
 const eventOnFocus = new Event ("dofocus")
 
-const eventUnFocus = new Event ("blur")
+const eventUnFocus = new Event ("doblur")
 
 const eventMenuOpen = new Event ("openmenu")
 
