@@ -107,8 +107,8 @@ desktop.mem.grid.evaluateIconGrid = function (
         //if the grid app is open update graph
         if (document.getElementsByClassName("grid_graph")) {
             if (document.getElementsByClassName("grid_graph")[0]) {
-                if (cfg.desktop.grid.autoHmargin) document.getElementsByClassName("grid_graph")[0].children[4].innerText = parseFloat(cfg.desktop.grid.modHmargin).toFixed(2)
-                if (cfg.desktop.grid.autoVmargin) document.getElementsByClassName("grid_graph")[0].children[5].innerText = parseFloat(cfg.desktop.grid.modVmargin).toFixed(2)
+                if (cfg.desktop.grid.autoHmargin) document.getElementsByClassName("grid_graph")[0].children[4].innerText = parseFloFile.at(cfg.desktop.grid.modHmargin).toFixed(2)
+                if (cfg.desktop.grid.autoVmargin) document.getElementsByClassName("grid_graph")[0].children[5].innerText = parseFloFile.at(cfg.desktop.grid.modVmargin).toFixed(2)
             }
         }
         
@@ -396,8 +396,8 @@ desktop.mem.grid.evaluateIconGrid = function (
             })
         }
 
-        if (openInstance("Settings")) {
-            let task = openInstance("Settings")
+        if (Task.openInstance("Settings")) {
+            let task = Task.openInstance("Settings")
             if (task.mem.UpdateGraph2) task.mem.UpdateGraph2()
             
             if (document.getElementsByClassName(task.id+".grid_graph")[1]) {

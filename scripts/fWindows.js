@@ -1,8 +1,8 @@
-//javascript.js
-//f.js
-//system.js
-//fTasks.js
-//fDesktop.js
+//javascript.plexos.js
+//f.plexos.js
+//system.plexos.js
+//fTasks.plexos.js
+//fDesktop.plexos.js
 
 class Window {
 	stat = 1
@@ -10,6 +10,11 @@ class Window {
 	posX = 200
 	posY = 200
     constructor(p){
+		if (!p.task) {
+			delete this
+			return
+		}
+
         this.stat = p.stat || this.stat // 0 => minimized | 1/2 => open/selected | 3/4 => maximized/selected
         this.uiux = p.uiux || this.uiux // 0 => no button | 1 =>   only X button | 2 => X and minimize buttons | 3 => X, minimize and maximize buttons
         this.posX = p.posX || this.posX
@@ -24,11 +29,17 @@ class Window {
         
         this.name = p.name
         this.resi = p.resi
+
+		plexos.Windows.push(this)
+		this.createNode()
+
+		Task.id(this.task).wndw = this 
+		Task.id(this.task).node = this.cont
     }
     createNode(){
 		let newWindow = document.createElement("div")
 		newWindow.setAttribute("class", "window ID_"+this.task)
-		newWindow.setAttribute("id", "window_" + sys.wndwArr.indexOf(this))
+		newWindow.setAttribute("id", "window_" + plexos.Windows.indexOf(this))
 	
 		let newWindowInner = document.createElement("div")
 		newWindowInner.setAttribute("class", "windowInner")
@@ -109,10 +120,9 @@ class Window {
 				newWindowBorder.appendChild(newWindowCbl)
 			}
 	
-	
 		document.getElementById("windowLayer").appendChild(newWindow)
 
-		system.mem.focus(system.mem.task(this.task))
+		system.mem.focus(Task.id(this.task))
 		
 		//Getting minimum size to apply to the content,
 		//instead of the window node, by comparing the 
@@ -134,25 +144,22 @@ class Window {
 									"min-height:"+this.minH+"px;"+
 									"z-index: 0;");
 	
-		for (i = 0; i < document.getElementsByClassName("windowButton").length; i++){
-			let windowButton = document.getElementsByClassName("windowButton")[i]
-			windowButton.onmousedown = () => {windowButtonClick(windowButton)}
-		}
-		function windowButtonClick(button){
-			button.classList.add("mousedown")
-			window.onmouseup = () => {
-				button.classList.remove("mousedown")
-				window.onmouseup = null
+		for (let button of newWindow.getElementsByClassName("windowButton")){
+			button.onmousedown = e => {
+				button.classList.add("mousedown")
+				window.onmouseup = e => {
+					button.classList.remove("mousedown")
+					window.onmouseup = null
+				}
 			}
-			switch (button.classList[1]) {
-				case "_": //console.log("_"); break;
-				case "O": //console.log("O"); break;
-				case "X": //console.log("X"); break;
-			}
+			button.onclick = e => {
+				switch (button.classList[1]) {
+					case "_": //console.log("_"); break;
+					case "O": //console.log("O"); break;
+					case "X": Task.id(this.task).end(); break;
+				}
+			}	
 		}
-
-		//X button
-		document.getElementsByClassName("ID_"+this.task)[0].children[0].children[0].getElementsByClassName("X")[0].addEventListener("mouseup", e => system.mem.task(this.task).end())
 		
 		this.node = newWindow
 		this.cont = newContent
@@ -166,13 +173,13 @@ class Window {
     }
     deleteNode(){
 		//delete window
-		let thisIndex = sys.wndwArr.indexOf(this)
-		sys.wndwArr.splice(thisIndex, 1)
+		let thisIndex = plexos.Windows.indexOf(this)
+		plexos.Windows.splice(thisIndex, 1)
 
 		//if the window was focused, shift focus behind it
 		if (thisIndex === 0) {
-			if (sys.wndwArr.length > 0) {
-				system.mem.focus(system.mem.task(sys.wndwArr[0].task))
+			if (plexos.Windows.length > 0) {
+				system.mem.focus(Task.id(plexos.Windows[0].task))
 			} else {
 				system.mem.focus(desktop)
 			}
@@ -195,9 +202,9 @@ class Window {
 		//if window isn't at front already
 		if (this.node.id != "window_" + 0) {
 			//send to first array index
-			let thisIndex = sys.wndwArr.indexOf(this)
-			sys.wndwArr.splice(thisIndex, 1)
-			sys.wndwArr.unshift(this)
+			let thisIndex = plexos.Windows.indexOf(this)
+			plexos.Windows.splice(thisIndex, 1)
+			plexos.Windows.unshift(this)
 
 			//make DOM elements's IDs and zIndex match new object arrangement
 			for(let wndw of document.getElementsByClassName("window")){ 
@@ -217,7 +224,7 @@ class Window {
 			
 				Let's say this is our list of window HTML elements, represented as an array whose 
 			indexes stand for their ID number, as well as match their associated object's index
-			within the sys.wndwArr:
+			within the plexos.Windows:
 
 				[0][1][2][3][4][5] 
 				
@@ -261,13 +268,13 @@ class Window {
 			//if present, the header is where you move the window from:
 			wndw.getElementsByClassName("header")[0].onmousedown = dragMouseDown
 			wndw.onmousedown = e => {
-				system.mem.focus(system.mem.task(this.task))
+				system.mem.focus(Task.id(this.task))
 				this.statNode()
 			}
 		} else {
 			//otherwise, move the window from anywhere inside the DIV:
 			wndw.onmousedown = e => {
-				system.mem.focus(system.mem.task(this.task))
+				system.mem.focus(Task.id(this.task))
 				dragMouseDown
 			}
 		}
@@ -285,7 +292,7 @@ class Window {
 	
 				document.onmouseup = closeDragWindow
 				document.onmousemove = windowDrag
-				iframeAntiHover (true)
+				jsc.iframeAntiHover(true)
 			}
 		}
 		
@@ -309,7 +316,7 @@ class Window {
 			//stop moving when mouse button is released:
 			document.onmouseup = null
 			document.onmousemove = null
-			iframeAntiHover (false)
+			jsc.iframeAntiHover(false)
 		}
     }
     size(){
@@ -346,7 +353,7 @@ class Window {
 			
 			document.onmouseup = stopResize
 			document.onmousemove = doResize
-			iframeAntiHover (true)
+			jsc.iframeAntiHover(true)
 		}
 		
 		function doResize(e) {
@@ -402,7 +409,7 @@ class Window {
 		function stopResize() {
 			document.onmouseup = null
 			document.onmousemove = null
-			iframeAntiHover (false)
+			jsc.iframeAntiHover(false)
 		}
     }
 	focus(bool){

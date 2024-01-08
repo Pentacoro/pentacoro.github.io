@@ -29,7 +29,7 @@ for (option of document.getElementsByClassName("optionValue")){
     option.parentElement.children[2].children[0].onclick = (e) => mem.editContent(e.target.parentElement.parentElement);
 }
 
-let mem  = system.mem.task("TASKID").mem
+let mem  = Task.id("TASKID").mem
 mem.apps = "exp"
 mem.var = {}
 
@@ -39,7 +39,7 @@ mem.editContent = function(option){
     value.setAttribute("contenteditable", "true");
     value.setAttribute("spellcheck", "false");
 
-    selectText(value)
+    jsc.selectText(value)
 
     button.children[0].classList.add("hidden");
     button.children[1].classList.remove("hidden");
@@ -237,7 +237,7 @@ mem.var.graph2images =
     "./assets/deskIconGridGraph2/deskIconGridGraph2_03-3.svg",
 ]
 for (image of mem.var.graph2images){
-    preloadImage(image);
+    jsc.preloadImage(image);
 }
 
 //set values to graph html
@@ -252,8 +252,8 @@ mem.UpdateGraph = function(){
     mem.var.vMarginHTML.innerText = cfg.desktop.grid.vMargin
 }
 mem.UpdateGraphAuto = function(arg = null, which = 2){
-    if (which == 0 || which == 2)document.getElementsByClassName("ID_TASKID grid_graph")[0].children[4].innerText = (cfg.desktop.grid.modHmargin != 0 || arg) ? parseFloat(cfg.desktop.grid.modHmargin).toFixed(2) : "";
-    if (which == 1 || which == 2)document.getElementsByClassName("ID_TASKID grid_graph")[0].children[5].innerText = (cfg.desktop.grid.modVmargin != 0 || arg) ? parseFloat(cfg.desktop.grid.modVmargin).toFixed(2) : "";
+    if (which == 0 || which == 2)document.getElementsByClassName("ID_TASKID grid_graph")[0].children[4].innerText = (cfg.desktop.grid.modHmargin != 0 || arg) ? parseFloFile.at(cfg.desktop.grid.modHmargin).toFixed(2) : "";
+    if (which == 1 || which == 2)document.getElementsByClassName("ID_TASKID grid_graph")[0].children[5].innerText = (cfg.desktop.grid.modVmargin != 0 || arg) ? parseFloFile.at(cfg.desktop.grid.modVmargin).toFixed(2) : "";
 }
 mem.UpdateGraph2 = function(num = false){
     document.getElementsByClassName("ID_TASKID grid_graph")[1].children[0].children[0].innerText = cfg.desktop.grid.hLength;

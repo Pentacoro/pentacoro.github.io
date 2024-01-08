@@ -1,4 +1,4 @@
-const ajax = function(method, url, callback = null, arg = null){
+jsc.ajax = function(method, url, callback = null, arg = null){
     let xhr = new XMLHttpRequest;
     xhr.open(method,url)
     xhr.onload = () => {
@@ -13,7 +13,7 @@ const ajax = function(method, url, callback = null, arg = null){
     xhr.send();
 }
 
-const ajaxReturn = function(method, url) {
+jsc.ajaxReturn = function(method, url) {
     return new Promise((resolve, reject) => {
         let xhr = new XMLHttpRequest
         xhr.open(method, url)
@@ -39,21 +39,40 @@ const ajaxReturn = function(method, url) {
     })
 }
 
-const genRanHex = size => [...Array(size)].map(() => Math.floor(Math.random() * 16).toString(16)).join('');
+jsc.genRanHex = size => [...Array(size)].map(() => Math.floor(Math.random() * 16).toString(16)).join('');
 
-const loadComponent = async function({url, taskid, container}){
-    let data = await ajaxReturn("get", url)
-    await loadURL({
-        url:url,
-        taskid:taskid,
-        data:data,
-        container:container
+jsc.displayComponent = async function({url, taskid, container, replacementPairs, env}){
+    let appHTML = jsc.ajaxReturn("get", url)
+    await appHTML.then( async data => {
+        await jsc.loadFront({
+            url:url,
+            taskid:taskid,
+            data:data,
+            container:container,
+            replacementPairs:replacementPairs,
+            env:env,
+        })
+    })
+    await appHTML.catch( e => {
+        system.mem.var.error = e
+        system.mem.var.errorB = [["Okay"]]
+        jsc.runLauncher("./apps/system_popup/popup_lau.js",
+            {
+                name:e.status,
+                type:false,
+                title:"Component: " + e.statusText, 
+                description:"Couldn't load component at: <i>'" + e.statusUrl + "'</i>",
+                taskid:system.id,
+                icon:""
+            }
+        )
+        Task.id(id).end()
     })
 }
-const loadURL = async function({url, taskid, data, replacementPairs = [], container, env = null}){
-    data = repDir(data,url)
-    data = repTid(data,taskid)
-    if (replacementPairs.length > 0) data = repArr(data,replacementPairs)
+jsc.loadFront = async function({url, taskid, data, replacementPairs = [], container, env = null}){
+    data = jsc.repDir(data,url)
+    data = jsc.repTid(data,taskid)
+    if (replacementPairs.length > 0) data = jsc.repArr(data,replacementPairs)
     async function stylizeData(data) {
         return new Promise (async (resolve, reject) => {
             let promiseStyleArray = []
@@ -65,7 +84,7 @@ const loadURL = async function({url, taskid, data, replacementPairs = [], contai
                 return new Promise (async (resolve, reject) => {
                     if (link.getAttribute("rel")=="stylesheet") {
                         link.remove()
-                        let stylesheet = await ajaxReturn("get", link.getAttribute("href"))
+                        let stylesheet = await jsc.ajaxReturn("get", link.getAttribute("href"))
                         resolve("/*" + link.getAttribute("href") + "*/" + stylesheet)
                     } 
                 })
@@ -85,9 +104,9 @@ const loadURL = async function({url, taskid, data, replacementPairs = [], contai
             //newStyleElement.classList.add("ID_"+taskid)
             //document.head.appendChild(newStyleElement)
             for(let css of styleContents) {
-                css = repTid(css,taskid)
-                css = repDir(css,url)
-                if (replacementPairs) css = repArr(css, replacementPairs)
+                css = jsc.repTid(css,taskid)
+                css = jsc.repDir(css,url)
+                if (replacementPairs) css = jsc.repArr(css, replacementPairs)
                 cont.getElementsByTagName("style")[0].innerHTML = cont.getElementsByTagName("style")[0].innerText + css
                 //newStyleElement.innerHTML = cont.getElementsByTagName("style")[0].innerText
             }
@@ -106,18 +125,18 @@ const loadURL = async function({url, taskid, data, replacementPairs = [], contai
                         js = script.innerText
                         if (!script.classList.contains("imported")) {
                             imported = false
-                            js = repDir(js,url)
-                            js = repTid(js,taskid)
-                            js = repArr(js,replacementPairs)
+                            js = jsc.repDir(js,url)
+                            js = jsc.repTid(js,taskid)
+                            js = jsc.repArr(js,replacementPairs)
                         }
                         //await eval("const runScript = async function(){return new Promise (async (resolve, reject)=>{\n"+js+"\nresolve()})}; runScript();console.log('wow')")
                     } else if (script.getAttribute("src")) {
-                        js = await ajaxReturn("get", script.getAttribute("src"))
+                        js = await jsc.ajaxReturn("get", script.getAttribute("src"))
                         if (!script.classList.contains("imported")) {
                             imported = false
-                            js = repDir(js,url)
-                            js = repTid(js,taskid)
-                            js = repArr(js,replacementPairs)
+                            js = jsc.repDir(js,url)
+                            js = jsc.repTid(js,taskid)
+                            js = jsc.repArr(js,replacementPairs)
                         }
                         //await eval("const runScript = async function(){return new Promise (async (resolve, reject)=>{\n"+js+"\nresolve()})}; runScript();console.log('wow')")
                     }
@@ -135,20 +154,20 @@ const loadURL = async function({url, taskid, data, replacementPairs = [], contai
                 let count = 0
                 try {
                     if (!imported) {
-                        await eval("const runScript = async function(){return new Promise (async (resolve, reject)=>{"+js+";resolve('wow')})}; runScript();")
+                        await eval("const runScript = async function(){return new Promise (async (resolve, reject)=>{"+js+";resolve()})}; runScript();")
                     } else {
                         await eval(js)
                     }
-                    if (system.mem.task(taskid)) system.mem.focus(system.mem.task(taskid))
+                    if (Task.id(taskid)) system.mem.focus(Task.id(taskid))
                 } catch (e) {
                     e.taskId = taskid
-                    evalErrorPopup
+                    jsc.evalErrorPopup
                     (
                         js,
-                        "The script number <i>"+count+"</i> from the <i>"+system.mem.task(taskid).name+"</i> application failed evaluation.",
+                        "The script number <i>"+count+"</i> from the <i>"+Task.id(taskid).name+"</i> application failed evaluation.",
                         e
                     )
-                    if (system.mem.task(taskid)) system.mem.task(taskid).end()
+                    if (Task.id(taskid)) Task.id(taskid).end()
                 } finally {
                     count++
                 }
@@ -166,19 +185,24 @@ const loadURL = async function({url, taskid, data, replacementPairs = [], contai
     container.style.opacity = 1
     if (env) env.loader(false)
 }
-const loadAPP = async function(url, args = {}, env = null){
+jsc.runLauncher = async function(url, args = {}, env = null, name = ""){
+    if (!Task.canInstance(name)) {
+        system.mem.focus(Task.openInstance(name))
+        return
+    }
+
     //add to env workload
     if (env) env.loader(true)
 
     //generate task id
-    let appID = { id : genRanHex(16)}
-    checkUniqueID(appID)
+    let appID = { id : jsc.genRanHex(16)}
+    Task.checkUniqueID(appID)
 
     //place arguments on system task
     system.mem.lau[appID.id] = args
 
     //get _lau file
-    let appLauncher = ajaxReturn("get", url)
+    let appLauncher = jsc.ajaxReturn("get", url)
 
     appLauncher.then( oData => {
         nData = oData.replace("let params = {}", "let params = system.mem.lau['"+appID.id+"']")
@@ -188,10 +212,10 @@ const loadAPP = async function(url, args = {}, env = null){
         document.getElementById("appLauncher").innerHTML = "<script>"+nData+"</script>"
         
         try {
-            eval(nData)
+            eval("const runScript = async function(){return new Promise (async (resolve, reject)=>{"+nData+";resolve()})}; runScript();")
             if (env) env.loader(false)
         } catch (e) {
-            evalErrorPopup
+            jsc.evalErrorPopup
             (
                 nData,
                 "The application launcher at: <i>'" + url + "'</i> failed evaluation.",
@@ -203,7 +227,7 @@ const loadAPP = async function(url, args = {}, env = null){
         system.mem.var.error = e
         system.mem.var.errorB = [["Okay"]]
         
-        loadAPP("./apps/system_popup/popup_lau.js",
+        jsc.runLauncher("./apps/system_popup/popup_lau.js",
             {
                 name:e.status,
                 type:false,
@@ -219,7 +243,7 @@ const loadAPP = async function(url, args = {}, env = null){
     })
 }
 
-function evalErrorPopup(code, desc, err) {
+jsc.evalErrorPopup = function(code, desc, err) {
     //find and color-code the problematic line
     let coder = ""
     coder = code.replace(/[<]/g, "&lt;")
@@ -236,7 +260,7 @@ function evalErrorPopup(code, desc, err) {
     //add it to typeError stack
     err.script = colour
     system.mem.var.error = err
-    loadAPP("./apps/system_popup/popup_lau.js",
+    jsc.runLauncher("./apps/system_popup/popup_lau.js",
         {
             name:"Error",
             type:true,
@@ -269,7 +293,7 @@ Array.prototype.remove = function(value) {
     return newArr
 }
 
-function renameKey(obj, oldName, newName) {
+jsc.renameKey = function (obj, oldName, newName) {
     if(!obj.hasOwnProperty(oldName)) {
         return false;
     }
@@ -279,29 +303,28 @@ function renameKey(obj, oldName, newName) {
     return true;
 }
 
-function repDir(data, parDir){ //replace asset directory for local apps
-    let newData = data.replace(/\.\/assets/g, parDir.substr(0, parDir.lastIndexOf("/")) + "/assets");
-    newData     = newData.replace(/\.\/res/g, parDir.substr(0, parDir.lastIndexOf("/")) + "/res");
-    return newData;
+jsc.repDir = function (data, parDir){ //replace asset directory for local apps
+    let newData = data.replace(/\.\//g, parDir.substr(0, parDir.lastIndexOf("/")) + "/")
+    return newData
 }
-function repTid(data, taskId){ //place the task id on element classList for apps that allow multiple windows
-    let newData = data.replace(/TASKID/g, taskId);
-    return newData;
+jsc.repTid = function (data, taskId){ //place the task id on element classList for apps that allow multiple windows
+    let newData = data.replace(/TASKID/g, taskId)
+    return newData
 }
-function repArr(data, replacementPairs) { //replace all required instances listed as regex and text pairs
+jsc.repArr = function (data, replacementPairs) { //replace all required instances listed as regex and text pairs
     let newData = data
     for (pair of replacementPairs) {
         newData = newData.replace(pair.regex,pair.text)
     }
-    return newData;
+    return newData
 }
 
-function preloadImage(url){
+jsc.preloadImage = function(url){
     let img=new Image()
     img.src=url
 }
 
-function getValue(key) {
+jsc.getValue = function(key) {
     let value = null 
     let pairs = []
     let items = location.search.substr(1).split("&")
@@ -312,7 +335,7 @@ function getValue(key) {
     return value
 }
 
-function wait(ms){
+jsc.wait = function (ms){
     let start = new Date().getTime()
     let end = start
     while(end < start + ms) {
@@ -320,25 +343,25 @@ function wait(ms){
     }
 }
 
-function iframeAntiHover (coin) {
+jsc.iframeAntiHover = function (bool) {
     let tagIframe = document.getElementsByTagName("iframe")
 
     for (i = 0; i < tagIframe.length; i++) {
-        if (coin == true) {
+        if (bool == true) {
             tagIframe[i].className += "antiHover"
         }
-        if (coin == false) {
+        if (bool == false) {
             tagIframe[i].classList.remove("antiHover")
         }
     }
 }
 
-function selectRange(range) {
+jsc.selectRange = function (range) {
     const selection = window.getSelection()
     selection.removeAllRanges()
     selection.addRange(range)
 }
-function selectText(node,from=null,to=null) {
+jsc.selectText = function (node,from=null,to=null) {
     if (window.getSelection) {
         const selection = window.getSelection()
         const range = document.createRange()
@@ -358,12 +381,12 @@ function selectText(node,from=null,to=null) {
     }
 }
 
-function clearSelection(){
+jsc.clearSelection = function () {
     if (window.getSelection) {window.getSelection().removeAllRanges()}
     else if (document.selection) {document.selection.empty()}
 }
 
-function getFavicon(dom){
+jsc.getFavicon = function (dom) {
     let favicon = null
     let nodeList = dom.getElementsByTagName("link")
     for (let i = 0; i < nodeList.length; i++)
@@ -376,8 +399,7 @@ function getFavicon(dom){
     return favicon
 }
 
-//-----------------------------------------------------------------|
-function areRectanglesOverlap(div1, div2) {
+jsc.areRectanglesOverlap = function (div1, div2) {
 	let x1 = div1.offsetLeft;
 	let y1 = div1.offsetTop;
 	let h1 = y1 + div1.offsetHeight;
@@ -391,6 +413,6 @@ function areRectanglesOverlap(div1, div2) {
 	if (h1 < y2 || y1 > h2 || w1 < x2 || x1 > w2) return false;
 	return true;
 }
-//-----------------------------------------------------------------|
+
 
 //document.onselectionchange = () => {console.log("New selection made");selection = document.getSelection();console.log(selection);};

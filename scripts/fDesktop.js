@@ -19,7 +19,6 @@ const desktop = new Task(
 		from : "sys"
 	}
 )
-sys.taskArr.push(desktop)
 
 desktop.mem.iconArr = []
 
@@ -66,7 +65,7 @@ desktop.mem.iconArr = []
 				{section:"view", name:"Grid",icon:"url('assets/svg/contextMenu/grid2.svg')",func:[
 					{name:"Auto Length",icon:"url('assets/svg/contextMenu/autogrid.svg')",func:() => desktop.mem.grid.autoLength()},
 					{name:"Auto Margin",icon:"url('assets/svg/contextMenu/automargin.svg')",func:() => desktop.mem.grid.autoMargin()},
-					{name:"Grid Settings",icon:"url('assets/svg/contextMenu/gridsettings.svg')",func:() => loadAPP("./apps/settings_deskGrid/deskGridOptions_lau.js",[],envfocus)},
+					{name:"Grid Settings",icon:"url('assets/svg/contextMenu/gridsettings.svg')",func:() => jsc.runLauncher("./apps/settings_deskGrid/deskGridOptions_lau.js",[],envfocus)},
 				]},
 				{section:"view", name:"Refresh",icon:"url('assets/svg/contextMenu/refresh.svg')",func: () => desktop.mem.refresh},
 				{section:"file", name:"New",icon:"url('assets/svg/contextMenu/new2.svg')",func:[
@@ -110,7 +109,7 @@ desktop.mem.selectBox = function() {
 		selectBox.style.top = posyIn + "px"
 		selectBox.style.left = posxIn + "px"
 
-		iframeAntiHover (true)
+		jsc.iframeAntiHover(true)
 		document.onmouseup = selectBoxRelease
 		document.onmousemove = selectBoxSizing
 	}
@@ -145,7 +144,7 @@ desktop.mem.selectBox = function() {
 		//iconReaction--------------------------------------------------|
 		for (icon of desktop.mem.iconArr){
 			if (icon.node != null) { /*otherwise callback argument ruins everything*/
-				if (areRectanglesOverlap(icon.node,selectBox)) {
+				if (jsc.areRectanglesOverlap(icon.node,selectBox)) {
 					//light up colliding icon hover border:
 					highlight(icon.node)
 				} else {
@@ -158,7 +157,7 @@ desktop.mem.selectBox = function() {
 	}
 	
 	function selectBoxRelease() {
-		iframeAntiHover (false)
+		jsc.iframeAntiHover(false)
 		document.onmouseup = null
 		document.onmousemove = null
 
@@ -166,7 +165,7 @@ desktop.mem.selectBox = function() {
 		
 		for (icon of desktop.mem.iconArr){
 			if (icon.node != null) { /*otherwise callback argument ruins everything*/
-				if (areRectanglesOverlap(icon.node, selectBox) && icon.stat === 0) {
+				if (jsc.areRectanglesOverlap(icon.node, selectBox) && icon.stat === 0) {
 					desktop.pocket.push(icon)
 					icon.statNode(1)
 				} else if (wasCtrl == false) {
@@ -187,7 +186,7 @@ desktop.mem.selectBox = function() {
 //desktop methods
 
 desktop.mem.renderIcons = function() {
-	for (file of Object.entries(sys.vertex.cont)) {
+	for (file of Object.entries(plexos.vtx.cont)) {
 		file[1].render()
 	}
 }
@@ -198,7 +197,7 @@ desktop.mem.refresh = function() {
 		icon.deleteNode()
 	}
 
-	for (file of Object.entries(sys.vertex.cont)) {
+	for (file of Object.entries(plexos.vtx.cont)) {
 		file[1].render()
 	}
 }
@@ -219,7 +218,7 @@ desktop.mem.new = function(e, _this, Type, name){
 	let initialY = parseInt(window.getComputedStyle(document.getElementsByClassName("clickContext sub_0")[0],null).getPropertyValue("top"))
 
 	let editFile = null
-	let editFrom = sys.vertex
+	let editFrom = plexos.vtx
 
 	let iconWidth = cfg.desktop.grid.width/2
 	let iconHeight = cfg.desktop.grid.height/2
@@ -229,10 +228,10 @@ desktop.mem.new = function(e, _this, Type, name){
 	let iconPosX = (Math.round((initialX-iconWidth)/(w + wm))*(w + wm) + wm)
 	let iconPosY = (Math.round((initialY-iconHeight)/(h + hm))*(h + hm) + hm)
 	//--------------------------------------------------------------|
-	let typeDefaults = filetypeDefaults(Type)
+	let typeDefaults = File.typeDefaults(Type)
 
 	function createDesktopFile(name) {
-		if(!iconNameExists(name, null, editFrom)) {
+		if(!jsc.iconNameExists(name, null, editFrom)) {
 			let newFileIcon = new Icon (
 				{
 					imag : typeDefaults.iconImag,

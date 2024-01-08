@@ -1,4 +1,38 @@
 class Task {
+    static checkUniqueID(task){
+        for (let i = 0; i < plexos.Tasks.length; i++){
+            if (plexos.Tasks[i].id == task.id && plexos.Tasks[i] != task){
+                task.id = jsc.genRanHex(16)
+                Task.checkUniqueID(task)
+            }
+        }
+    }
+    static canInstance(appName){
+        for (let i = 0; i < plexos.Tasks.length; i++){
+            if (plexos.Tasks[i].inst === false && plexos.Tasks[i].name === appName) return false
+        }
+        return true
+    }
+    static openInstance(appName){
+        for (i = 0; i < plexos.Tasks.length; i++){
+            if (plexos.Tasks[i].name === appName) return plexos.Tasks[i]
+        }
+        return null
+    }
+    static endTask(id) {
+        Task.id(id).end()
+    }
+    static deleteSelectedNodes(pocket){
+        for(icon of pocket){
+            icon.deleteNode()
+            //delete from filesystem
+            if(File.at(icon.file)!=undefined) File.at(icon.file).delete()
+        }
+    }
+    static id(id){
+        let find = plexos.Tasks.filter(task => task.id === id)
+        return find[0]
+    }
     appEnd = null 
     name = null
     inst = null
@@ -6,6 +40,13 @@ class Task {
     from = null 
     id = null
     constructor(p) {
+        //check if instance allowed
+        if (!Task.canInstance(p.name)) {
+            system.mem.focus(Task.openInstance(p.name))
+            delete this
+            return
+        }
+
         this.name = p.name
         this.apps = p.apps
         this.from = p.from || this.from
@@ -19,11 +60,13 @@ class Task {
         this.mem = {
             var: {} 
         }
-        this.id = (p.id !== null) ? p.id : genRanHex(16)
-        checkUniqueID(this)
+        this.id = (p.id !== null) ? p.id : jsc.genRanHex(16)
+        Task.checkUniqueID(this)
         
         //end task
         this.appEnd = p.appEnd || null
+
+        plexos.Tasks.push(this)
     }
     end () {
         if (this.appEnd) this.appEnd()
@@ -34,9 +77,9 @@ class Task {
         }
         //close window
         if (document.getElementsByClassName("ID_"+this.id).length > 0) {
-            sys.wndwArr[parseInt(document.getElementsByClassName("ID_"+this.id)[0].id.match(/(\d+)/)[0])].deleteNode()
+            plexos.Windows[parseInt(document.getElementsByClassName("ID_"+this.id)[0].id.match(/(\d+)/)[0])].deleteNode()
         }
-        sys.taskArr = sys.taskArr.remove(system.mem.task(this.id))
+        plexos.Tasks = plexos.Tasks.remove(Task.id(this.id))
     }
     loader(op) {
         (op) ? this.load++ : this.load--
@@ -57,7 +100,7 @@ class Task {
 			let taskRange = this.mem.selectionRange
 			if (taskRange && taskRange.commonAncestorContainer instanceof HTMLElement) {
 				taskRange.commonAncestorContainer.focus()
-				//selectRange(taskRange)
+				//jsc.selectRange(taskRange)
 			} else {
 				taskRange = null
 			}
@@ -73,73 +116,11 @@ class Task {
 			}
 			if (this.mem.selectionRange && this.mem.selectionRange.commonAncestorContainer instanceof HTMLElement) {
 				this.mem.selectionRange.commonAncestorContainer.blur()
-				//selectRange(taskRange)
+				//jsc.selectRange(taskRange)
 			}
             this.wndw.focus(false)
 			this.node.blur()
             if (this.node?.onblur) this.node.onblur()
         }
     }
-}
-
-function checkUniqueID(_this){
-    for (i = 0; i < sys.taskArr.length; i++){
-        if (sys.taskArr[i].id == _this.id && sys.taskArr[i] != _this){
-            _this.id = genRanHex(16)
-            checkUniqueID(_this)
-        }
-    }
-}
-
-function canInstance(appName){
-    for (i = 0; i < sys.taskArr.length; i++){
-        if (sys.taskArr[i].inst === false && sys.taskArr[i].name === appName) return false
-    }
-    return true
-}
-
-function openInstance(appName){
-    for (i = 0; i < sys.taskArr.length; i++){
-        if (sys.taskArr[i].name === appName) return sys.taskArr[i]
-    }
-    return null
-}
-
-function endTask(taskid) {
-    system.mem.task(taskid).end()
-}
-
-function deleteSelectedNodes(pocket){
-    for(icon of pocket){
-        icon.deleteNode()
-        //delete from filesystem
-        if(at(icon.file)!=undefined) at(icon.file).delete()
-    }
-}
-
-const system = new Task(
-    {
-		name : "system",
-		inst : false,
-		appEnd : null,
-		node : null,
-		from : "sys"
-	}
-)
-sys.taskArr.push(system)
-
-system.mem.lau = {}
-system.mem.var.dragging = false
-system.mem.var.shSelect = true
-system.mem.var.envfocus = null
-system.mem.focus = function (env) {
-    if (system.mem.var.envfocus && env != system.mem.var.envfocus){
-        system.mem.var.envfocus.blur()
-    }
-    system.mem.var.envfocus = env
-    system.mem.var.envfocus.focus()
-}
-system.mem.task = function(id) {
-    let find = sys.taskArr.filter(task => task.id === id)
-    return find[0]
 }
