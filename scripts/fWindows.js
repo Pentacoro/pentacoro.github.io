@@ -28,6 +28,7 @@ class Window {
         this.task = p.task
         
         this.name = p.name
+		this.move = p.move || []
         this.resi = p.resi
 
 		plexos.Windows.push(this)
@@ -45,9 +46,11 @@ class Window {
 		newWindowInner.setAttribute("class", "windowInner")
 		newWindow.appendChild(newWindowInner)
 	
+		if (this.uiux > 0) {
 			let newHeader = document.createElement("div")
 			newHeader.setAttribute("class", "header")
 			newWindowInner.appendChild(newHeader)
+			this.move.push(newHeader)
 	
 				let newWindowText = document.createElement("span")
 				newWindowText.setAttribute("class", "windowName")
@@ -84,10 +87,11 @@ class Window {
 						newHeader.style.gridTemplateColumns = "auto 36px 36px 36px"
 						break
 				}
-	
+		}
 			let newContent = document.createElement("div")
 			newContent.setAttribute("class", "content")
 			newWindowInner.appendChild(newContent)
+		
 	
 		let newWindowBorder = document.createElement("div")
 		newWindowBorder.setAttribute("class", "windowBorder")
@@ -163,6 +167,11 @@ class Window {
 		
 		this.node = newWindow
 		this.cont = newContent
+
+		this.node.onmousedown = e => {
+			system.mem.focus(Task.id(this.task))
+			this.statNode()
+		}
 	
 		this.statNode()
 		this.poseNode()
@@ -199,8 +208,8 @@ class Window {
 		}
     }
     statNode(){
-		//if window isn't at front already
-		if (this.node.id != "window_" + 0) {
+		//only works with moveable windows & if window isn't at front already 
+		if (this.move && this.node.id != "window_" + 0) {
 			//send to first array index
 			let thisIndex = plexos.Windows.indexOf(this)
 			plexos.Windows.splice(thisIndex, 1)
@@ -222,14 +231,13 @@ class Window {
 
 			/*principle: ---------------|
 			
-				Let's say this is our list of window HTML elements, represented as an array whose 
-			indexes stand for their ID number, as well as match their associated object's index
-			within the plexos.Windows:
+				Let's say this is our list of window HTML elements, represented as an array ordered
+			from front to back.
 
 				[0][1][2][3][4][5] 
 				
-				!this is an abstract representation of our DOM elements for explanation purposes.
-				!the window class as a selector would return an array that would always order the
+				*this is an abstract representation of our DOM elements for explanation purposes.
+				*the window class as a selector would return an array that would always order the
 				window elements from oldest to newest, which for this principle turns out useless.
 
 				The window at 0 will always be the one at the front, manifested through a zIndex of 0 
@@ -242,12 +250,12 @@ class Window {
 				[0][1][2][3][4][5] => [3][0][1][2][4][5] => [0][1][2][3][4][5]
 				 ┗◄━━━━━━━┛
 
-				The third window's ID would be set to 0, while every window that was in front of it 
-			would sum +1 to theirs, and every window that was behind it would be unchanged.
+				The third window's array position would be set to 0, while every window that was in 
+			front of it would sum +1 to theirs, and every window that was behind it would be unchanged.
 
 				The benefit of this rotation is to keep our Z dimension clean and better administrate
 			its range. It's also a good way to pack everything related to windows nicely together:
-			the array, the objects, their associated HTML element and their Z position.
+			the array, the objects and their Z position.
 
 			|---------------  principle*/
 		}
@@ -264,19 +272,9 @@ class Window {
 		let wndw = this.node
 		let _this = this
 		
-		if (this.uiux != 0) {
+		for (let node of this.move) {
 			//if present, the header is where you move the window from:
-			wndw.getElementsByClassName("header")[0].onmousedown = dragMouseDown
-			wndw.onmousedown = e => {
-				system.mem.focus(Task.id(this.task))
-				this.statNode()
-			}
-		} else {
-			//otherwise, move the window from anywhere inside the DIV:
-			wndw.onmousedown = e => {
-				system.mem.focus(Task.id(this.task))
-				dragMouseDown
-			}
+			node.onmousedown = dragMouseDown
 		}
 	
 		function dragMouseDown(e) {
