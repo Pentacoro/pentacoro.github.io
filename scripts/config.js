@@ -33,6 +33,7 @@ cfg = {
             color: "#444444",
         },
         taskbar: {
+            anchored: true,
             height: 60
         }
     },
