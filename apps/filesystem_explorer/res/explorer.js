@@ -85,28 +85,28 @@ class IconDir {
                 //managing selected icons
                 for (icon of Task.id(_this.task).pocket) {
                     //light up all hover border onmousedown:-|
-                    highlight(icon.node)
+                    icon.highlight(true)
                     //---------------------------------------|
                 }
             } else {
                 if (system.mem.var.shSelect == true && !system.mem.var.dragging) {
                     //light up 1 hover border onmousedown:
-                    highlight(node)
+                    _this.highlight(true)
                     
                     //when mousedown on unselected icon
                     if(!e.ctrlKey) {
                         for (icon of Task.id(_this.task).pocket){
                             Task.id(_this.task).pocket = Task.id(_this.task).pocket.remove(icon)
                             icon.statNode(0)
-                            lowlight(icon.node)
+                            icon.highlight(false)
                         }
                         Task.id(_this.task).pocket.push(_this)
                         _this.statNode(1)
-                        highlight(node)
+                        _this.highlight(true)
                     } else if(e.ctrlKey) {
                         Task.id(_this.task).pocket.push(_this)
                         _this.statNode(1)
-                        highlight(node)
+                        _this.highlight(true)
                     }
                 }
             }
@@ -121,8 +121,8 @@ class IconDir {
                     icon.statNode(2)
                 }
 
-                if (document.getElementById("godGrasp").children.length === 0) {
-                    //make pocket representation on godGrasp--------||
+                if (document.getElementById("dragLayer").children.length === 0) {
+                    //make pocket representation on dragLayer--------||
                     let pockImg = (Task.id(_this.task).pocket.length > 3) ? 3 : Task.id(_this.task).pocket.length
     
                     let iconShip = document.createElement("div")
@@ -142,10 +142,10 @@ class IconDir {
     
                     iconShip.appendChild(iconShipSize)
                     iconShip.appendChild(iconShipImg)
-                    document.getElementById("godGrasp").appendChild(iconShip)
+                    document.getElementById("dragLayer").appendChild(iconShip)
                     //----------------------------------------------||
                 } else {
-                    let iconShip = document.getElementById("godGrasp").children[0]
+                    let iconShip = document.getElementById("dragLayer").children[0]
 
                     iconShip.style.top  = e.clientY - iconShip.offsetHeight/2 + "px"
                     iconShip.style.left = e.clientX - iconShip.offsetWidth/2  + "px"
@@ -158,21 +158,21 @@ class IconDir {
                 document.onmousemove = null
                 document.onmouseup   = null
 
-                //empty godGrasp
-                document.getElementById("godGrasp").innerHTML = ""
+                //empty dragLayer
+                document.getElementById("dragLayer").innerHTML = ""
     
                 //unselect other folders on mouseup W/O drag UNLESS ctrl
                 if(e.ctrlKey == false && system.mem.var.dragging == false && e.button == 0) {
                     for (icon of Task.id(_this.task).pocket){
                         Task.id(_this.task).pocket = Task.id(_this.task).pocket.remove(icon)
                         icon.statNode(0)
-                        lowlight(icon.node)
+                        icon.highlight(false)
                     }
                     _this.statNode(1)
                 } else {
                     for (icon of Task.id(_this.task).pocket){
                         icon.statNode(1)
-                        lowlight(icon.node)
+                        icon.highlight(false)
                     }
                 }
                 system.mem.var.dragging = false
@@ -190,6 +190,13 @@ class IconDir {
         } else {
             File.at(this.file).open()
         }
+    }
+    highlight(coin) {
+        if (coin) {
+            this.node.classList.add("highlight")
+            return
+        } 
+        this.node.classList.remove("highlight")
     }
 }
 
@@ -213,6 +220,10 @@ mem.createExplorerIcons = async function(array) {
 }
 mem.refresh = function () {
     mem.explorerInit(mem.dirObject.conf.addr, "TASKID", "refresh")
+}
+mem.getIcon = function(name){
+    let find = mem.iconArray.filter(icon => icon.name === name)
+    return find[0]
 }
 mem.explorerInit = function (dir, id, act = null) {    
     try {       
@@ -261,7 +272,7 @@ mem.explorerInit = function (dir, id, act = null) {
     } catch (e) {
         mem.var.error = e
         mem.var.errorB = [["Okay"]]
-        jsc.runLauncher("./apps/system_popup/popup_lau.js",
+        jsc.runLauncher("/apps/system_popup/popup_lau.js",
             {
              name:"Error",
              type:false,
@@ -296,7 +307,7 @@ document.getElementsByClassName("parent ID_TASKID")[0].onclick = e => {
             } catch (e) {
                 mem.var.error  = e
                 mem.var.errorB = [["Okay"]]
-                jsc.runLauncher("./apps/system_popup/popup_lau.js",{name:"Error",type:false,title:"Couldn't load directory", description:"This directory seems to no longer exist. It might have been moved, or a parent directory been renamed",taskid:"TASKID",icon:""})
+                jsc.runLauncher("/apps/system_popup/popup_lau.js",{name:"Error",type:false,title:"Couldn't load directory", description:"This directory seems to no longer exist. It might have been moved, or a parent directory been renamed",taskid:"TASKID",icon:""})
 
                 mem.explorerInit("", "TASKID")
             }

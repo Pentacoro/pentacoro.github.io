@@ -16,7 +16,7 @@ body {
 	z-index: -998;
 }
 
-#navbar {
+#overlayLayer {
 	position: fixed;
 	bottom: 0%;
 	height: 60px;

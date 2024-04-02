@@ -21,5 +21,11 @@ system.mem.focus = function (env) {
 }
 
 plexos.vtx = core.cont["vertex"]
-desktop.mem.grid.evaluateIconGrid()
-desktop.mem.renderIcons()
+
+let promiseInit = new Promise(async () => {
+    await jsc.runLauncher("./apps/filesystem_desktop/desktop_lau.js",{addr:"/vertex"})
+})
+promiseInit.then( () => {
+    Task.openInstance("Desktop").mem.grid.evaluateIconGrid()
+    Task.openInstance("Desktop").mem.renderIcons()
+})

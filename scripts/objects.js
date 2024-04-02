@@ -1,3 +1,40 @@
+class Icon {
+    stat = 0
+    coor = 
+    {
+        px : -1,
+        py : -1,
+        tx : -1,
+        ty : -1,
+        ax : null,
+        ay : null
+    }
+    constructor(p){
+        this.stat = p.stat || this.stat
+        this.coor = p.coor || this.coor
+
+        this.file = p.file || ""
+        this.imag = p.imag
+        this.name = p.name
+        this.type = p.type
+        this.exte = p.exte || (this.type==="Directory") ? "dir" : (this.name.match(/\.(?:.(?<!\.))+$/s)!=null) ? this.name.match(/(?:.(?<!\.))+$/s)[0] : ""
+
+        this.drop = []
+    }
+    clic(){
+        this.node.oncontextmenu = e => openMenu(e,this)
+        this.node.onmousedown = e => this.drag(e);
+        this.node.ondblclick = e => File.at(this.file).open()
+    }
+    gray(coin){
+        if ( coin ) {
+            this.node.classList.add("blur")
+        } else {
+            this.node.classList.remove("blur")      
+        }
+    }
+}
+
 class File {
     static at(addr = "") {
         //string: where we'll devour addr one dir at a time as we build expression
@@ -120,7 +157,8 @@ class File {
 
     render(taskid=null) {
         if (File.at(this.conf.from) === plexos.vtx) { //if is on current vertex / render on desktop
-            this.conf.icon.createNode()
+            if  (Task.openInstance("Desktop")?.mem.getIcon(this.name)) Task.openInstance("Desktop")?.mem.getIcon(this.name).poseNode()
+            else Task.openInstance("Desktop")?.mem.createDesktopIcons([this])
         }
         if (taskid) { //if is on any other directory / render on explorer
             Task.id(taskid).mem.createExplorerIcons([this])

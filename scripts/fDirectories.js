@@ -82,6 +82,8 @@ class Directory extends File {
         } catch (e) {
             console.log(e)
         }
+
+        return this.cont[childName]
     }
 
     checkCont(){ //this function swaps default dir icons whether it contains files or not

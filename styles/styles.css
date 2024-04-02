@@ -15,7 +15,7 @@ body {
 
 }
 
-#desktop {
+#desktopLayer {
 	display: block;
 	position: relative;
 	z-index: -998;
@@ -25,7 +25,7 @@ body {
 	overflow: auto;
 }
 
-#navbar {
+#overlayLayer {
 	position: fixed;
 	bottom: 0%;
 	height: 60px;

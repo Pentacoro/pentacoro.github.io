@@ -1,7 +1,7 @@
 let params = {} //
 let taskid = ''
-let url = "./apps/filesystem_desktop/desktop.html"
-let lau = "./apps/filesystem_desktop/desktop_lau.html"
+let url = "/apps/filesystem_desktop/desktop.html"
+let lau = "/apps/filesystem_desktop/desktop_lau.html"
 
 //on app init
 function ini() {
@@ -16,9 +16,9 @@ function end() {
 let task = new Task(
     {
         name : "Desktop",
-        inst : true,
+        inst : false,
         appEnd : end,
-        node : null,
+        node : document.getElementById("desktopLayer"),
         from : "Plexus",
         id   : taskid
     }
@@ -27,21 +27,6 @@ if (!task.id) return
 
 try {
     let id = task.id
-
-    //window generation
-    new Window(
-        {
-            name : params.name,
-            task : id, 
-            resi : false, 
-            uiux : 0, 
-            stat : 1, 
-            widt : 700, 
-            heig : 460, 
-            minW : 192,
-            minH : 160
-        }
-    )
 
     ini()
 

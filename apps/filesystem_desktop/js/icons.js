@@ -1,9 +1,9 @@
-//javascript.js
-//f.js
-//fPocket.js
-//fGrid.js
+let task = Task.id("TASKID")
+let mem  = task.mem
+mem.class = {}
+let desktop = task
 
-class Icon {
+mem.class.IconDesk = class IconDesk {
     stat = 0
     coor = 
     {
@@ -30,9 +30,9 @@ class Icon {
         //Icon HTML structure-----|
         if (desktop.mem.iconArr.includes(this)) return
         if (this.coor.ax==null||this.coor.ay==null) {
-            repositionIcons([this],true,false)
+            mem.repositionIcons([this],true,false)
         } else {
-            repositionIcons([this],true,true)
+            mem.repositionIcons([this],true,true)
         }
 
         let newIcon = document.createElement("div")
@@ -104,8 +104,8 @@ class Icon {
             case 2: 
                 if(!this.node.classList.contains("moving")) this.node.className += " moving"
 
-                //godGrasp layer
-                document.getElementById("godGrasp").appendChild(this.node)
+                //dragLayer layer
+                document.getElementById("dragLayer").appendChild(this.node)
                 break
             default: 
         }
@@ -113,10 +113,10 @@ class Icon {
     poseNode(){
         let node = this.node
 
-        node.style.left = this.coor.tx + "px";
-        node.style.top = this.coor.ty + "px";
-        node.style.width = cfg.desktop.grid.width + "px";
-        node.style.height = cfg.desktop.grid.height + "px";
+        node.style.left = this.coor.tx + "px"
+        node.style.top = this.coor.ty + "px"
+        node.style.width = cfg.desktop.grid.width + "px"
+        node.style.height = cfg.desktop.grid.height + "px"
     
         function rawr(px, dem = 2.35, dpx = 44) {
             let per = px/dpx * 100
@@ -140,7 +140,7 @@ class Icon {
             return false
         }
         function gcd (a, b) {
-            return (b == 0) ? a : gcd (b, a%b);
+            return (b == 0) ? a : gcd (b, a%b)
         }
     
         //_______________________
@@ -217,6 +217,8 @@ class Icon {
                 return
             }
         }
+        File.at(this.file).conf.icon.coor = this.coor
+        this.node.childNodes[1].innerText = this.name
     }
     clic(){
         this.node.oncontextmenu = e => openMenu(e,this)
@@ -242,13 +244,13 @@ class Icon {
                 //managing selected icons
                 for (icon of desktop.pocket) {
                     //light up all hover border onmousedown:-|
-                    highlight(icon.node)
+                    icon.highlight(true)
                     //---------------------------------------|
                 }
             } else {
                 if (system.mem.var.shSelect == true && !system.mem.var.dragging) {
                     //light up 1 hover border onmousedown:
-                    highlight(node)
+                    _this.highlight(true)
                     node.style.backgroundColor = 'rgb(0,0,0,0)'
                     
                     //when mousedown on unselected icon
@@ -259,11 +261,11 @@ class Icon {
                         }
                         desktop.pocket.push(_this)
                         _this.stat = 1
-                        highlight(node)
+                        _this.highlight(true)
                     } else if(e.ctrlKey) {
                         desktop.pocket.push(_this)
                         _this.stat = 1
-                        highlight(node)
+                        _this.highlight(true)
                     }
                 }
             }
@@ -293,8 +295,8 @@ class Icon {
             
             //managing selected icons
             for (icon of desktop.pocket){
-                //godGrasp layer
-                document.getElementById("godGrasp").appendChild(icon.node)
+                //dragLayer layer
+                document.getElementById("dragLayer").appendChild(icon.node)
                 //set position for selected icons:------------|
                 icon.coor.tx = (icon.coor.tx - pos1)
                 icon.coor.ty = (icon.coor.ty - pos2)
@@ -321,7 +323,7 @@ class Icon {
                     iconsToValidate.push(icon)
                 }
             }
-            repositionIcons(iconsToValidate, true, true)
+            mem.repositionIcons(iconsToValidate, true, true)
     
             //update HTML of icons after evaluation
             for (icon of desktop.pocket){
@@ -334,12 +336,12 @@ class Icon {
                 for (icon of desktop.pocket){
                     if (icon != _this) desktop.pocket = desktop.pocket.remove(icon)
                     icon.statNode(0)
-                    lowlight(icon.node)
+                    icon.highlight(false)
                 }
                 _this.statNode(1)
             } else {
                 for (icon of desktop.pocket){
-                    lowlight(icon.node)
+                    icon.highlight(false)
                 }
                 _this.statNode(1)
             }
@@ -349,22 +351,22 @@ class Icon {
     }
     gray(coin){
         if ( coin ) {
-            this.node.classList.add("blur")
+            this.node?.classList.add("blur")
         } else {
-            this.node.classList.remove("blur")      
+            this.node?.classList.remove("blur")      
         }
+    }
+    highlight(coin) {
+        if (coin) {
+            this.node.classList.add("highlight")
+            return
+        } 
+        this.node.classList.remove("highlight")
     }
 }
 
 //icon behavior------------------------------------------------------------------------|
-function highlight(hIcon) {
-    hIcon.classList.add("highlight")
-} 
-function lowlight(hIcon) {
-    hIcon.classList.remove("highlight")
-} 
-
-function repositionIcons(icons, mustSet = false, hasPrev = true){
+mem.repositionIcons = function(icons, mustSet = false, hasPrev = true){
     let w = cfg.desktop.grid.width
     let h = cfg.desktop.grid.height
     let wm = (cfg.desktop.grid.modHmargin == 0) ? cfg.desktop.grid.hMargin : cfg.desktop.grid.modHmargin
@@ -431,7 +433,8 @@ function repositionIcons(icons, mustSet = false, hasPrev = true){
             coords.ax = px
             coords.ay = py
         }else if(mustSet){
-            newGrid = orderIconPosition()
+            newGrid = mem.orderIconPosition()
+            if (newGrid === undefined) return
             newGrid[0].used = true
             newGrid[0].icon = icon
             coords.px = newGrid[0].posX
@@ -454,7 +457,7 @@ function repositionIcons(icons, mustSet = false, hasPrev = true){
     }
 }
 
-function orderIconPosition(){
+mem.orderIconPosition = function(){
     for (x = 0; x < desktop.mem.grid.gridArr.length; x++){
         for(y = 0; y < desktop.mem.grid.gridArr[x].length; y++){
             if (desktop.mem.grid.gridArr[x][y].used == false){
@@ -463,12 +466,3 @@ function orderIconPosition(){
         }
     }
 }
-
-//------------------------------------------------------------------------icon behavior|
-
-/*
-<div class="icon" id="Folder 1" style="left: 10px;top: 10px;">
-	<div class="iconImage" style="background-image: url('assets/svg/desktopIcons/folderPlaceholder.svg');"></div>
-	<h3>Folder 1</h3>
-</div>
-*/

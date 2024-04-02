@@ -1,26 +1,6 @@
-const idDesktop = document.getElementById("desktop")
-
-window.addEventListener("resize", e => {
-	idDesktop.style.width = document.body.offsetWidth + "px"
-    idDesktop.style.height = document.body.offsetHeight - cfg.desktop.taskbar.height + "px"
-})
-
-//set background size
-idDesktop.style.width = document.body.offsetWidth + "px"
-idDesktop.style.height = document.body.offsetHeight - cfg.desktop.taskbar.height + "px"
-
-//desktop task reference
-const desktop = new Task(
-	{
-		apps : "Vertex",
-		inst : false,
-		appEnd : null,
-		node : idDesktop,
-		from : "sys"
-	}
-)
-
-desktop.mem.iconArr = []
+let task = Task.id("TASKID")
+let mem  = task.mem
+let desktop = task
 
 //when desktop click:---------------------------------------------------|
 	//when desktop click-------------------|
@@ -28,7 +8,7 @@ desktop.mem.iconArr = []
 		system.mem.focus(desktop)
 		//if not clicking folder or window--------------|
 		if(
-			e.target.id == "desktop" &&
+			e.target.id == "desktopLayer" &&
 			e.ctrlKey == false &&
 			!system.mem.var.dragging
 		) {
@@ -41,7 +21,7 @@ desktop.mem.iconArr = []
 	desktop.node.addEventListener("mousedown", e => {
 		//if not clicking folder or window--------------|
 		if(
-			e.target.id == "desktop" &&
+			e.target.id == "desktopLayer" &&
 			!system.mem.var.dragging
 		) {
 			pos1 = 0
@@ -65,9 +45,9 @@ desktop.mem.iconArr = []
 				{section:"view", name:"Grid",icon:"url('assets/svg/contextMenu/grid2.svg')",func:[
 					{name:"Auto Length",icon:"url('assets/svg/contextMenu/autogrid.svg')",func:() => desktop.mem.grid.autoLength()},
 					{name:"Auto Margin",icon:"url('assets/svg/contextMenu/automargin.svg')",func:() => desktop.mem.grid.autoMargin()},
-					{name:"Grid Settings",icon:"url('assets/svg/contextMenu/gridsettings.svg')",func:() => jsc.runLauncher("./apps/settings_deskGrid/deskGridOptions_lau.js",[],envfocus)},
+					{name:"Grid Settings",icon:"url('assets/svg/contextMenu/gridsettings.svg')",func:() => jsc.runLauncher("/apps/settings_deskGrid/deskGridOptions_lau.js",[],envfocus)},
 				]},
-				{section:"view", name:"Refresh",icon:"url('assets/svg/contextMenu/refresh.svg')",func: () => desktop.mem.refresh},
+				{section:"view", name:"Refresh",icon:"url('assets/svg/contextMenu/refresh.svg')",func: () => desktop.mem.refresh()},
 				{section:"file", name:"New",icon:"url('assets/svg/contextMenu/new2.svg')",func:[
 					{name:"Directory",icon:"url('assets/svg/contextMenu/directory.svg')",func:() => desktop.mem.new(e,desktop,Directory,"New Folder")},
 					{name:"Metafile",icon:"url('assets/svg/contextMenu/metafile.svg')",func:() => desktop.mem.new(e,desktop,Metafile, "New Metafile.msf")},
@@ -146,10 +126,10 @@ desktop.mem.selectBox = function() {
 			if (icon.node != null) { /*otherwise callback argument ruins everything*/
 				if (jsc.areRectanglesOverlap(icon.node,selectBox)) {
 					//light up colliding icon hover border:
-					highlight(icon.node)
+					icon.highlight(true)
 				} else {
 					//unlight non-colliding icon hover border:
-					lowlight(icon.node)
+					icon.highlight(false)
 				}
 			}
 		}
@@ -172,98 +152,11 @@ desktop.mem.selectBox = function() {
 					desktop.pocket = desktop.pocket.remove(icon)
 					icon.statNode(0)
 				}
-				lowlight(icon.node)
+				icon.highlight(false)
 			}
 		}
 		//--------------------------------------------------iconReaction|
 	
 		selectBox.parentElement.removeChild(selectBox)
 	}
-}
-
-//----------------------------------------------------selectBox behavior|
-
-//desktop methods
-
-desktop.mem.renderIcons = function() {
-	for (file of Object.entries(plexos.vtx.cont)) {
-		file[1].render()
-	}
-}
-desktop.mem.refresh = function() {
-    desktop.pocket = []
-
-	for (icon of desktop.mem.iconArr) {
-		icon.deleteNode()
-	}
-
-	for (file of Object.entries(plexos.vtx.cont)) {
-		file[1].render()
-	}
-}
-desktop.node.onfocus = e => {
-	for (icon of desktop.mem.iconArr) {
-		icon.gray(false)
-	}
-}
-desktop.node.onblur = e => {
-	for (icon of desktop.mem.iconArr) {
-		icon.gray(true)
-	}
-}
-
-desktop.mem.new = function(e, _this, Type, name){
-	//Make sure icon appears at center of initial right click-------|
-	let initialX = parseInt(window.getComputedStyle(document.getElementsByClassName("clickContext sub_0")[0],null).getPropertyValue("left"))
-	let initialY = parseInt(window.getComputedStyle(document.getElementsByClassName("clickContext sub_0")[0],null).getPropertyValue("top"))
-
-	let editFile = null
-	let editFrom = plexos.vtx
-
-	let iconWidth = cfg.desktop.grid.width/2
-	let iconHeight = cfg.desktop.grid.height/2
-
-	let w = cfg.desktop.grid.width; let h = cfg.desktop.grid.height; let wm = cfg.desktop.grid.hMargin; let hm = cfg.desktop.grid.vMargin
-
-	let iconPosX = (Math.round((initialX-iconWidth)/(w + wm))*(w + wm) + wm)
-	let iconPosY = (Math.round((initialY-iconHeight)/(h + hm))*(h + hm) + hm)
-	//--------------------------------------------------------------|
-	let typeDefaults = File.typeDefaults(Type)
-
-	function createDesktopFile(name) {
-		if(!jsc.iconNameExists(name, null, editFrom)) {
-			let newFileIcon = new Icon (
-				{
-					imag : typeDefaults.iconImag,
-					name : name,
-					type : typeDefaults.confType,
-					stat : 0,
-					coor : {
-						px : iconPosX,
-						py : iconPosY,
-						tx : iconPosX,
-						ty : iconPosY,
-						ax : null,
-						ay : null,
-					} 
-				}
-			)
-			editFrom.new(Type,name,newFileIcon)
-			editFrom.cont[name].render()
-
-			return newFileIcon
-		} else {
-			let exte = name.match(/\.(?:.(?<!\.))+$/s)
-			exte = (exte!=null && exte.length > 0) ? exte[0] : ""
-			name = name.replace(exte,"")
-			let amnt = name.match(/(?<!\w)\d+$/)
-			amnt = (amnt!=null && amnt.length > 0) ? parseInt(amnt[0],10) : ""
-			let dgts = (amnt!="") ? (""+amnt).length : 1
-			name = (amnt!="") ? name.slice(0,(name.length)-dgts) + (amnt+1) : name + " 2"
-			name = name + exte
-			return createDesktopFile(name)
-		}
-	}
-
-	iconRename(e,createDesktopFile(name))
 }

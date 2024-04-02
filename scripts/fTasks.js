@@ -14,7 +14,7 @@ class Task {
         return true
     }
     static openInstance(appName){
-        for (i = 0; i < plexos.Tasks.length; i++){
+        for (let i = 0; i < plexos.Tasks.length; i++){
             if (plexos.Tasks[i].name === appName) return plexos.Tasks[i]
         }
         return null

@@ -25,7 +25,7 @@ class contextSection {
 function createMenu(e, target, sections, options) {
     let menu = []
     switch (target.constructor.name) {
-        case "Icon":
+        case "IconDesk":
             menu = drop.fileDrop(e,target,sections,options)
             break
         case "IconDir":
@@ -306,6 +306,10 @@ function iconRename(e, _this){
 
             //insert into fylesystem
             if (iconText.textContent != editFile.name) { //if the name changed
+                if (editFrom === plexos.vtx){
+                    Task.openInstance("Desktop").mem.getIcon(editFile.name).file = editFrom.conf.addr +"/"+ iconText.textContent
+                    Task.openInstance("Desktop").mem.getIcon(editFile.name).name = iconText.textContent
+                }
                 editFile.rename(iconText.textContent)
                 if (_this.task) {
                     taskid = _this.task
@@ -315,10 +319,6 @@ function iconRename(e, _this){
 
                     editFile.render(taskid)
                     _this = task.mem.iconArray[task.mem.iconArray.length-1]
-
-                    if (File.at(task.mem.address) === plexos.vtx){
-                        desktop.mem.refresh()
-                    }
 
                     for (icon of task.mem.iconArray) {
                         if (icon.name == iconText.textContent) {
@@ -354,9 +354,9 @@ function iconRename(e, _this){
                         Task.id(_this.task).pocket = Task.id(_this.task).pocket.remove(icon)
                     }
                 } else {
-                    for (icon of desktop.mem.iconArr){
+                    for (icon of Task.openInstance("Desktop")?.mem.iconArr){
                         icon.statNode(0)
-                        desktop.pocket = desktop.pocket.remove(icon)
+                        Task.openInstance("Desktop").pocket = Task.openInstance("Desktop").pocket.remove(icon)
                     }
                 }
                 _this.statNode(1)

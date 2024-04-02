@@ -1,9 +1,3 @@
-//javascript.plexos.js
-//f.plexos.js
-//system.plexos.js
-//fTasks.plexos.js
-//fDesktop.plexos.js
-
 class Window {
 	stat = 1
 	uiux = 3
@@ -190,7 +184,7 @@ class Window {
 			if (plexos.Windows.length > 0) {
 				system.mem.focus(Task.id(plexos.Windows[0].task))
 			} else {
-				system.mem.focus(desktop)
+				system.mem.focus(Task.openInstance("Desktop"))
 			}
 		}
 

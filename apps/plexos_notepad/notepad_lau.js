@@ -1,8 +1,8 @@
 let params = {}
 //[1] file address
 let taskid = ''
-let url = "./apps/plexos_notepad/notepad.html"
-let lau = "./apps/plexos_notepad/notepad_lau.js"
+let url = "/apps/plexos_notepad/notepad.html"
+let lau = "/apps/plexos_notepad/notepad_lau.js"
 
 //on app init
 function ini() {

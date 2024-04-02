@@ -1,8 +1,8 @@
 let params = {}
 //[1] file address
 let taskid = ''
-let url = "./apps/imported_apps/monaco_editor/monaco.html"
-let lau = "./apps/imported_apps/monaco_editor/monaco_lau.js"
+let url = "/apps/imported_apps/monaco_editor/monaco.html"
+let lau = "/apps/imported_apps/monaco_editor/monaco_lau.js"
 
 //on app init
 function ini() {

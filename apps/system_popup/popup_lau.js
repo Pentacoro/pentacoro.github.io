@@ -6,8 +6,8 @@ let params = {}
 //[4] taskid
 //[5] icon
 let taskid = ''
-let url = (params.type) ? "./apps/system_popup/popup.html" : "./apps/system_popup/popupB.html"
-let lau = "./apps/system_popup/popup_lau.html"
+let url = (params.type) ? "/apps/system_popup/popup.html" : "/apps/system_popup/popupB.html"
+let lau = "/apps/system_popup/popup_lau.html"
 
 //on app init
 function ini() {

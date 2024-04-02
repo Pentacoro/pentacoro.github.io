@@ -2,8 +2,8 @@ let params = {}
 //[0] name
 //[1] addr
 let taskid = ''
-let url = "./apps/media/iframer/iframer.html"
-let lau = "./apps/media/iframer/iframer_lau.js"
+let url = "/apps/media/iframer/iframer.html"
+let lau = "/apps/media/iframer/iframer_lau.js"
 
 //on app init
 function ini() {

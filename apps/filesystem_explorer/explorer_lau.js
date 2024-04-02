@@ -1,7 +1,7 @@
 let params = {} //name, addr, type, file
 let taskid = ''
-let url = (params.type) ? "./apps/filesystem_explorer/explorer"+params.type+".html" : "./apps/filesystem_explorer/explorer.html"
-let lau = "./apps/filesystem_explorer/explorer_lau.html"
+let url = (params.type) ? "/apps/filesystem_explorer/explorer"+params.type+".html" : "/apps/filesystem_explorer/explorer.html"
+let lau = "/apps/filesystem_explorer/explorer_lau.html"
 
 //on app init
 function ini() {

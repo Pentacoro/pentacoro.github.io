@@ -1,8 +1,6 @@
-//javascript.js
-//f.js
-//cfg.js
-//fIcon.js
-//fDesktop.js
+let task = Task.id("TASKID")
+let mem  = task.mem
+let desktop = task
 
 desktop.mem.grid = {}
 desktop.mem.grid.gridArr = []
@@ -107,8 +105,8 @@ desktop.mem.grid.evaluateIconGrid = function (
         //if the grid app is open update graph
         if (document.getElementsByClassName("grid_graph")) {
             if (document.getElementsByClassName("grid_graph")[0]) {
-                if (cfg.desktop.grid.autoHmargin) document.getElementsByClassName("grid_graph")[0].children[4].innerText = parseFloFile.at(cfg.desktop.grid.modHmargin).toFixed(2)
-                if (cfg.desktop.grid.autoVmargin) document.getElementsByClassName("grid_graph")[0].children[5].innerText = parseFloFile.at(cfg.desktop.grid.modVmargin).toFixed(2)
+                if (cfg.desktop.grid.autoHmargin) document.getElementsByClassName("grid_graph")[0].children[4].innerText = parseFloat(cfg.desktop.grid.modHmargin).toFixed(2)
+                if (cfg.desktop.grid.autoVmargin) document.getElementsByClassName("grid_graph")[0].children[5].innerText = parseFloat(cfg.desktop.grid.modVmargin).toFixed(2)
             }
         }
         
@@ -211,7 +209,7 @@ desktop.mem.grid.evaluateIconGrid = function (
                                             desktop.mem.grid.gridArr[icon.coor.ax][icon.coor.ay].used = false
                                         }
                                     }
-                                    repositionIcons(iconsForShift,true,false)
+                                    mem.repositionIcons(iconsForShift,true,false)
                                     for(icon of iconsForShift) {
                                         icon.poseNode()
                                         icon.statNode()
@@ -223,7 +221,7 @@ desktop.mem.grid.evaluateIconGrid = function (
                             checkNextSlot(object)
                         } else if (object.icon) {
                             iconsForShift = [object.icon]
-                            repositionIcons(iconsForShift,true,false)
+                            mem.repositionIcons(iconsForShift,true,false)
                             for(icon of iconsForShift) {
                                 icon.poseNode()
                                 icon.statNode()
@@ -231,7 +229,7 @@ desktop.mem.grid.evaluateIconGrid = function (
                         }
                     })
                 })
-                repositionIcons(iconsForShiftLate,true,false)
+                mem.repositionIcons(iconsForShiftLate,true,false)
                 for(icon of iconsForShiftLate) {
                     icon.poseNode()
                     icon.statNode()
@@ -273,7 +271,7 @@ desktop.mem.grid.evaluateIconGrid = function (
                                     desktop.mem.grid.gridArr[icon.coor.ax][icon.coor.ay].used = false
                                 }
                             }
-                            repositionIcons(iconsForShift,true,true)
+                            mem.repositionIcons(iconsForShift,true,true)
                             for(icon of iconsForShift) {
                                 icon.poseNode()
                                 icon.statNode()
@@ -321,7 +319,7 @@ desktop.mem.grid.evaluateIconGrid = function (
                                             desktop.mem.grid.gridArr[icon.coor.ax][icon.coor.ay].used = false
                                         }
                                     }
-                                    repositionIcons(iconsForShift,true,false)
+                                    mem.repositionIcons(iconsForShift,true,false)
                                     for(icon of iconsForShift) {
                                         icon.poseNode()
                                         icon.statNode()
@@ -333,7 +331,7 @@ desktop.mem.grid.evaluateIconGrid = function (
                             checkNextSlot(object)
                         } else if (object.icon) {
                             iconsForShift = [object.icon]
-                            repositionIcons(iconsForShift,true,false)
+                            mem.repositionIcons(iconsForShift,true,false)
                             for(icon of iconsForShift) {
                                 icon.poseNode()
                                 icon.statNode()
@@ -342,7 +340,7 @@ desktop.mem.grid.evaluateIconGrid = function (
                     })
                 }
             })
-            repositionIcons(iconsForShiftLate,true,false)
+            mem.repositionIcons(iconsForShiftLate,true,false)
             for(icon of iconsForShiftLate) {
                 icon.poseNode()
                 icon.statNode()
@@ -382,7 +380,7 @@ desktop.mem.grid.evaluateIconGrid = function (
                                     desktop.mem.grid.gridArr[icon.coor.ax][icon.coor.ay].used = false
                                 }
                             }
-                            repositionIcons(iconsForShift,true,true)
+                            mem.repositionIcons(iconsForShift,true,true)
                             for(icon of iconsForShift) {
                                 icon.poseNode()
                                 icon.statNode()
