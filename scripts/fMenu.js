@@ -241,136 +241,7 @@ function closeMenu() {
 
 //-------------------------------------------------------------------------------------|
 
-function iconRename(e, _this){
-    let iconText = _this.node.childNodes[1]
-    let editFile = File.at(_this.file)
-    let editFrom = File.at(editFile.conf.from)
-    //make h3 editable --------------------|
-    iconText.setAttribute("contenteditable", "true")
-    iconText.setAttribute("spellcheck", "false")
-    
-    //select h3 content --------------------|
-    let exte = iconText.innerText.match(/\.(?:.(?<!\.))+$/s)
-    exte = (exte!=null && exte.length > 0) ? exte[0] : ""
-    _this.statNode(1)
-    _this.stat = 0
-    jsc.selectText(iconText,0, iconText.innerText.replace(exte,"").length)
-
-    iconText.style.textShadow = "none"
-    iconText.style.display = "block"
-
-    //restore -> leave icon unmodified
-    document.body.oncontextmenu = iconRenamingRestore
-    window.onkeydown = (e) => {if(e.key == "Escape"){
-        iconRenamingRestore()
-        return false
-    }}
-    function iconRenamingRestore(){
-        system.mem.var.shSelect = true
-        
-        _this.statNode()
-
-        iconText.textContent = _this.name
-        iconText.setAttribute("contenteditable", "false");
-        iconText.style.backgroundColor = ""
-        iconText.style.textShadow = ""
-
-        iconText.blur();
-        jsc.clearSelection();
-
-        nullifyOnEvents(iconText)
-    }
-
-    setTimeout( () => {
-    document.body.onmousedown = iconRenaming
-    iconText.onkeydown = (e) => {
-        if(e.key == "Enter" && e.shiftKey == false){
-            iconRenaming()
-            return false
-        }
-    }
-    function iconRenaming(){
-        if(
-            !jsc.iconNameExists(iconText.textContent, editFile.conf.icon, editFrom) &&
-            jsc.validIconName(iconText.textContent)
-        ) {
-            //if the name is allowed --------------------|
-            system.mem.var.shSelect = true;
-
-            if (editFrom === plexos.vtx) _this.node.id = "Icon: "+iconText.textContent
-            
-            iconText.setAttribute("contenteditable", "false")
-            editFile.conf.icon.name = iconText.textContent
-            iconText.style.backgroundColor = ""
-            iconText.style.textShadow = ""
-
-            //insert into fylesystem
-            if (iconText.textContent != editFile.name) { //if the name changed
-                if (editFrom === plexos.vtx){
-                    Task.openInstance("Desktop").mem.getIcon(editFile.name).file = editFrom.conf.addr +"/"+ iconText.textContent
-                    Task.openInstance("Desktop").mem.getIcon(editFile.name).name = iconText.textContent
-                }
-                editFile.rename(iconText.textContent)
-                if (_this.task) {
-                    taskid = _this.task
-                    task   = Task.id(taskid)
-                    task.mem.iconArray = task.mem.iconArray.remove(_this)
-                    document.getElementsByClassName("list ID_"+taskid)[0].removeChild(_this.node)
-
-                    editFile.render(taskid)
-                    _this = task.mem.iconArray[task.mem.iconArray.length-1]
-
-                    for (icon of task.mem.iconArray) {
-                        if (icon.name == iconText.textContent) {
-                            icon.statNode(1)
-                            task.pocket.push(icon)
-                        }
-                    }
-                }
-            }
-
-            _this.statNode(0)
-            iconText.blur()
-            jsc.clearSelection()
-
-            nullifyOnEvents(iconText)
-        } else {
-            //if the name not allowed --------------------|
-            system.mem.var.shSelect = false
-            iconText.style.backgroundColor = "#c90000"
-
-            //insist -> keep only edited selected
-            document.body.onclick = iconRenamingInsist
-            window.onkeyup = (e) => {
-                if(e.key == "Enter"){
-                    iconRenamingInsist()
-                    return false
-                }
-            }
-            function iconRenamingInsist(){
-                if (_this.task) {
-                    for (icon of Task.id(_this.task).mem.iconArray){
-                        icon.statNode(0)
-                        Task.id(_this.task).pocket = Task.id(_this.task).pocket.remove(icon)
-                    }
-                } else {
-                    for (icon of Task.openInstance("Desktop")?.mem.iconArr){
-                        icon.statNode(0)
-                        Task.openInstance("Desktop").pocket = Task.openInstance("Desktop").pocket.remove(icon)
-                    }
-                }
-                _this.statNode(1)
-                _this.stat = 0
-
-                jsc.selectText(iconText)
-            }
-        }
-    }
-    }, 0) //TIMEOUT
-}
-function iconProperties(e, _this){
-
-}
+function iconProperties(e, _this){}
 //-------------------------------------------------------------------------------------|
 
 //-------------------------------------------------------------------------------------|
@@ -427,7 +298,7 @@ drop.dirDrop = function (e,target,sectionList,optionList) {
     this.section("clip").item.push(new contextOption("Paste","url('assets/svg/contextMenu/paste.svg')",() => iconPaste(e),File.at(target.file)!=undefined))
     
     this.section("prop").item.push(new contextOption("Delete","url('assets/svg/contextMenu/delete.svg')",() => Task.deleteSelectedNodes(system.mem.var.envfocus.pocket)))
-    this.section("prop").item.push(new contextOption("Rename","url('assets/svg/contextMenu/rename.svg')",() => iconRename(e,target),File.at(target.file)!=undefined))
+    this.section("prop").item.push(new contextOption("Rename","url('assets/svg/contextMenu/rename.svg')",(e) => target.rename(e),File.at(target.file)!=undefined))
     this.section("prop").item.push(new contextOption("Properties","url('assets/svg/contextMenu/properties.svg')",e => iconProperties(e),File.at(target.file)!=undefined))
 
     return this.arr
@@ -453,7 +324,7 @@ drop.fileDrop = function(e,target,sectionList,optionList) {
     this.section("clip").item.push(new contextOption("Paste","url('assets/svg/contextMenu/paste.svg')",() => iconPaste(e),File.at(target.file)!=undefined))
     
     this.section("prop").item.push(new contextOption("Delete","url('assets/svg/contextMenu/delete.svg')",() => Task.deleteSelectedNodes(system.mem.var.envfocus.pocket)))
-    this.section("prop").item.push(new contextOption("Rename","url('assets/svg/contextMenu/rename.svg')",() => iconRename(e,target),File.at(target.file)!=undefined))
+    this.section("prop").item.push(new contextOption("Rename","url('assets/svg/contextMenu/rename.svg')",() => target.rename(e),File.at(target.file)!=undefined))
     this.section("prop").item.push(new contextOption("Properties","url('assets/svg/contextMenu/properties.svg')",() => iconProperties(e),File.at(target.file)!=undefined))
 
     return this.arr

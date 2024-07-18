@@ -37,6 +37,7 @@ mem.class.IconDesk = class IconDesk {
 
         let newIcon = document.createElement("div")
         newIcon.setAttribute("class", "icon")
+        newIcon.setAttribute("title", this.name)
         newIcon.setAttribute("id", "Icon: "+this.name)
         newIcon.setAttribute("style",   "left:"+this.coor.px+"px;"+
                                         "top:"+this.coor.py+"px;"+
@@ -362,6 +363,135 @@ mem.class.IconDesk = class IconDesk {
             return
         } 
         this.node.classList.remove("highlight")
+    }
+    rename(e){
+        let iconText = this.node.childNodes[1]
+        let editFile = File.at(this.file)
+        let editFrom = File.at(editFile.conf.from)
+        let thisIcon = this
+        //make h3 editable --------------------|
+        iconText.setAttribute("contenteditable", "true")
+        iconText.setAttribute("spellcheck", "false")
+        
+        //select h3 content --------------------|
+        let exte = iconText.innerText.match(/\.(?:.(?<!\.))+$/s)
+        exte = (exte!=null && exte.length > 0) ? exte[0] : ""
+        this.statNode(1)
+        this.stat = 0
+        jsc.selectText(iconText,0, iconText.innerText.replace(exte,"").length)
+    
+        iconText.style.textShadow = "none"
+        iconText.style.display = "block"
+    
+        //restore -> leave icon unmodified
+        document.body.oncontextmenu = iconRenamingRestore
+        window.onkeydown = (e) => {if(e.key == "Escape"){
+            iconRenamingRestore()
+            return false
+        }}
+        function iconRenamingRestore(){
+            system.mem.var.shSelect = true
+            
+            thisIcon.statNode()
+    
+            iconText.textContent = thisIcon.name
+            iconText.setAttribute("contenteditable", "false");
+            iconText.style.backgroundColor = ""
+            iconText.style.textShadow = ""
+    
+            iconText.blur();
+            jsc.clearSelection();
+    
+            nullifyOnEvents(iconText)
+        }
+    
+        setTimeout( () => {
+        document.body.onmousedown = iconRenaming
+        iconText.onkeydown = (e) => {
+            if(e.key == "Enter" && e.shiftKey == false){
+                iconRenaming()
+                return false
+            }
+        }
+        function iconRenaming(){
+            if(
+                !jsc.iconNameExists(iconText.textContent, editFile.conf.icon, editFrom) &&
+                jsc.validIconName(iconText.textContent)
+            ) {
+                //if the name is allowed --------------------|
+                system.mem.var.shSelect = true;
+    
+                if (editFrom === plexos.vtx) thisIcon.node.id = "Icon: "+iconText.textContent
+                
+                iconText.setAttribute("contenteditable", "false")
+                editFile.conf.icon.name = iconText.textContent
+                thisIcon.node.setAttribute("title", iconText.textContent)
+                iconText.style.backgroundColor = ""
+                iconText.style.textShadow = ""
+    
+                //insert into fylesystem
+                if (iconText.textContent != editFile.name) { //if the name changed
+                    if (editFrom === plexos.vtx){
+                        Task.openInstance("Desktop").mem.getIcon(editFile.name).file = editFrom.conf.addr +"/"+ iconText.textContent
+                        Task.openInstance("Desktop").mem.getIcon(editFile.name).name = iconText.textContent
+                    }
+                    editFile.rename(iconText.textContent)
+                    if (thisIcon.task) {
+                        taskid = thisIcon.task
+                        task   = Task.id(taskid)
+                        task.mem.iconArray = task.mem.iconArray.remove(thisIcon)
+                        document.getElementsByClassName("list ID_"+taskid)[0].removeChild(thisIcon.node)
+    
+                        editFile.render(taskid)
+                        thisIcon = task.mem.iconArray[task.mem.iconArray.length-1]
+    
+                        for (icon of task.mem.iconArray) {
+                            if (icon.name == iconText.textContent) {
+                                icon.statNode(1)
+                                task.pocket.push(icon)
+                            }
+                        }
+                    }
+                }
+    
+                thisIcon.statNode(0)
+                iconText.blur()
+                jsc.clearSelection()
+    
+                nullifyOnEvents(iconText)
+            } else {
+                //if the name not allowed --------------------|
+                system.mem.var.shSelect = false
+                iconText.style.backgroundColor = "#c90000"
+    
+                //insist -> keep only edited selected
+                document.body.onclick = iconRenamingInsist
+                window.onkeyup = (e) => {
+                    if(e.key == "Enter"){
+                        iconRenamingInsist()
+                        return false
+                    }
+                }
+                function iconRenamingInsist(){
+                    if (thisIcon.task) {
+                        for (icon of Task.id(thisIcon.task).mem.iconArray){
+                            icon.statNode(0)
+                            Task.id(thisIcon.task).pocket = Task.id(thisIcon.task).pocket.remove(icon)
+                        }
+                    } else {
+                        for (icon of Task.openInstance("Desktop")?.mem.iconArr){
+                            icon.statNode(0)
+                            Task.openInstance("Desktop").pocket = Task.openInstance("Desktop").pocket.remove(icon)
+                        }
+                    }
+                    thisIcon.statNode(1)
+                    thisIcon.stat = 0
+    
+                    jsc.selectText(iconText)
+                }
+            }
+        }
+        }, 0) //TIMEOUT
     }
 }
 
