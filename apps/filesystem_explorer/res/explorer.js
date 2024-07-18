@@ -527,5 +527,5 @@ mem.new = function(e, _this, Type, name){
     let newFileIcon = createExplorerFile(name)
     //mem.createExplorerIcons([File.at(newFileIcon.file)])
     let createdIcon = mem.iconArray[mem.iconArray.length - 1]
-    iconRename(e, createdIcon)
+    createdIcon.rename()
 }

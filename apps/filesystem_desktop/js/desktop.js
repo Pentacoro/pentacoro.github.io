@@ -148,7 +148,7 @@ mem.new = function(e, _this, Type, name){
 		}
 	}
 
-	iconRename(e,createDesktopFile(name))
+	createDesktopFile(name).rename()
 }
 
 mem.desktopInit("xcorex", "TASKID")
