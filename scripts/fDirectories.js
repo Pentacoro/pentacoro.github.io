@@ -17,6 +17,20 @@ class Configuration {
 }
 
 class Directory extends File {
+    static coreTemplate(){ 
+        return new Directory(
+        {
+            name : "core",
+            conf : new Configuration (
+            {
+                icon : new Icon ({imag:"assets/svg/desktopIcons/vertexPH.svg", name:"core", type:"Directory", stat:0}),
+                from : "",
+                type : "Directory",
+                vert : true,
+                move : false
+            })
+        })
+    }
     conf = {}
     cont = {}
     constructor(p) {

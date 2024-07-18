@@ -31,31 +31,6 @@ system.init.setVertex = function (address) {
     })
 }
 
-function storageAvailable(type) {
-    let storage
-    try {
-        storage = window[type]
-        let x = '__storage_test__'
-        storage.setItem(x, x)
-        storage.removeItem(x)
-        return true
-    }
-    catch(e) {
-        return e instanceof DOMException && (
-            // everything except Firefox
-            e.code === 22 ||
-            // Firefox
-            e.code === 1014 ||
-            // test name field too, because code might not be present
-            // everything except Firefox
-            e.name === 'QuotaExceededError' ||
-            // Firefox
-            e.name === 'NS_ERROR_DOM_QUOTA_REACHED') &&
-            // acknowledge QuotaExceededError only if there's something already stored
-            (storage && storage.length !== 0)
-    }
-}
-
 function downloadCoreJSON(exportName="core") {
     let jsonCore = JSON.parse(window.localStorage.core)
     let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(jsonCore));
@@ -109,57 +84,11 @@ function recreateFiles(dir, newDir) {
 
 function defineCore(){
     
-    if (storageAvailable('localStorage')) {
-        
-        // Yippee! We can use localStorage awesomeness
-        window.addEventListener("keydown", e => {
-            if (e.key === "," && e.ctrlKey) {  
-                e.preventDefault()
-                window.localStorage.core = JSON.stringify(core)
-                console.log("Saved to localStorage")
-            } 
-        })
-        window.addEventListener("keydown", e => {
-            if (e.key === "." && e.ctrlKey) {  
-                e.preventDefault()
-                delete window.localStorage.core
-                console.log("Cleared localStorage")
-            } 
-        })
-        window.addEventListener("keydown", e => {
-            if (e.key === "s" && e.ctrlKey) {  
-                e.preventDefault()
-                console.log("Downloading Core JSON")
-                downloadCoreJSON()
-            } 
-        })
-        window.addEventListener("keyrelease", e => {
-            if (e.ctrlKey) window.onkeydown = null
-        })
+    if (jsc.storageAvailable('localStorage')) {
         
         if(window.localStorage.getItem("core")) {
             let jsonCore = JSON.parse(window.localStorage.core)
-            let newCore  = new Directory(
-                {
-                    name : "core",
-                    conf : new Configuration (
-                    {
-                        icon : new Icon(
-                            {
-                                imag : "assets/svg/desktopIcons/vertexPH.svg", 
-                                name : "core", 
-                                apps : "dir", 
-                                stat : 0  
-                            }
-                        ),
-                        from : "",
-                        type : "Directory",
-                        vert : true,
-                        plex : true,
-                        move : false
-                    })
-                }
-            )
+            let newCore  = Directory.coreTemplate()
     
             recreateFiles(jsonCore, newCore)
         
