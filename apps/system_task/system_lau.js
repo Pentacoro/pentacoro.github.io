@@ -32,7 +32,7 @@ try {
 
     let replacementPairs = []
 
-    jsc.displayComponent({
+    dll.displayComponent({
         url:url,
         taskid:id,
         replacementPairs:replacementPairs,

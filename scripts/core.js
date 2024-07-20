@@ -23,7 +23,7 @@ system.init = {}
 system.init.setVertex = function (address) {
     plexos.vtx = File.at(address)
     let promiseInit = new Promise(async () => {
-        await jsc.runLauncher("./apps/filesystem_desktop/desktop_lau.js",{addr:address})
+        await dll.runLauncher("./apps/filesystem_desktop/desktop_lau.js",{addr:address})
     })
     promiseInit.then( () => {
         Task.openInstance("Desktop").mem.grid.evaluateIconGrid()
@@ -84,7 +84,7 @@ function recreateFiles(dir, newDir) {
 
 function defineCore(){
     
-    if (jsc.storageAvailable('localStorage')) {
+    if (dll.storageAvailable('localStorage')) {
         
         if(window.localStorage.getItem("core")) {
             let jsonCore = JSON.parse(window.localStorage.core)

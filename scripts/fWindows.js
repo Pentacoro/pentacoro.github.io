@@ -284,7 +284,7 @@ class Window {
 	
 				document.onmouseup = closeDragWindow
 				document.onmousemove = windowDrag
-				jsc.iframeAntiHover(true)
+				dll.iframeAntiHover(true)
 			}
 		}
 		
@@ -308,7 +308,7 @@ class Window {
 			//stop moving when mouse button is released:
 			document.onmouseup = null
 			document.onmousemove = null
-			jsc.iframeAntiHover(false)
+			dll.iframeAntiHover(false)
 		}
     }
     size(){
@@ -345,7 +345,7 @@ class Window {
 			
 			document.onmouseup = stopResize
 			document.onmousemove = doResize
-			jsc.iframeAntiHover(true)
+			dll.iframeAntiHover(true)
 		}
 		
 		function doResize(e) {
@@ -401,7 +401,7 @@ class Window {
 		function stopResize() {
 			document.onmouseup = null
 			document.onmousemove = null
-			jsc.iframeAntiHover(false)
+			dll.iframeAntiHover(false)
 		}
     }
 	focus(bool){

@@ -9,7 +9,7 @@ mem.var.textarea = task.node.getElementsByTagName("textarea")[0]
 task.wndw.node.addEventListener("onfocus", e => {
     console.log(window.getSelection())
     mem.var.textarea.focus()
-    jsc.selectText(mem.var.textarea)
+    dll.selectText(mem.var.textarea)
 })
 task.wndw.node.addEventListener("blur", e => {
     mem.var.selectionRange = window.getSelection()

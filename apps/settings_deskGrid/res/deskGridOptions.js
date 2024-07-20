@@ -40,7 +40,7 @@ mem.editContent = function(option){
     value.setAttribute("contenteditable", "true");
     value.setAttribute("spellcheck", "false");
 
-    jsc.selectText(value)
+    dll.selectText(value)
 
     button.children[0].classList.add("hidden");
     button.children[1].classList.remove("hidden");
@@ -238,7 +238,7 @@ mem.var.graph2images =
     "./assets/deskIconGridGraph2/deskIconGridGraph2_03-3.svg",
 ]
 for (image of mem.var.graph2images){
-    jsc.preloadImage(image);
+    dll.preloadImage(image);
 }
 
 //set values to graph html

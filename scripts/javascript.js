@@ -1,4 +1,4 @@
-jsc.ajax = function(method, url, callback = null, arg = null){
+dll.ajax = function(method, url, callback = null, arg = null){
     let xhr = new XMLHttpRequest;
     xhr.open(method,url)
     xhr.onload = () => {
@@ -13,7 +13,7 @@ jsc.ajax = function(method, url, callback = null, arg = null){
     xhr.send();
 }
 
-jsc.ajaxReturn = function(method, url) {
+dll.ajaxReturn = function(method, url) {
     return new Promise((resolve, reject) => {
         let xhr = new XMLHttpRequest
         xhr.open(method, url)
@@ -39,12 +39,12 @@ jsc.ajaxReturn = function(method, url) {
     })
 }
 
-jsc.genRanHex = size => [...Array(size)].map(() => Math.floor(Math.random() * 16).toString(16)).join('');
+dll.genRanHex = size => [...Array(size)].map(() => Math.floor(Math.random() * 16).toString(16)).join('');
 
-jsc.displayComponent = async function({url, taskid, container, replacementPairs, env}){
-    let appHTML = jsc.ajaxReturn("get", url)
+dll.displayComponent = async function({url, taskid, container, replacementPairs, env}){
+    let appHTML = dll.ajaxReturn("get", url)
     await appHTML.then( async data => {
-        await jsc.loadFront({
+        await dll.loadFront({
             url:url,
             taskid:taskid,
             data:data,
@@ -56,7 +56,7 @@ jsc.displayComponent = async function({url, taskid, container, replacementPairs,
     await appHTML.catch( e => {
         system.mem.var.error = e
         system.mem.var.errorB = [["Okay"]]
-        jsc.runLauncher("./apps/system_popup/popup_lau.js",
+        dll.runLauncher("./apps/system_popup/popup_lau.js",
             {
                 name:e.status,
                 type:false,
@@ -69,10 +69,10 @@ jsc.displayComponent = async function({url, taskid, container, replacementPairs,
         Task.id(id).end()
     })
 }
-jsc.loadFront = async function({url, taskid, data, replacementPairs = [], container, env = null}){
-    data = jsc.repDir(data,url)
-    data = jsc.repTid(data,taskid)
-    if (replacementPairs.length > 0) data = jsc.repArr(data,replacementPairs)
+dll.loadFront = async function({url, taskid, data, replacementPairs = [], container, env = null}){
+    data = dll.repDir(data,url)
+    data = dll.repTid(data,taskid)
+    if (replacementPairs.length > 0) data = dll.repArr(data,replacementPairs)
     async function stylizeData(data) {
         return new Promise (async (resolve, reject) => {
             let promiseStyleArray = []
@@ -84,7 +84,7 @@ jsc.loadFront = async function({url, taskid, data, replacementPairs = [], contai
                 return new Promise (async (resolve, reject) => {
                     if (link.getAttribute("rel")=="stylesheet") {
                         link.remove()
-                        let stylesheet = await jsc.ajaxReturn("get", link.getAttribute("href"))
+                        let stylesheet = await dll.ajaxReturn("get", link.getAttribute("href"))
                         resolve("/*" + link.getAttribute("href") + "*/" + stylesheet)
                     } 
                 })
@@ -104,9 +104,9 @@ jsc.loadFront = async function({url, taskid, data, replacementPairs = [], contai
             //newStyleElement.classList.add("ID_"+taskid)
             //document.head.appendChild(newStyleElement)
             for(let css of styleContents) {
-                css = jsc.repTid(css,taskid)
-                css = jsc.repDir(css,url)
-                if (replacementPairs) css = jsc.repArr(css, replacementPairs)
+                css = dll.repTid(css,taskid)
+                css = dll.repDir(css,url)
+                if (replacementPairs) css = dll.repArr(css, replacementPairs)
                 cont.getElementsByTagName("style")[0].innerHTML = cont.getElementsByTagName("style")[0].innerText + css
                 //newStyleElement.innerHTML = cont.getElementsByTagName("style")[0].innerText
             }
@@ -125,18 +125,18 @@ jsc.loadFront = async function({url, taskid, data, replacementPairs = [], contai
                         js = script.innerText
                         if (!script.classList.contains("imported")) {
                             imported = false
-                            js = jsc.repDir(js,url)
-                            js = jsc.repTid(js,taskid)
-                            js = jsc.repArr(js,replacementPairs)
+                            js = dll.repDir(js,url)
+                            js = dll.repTid(js,taskid)
+                            js = dll.repArr(js,replacementPairs)
                         }
                         //await eval("const runScript = async function(){return new Promise (async (resolve, reject)=>{\n"+js+"\nresolve()})}; runScript();console.log('wow')")
                     } else if (script.getAttribute("src")) {
-                        js = await jsc.ajaxReturn("get", script.getAttribute("src"))
+                        js = await dll.ajaxReturn("get", script.getAttribute("src"))
                         if (!script.classList.contains("imported")) {
                             imported = false
-                            js = jsc.repDir(js,url)
-                            js = jsc.repTid(js,taskid)
-                            js = jsc.repArr(js,replacementPairs)
+                            js = dll.repDir(js,url)
+                            js = dll.repTid(js,taskid)
+                            js = dll.repArr(js,replacementPairs)
                         }
                         //await eval("const runScript = async function(){return new Promise (async (resolve, reject)=>{\n"+js+"\nresolve()})}; runScript();console.log('wow')")
                     }
@@ -161,7 +161,7 @@ jsc.loadFront = async function({url, taskid, data, replacementPairs = [], contai
                     if (Task.id(taskid)) system.mem.focus(Task.id(taskid))
                 } catch (e) {
                     e.taskId = taskid
-                    jsc.evalErrorPopup
+                    dll.evalErrorPopup
                     (
                         js,
                         "The script number <i>"+count+"</i> from the <i>"+Task.id(taskid).name+"</i> application failed evaluation.",
@@ -185,7 +185,7 @@ jsc.loadFront = async function({url, taskid, data, replacementPairs = [], contai
     container.style.opacity = 1
     if (env) env.loader(false)
 }
-jsc.runLauncher = async function(url, args = {}, env = null, name = ""){
+dll.runLauncher = async function(url, args = {}, env = null, name = ""){
     if (!Task.canInstance(name)) {
         system.mem.focus(Task.openInstance(name))
         return
@@ -195,14 +195,14 @@ jsc.runLauncher = async function(url, args = {}, env = null, name = ""){
     if (env) env.loader(true)
 
     //generate task id
-    let appID = { id : jsc.genRanHex(16)}
+    let appID = { id : dll.genRanHex(16)}
     Task.checkUniqueID(appID)
 
     //place arguments on system task
     system.mem.lau[appID.id] = args
 
     //get _lau file
-    let appLauncher = jsc.ajaxReturn("get", url)
+    let appLauncher = dll.ajaxReturn("get", url)
 
     appLauncher.then( oData => {
         nData = oData.replace("let params = {}", "let params = system.mem.lau['"+appID.id+"']")
@@ -215,7 +215,7 @@ jsc.runLauncher = async function(url, args = {}, env = null, name = ""){
             eval("const runScript = async function(){return new Promise (async (resolve, reject)=>{"+nData+";resolve()})}; runScript();")
             if (env) env.loader(false)
         } catch (e) {
-            jsc.evalErrorPopup
+            dll.evalErrorPopup
             (
                 nData,
                 "The application launcher at: <i>'" + url + "'</i> failed evaluation.",
@@ -227,7 +227,7 @@ jsc.runLauncher = async function(url, args = {}, env = null, name = ""){
         system.mem.var.error = e
         system.mem.var.errorB = [["Okay"]]
         
-        jsc.runLauncher("./apps/system_popup/popup_lau.js",
+        dll.runLauncher("./apps/system_popup/popup_lau.js",
             {
                 name:e.status,
                 type:false,
@@ -243,7 +243,7 @@ jsc.runLauncher = async function(url, args = {}, env = null, name = ""){
     })
 }
 
-jsc.evalErrorPopup = function(code, desc, err) {
+dll.evalErrorPopup = function(code, desc, err) {
     //find and color-code the problematic line
     let coder = ""
     coder = code.replace(/[<]/g, "&lt;")
@@ -260,7 +260,7 @@ jsc.evalErrorPopup = function(code, desc, err) {
     //add it to typeError stack
     err.script = colour
     system.mem.var.error = err
-    jsc.runLauncher("./apps/system_popup/popup_lau.js",
+    dll.runLauncher("./apps/system_popup/popup_lau.js",
         {
             name:"Error",
             type:true,
@@ -293,7 +293,7 @@ Array.prototype.remove = function(value) {
     return newArr
 }
 
-jsc.renameKey = function (obj, oldName, newName) {
+dll.renameKey = function (obj, oldName, newName) {
     if(!obj.hasOwnProperty(oldName)) {
         return false;
     }
@@ -303,15 +303,15 @@ jsc.renameKey = function (obj, oldName, newName) {
     return true;
 }
 
-jsc.repDir = function (data, parDir){ //replace asset directory for local apps
+dll.repDir = function (data, parDir){ //replace asset directory for local apps
     let newData = data.replace(/\.\//g, parDir.substr(0, parDir.lastIndexOf("/")) + "/")
     return newData
 }
-jsc.repTid = function (data, taskId){ //place the task id on element classList for apps that allow multiple windows
+dll.repTid = function (data, taskId){ //place the task id on element classList for apps that allow multiple windows
     let newData = data.replace(/TASKID/g, taskId)
     return newData
 }
-jsc.repArr = function (data, replacementPairs) { //replace all required instances listed as regex and text pairs
+dll.repArr = function (data, replacementPairs) { //replace all required instances listed as regex and text pairs
     let newData = data
     for (pair of replacementPairs) {
         newData = newData.replace(pair.regex,pair.text)
@@ -319,12 +319,12 @@ jsc.repArr = function (data, replacementPairs) { //replace all required instance
     return newData
 }
 
-jsc.preloadImage = function(url){
+dll.preloadImage = function(url){
     let img=new Image()
     img.src=url
 }
 
-jsc.getValue = function(key) {
+dll.getValue = function(key) {
     let value = null 
     let pairs = []
     let items = location.search.substr(1).split("&")
@@ -335,7 +335,7 @@ jsc.getValue = function(key) {
     return value
 }
 
-jsc.storageAvailable = function(type) {
+dll.storageAvailable = function(type) {
     let storage
     try {
         storage = window[type]
@@ -360,7 +360,7 @@ jsc.storageAvailable = function(type) {
     }
 }
 
-jsc.wait = function (ms){
+dll.wait = function (ms){
     let start = new Date().getTime()
     let end = start
     while(end < start + ms) {
@@ -368,7 +368,7 @@ jsc.wait = function (ms){
     }
 }
 
-jsc.iframeAntiHover = function (bool) {
+dll.iframeAntiHover = function (bool) {
     let tagIframe = document.getElementsByTagName("iframe")
 
     for (i = 0; i < tagIframe.length; i++) {
@@ -381,12 +381,12 @@ jsc.iframeAntiHover = function (bool) {
     }
 }
 
-jsc.selectRange = function (range) {
+dll.selectRange = function (range) {
     const selection = window.getSelection()
     selection.removeAllRanges()
     selection.addRange(range)
 }
-jsc.selectText = function (node,from=null,to=null) {
+dll.selectText = function (node,from=null,to=null) {
     if (window.getSelection) {
         const selection = window.getSelection()
         const range = document.createRange()
@@ -406,12 +406,12 @@ jsc.selectText = function (node,from=null,to=null) {
     }
 }
 
-jsc.clearSelection = function () {
+dll.clearSelection = function () {
     if (window.getSelection) {window.getSelection().removeAllRanges()}
     else if (document.selection) {document.selection.empty()}
 }
 
-jsc.getFavicon = function (dom) {
+dll.getFavicon = function (dom) {
     let favicon = null
     let nodeList = dom.getElementsByTagName("link")
     for (let i = 0; i < nodeList.length; i++)
@@ -424,7 +424,7 @@ jsc.getFavicon = function (dom) {
     return favicon
 }
 
-jsc.areRectanglesOverlap = function (div1, div2) {
+dll.areRectanglesOverlap = function (div1, div2) {
 	let x1 = div1.offsetLeft;
 	let y1 = div1.offsetTop;
 	let h1 = y1 + div1.offsetHeight;
@@ -439,5 +439,11 @@ jsc.areRectanglesOverlap = function (div1, div2) {
 	return true;
 }
 
-
-//document.onselectionchange = () => {console.log("New selection made");selection = document.getSelection();console.log(selection);};
+dll.nullifyOnEvents = function(node) {
+    document.body.oncontextmenu = null
+    document.body.onmousedown = null
+    document.body.onclick = null
+    node.onkeydown = null
+    window.onkeydown = null
+    window.onkeyup = null
+}

@@ -21,11 +21,10 @@ mem.menubarRender = function () {
             clientX:bound.left,
             contextVar:mem.menubar
         }
-        let menuSections = mem.menubar.contextOptions(button).menuSections
-        let menuOptions  = mem.menubar.contextOptions(button).menuOptions
-        openMenu(param,button,menuSections,menuOptions)
+        let menu = mem.menubar.contextOptions(button).menu
+        ContextMenu.open(param,button,menu)
         button.onmousedown = e => {
-            closeMenu()
+            ContextMenu.close()
             buttonMenuClose(e)
         }
     }

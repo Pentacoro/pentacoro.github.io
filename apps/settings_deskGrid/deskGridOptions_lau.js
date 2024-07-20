@@ -46,13 +46,13 @@ try {
 
     ini()
 
-    jsc.displayComponent({
+    dll.displayComponent({
         url:url,
         taskid:id,
         container:task.node,
     })
 } catch (e) {
-    jsc.evalErrorPopup
+    dll.evalErrorPopup
     (
         document.getElementById("appLauncher").getElementsByTagName("script")[0].innerText,
         "The application launcher at: <i>'" + lau + "'</i> failed evaluation.",

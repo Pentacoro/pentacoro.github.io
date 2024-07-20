@@ -22,7 +22,7 @@ class Icon {
         this.drop = []
     }
     clic(){
-        this.node.oncontextmenu = e => openMenu(e,this)
+        this.node.oncontextmenu = e => ContextMenu.open(e,this)
         this.node.onmousedown = e => this.drag(e);
         this.node.ondblclick = e => File.at(this.file).open()
     }
@@ -147,7 +147,7 @@ class File {
             }
         }
 
-        jsc.renameKey(parent.cont, this.name, rename)
+        dll.renameKey(parent.cont, this.name, rename)
         let renamedFile = parent.cont[rename]
         let extension = (this.conf.type==="Directory") ? "dir" : (rename.match(/\.(?:.(?<!\.))+$/s)!=null) ? rename.match(/(?:.(?<!\.))+$/s)[0] : ""
         renamedFile.name = rename
@@ -166,7 +166,7 @@ class File {
     }
 
     open() {
-        jsc.runLauncher(cfg.apps[this.conf.exte], {name:this.name, addr:this.conf.addr}, system.mem.var.envfocus)
+        dll.runLauncher(cfg.apps[this.conf.exte], {name:this.name, addr:this.conf.addr}, system.mem.var.envfocus)
     }
 }
 

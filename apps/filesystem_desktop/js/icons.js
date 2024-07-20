@@ -222,7 +222,7 @@ mem.class.IconDesk = class IconDesk {
         this.node.childNodes[1].innerText = this.name
     }
     clic(){
-        this.node.oncontextmenu = e => openMenu(e,this)
+        this.node.oncontextmenu = e => ContextMenu.open(e,this)
         this.node.onmousedown = e => this.drag(e);
         this.node.ondblclick = e => File.at(this.file).open()
     }
@@ -278,7 +278,7 @@ mem.class.IconDesk = class IconDesk {
             
             document.onmouseup = closeDragIcon
             if(e.button == 0) document.onmousemove = iconDrag
-            jsc.iframeAntiHover(true)
+            dll.iframeAntiHover(true)
         }								 
     
         function iconDrag(e) {
@@ -314,7 +314,7 @@ mem.class.IconDesk = class IconDesk {
             //stop moving when mouse button is released:
             document.onmouseup = null
             document.onmousemove = null
-            jsc.iframeAntiHover(false)
+            dll.iframeAntiHover(false)
             
             let iconsToValidate = []
     
@@ -378,7 +378,7 @@ mem.class.IconDesk = class IconDesk {
         exte = (exte!=null && exte.length > 0) ? exte[0] : ""
         this.statNode(1)
         this.stat = 0
-        jsc.selectText(iconText,0, iconText.innerText.replace(exte,"").length)
+        dll.selectText(iconText,0, iconText.innerText.replace(exte,"").length)
     
         iconText.style.textShadow = "none"
         iconText.style.display = "block"
@@ -400,9 +400,9 @@ mem.class.IconDesk = class IconDesk {
             iconText.style.textShadow = ""
     
             iconText.blur();
-            jsc.clearSelection();
+            dll.clearSelection();
     
-            nullifyOnEvents(iconText)
+            dll.nullifyOnEvents(iconText)
         }
     
         setTimeout( () => {
@@ -415,8 +415,8 @@ mem.class.IconDesk = class IconDesk {
         }
         function iconRenaming(){
             if(
-                !jsc.iconNameExists(iconText.textContent, editFile.conf.icon, editFrom) &&
-                jsc.validIconName(iconText.textContent)
+                !dll.iconNameExists(iconText.textContent, editFile.conf.icon, editFrom) &&
+                dll.validIconName(iconText.textContent)
             ) {
                 //if the name is allowed --------------------|
                 system.mem.var.shSelect = true;
@@ -456,9 +456,9 @@ mem.class.IconDesk = class IconDesk {
     
                 thisIcon.statNode(0)
                 iconText.blur()
-                jsc.clearSelection()
+                dll.clearSelection()
     
-                nullifyOnEvents(iconText)
+                dll.nullifyOnEvents(iconText)
             } else {
                 //if the name not allowed --------------------|
                 system.mem.var.shSelect = false
@@ -487,7 +487,7 @@ mem.class.IconDesk = class IconDesk {
                     thisIcon.statNode(1)
                     thisIcon.stat = 0
     
-                    jsc.selectText(iconText)
+                    dll.selectText(iconText)
                 }
             }
         }

@@ -1,5 +1,5 @@
-if (jsc.getValue("core")) {
-    let corePromise = jsc.ajaxReturn("GET",jsc.getValue("core"))
+if (dll.getValue("core")) {
+    let corePromise = dll.ajaxReturn("GET",dll.getValue("core"))
     corePromise
     .then(data=>{
         if (data.status >= 200 && data.status < 300) throw data

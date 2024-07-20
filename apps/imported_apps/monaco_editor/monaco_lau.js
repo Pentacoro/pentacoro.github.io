@@ -51,14 +51,14 @@ try {
         {regex:/ARG_FILEADDR/g,text:params.addr},
     ]
 
-    jsc.displayComponent({
+    dll.displayComponent({
         url:url,
         taskid:id,
         replacementPairs:replacementPairs,
         container:task.node
     })
 } catch (e) {
-    jsc.evalErrorPopup(
+    dll.evalErrorPopup(
         document.getElementById("appLauncher").getElementsByTagName("script")[0].innerText,
         "The application launcher at: <i>'" + lau + "'</i> failed evaluation.",
         e

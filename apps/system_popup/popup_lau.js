@@ -61,7 +61,7 @@ try {
         {regex:/arg\[5\]/,text:JSON.stringify(params.icon)},
     ]
 
-    jsc.displayComponent({
+    dll.displayComponent({
         url:url,
         taskid:id,
         replacementPairs:replacementPairs,

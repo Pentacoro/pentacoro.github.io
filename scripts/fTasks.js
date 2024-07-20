@@ -2,7 +2,7 @@ class Task {
     static checkUniqueID(task){
         for (let i = 0; i < plexos.Tasks.length; i++){
             if (plexos.Tasks[i].id == task.id && plexos.Tasks[i] != task){
-                task.id = jsc.genRanHex(16)
+                task.id = dll.genRanHex(16)
                 Task.checkUniqueID(task)
             }
         }
@@ -60,7 +60,7 @@ class Task {
         this.mem = {
             var: {} 
         }
-        this.id = (p.id !== null) ? p.id : jsc.genRanHex(16)
+        this.id = (p.id !== null) ? p.id : dll.genRanHex(16)
         Task.checkUniqueID(this)
         
         //end task
@@ -100,7 +100,7 @@ class Task {
 			let taskRange = this.mem.selectionRange
 			if (taskRange && taskRange.commonAncestorContainer instanceof HTMLElement) {
 				taskRange.commonAncestorContainer.focus()
-				//jsc.selectRange(taskRange)
+				//dll.selectRange(taskRange)
 			} else {
 				taskRange = null
 			}
@@ -116,7 +116,7 @@ class Task {
 			}
 			if (this.mem.selectionRange && this.mem.selectionRange.commonAncestorContainer instanceof HTMLElement) {
 				this.mem.selectionRange.commonAncestorContainer.blur()
-				//jsc.selectRange(taskRange)
+				//dll.selectRange(taskRange)
 			}
             this.wndw.focus(false)
 			this.node.blur()

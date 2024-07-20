@@ -93,7 +93,7 @@ mem.menubar.contextOptions = function (button) {
             }
     }
 }
-await jsc.displayComponent({
+await dll.displayComponent({
     url:"/apps/system/components/menubar/menubar.html",
     taskid:task.id,
     container:document.getElementsByClassName("component_menubar ID_TASKID")[0]

@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------|
-function jsc.areRectanglesOverlap(div1, div2) {
+function dll.areRectanglesOverlap(div1, div2) {
 	var x1 = div1.offsetLeft;
 	var y1 = div1.offsetTop;
 	var h1 = y1 + div1.offsetHeight;
@@ -549,7 +549,7 @@ function selectBox() {
 		function isUnderSBox(icon,sBox) {
 			//console.log('hello');
 			
-			if (jsc.areRectanglesOverlap(icon,sBox)) {
+			if (dll.areRectanglesOverlap(icon,sBox)) {
 				//light up colliding folder hover border:
 				icon.className += " active";
 				icon.style.border = '3px dotted rgb(255,255,255,0.16)';

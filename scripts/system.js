@@ -5,7 +5,7 @@ var plexos = {
     vtx: {},
     reg: {},
     cfg: {},
-    jsc: {},
+    dll: {},
 }
 
 var Windows = plexos.Windows
@@ -14,7 +14,7 @@ var Sound = plexos.Sound
 var vtx = plexos.vtx
 var reg = plexos.reg
 var cfg = plexos.cfg
-var jsc = plexos.jsc
+var dll = plexos.dll
 
 plexos.Sound.push(new Audio("assets/sound/Norrum - Interfaz Click v1.mp3"))
 plexos.Sound.push(new Audio("assets/sound/Norrum - Interfaz Item errOr v1.mp3"))

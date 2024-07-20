@@ -46,7 +46,7 @@ mem.desktopInit = function (dir, id, act = null) {
         mem.var.error = e
         mem.var.errorB = [["Okay"]]
         console.log(e)
-        jsc.runLauncher("/apps/system_popup/popup_lau.js",
+        dll.runLauncher("/apps/system_popup/popup_lau.js",
             {
              name:"Error",
              type:false,
@@ -113,7 +113,7 @@ mem.new = function(e, _this, Type, name){
 	let typeDefaults = File.typeDefaults(Type)
 
 	function createDesktopFile(name) {
-		if(!jsc.iconNameExists(name, null, editFrom)) {
+		if(!dll.iconNameExists(name, null, editFrom)) {
 			let newFileIcon = new Icon (
 				{
 					imag : typeDefaults.iconImag,

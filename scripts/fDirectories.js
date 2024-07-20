@@ -111,14 +111,14 @@ class Directory extends File {
 
 //--------------------------------------------------------------------------|
 
-jsc.isDirOpen = function (addr) {
+dll.isDirOpen = function (addr) {
     for (task of plexos.Tasks) {
         if (task.apps === "exp" && task.mem.address === addr) return true
     }
     return false
 }
 
-jsc.validIconName = function (string) {
+dll.validIconName = function (string) {
     if (
         string.slice(-1) != "." &&
         string != "" &&
@@ -127,7 +127,7 @@ jsc.validIconName = function (string) {
     return false
 }
 
-jsc.iconNameExists = function (text, _this, from){
+dll.iconNameExists = function (text, _this, from){
     for ([name, file] of Object.entries(from.cont)){
         if (file.name == text && file.conf.icon != _this) {
             return true

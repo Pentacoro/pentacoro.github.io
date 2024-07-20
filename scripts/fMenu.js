@@ -1,56 +1,83 @@
-class contextOption {
-    constructor(name, icon, func, able = true){
-        this.name = name
-        this.icon = icon
-        this.func = func 
-        this.able = able
-    }
-}
-class contextSubmenu {
-    constructor(name, icon, cont){
-        this.name = name
-        this.icon = icon
-        this.cont = [new contextSection("sub")]
-        this.cont[0].item = cont 
-    }
-}
-class contextSection {
-    constructor(name = null, item = []){
-        this.name = name
-        this.item = item
-    }
-}
+class ContextMenu {
+    static configAddr = "/config/context"
+    static contextVar = null
+    static subMenus   = 0
+    static target     = null
+    static node       = null
+    static menu       = []
 
-//DROP MENU----------------------------------------------------------------------------|
-function createMenu(e, target, sections, options) {
-    let menu = []
-    switch (target.constructor.name) {
-        case "IconDesk":
-            menu = drop.fileDrop(e,target,sections,options)
-            break
-        case "IconDir":
-            menu = drop.dirDrop(e,target,sections,options)
-            break
-        case "Task":
-            menu = drop.taskDrop(e,target,sections,options)
-            break
-        default: menu = drop.taskDrop(e,target,sections,options)
+    //open context menu
+    static open = function(e, target, menu=null) {
+        if (e.preventDefault) e.preventDefault()
+        ContextMenu.close()
+
+        ContextMenu.target = target
+        let contextVar = e.contextVar || null
+        
+        let newMenu = document.createElement("div")
+        newMenu.setAttribute("class", "clickContext sub_0 shadow")
+        document.getElementById("contextLayer").appendChild(newMenu)
+        ContextMenu.node = newMenu
+
+        newMenu.style.top  = e.clientY + "px"
+        newMenu.style.left = e.clientX + "px"
+
+        //handle hover context transfer
+        if (contextVar) {
+            if (contextVar.continuousContext!=undefined) contextVar.continuousContext = true
+            contextVar.targetElement.dispatchEvent(eventMenuOpen)
+            ContextMenu.contextVar = contextVar
+        }
+
+        let contextArray = ContextMenu.applyTemplates(e, target, menu)
+        ContextMenu.draw(newMenu, contextArray)
     }
-    return menu
-}
+    //close all context menus
+    static close = function() {
+        //handle hover context transfer
+        if (ContextMenu.contextVar) {
+            if (ContextMenu.contextVar.continuousContext!=undefined) ContextMenu.contextVar.continuousContext = false
+            ContextMenu.contextVar.targetElement.dispatchEvent(eventMenuClose)
+            ContextMenu.contextVar = null
+        }
+        document.getElementById("contextLayer").innerHTML = ""
+        ContextMenu.subMenus = 0
+        ContextMenu.target   = null
+        ContextMenu.node     = null
+        ContextMenu.menu     = []
+    }
+    static applyTemplates = function (e, target, menu=null) {
+        let menuTemplates = eval(File.at(ContextMenu.configAddr + "/templates.json").data)
+        //find matching template class
+        for (let template of menuTemplates) {
+            if (target.constructor.name === template.class) {
+                if (menu!==null) template.menu.map(section=>{
+                    for (let item of menu) if (section.name===item.name) {
+                        section.list = item.list
+                    }
+                })
+                if (menu!==null) for (let item of menu) {
+                    if (!template.menu.find(section=>section.name===item.name)) template.menu.splice(template.menu.indexOf(template.menu.find(section=>section.name==="null"))+1,0,item)
+                }
+                template.menu = template.menu.filter(section=>section.name!=="null")
+                return template.menu
+            }
+        }
+        //if for failed to return use default
+        if (menu) return menu
+        //if there's no menu, use default template
+        return menuTemplates[menuTemplates.indexOf(menuTemplates.find(temp=>temp.class==="Default"))]
+    }
 
-let subMenus = 0
-
-function makeDropContext(e = null, task, node, contextArray) {
-    drawMenu(contextArray, node)
-
-    function drawMenu(arr, node) {
+    static draw = function(node, arr) {
         //id-number-magic
         let x = 0
         let z = 1
+
+        let classInt = 0
         
         //for each section
-        for(section of arr) {
+        for(let section of arr) {
             let newSection = document.createElement("div")
             newSection.classList.add("contextSection")
 
@@ -58,8 +85,8 @@ function makeDropContext(e = null, task, node, contextArray) {
             let y = 0
 
             //for each item
-            for(item of section.item) {
-                let id = "drop_" + subMenus + "_" + (x + y + z)
+            for(let item of section.list) {
+                let id = "drop_" + ContextMenu.subMenus + "_" + (x + y + z)
 
                 let newButton = document.createElement("div")
                 newButton.id = id
@@ -76,24 +103,24 @@ function makeDropContext(e = null, task, node, contextArray) {
                 newSection.appendChild(newButton)
 
                 newButton.onclick = e => e.preventDefault()
-                if (arr[x].item[y].func != undefined) {
+                if (typeof arr[x].list[y].func  === "function") {
                     let index = [x,y]
-                    let nbttn = arr[index[0]].item[index[1]]
-                    let subms = subMenus
-                    if (nbttn.able){
+                    let nbttn = arr[index[0]].list[index[1]]
+                    let subms = ContextMenu.subMenus
+                    if (nbttn.bool==undefined||nbttn.bool){
                         newButton.onclick = e => {
                             e.preventDefault()
                             nbttn.func()
-                            closeMenu()
+                            ContextMenu.close()
                         }
                     } else {
                         newButton.classList.add("disabled")
                     }
                     newButton.onmouseover = e => closeSubOpt(subms)
-                } else if (arr[x].item[y].cont != undefined) {
+                } else if (Array.isArray(arr[x].list[y].func)) {
                     let index = [x,y]
-                    let nbttn = arr[index[0]].item[index[1]]
-                    let subms = subMenus
+                    let nbttn = arr[index[0]].list[index[1]]
+                    let subms = ContextMenu.subMenus
                     let arg = x+y+z
                     newButton.onmouseover = e => {
                         closeSubOpt(subms)
@@ -115,7 +142,7 @@ function makeDropContext(e = null, task, node, contextArray) {
             node.appendChild(newSection)
 
             //id-number-magic
-            z = z + (section.item.length - 1)
+            z = z + (section.list.length - 1)
             x++
         }
         //bottom border
@@ -133,18 +160,18 @@ function makeDropContext(e = null, task, node, contextArray) {
             }
             //references to main menu and submenu option
             let main  = document.getElementsByClassName("clickContext sub_0")[0]
-            let menu  = document.getElementsByClassName("clickContext sub_" + subMenus)[0]
+            let menu  = document.getElementsByClassName("clickContext sub_" + ContextMenu.subMenus)[0]
             let rect1 = menu.getBoundingClientRect()
-            let from  = document.getElementById("drop_" + subMenus + "_" + optPos)
+            let from  = document.getElementById("drop_" + ContextMenu.subMenus + "_" + optPos)
             let rect2 = from.getBoundingClientRect()
 
-            subMenus++
+            ContextMenu.subMenus++
 
             //make submenu option stay hover colored
             if (!from.classList.contains("hover")) from.classList.add("hover")
 
             let newSub = document.createElement("div")
-            newSub.setAttribute("class", "clickContext sub_" + subMenus + " subMenu shadow")
+            newSub.setAttribute("class", "clickContext sub_" + ContextMenu.subMenus + " subMenu shadow")
             document.getElementById("contextLayer").appendChild(newSub)
 
             //position of submenu
@@ -152,199 +179,30 @@ function makeDropContext(e = null, task, node, contextArray) {
             newSub.style.top   = rect2.top - 1 + "px"
             newSub.style.minWidth = main.offsetWidth - main.offsetWidth / 3 + "px"
 
-            drawMenu(opt.cont, newSub, true)
+            ContextMenu.draw(newSub, opt.func)
         }
 
         function closeSubOpt(trigger) {
             //
             let delArr = []
             //add every submenu up to trigger to deletion queue
-            for (menu of document.getElementsByClassName("clickContext")) {
+            for (let menu of document.getElementsByClassName("clickContext")) {
                 classInt = menu.classList[1].match(/(\d+)/)[0]
                 if (classInt > trigger) {
                     delArr.push(menu)
                 }
             }
-            for (item of delArr) {
+            for (let item of delArr) {
                 item.parentElement.removeChild(item)
             }
             //remove hover class from previous menu
-            for (sect of document.getElementsByClassName("sub_"+(trigger))[0].children){
-                for (opt of sect.children) {
+            for (let sect of document.getElementsByClassName("sub_"+(trigger))[0].children){
+                for (let opt of sect.children) {
                     if (opt.classList.contains("hover")) opt.classList.remove("hover")
                 }
             }
         
-            subMenus = trigger
+            ContextMenu.subMenus = trigger
         }
     }
 }
-
-function hideDropContext() {
-    let menu = document.getElementsByClassName("clickContext")[0]
-    menu.parentElement.removeChild(menu)
-}
-//----------------------------------------------------------------------------DROP MENU|
-
-//close context menu on mousedown anywhere
-window.addEventListener("mousedown", (e) => {
-	if (e.target.parentElement.parentElement){
-		if(
-			e.target.parentElement.classList.contains("contextSection") == false && 
-			e.target.parentElement.parentElement.classList.contains("contextSection") == false &&
-            !e.target.contextMenu
-		) {
-			closeMenu()
-			jsc.clearSelection()
-		}
-	} else{
-		closeMenu()
-        jsc.clearSelection()
-	}
-});
-
-//open context menu
-function openMenu(e, obj, sections, options) {
-	if (e.preventDefault) e.preventDefault()
-    closeMenu()
-
-    let contextVar = e.contextVar || null
-    
-    let newMenu = document.createElement("div")
-    newMenu.setAttribute("class", "clickContext sub_0 shadow")
-    document.getElementById("contextLayer").appendChild(newMenu)
-
-    newMenu.style.top  = e.clientY + "px"
-    newMenu.style.left = e.clientX + "px"
-
-    if (contextVar) {
-        if (contextVar.continuousContext!=undefined) contextVar.continuousContext = true
-        contextVar.targetElement.dispatchEvent(eventMenuOpen)
-        drop.contextVar = contextVar
-    }
-
-    let contextArray = createMenu(e, obj, sections, options)
-	makeDropContext(e, obj, newMenu, contextArray)
-}
-
-//close all context menus
-function closeMenu() {
-    if (drop.contextVar) {
-        if (drop.contextVar.continuousContext!=undefined) drop.contextVar.continuousContext = false
-        drop.contextVar.targetElement.dispatchEvent(eventMenuClose)
-        drop.contextVar = null
-    }
-    document.getElementById("contextLayer").innerHTML = ""
-    subMenus = 0
-    drop.arr = []
-}
-
-//-------------------------------------------------------------------------------------|
-
-function iconProperties(e, _this){}
-//-------------------------------------------------------------------------------------|
-
-//-------------------------------------------------------------------------------------|
-
-function nullifyOnEvents(rawr) {
-    document.body.oncontextmenu = null
-    document.body.onmousedown = null
-    document.body.onclick = null
-    rawr.onkeydown = null
-    window.onkeydown = null
-    window.onkeyup = null
-}
-
-//-------------------------------------------------------------------------------------|
-plexos.reg.dropMenu = {}
-const drop = plexos.reg.dropMenu
-drop.var = {}
-drop.arr = []
-drop.section = function (name) {
-    return this.arr[this.arr.findIndex(obj => obj.name == name)]
-}
-//--------------------n //UNVERSAL TASK CUSTOM MENU
-drop.taskDrop = function (e,target,sectionList=null,optionList=null) {
-    if (sectionList && optionList) { 
-        for (section of sectionList) {
-            this.arr.push(new contextSection(section.name))
-        }
-        this.buildMenu(sectionList, optionList)
-    } else {
-        this.arr.push(new contextSection("info"))
-        this.section("info").item.push(new contextOption("Settings","url('assets/svg/contextMenu/settings2.svg')",(e) => {return}))
-        this.section("info").item.push(new contextOption("About","url('assets/svg/contextMenu/about.svg')",(e) => {return}))
-    }
-    return this.arr
-}
-//--------------------n //DIR ICON EXPLORER MENU
-drop.dirDrop = function (e,target,sectionList,optionList) {
-    let envfocus = system.mem.var.envfocus
-
-    this.arr.push(new contextSection("open"))
-    if (sectionList) { for (section of sectionList) {
-        drop.arr.push(new contextSection(section.name))
-    }}
-    this.arr.push(new contextSection("clip"))
-    this.arr.push(new contextSection("prop"))
-    
-    this.section("open").item.push(new contextOption("Open","url('assets/svg/contextMenu/open.svg')",() => target.open()))
-    this.section("open").item.push(new contextOption("New window","url('assets/svg/contextMenu/maximize.svg')",e => File.at(target.file).open(),File.at(target.file)!=undefined))
-
-    if (optionList) this.buildMenu(sectionList, optionList)
-    
-    this.section("clip").item.push(new contextOption("Cut","url('assets/svg/contextMenu/cut.svg')",() => iconCut(e),File.at(target.file)!=undefined))
-    this.section("clip").item.push(new contextOption("Copy","url('assets/svg/contextMenu/copy.svg')",() => iconCopy(e),File.at(target.file)!=undefined))
-    this.section("clip").item.push(new contextOption("Paste","url('assets/svg/contextMenu/paste.svg')",() => iconPaste(e),File.at(target.file)!=undefined))
-    
-    this.section("prop").item.push(new contextOption("Delete","url('assets/svg/contextMenu/delete.svg')",() => Task.deleteSelectedNodes(system.mem.var.envfocus.pocket)))
-    this.section("prop").item.push(new contextOption("Rename","url('assets/svg/contextMenu/rename.svg')",(e) => target.rename(e),File.at(target.file)!=undefined))
-    this.section("prop").item.push(new contextOption("Properties","url('assets/svg/contextMenu/properties.svg')",e => iconProperties(e),File.at(target.file)!=undefined))
-
-    return this.arr
-}
-//--------------------n //UNIVERSAL FILE MENU
-drop.fileDrop = function(e,target,sectionList,optionList) {
-    sectionList = sectionList || null
-    let envfocus = system.mem.var.envfocus 
-
-    this.arr.push(new contextSection("open"))
-    if (sectionList) { for (section of sectionList) {
-        drop.arr.push(new contextSection(section.name))
-    }}
-    this.arr.push(new contextSection("clip"))
-    this.arr.push(new contextSection("prop"))
-
-    this.section("open").item.push(new contextOption("Open","url('assets/svg/contextMenu/open.svg')",() => File.at(target.file).open()!=undefined))
-
-    if (optionList) this.buildMenu(sectionList, optionList)
-
-    this.section("clip").item.push(new contextOption("Cut","url('assets/svg/contextMenu/cut.svg')",() => iconCut(e),File.at(target.file)!=undefined))
-    this.section("clip").item.push(new contextOption("Copy","url('assets/svg/contextMenu/copy.svg')",() => iconCopy(e),File.at(target.file)!=undefined))
-    this.section("clip").item.push(new contextOption("Paste","url('assets/svg/contextMenu/paste.svg')",() => iconPaste(e),File.at(target.file)!=undefined))
-    
-    this.section("prop").item.push(new contextOption("Delete","url('assets/svg/contextMenu/delete.svg')",() => Task.deleteSelectedNodes(system.mem.var.envfocus.pocket)))
-    this.section("prop").item.push(new contextOption("Rename","url('assets/svg/contextMenu/rename.svg')",() => target.rename(e),File.at(target.file)!=undefined))
-    this.section("prop").item.push(new contextOption("Properties","url('assets/svg/contextMenu/properties.svg')",() => iconProperties(e),File.at(target.file)!=undefined))
-
-    return this.arr
-    //--------------------n
-}
-drop.buildMenu = function (sectionList, optionList) {
-    for (option of optionList) { for (section of sectionList) { if (section.name === option.section) {
-        this.section(section.name).item.push(this.buildContextObject(option))
-    }}}
-}
-drop.buildContextObject = function (option) {
-    //Check wether it's an option or a submenu
-            if (typeof option.func === "function") {
-        option.able = option.able!=undefined ? option.able : true
-        let contextOpt = new contextOption(option.name, option.icon, option.func, option.able)
-        return contextOpt
-    }  else if (Array.isArray(option.func)) {
-        let contextSub = new contextSubmenu(option.name, option.icon, option.func.map(opt=> this.buildContextObject(opt)))
-        return contextSub
-    }
-}
-
-//-------------------------------------------------------------------------------------|

@@ -182,7 +182,7 @@ class IconDir {
     }
     clic(){
         this.node.onmousedown = e => this.drag(e)
-        this.node.oncontextmenu = e => openMenu(e,this)
+        this.node.oncontextmenu = e => ContextMenu.open(e,this)
         this.node.ondblclick = e => this.open()
     }
     open(){
@@ -213,7 +213,7 @@ class IconDir {
         exte = (exte!=null && exte.length > 0) ? exte[0] : ""
         this.statNode(1)
         this.stat = 0
-        jsc.selectText(iconText,0, iconText.innerText.replace(exte,"").length)
+        dll.selectText(iconText,0, iconText.innerText.replace(exte,"").length)
     
         iconText.style.textShadow = "none"
         iconText.style.display = "block"
@@ -235,9 +235,9 @@ class IconDir {
             iconText.style.textShadow = ""
     
             iconText.blur();
-            jsc.clearSelection();
+            dll.clearSelection();
     
-            nullifyOnEvents(iconText)
+            dll.nullifyOnEvents(iconText)
         }
     
         setTimeout( () => {
@@ -250,8 +250,8 @@ class IconDir {
         }
         function iconRenaming(){
             if(
-                !jsc.iconNameExists(iconText.textContent, editFile.conf.icon, editFrom) &&
-                jsc.validIconName(iconText.textContent)
+                !dll.iconNameExists(iconText.textContent, editFile.conf.icon, editFrom) &&
+                dll.validIconName(iconText.textContent)
             ) {
                 //if the name is allowed --------------------|
                 system.mem.var.shSelect = true;
@@ -291,9 +291,9 @@ class IconDir {
     
                 thisIcon.statNode(0)
                 iconText.blur()
-                jsc.clearSelection()
+                dll.clearSelection()
     
-                nullifyOnEvents(iconText)
+                dll.nullifyOnEvents(iconText)
             } else {
                 //if the name not allowed --------------------|
                 system.mem.var.shSelect = false
@@ -322,7 +322,7 @@ class IconDir {
                     thisIcon.statNode(1)
                     thisIcon.stat = 0
     
-                    jsc.selectText(iconText)
+                    dll.selectText(iconText)
                 }
             }
         }
@@ -402,7 +402,7 @@ mem.explorerInit = function (dir, id, act = null) {
     } catch (e) {
         mem.var.error = e
         mem.var.errorB = [["Okay"]]
-        jsc.runLauncher("/apps/system_popup/popup_lau.js",
+        dll.runLauncher("/apps/system_popup/popup_lau.js",
             {
              name:"Error",
              type:false,
@@ -437,7 +437,7 @@ document.getElementsByClassName("parent ID_TASKID")[0].onclick = e => {
             } catch (e) {
                 mem.var.error  = e
                 mem.var.errorB = [["Okay"]]
-                jsc.runLauncher("/apps/system_popup/popup_lau.js",{name:"Error",type:false,title:"Couldn't load directory", description:"This directory seems to no longer exist. It might have been moved, or a parent directory been renamed",taskid:"TASKID",icon:""})
+                dll.runLauncher("/apps/system_popup/popup_lau.js",{name:"Error",type:false,title:"Couldn't load directory", description:"This directory seems to no longer exist. It might have been moved, or a parent directory been renamed",taskid:"TASKID",icon:""})
 
                 mem.explorerInit("", "TASKID")
             }
@@ -481,7 +481,7 @@ document.getElementsByClassName("list ID_TASKID")[0].oncontextmenu = e => {
             {section:"info", name:"About",icon:"url('assets/svg/contextMenu/about.svg')",func: () => {return} },
             {section:"info", name:"Properties",icon:"url('assets/svg/contextMenu/properties.svg')",func: () => {return} }
         ]
-        openMenu(e, task,menuSections,menuOptions)
+        ContextMenu.open(e, task,menuSections,menuOptions)
     }
 }
 
@@ -499,7 +499,7 @@ mem.new = function(e, _this, Type, name){
     let typeDefaults = File.typeDefaults(Type)
 
     function createExplorerFile(name) {
-		if(!jsc.iconNameExists(name, null, editFrom)) {
+		if(!dll.iconNameExists(name, null, editFrom)) {
             let newFileIcon = new Icon (
                 {
                     imag : typeDefaults.iconImag,

@@ -10,28 +10,45 @@ const eventMenuClose = new Event ("closemenu")
 
 //----------------------------------------------Custom Events|
 
-if (jsc.storageAvailable('localStorage')) {
+//close context menu on mousedown anywhere
+window.addEventListener("mousedown", (e) => {
+	if (e.target.parentElement.parentElement){
+		if(
+			e.target.parentElement.classList.contains("contextSection") == false && 
+			e.target.parentElement.parentElement.classList.contains("contextSection") == false &&
+            !e.target.contextMenu
+		) {
+			ContextMenu.close()
+			dll.clearSelection()
+		}
+	} else{
+		ContextMenu.close()
+        dll.clearSelection()
+	}
+})
+
+if (dll.storageAvailable('localStorage')) {
         
     // Yippee! We can use localStorage awesomeness
     window.addEventListener("keydown", e => {
         if (e.key === "," && e.ctrlKey) {  
             e.preventDefault()
             window.localStorage.core = JSON.stringify(core)
-            console.log("Saved to localStorage")
+            alert("Saved to localStorage")
         } 
     })
     window.addEventListener("keydown", e => {
         if (e.key === "." && e.ctrlKey) {  
             e.preventDefault()
             delete window.localStorage.core
-            console.log("Cleared localStorage")
+            alert("Cleared localStorage")
         } 
     })
     window.addEventListener("keydown", e => {
         if (e.key === "s" && e.ctrlKey) {  
             e.preventDefault()
-            console.log("Downloading Core JSON")
             downloadCoreJSON()
+            alert("Downloading Core JSON")
         } 
     })
     window.addEventListener("keyrelease", e => {
