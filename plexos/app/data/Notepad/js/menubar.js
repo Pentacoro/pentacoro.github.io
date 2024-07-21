@@ -94,7 +94,7 @@ mem.menubar.contextOptions = function (button) {
     }
 }
 await dll.displayComponent({
-    url:"/plexos/res/images/components/menubar/menubar.html",
+    url:"/plexos/res/components/menubar/menubar.html",
     taskid:task.id,
     container:document.getElementsByClassName("component_menubar ID_TASKID")[0]
 })
