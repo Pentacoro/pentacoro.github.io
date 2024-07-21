@@ -41,7 +41,7 @@ cfg = {
         dir: "./apps/filesystem_explorer/explorer_lau.js",
         msf: "./apps/media/iframer/iframer_lau.js",
         txt: "./apps/plexos_notepad/notepad_lau.js",
-        json: "./apps/plexos_notepad/notepad_lau.js",
+        json: "./apps/imported_apps/monaco_editor/monaco_lau.js",
         js:  "./apps/imported_apps/monaco_editor/monaco_lau.js",
         img: "./apps/media/gallery/gallery_lau.js",
         vid: "./apps/media/player/player_lau.js",

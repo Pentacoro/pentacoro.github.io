@@ -57,7 +57,7 @@ class ContextMenu {
                     }
                 })
                 if (menu!==null) for (let item of menu) {
-                    if (!template.menu.find(section=>section.name===item.name)) template.menu.splice(template.menu.indexOf(template.menu.find(section=>section.name==="null"))+1,0,item)
+                    if (!template.menu.find(section=>section.name===item.name)) template.menu.splice(template.menu.indexOf(template.menu.find(section=>section.name==="null")),0,item)
                 }
                 template.menu = template.menu.filter(section=>section.name!=="null")
                 return template.menu

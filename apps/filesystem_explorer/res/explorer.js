@@ -464,24 +464,27 @@ document.getElementsByClassName("list ID_TASKID")[0].oncontextmenu = e => {
     if (e.target.classList.contains("list")) {
         let envfocus = system.mem.var.envfocus
 
-        let menuSections = [
-            {name:"icon"},
-            {name:"file"},
-            {name:"info"}
-        ]
-        let menuOptions  = [
-            {section:"icon", name:"View",icon:"url('assets/svg/contextMenu/grid.svg')",func:envfocus.mem.refresh},
-            {section:"icon", name:"Refresh",icon:"url('assets/svg/contextMenu/refresh.svg')",func:envfocus.mem.refresh},
-            {section:"file", name:"New",icon:"url('assets/svg/contextMenu/new2.svg')",func:[
-                {name:"Directory",icon:"url('assets/svg/contextMenu/directory.svg')",func:() => envfocus.mem.new(e,task,Directory,"New Folder")},
-                {name:"Metafile",icon:"url('assets/svg/contextMenu/metafile.svg')",func:() => envfocus.mem.new(e,task,Metafile,"New Metafile.msf")},
-                {name:"Text Document",icon:"url('assets/svg/contextMenu/textfile.svg')",func:() => envfocus.mem.new(e,task,JsString,"New Text Document.txt")},
+        let menu = [
+            {name: "icon", list: [
+                {name:"View",icon:"url('assets/svg/contextMenu/grid.svg')",func:envfocus.mem.refresh},
+                {name:"Refresh",icon:"url('assets/svg/contextMenu/refresh.svg')",func:envfocus.mem.refresh},
             ]},
-            {section:"file", name:"Paste",icon:"url('assets/svg/contextMenu/paste.svg')",func: () => {return} },
-            {section:"info", name:"About",icon:"url('assets/svg/contextMenu/about.svg')",func: () => {return} },
-            {section:"info", name:"Properties",icon:"url('assets/svg/contextMenu/properties.svg')",func: () => {return} }
+            {name: "file", list: [
+                {name:"New",icon:"url('assets/svg/contextMenu/new2.svg')",func: [
+                    {name: "new", list: [
+                        {name:"Directory",icon:"url('assets/svg/contextMenu/directory.svg')",func:() => envfocus.mem.new(e,task,Directory,"New Folder")},
+                        {name:"Metafile",icon:"url('assets/svg/contextMenu/metafile.svg')",func:() => envfocus.mem.new(e,task,Metafile,"New Metafile.msf")},
+                        {name:"Text Document",icon:"url('assets/svg/contextMenu/textfile.svg')",func:() => envfocus.mem.new(e,task,JsString,"New Text Document.txt")},
+                    ]}
+                ]},
+                {name:"Paste",icon:"url('assets/svg/contextMenu/paste.svg')",func: () => {return} },
+            ]},
+            {name: "info", list: [
+                {name:"About",icon:"url('assets/svg/contextMenu/about.svg')",func: () => {return} },
+                {name:"Properties",icon:"url('assets/svg/contextMenu/properties.svg')",func: () => {return} }
+            ]}
         ]
-        ContextMenu.open(e, task,menuSections,menuOptions)
+        ContextMenu.open(e, task, menu)
     }
 }
 
