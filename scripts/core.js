@@ -23,7 +23,7 @@ system.init = {}
 system.init.setVertex = function (address) {
     plexos.vtx = File.at(address)
     let promiseInit = new Promise(async () => {
-        await dll.runLauncher("./apps/filesystem_desktop/desktop_lau.js",{addr:address})
+        await dll.runLauncher("./plexos/app/sys/Desktop/desktop_lau.js",{addr:address})
     })
     promiseInit.then( () => {
         Task.openInstance("Desktop").mem.grid.evaluateIconGrid()
@@ -102,7 +102,7 @@ function defineCore(){
                 "vertex",  
                 null,
                 new Configuration ({
-                    icon : new Icon ({imag:"assets/svg/desktopIcons/vertexPH.svg", name:"vertex", type:"Directory", stat:0}),
+                    icon : new Icon ({imag:"plexos/res/images/svg/desktopIcons/vertexPH.svg", name:"vertex", type:"Directory", stat:0}),
                     from : "",
                     type : "Directory",
                     vert : true,
@@ -115,7 +115,7 @@ function defineCore(){
                 "trash",
                 null,
                 new Configuration ({
-                    icon : new Icon ({imag:"assets/svg/desktopIcons/trashPH.svg", name:"trash", type:"Directory", stat:0}),
+                    icon : new Icon ({imag:"plexos/res/images/svg/desktopIcons/trashPH.svg", name:"trash", type:"Directory", stat:0}),
                     from : "",
                     type : "Directory",
                     plex : true,
@@ -128,7 +128,7 @@ function defineCore(){
                 "stash",
                 null,
                 new Configuration ({
-                    icon : new Icon ({imag:"assets/svg/desktopIcons/stashPH.svg", name:"stash", type:"Directory", stat:0}),
+                    icon : new Icon ({imag:"plexos/res/images/svg/desktopIcons/stashPH.svg", name:"stash", type:"Directory", stat:0}),
                     from : "",
                     type : "Directory",
                     plex : true,
@@ -141,7 +141,7 @@ function defineCore(){
                 "config",
                 null,
                 new Configuration ({
-                    icon : new Icon ({imag:"assets/svg/desktopIcons/systemPH.svg", name:"config", type:"Directory", stat:0}),
+                    icon : new Icon ({imag:"plexos/res/images/svg/desktopIcons/systemPH.svg", name:"config", type:"Directory", stat:0}),
                     from : "",
                     type : "Directory",
                     plex : true,

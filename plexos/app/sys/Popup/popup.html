@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./css/popup.css">
+    <title>Popup Message</title>
+</head>
+<body>
+    <div class="appcontent ID_TASKID">
+        <div class="container ID_TASKID">
+            <img src="./plexos/res/images/error-svgrepo-com.svg" alt="">
+            <div class="message ID_TASKID">
+                <h3>Unable to move directory</h3>
+                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Velit in fuga totam sapiente.</p>
+            </div>
+        </div>
+
+        <div class="buttons ID_TASKID">
+            <button class="expand ID_TASKID">Details</button>
+        </div>
+
+        <div class="details ID_TASKID" style="display: none">
+            <p></p>
+            <br>
+            <hr>
+            <br>
+        </div>
+
+    </div>
+
+    <script>
+        let title       = arg[2]
+        let description = arg[3]
+        let taskid      = arg[4]
+        let image       = arg[5]
+
+        let windowNode = document.getElementsByClassName("window ID_TASKID")[0]
+        let window     = plexos.Windows[parseInt(windowNode.id.match(/(\d+)/)[0])]
+
+        //set text to launcher arguments
+        if (title       != "") document.getElementsByClassName("message ID_TASKID")[0].children[0].innerHTML = title
+        if (description != "") document.getElementsByClassName("message ID_TASKID")[0].children[1].innerHTML = description
+        if (image       != "") document.getElementsByClassName("container ID_TASKID")[0].children[0].setAttribute("src", image)
+        if (taskid      != "") {
+            document.getElementsByClassName("details ID_TASKID")[0].innerHTML  = ""
+            let newDetails = document.createElement("p")
+            let newButton = document.createElement("button")
+            newButton.setAttribute("class", "error ID_TASKID")
+            newButton.innerHTML = "console.error()"
+
+            document.getElementsByClassName("details ID_TASKID")[0].appendChild(newDetails)
+            document.getElementsByClassName("details ID_TASKID")[0].children[0].innerHTML  = ""
+            document.getElementsByClassName("details ID_TASKID")[0].children[0].innerHTML += "<b>message: </b>" + Task.id(taskid).mem.var.error.message + "<br>"
+            document.getElementsByClassName("details ID_TASKID")[0].children[0].innerHTML += "<b>columnNumber: </b>" + Task.id(taskid).mem.var.error.columnNumber + "<br>"
+            document.getElementsByClassName("details ID_TASKID")[0].children[0].innerHTML += "<b>fileName: </b>" + Task.id(taskid).mem.var.error.fileName + "<br>"
+            if (Task.id(taskid).mem.var.error.taskId){
+                document.getElementsByClassName("details ID_TASKID")[0].children[0].innerHTML+="<b>taskId: </b>" + Task.id(taskid).mem.var.error.taskId + "<br>"
+            }
+            document.getElementsByClassName("details ID_TASKID")[0].children[0].innerHTML += "<b>lineNumber: </b>" + Task.id(taskid).mem.var.error.lineNumber + "<br><br><hr><br>"
+            document.getElementsByClassName("details ID_TASKID")[0].children[0].innerHTML += "<b>stack: </b><br>" + Task.id(taskid).mem.var.error.stack + "<br>"
+            document.getElementsByClassName("details ID_TASKID")[0].children[0].innerHTML += "<button class='error ID_TASKID'>console.error()</button><br>"
+            document.getElementsByClassName("details ID_TASKID")[0].children[0].innerHTML += "<br><hr><br>"
+            if (Task.id(taskid).mem.var.error.script){
+                document.getElementsByClassName("details ID_TASKID")[0].children[0].innerHTML+="<b>script: </b>" + Task.id(taskid).mem.var.error.script + "<br><hr><br>"
+            }
+        }
+
+        document.getElementsByClassName("expand ID_TASKID")[0].onclick = e => {
+            if (document.getElementsByClassName("details ID_TASKID")[0].style.display === "none") {
+                document.getElementsByClassName("details ID_TASKID")[0].style.display = "block"
+                document.getElementsByClassName("appcontent ID_TASKID")[0].style.height = "450px"
+
+                window.heig += 300
+                window.poseNode()
+            } else {
+                document.getElementsByClassName("details ID_TASKID")[0].style.display = "none"
+                document.getElementsByClassName("appcontent ID_TASKID")[0].style.height = "150px"
+
+                window.heig += -300
+                window.poseNode()
+            }
+        }
+        document.getElementsByClassName("error ID_TASKID")[0].onclick = e => {
+            console.error(Task.id(taskid).mem.var.error)
+            document.getElementsByClassName("error ID_TASKID")[0].onclick = null
+        }
+    </script>
+</body>
+</html>

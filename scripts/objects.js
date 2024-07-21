@@ -100,22 +100,40 @@ class File {
         
         switch (Type) {
             case Directory:
-                defaults.iconImag = "assets/svg/desktopIcons/defaultDIR.svg"
+                defaults.iconImag = "plexos/res/images/svg/desktopIcons/defaultDIR.svg"
                 defaults.confType = "Directory"
                 defaults.skeyName = "cont"
                 break
             case Metafile: 
-                defaults.iconImag = "assets/svg/desktopIcons/defaultMSF.svg"
+                defaults.iconImag = "plexos/res/images/svg/desktopIcons/defaultMSF.svg"
                 defaults.confType = "Metafile"
                 defaults.skeyName = "meta"
                 break
             case JsString:
-                defaults.iconImag = "assets/svg/desktopIcons/defaultTXT.svg"
+                defaults.iconImag = "plexos/res/images/svg/desktopIcons/defaultTXT.svg"
                 defaults.confType = "JsString"
                 defaults.skeyName = "data"
         }
     
         return defaults
+    }
+
+    static validName = function (string) {
+        if (
+            string.slice(-1) != "." &&
+            string != "" &&
+            string.match(/[\/"]/g) === null
+        ) {return true}
+        return false
+    }
+
+    static nameAvailable = function (text, _this, from){
+        for ([name, file] of Object.entries(from.cont)){
+            if (file.name == text && file.conf.icon != _this) {
+                return true
+            }
+        }
+        return false
     }
 
     delete() {

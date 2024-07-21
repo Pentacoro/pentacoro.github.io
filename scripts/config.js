@@ -29,7 +29,7 @@ cfg = {
             style: null
         },
         background: {
-            image: "../assets/norrum/Desktop/fondoB.png",
+            image: "../plexos/res/images/norrum/Desktop/fondoB.png",
             color: "#444444",
         },
         taskbar: {
@@ -38,12 +38,12 @@ cfg = {
         }
     },
     apps: {
-        dir: "./apps/filesystem_explorer/explorer_lau.js",
-        msf: "./apps/media/iframer/iframer_lau.js",
-        txt: "./apps/plexos_notepad/notepad_lau.js",
-        json: "./apps/imported_apps/monaco_editor/monaco_lau.js",
-        js:  "./apps/imported_apps/monaco_editor/monaco_lau.js",
-        img: "./apps/media/gallery/gallery_lau.js",
-        vid: "./apps/media/player/player_lau.js",
+        dir:  "/plexos/app/sys/Explorer/explorer_lau.js",
+        msf:  "/plexos/app/meta/Web Framer/iframer_lau.js",
+        img:  "/plexos/app/meta/Image Viewer/viewer_lau.js",
+        vid:  "/plexos/app/meta/Media Player/player_lau.js",
+        txt:  "/plexos/app/data/Notepad/notepad_lau.js",
+        json: "/plexos/app/data/Monaco/monaco_lau.js",
+        js:   "/plexos/app/data/Monaco/monaco_lau.js",
     }
 }

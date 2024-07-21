@@ -20,7 +20,7 @@ body {
 	position: relative;
 	z-index: -998;
 
-	background: #444444 url("../assets/norrum/Desktop/fondoB.png") no-repeat fixed center center / cover;
+	background: #444444 url("../plexos/res/images/norrum/Desktop/fondoB.png") no-repeat fixed center center / cover;
 
 	overflow: auto;
 }
@@ -54,15 +54,15 @@ body {
 	float: left;
 	width: 60px;
 	height: 60px;
-	background-image: url("../assets/svg/norrumStartIdle.svg");
+	background-image: url("../plexos/res/images/svg/norrumStartIdle.svg");
 }
 
 #navbarNorrumStart:hover {
-	background-image: url("../assets/svg/norrumStartHover.svg");
+	background-image: url("../plexos/res/images/svg/norrumStartHover.svg");
 }
 
 #navbarNorrumStart:active {
-	background-image: url("../assets/svg/norrumStartPress.svg");
+	background-image: url("../plexos/res/images/svg/norrumStartPress.svg");
 }
 /*---------------------------------START BUTTON*/
 

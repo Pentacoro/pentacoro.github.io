@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Desk Grid Options</title>
+    <link rel="stylesheet" href="./css/deskGridOptions.css">
+</head>
+<body>
+    <div class="ID_TASKID appcontent">
+        <div class="ID_TASKID tabs">
+            <label class="ID_TASKID tab" for="ID_TASKID.tabResizing">
+                <input class="ID_TASKID tabRadio_input" type="radio" name="tabGrid" id="ID_TASKID.tabResizing">
+                <div class="ID_TASKID tabRadio_box"><span>Resizing</span></div>
+            </label>
+            <label class="ID_TASKID tab" for="ID_TASKID.tabPositioning">
+                <input class="ID_TASKID tabRadio_input" type="radio" name="tabGrid" id="ID_TASKID.tabPositioning">
+                <div class="ID_TASKID tabRadio_box"><span>Positioning</span></div>
+            </label>
+        </div>
+
+        <div class="ID_TASKID tabContent hidden" id="ID_TASKID.tabContent1">
+            <div class="ID_TASKID grid_graph n1">
+                <span><span class="ID_TASKID graph_item">123</span></span>
+                <span class="ID_TASKID graph_item">456</span>
+                <span class="ID_TASKID graph_item">789</span>
+                <span class="ID_TASKID graph_item">123</span>
+                <span class="ID_TASKID graph_item">456</span>
+                <span class="ID_TASKID graph_item">789</span>
+            </div>
+            <div class="ID_TASKID grid_editable">
+                <h5>SIZE</h5>
+                <span class="ID_TASKID optionInt"><div class="ID_TASKID optionName"><h4>Width: </h4></div>
+                    <span class="ID_TASKID optionValue" id="ID_TASKID.grid.width"></span> 
+                    <div class="ID_TASKID editButton">
+                        <button class="ID_TASKID edit">Edit</button>
+                        <button class="ID_TASKID apply hidden">✓</button>
+                        <button class="ID_TASKID cancel hidden">✕</button>
+                    </div>
+                </span>
+
+                <span class="ID_TASKID optionInt"><div class="ID_TASKID optionName"><h4>Height: </h4></div>
+                    <span class="ID_TASKID optionValue" id="ID_TASKID.grid.height"></span> 
+                    <div class="ID_TASKID editButton">
+                        <button class="ID_TASKID edit">Edit</button>
+                        <button class="ID_TASKID apply hidden">✓</button>
+                        <button class="ID_TASKID cancel hidden">✕</button>
+                    </div>
+                </span>
+
+                <h5>MARGIN</h5>
+                <span class="ID_TASKID optionInt"><div class="ID_TASKID optionName"><h4>H-zontal: </h4></div>
+                    <span class="ID_TASKID optionValue" id="ID_TASKID.grid.hMargin"></span> 
+                    <div class="ID_TASKID editButton">
+                        <button class="ID_TASKID edit">Edit</button>
+                        <button class="ID_TASKID apply hidden">✓</button>
+                        <button class="ID_TASKID cancel hidden">✕</button>
+                    </div>
+                </span>
+
+                <span class="ID_TASKID optionInt"><div class="ID_TASKID optionName"><h4>Vertical: </h4></div>
+                    <span class="ID_TASKID optionValue" id="ID_TASKID.grid.vMargin"></span> 
+                    <div class="ID_TASKID editButton">
+                        <button class="ID_TASKID edit">Edit</button>
+                        <button class="ID_TASKID apply hidden">✓</button>
+                        <button class="ID_TASKID cancel hidden">✕</button>
+                    </div>
+                </span>
+
+                <div class="ID_TASKID footerButton">
+                    <label class="ID_TASKID button" for="ID_TASKID.marginButton">
+                        <input class="ID_TASKID button_input" type="button" name="marginButton" id="ID_TASKID.marginButton">
+                        <div class="ID_TASKID button_box" id="ID_TASKID.marginButton_"><span>Calculate Optimal Margin</span></div>
+                    </label>
+                    <label class="ID_TASKID checkbox" for="ID_TASKID.marginCheckbox">
+                        <input class="ID_TASKID checkbox_input" type="checkbox" name="marginCheckbox" id="ID_TASKID.marginCheckbox">
+                        <div class="ID_TASKID checkbox_box" id="ID_TASKID.marginCheckbox_"></div>
+                    </label>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="ID_TASKID tabContent" id="ID_TASKID.tabContent2">
+            <div class="ID_TASKID grid_graph n2">
+                <span><span class="ID_TASKID graph_item">123</span></span>
+                <span class="ID_TASKID graph_item">456</span>
+                <span class="ID_TASKID graph_item">Y</span>
+                <span class="ID_TASKID graph_item">X</span>
+                <span class="ID_TASKID graph_item">+0</span>
+                <div class="ID_TASKID graph_item"></div>
+                <div class="ID_TASKID graph_sizeDir"></div>
+                <div class="ID_TASKID graph_sizeDot"></div>
+                <div class="ID_TASKID graph_sizeRuler"> <div></div> <div></div> <div></div> <div></div> </div>
+                <div class="ID_TASKID graph_sizeCheck"><input type="checkbox"></div>
+                <div class="ID_TASKID graph_sizeLine"></div>
+            </div>
+            <div class="ID_TASKID grid_editable">
+                <h5>SEND</h5>
+
+                <span class="ID_TASKID optionBoolean"><div class="ID_TASKID optionName"><h4>Desktop: </h4></div>
+                    <div class="ID_TASKID editBoolean">
+                        <label class="ID_TASKID optbool 1" for="ID_TASKID.optboolBorder">
+                            <input class="ID_TASKID optbool_input" type="radio" name="sendBorder" id="ID_TASKID.optboolBorder">
+                            <div class="ID_TASKID optbool_box"><span>Border</span></div>
+                        </label>
+                        <label class="ID_TASKID optbool 2" for="ID_TASKID.optboolOrder">
+                            <input class="ID_TASKID optbool_input" type="radio" name="sendBorder" id="ID_TASKID.optboolOrder">
+                            <div class="ID_TASKID optbool_box"><span>Order</span></div>
+                        </label>
+                    </div>
+                </span>
+
+                <span class="ID_TASKID optionBoolean"><div class="ID_TASKID optionName"><h4>Directory: </h4></div>
+                    <div class="ID_TASKID editBoolean">
+                        <label class="ID_TASKID optbool 1" for="ID_TASKID.optboolStash">
+                            <input class="ID_TASKID optbool_input" type="radio" name="sendStash" id="ID_TASKID.optboolStash">
+                            <div class="ID_TASKID optbool_box"><span>Stash</span></div>
+                        </label>
+                        <label class="ID_TASKID optbool 2" for="ID_TASKID.optboolBin">
+                            <input class="ID_TASKID optbool_input" type="radio" name="sendStash" id="ID_TASKID.optboolBin">
+                            <div class="ID_TASKID optbool_box"><span>Trash</span></div>
+                        </label>
+                    </div>
+                </span>
+
+                <h5>LENGTH</h5>
+                <span class="ID_TASKID optionInt"><div class="ID_TASKID optionName"><h4>X-Axis: </h4></div>
+                    <span class="ID_TASKID optionValue" id="ID_TASKID.grid.hLength"></span> 
+                    <div class="ID_TASKID editButton">
+                        <button class="ID_TASKID edit">Edit</button>
+                        <button class="ID_TASKID apply hidden">✓</button>
+                        <button class="ID_TASKID cancel hidden">✕</button>
+                    </div>
+                </span>
+
+                <span class="ID_TASKID optionInt"><div class="ID_TASKID optionName"><h4>Y-Axis: </h4></div>
+                    <span class="ID_TASKID optionValue" id="ID_TASKID.grid.vLength"></span> 
+                    <div class="ID_TASKID editButton">
+                        <button class="ID_TASKID edit">Edit</button>
+                        <button class="ID_TASKID apply hidden">✓</button>
+                        <button class="ID_TASKID cancel hidden">✕</button>
+                    </div>
+                </span>
+
+                <div class="ID_TASKID footerButton">
+                    <label class="ID_TASKID button" for="ID_TASKID.lengthButton">
+                        <input class="ID_TASKID button_input" type="button" name="lengthButton" id="ID_TASKID.lengthButton">
+                        <div class="ID_TASKID button_box" id="ID_TASKID.lengthButton_"><span>Calculate Optimal Length</span></div>
+                    </label>
+                    <label class="ID_TASKID checkbox" for="ID_TASKID.lengthCheckbox">
+                        <input class="ID_TASKID checkbox_input" type="checkbox" name="lengthCheckbox" id="ID_TASKID.lengthCheckbox">
+                        <div class="ID_TASKID checkbox_box" id="ID_TASKID.lengthCheckbox_"></div>
+                    </label>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script src="./js/deskGridOptions.js"></script>
+</body>
+</html>

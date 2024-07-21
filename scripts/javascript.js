@@ -56,12 +56,12 @@ dll.displayComponent = async function({url, taskid, container, replacementPairs,
     await appHTML.catch( e => {
         system.mem.var.error = e
         system.mem.var.errorB = [["Okay"]]
-        dll.runLauncher("./apps/system_popup/popup_lau.js",
+        dll.runLauncher("/plexos/app/sys/Popup/popup_lau.js",
             {
                 name:e.status,
                 type:false,
                 title:"Component: " + e.statusText, 
-                description:"Couldn't load component at: <i>'" + e.statusUrl + "'</i>",
+                description:"Failed to load component at: <i>'" + e.statusUrl + "'</i>",
                 taskid:system.id,
                 icon:""
             }
@@ -205,8 +205,10 @@ dll.runLauncher = async function(url, args = {}, env = null, name = ""){
     let appLauncher = dll.ajaxReturn("get", url)
 
     appLauncher.then( oData => {
-        nData = oData.replace("let params = {}", "let params = system.mem.lau['"+appID.id+"']")
-        nData = nData.replace("let taskid = ''", "let taskid = '"+appID.id+"'")
+        nData = oData.replace("/PARAMS/", `system.mem.lau["${appID.id}"]`)
+        nData = nData.replace("/TASKID/", `"${appID.id}"`)
+        nData = nData.replace("/ADDR/", `"${url}"`)
+        nData = nData.replace("/ROOT/", `"${url.replace(url.match(/\/(?:.(?<!\/))+$/s),"")}"`)
 
         //put launcher code here to later be referenced
         document.getElementById("appLauncher").innerHTML = "<script>"+nData+"</script>"
@@ -227,12 +229,12 @@ dll.runLauncher = async function(url, args = {}, env = null, name = ""){
         system.mem.var.error = e
         system.mem.var.errorB = [["Okay"]]
         
-        dll.runLauncher("./apps/system_popup/popup_lau.js",
+        dll.runLauncher("./plexos/app/sys/Popup/popup_lau.js",
             {
                 name:e.status,
                 type:false,
                 title:"Launcher: " + e.statusText, 
-                description:"Couldn't load launcher at: <i>'" + url + "'</i>.",
+                description:"Failed to load launcher at: <i>'" + url + "'</i>.",
                 taskid:system.id,
                 icon:""
             }
@@ -260,7 +262,7 @@ dll.evalErrorPopup = function(code, desc, err) {
     //add it to typeError stack
     err.script = colour
     system.mem.var.error = err
-    dll.runLauncher("./apps/system_popup/popup_lau.js",
+    dll.runLauncher("./plexos/app/sys/Popup/popup_lau.js",
         {
             name:"Error",
             type:true,

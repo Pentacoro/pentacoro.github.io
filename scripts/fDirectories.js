@@ -1,8 +1,3 @@
-//javascript.js
-//f.js
-//fIcon.js
-//fIconDir.js
-//fDesktop.js
 class Configuration {
     constructor(p){
         this.type = p.type
@@ -23,7 +18,7 @@ class Directory extends File {
             name : "core",
             conf : new Configuration (
             {
-                icon : new Icon ({imag:"assets/svg/desktopIcons/vertexPH.svg", name:"core", type:"Directory", stat:0}),
+                icon : new Icon ({imag:"plexos/res/images/svg/desktopIcons/vertexPH.svg", name:"core", type:"Directory", stat:0}),
                 from : "",
                 type : "Directory",
                 vert : true,
@@ -107,31 +102,11 @@ class Directory extends File {
             this.conf.icon.imag = File.typeDefaults(Directory).iconImag
         }
     }
-}
 
-//--------------------------------------------------------------------------|
-
-dll.isDirOpen = function (addr) {
-    for (task of plexos.Tasks) {
-        if (task.apps === "exp" && task.mem.address === addr) return true
-    }
-    return false
-}
-
-dll.validIconName = function (string) {
-    if (
-        string.slice(-1) != "." &&
-        string != "" &&
-        string.match(/[\/"]/g) === null
-    ) {return true}
-    return false
-}
-
-dll.iconNameExists = function (text, _this, from){
-    for ([name, file] of Object.entries(from.cont)){
-        if (file.name == text && file.conf.icon != _this) {
-            return true
+    static isOpen = function (addr) {
+        for (task of plexos.Tasks) {
+            if (task.apps === "exp" && task.mem.address === addr) return true
         }
+        return false
     }
-    return false
 }
