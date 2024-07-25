@@ -70,7 +70,7 @@ body{
 /*first graph-------------------*/
 .ID_TASKID.grid_graph.n1{
     position: relative;
-    background-image: url("./plexos/res/images/deskIconGridGraph1.svg");
+    background-image: url("./assets/deskIconGridGraph1.svg");
 }
 .ID_TASKID.grid_graph>span{
     user-select: none;
@@ -121,7 +121,7 @@ body{
 /*second graph------------------*/
 .ID_TASKID.grid_graph.n2{
     position: relative;
-    background-image: url("./plexos/res/images/deskIconGridGraph2/deskIconGridGraph2_00.svg");
+    background-image: url("./assets/deskIconGridGraph2/deskIconGridGraph2_00.svg");
     background-position: 50% 30%;
     background-size: 90%;
 }

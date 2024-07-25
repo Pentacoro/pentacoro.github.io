@@ -226,16 +226,16 @@ mem.var.vLengthHTML.innerText = cfg.desktop.grid.vLength
 //preload graph2 images
 mem.var.graph2images = 
 [
-    "./plexos/res/images/deskIconGrid_stash.svg",
-    "./plexos/res/images/deskIconGrid_bin.svg",
-    "./plexos/res/images/deskIconGridGraph2/deskIconGridGraph2_00.svg",
-    "./plexos/res/images/deskIconGridGraph2/deskIconGridGraph2_01.svg",
-    "./plexos/res/images/deskIconGridGraph2/deskIconGridGraph2_02-1.svg",
-    "./plexos/res/images/deskIconGridGraph2/deskIconGridGraph2_02-2.svg",
-    "./plexos/res/images/deskIconGridGraph2/deskIconGridGraph2_02-3.svg",
-    "./plexos/res/images/deskIconGridGraph2/deskIconGridGraph2_03-1.svg",
-    "./plexos/res/images/deskIconGridGraph2/deskIconGridGraph2_03-2.svg",
-    "./plexos/res/images/deskIconGridGraph2/deskIconGridGraph2_03-3.svg",
+    "./assets/deskIconGrid_stash.svg",
+    "./assets/deskIconGrid_bin.svg",
+    "./assets/deskIconGridGraph2/deskIconGridGraph2_00.svg",
+    "./assets/deskIconGridGraph2/deskIconGridGraph2_01.svg",
+    "./assets/deskIconGridGraph2/deskIconGridGraph2_02-1.svg",
+    "./assets/deskIconGridGraph2/deskIconGridGraph2_02-2.svg",
+    "./assets/deskIconGridGraph2/deskIconGridGraph2_02-3.svg",
+    "./assets/deskIconGridGraph2/deskIconGridGraph2_03-1.svg",
+    "./assets/deskIconGridGraph2/deskIconGridGraph2_03-2.svg",
+    "./assets/deskIconGridGraph2/deskIconGridGraph2_03-3.svg",
 ]
 for (image of mem.var.graph2images){
     dll.preloadImage(image);
@@ -259,7 +259,7 @@ mem.UpdateGraphAuto = function(arg = null, which = 2){
 mem.UpdateGraph2 = function(num = false){
     document.getElementsByClassName("ID_TASKID grid_graph")[1].children[0].children[0].innerText = cfg.desktop.grid.hLength;
     document.getElementsByClassName("ID_TASKID grid_graph")[1].children[1].innerText = cfg.desktop.grid.vLength;
-    document.getElementsByClassName("ID_TASKID grid_graph")[1].children[5].style.backgroundImage = (cfg.desktop.grid.sendStash) ? "url('./plexos/res/images/deskIconGrid_stash.svg')" : "url('./plexos/res/images/deskIconGrid_bin.svg')";
+    document.getElementsByClassName("ID_TASKID grid_graph")[1].children[5].style.backgroundImage = (cfg.desktop.grid.sendStash) ? "url('./assets/deskIconGrid_stash.svg')" : "url('./assets/deskIconGrid_bin.svg')";
 
     let chk = document.getElementsByClassName("ID_TASKID grid_graph")[1].children[9].firstChild;
     let dot = document.getElementsByClassName("ID_TASKID grid_graph")[1].children[7];
@@ -271,36 +271,36 @@ mem.UpdateGraph2 = function(num = false){
 
     if (chk.checked === false) {
         if (dot.offsetLeft > 174) {
-            img.style.backgroundImage = "url('./plexos/res/images/deskIconGridGraph2/deskIconGridGraph2_00.svg')";
+            img.style.backgroundImage = "url('./assets/deskIconGridGraph2/deskIconGridGraph2_00.svg')";
             dir.innerText = "+0";
         }
         if (dot.offsetLeft <= 174 && dot.offsetLeft > 141) {
-            img.style.backgroundImage = (cfg.desktop.grid.sendBorder) ? "url('./plexos/res/images/deskIconGridGraph2/deskIconGridGraph2_02-1.svg')" : "url('./plexos/res/images/deskIconGridGraph2/deskIconGridGraph2_02-2.svg')";
+            img.style.backgroundImage = (cfg.desktop.grid.sendBorder) ? "url('./assets/deskIconGridGraph2/deskIconGridGraph2_02-1.svg')" : "url('./assets/deskIconGridGraph2/deskIconGridGraph2_02-2.svg')";
             dir.innerText = "+0"
         }
         if (dot.offsetLeft <= 141 && dot.offsetLeft > 107) {
-            img.style.backgroundImage = (cfg.desktop.grid.sendBorder) ? "url('./plexos/res/images/deskIconGridGraph2/deskIconGridGraph2_03-1.svg')" : "url('./plexos/res/images/deskIconGridGraph2/deskIconGridGraph2_03-2.svg')";
+            img.style.backgroundImage = (cfg.desktop.grid.sendBorder) ? "url('./assets/deskIconGridGraph2/deskIconGridGraph2_03-1.svg')" : "url('./assets/deskIconGridGraph2/deskIconGridGraph2_03-2.svg')";
             dir.innerText = "+1"
         }
         if (dot.offsetLeft === 107) {
-            img.style.backgroundImage = "url('./plexos/res/images/deskIconGridGraph2/deskIconGridGraph2_01.svg')";
+            img.style.backgroundImage = "url('./assets/deskIconGridGraph2/deskIconGridGraph2_01.svg')";
             dir.innerText = "+4"
         }
     } else {
         if (dot.offsetLeft > 174) {
-            img.style.backgroundImage = "url('./plexos/res/images/deskIconGridGraph2/deskIconGridGraph2_00.svg')";
+            img.style.backgroundImage = "url('./assets/deskIconGridGraph2/deskIconGridGraph2_00.svg')";
             dir.innerText = "+0";
         }
         if (dot.offsetLeft <= 174 && dot.offsetLeft > 141) {
-            img.style.backgroundImage = "url('./plexos/res/images/deskIconGridGraph2/deskIconGridGraph2_02-3.svg')";
+            img.style.backgroundImage = "url('./assets/deskIconGridGraph2/deskIconGridGraph2_02-3.svg')";
             dir.innerText = "+3"
         }
         if (dot.offsetLeft <= 141 && dot.offsetLeft > 107) {
-            img.style.backgroundImage = "url('./plexos/res/images/deskIconGridGraph2/deskIconGridGraph2_03-3.svg')";
+            img.style.backgroundImage = "url('./assets/deskIconGridGraph2/deskIconGridGraph2_03-3.svg')";
             dir.innerText = "+3"
         }
         if (dot.offsetLeft === 107) {
-            img.style.backgroundImage = "url('./plexos/res/images/deskIconGridGraph2/deskIconGridGraph2_01.svg')";
+            img.style.backgroundImage = "url('./assets/deskIconGridGraph2/deskIconGridGraph2_01.svg')";
             dir.innerText = "+4"
         }
     }
