@@ -218,7 +218,7 @@ mem.class.IconDesk = class IconDesk {
                 return
             }
         }
-        File.at(this.file).conf.icon.coor = this.coor
+        File.at(this.file).cfg.icon.coor = this.coor
         this.node.childNodes[1].innerText = this.name
     }
     clic(){
@@ -367,7 +367,7 @@ mem.class.IconDesk = class IconDesk {
     rename(e){
         let iconText = this.node.childNodes[1]
         let editFile = File.at(this.file)
-        let editFrom = File.at(editFile.conf.from)
+        let editFrom = File.at(editFile.cfg.from)
         let thisIcon = this
         //make h3 editable --------------------|
         iconText.setAttribute("contenteditable", "true")
@@ -415,7 +415,7 @@ mem.class.IconDesk = class IconDesk {
         }
         function iconRenaming(){
             if(
-                !File.nameAvailable(iconText.textContent, editFile.conf.icon, editFrom) &&
+                !File.nameAvailable(iconText.textContent, editFile.cfg.icon, editFrom) &&
                 File.validName(iconText.textContent)
             ) {
                 //if the name is allowed --------------------|
@@ -424,7 +424,7 @@ mem.class.IconDesk = class IconDesk {
                 if (editFrom === plexos.vtx) thisIcon.node.id = "Icon: "+iconText.textContent
                 
                 iconText.setAttribute("contenteditable", "false")
-                editFile.conf.icon.name = iconText.textContent
+                editFile.cfg.icon.name = iconText.textContent
                 thisIcon.node.setAttribute("title", iconText.textContent)
                 iconText.style.backgroundColor = ""
                 iconText.style.textShadow = ""
@@ -432,7 +432,7 @@ mem.class.IconDesk = class IconDesk {
                 //insert into fylesystem
                 if (iconText.textContent != editFile.name) { //if the name changed
                     if (editFrom === plexos.vtx){
-                        Task.openInstance("Desktop").mem.getIcon(editFile.name).file = editFrom.conf.addr +"/"+ iconText.textContent
+                        Task.openInstance("Desktop").mem.getIcon(editFile.name).file = editFrom.cfg.addr +"/"+ iconText.textContent
                         Task.openInstance("Desktop").mem.getIcon(editFile.name).name = iconText.textContent
                     }
                     editFile.rename(iconText.textContent)

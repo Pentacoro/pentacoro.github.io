@@ -49,8 +49,8 @@ class IconDir {
         Task.id(this.task).pocket = Task.id(this.task).pocket.remove(this)
         Task.id(this.task).mem.iconArray = Task.id(this.task).mem.iconArray.remove(this)
         
-        if (File.at(File.at(this.file)?.conf.from) === plexos.vtx) { //delete desktop icon if file is from vertex
-            let rawr = File.at(this.file).conf.icon
+        if (File.at(File.at(this.file)?.cfg.from) === plexos.vtx) { //delete desktop icon if file is from vertex
+            let rawr = File.at(this.file).cfg.icon
             rawr.deleteNode()
         }
     }
@@ -202,7 +202,7 @@ class IconDir {
     rename(e){
         let iconText = this.node.childNodes[1]
         let editFile = File.at(this.file)
-        let editFrom = File.at(editFile.conf.from)
+        let editFrom = File.at(editFile.cfg.from)
         let thisIcon = this
         //make h3 editable --------------------|
         iconText.setAttribute("contenteditable", "true")
@@ -250,7 +250,7 @@ class IconDir {
         }
         function iconRenaming(){
             if(
-                !File.nameAvailable(iconText.textContent, editFile.conf.icon, editFrom) &&
+                !File.nameAvailable(iconText.textContent, editFile.cfg.icon, editFrom) &&
                 File.validName(iconText.textContent)
             ) {
                 //if the name is allowed --------------------|
@@ -259,7 +259,7 @@ class IconDir {
                 if (editFrom === plexos.vtx) thisIcon.node.id = "Icon: "+iconText.textContent
                 
                 iconText.setAttribute("contenteditable", "false")
-                editFile.conf.icon.name = iconText.textContent
+                editFile.cfg.icon.name = iconText.textContent
                 thisIcon.node.setAttribute("title", iconText.textContent)
                 iconText.style.backgroundColor = ""
                 iconText.style.textShadow = ""
@@ -267,7 +267,7 @@ class IconDir {
                 //insert into fylesystem
                 if (iconText.textContent != editFile.name) { //if the name changed
                     if (editFrom === plexos.vtx){
-                        Task.openInstance("Desktop").mem.getIcon(editFile.name).file = editFrom.conf.addr +"/"+ iconText.textContent
+                        Task.openInstance("Desktop").mem.getIcon(editFile.name).file = editFrom.cfg.addr +"/"+ iconText.textContent
                         Task.openInstance("Desktop").mem.getIcon(editFile.name).name = iconText.textContent
                     }
                     editFile.rename(iconText.textContent)
@@ -333,7 +333,7 @@ class IconDir {
 //local functions
 mem.createExplorerIcons = async function(array) {
     for(item of array) {
-        let itemIcon = item.conf.icon
+        let itemIcon = item.cfg.icon
         let dirIcon  = new IconDir(
             {           
                 imag : itemIcon.imag,
@@ -349,7 +349,7 @@ mem.createExplorerIcons = async function(array) {
     }
 }
 mem.refresh = function () {
-    mem.explorerInit(mem.dirObject.conf.addr, "TASKID", "refresh")
+    mem.explorerInit(mem.dirObject.cfg.addr, "TASKID", "refresh")
 }
 mem.getIcon = function(name){
     let find = mem.iconArray.filter(icon => icon.name === name)
@@ -358,7 +358,7 @@ mem.getIcon = function(name){
 mem.explorerInit = function (dir, id, act = null) {    
     try {       
         let activeObj = File.at(dir)
-        let dirList   = Object.entries(activeObj.cont)
+        let dirList   = Object.entries(activeObj.dir)
 
         let dirFolder = []
         let dirFile   = []
@@ -375,17 +375,17 @@ mem.explorerInit = function (dir, id, act = null) {
         Task.id(id).pocket = []
 
         for (item of dirList) {
-            if(item[1].conf.type === "Directory" && !item[1].conf.plex) {
+            if(item[1].cfg.type === "Directory" && !item[1].cfg.plex) {
                 dirFolder.push(item[1])
             }
         }
         for (item of dirList) {
-            if(item[1].conf.type !=  "Directory") {
+            if(item[1].cfg.type !=  "Directory") {
                 dirFile.push(item[1])
             }
         }
         for (item of dirList) {
-            if(item[1].conf.plex) {
+            if(item[1].cfg.plex) {
                 dirPlex.push(item[1])
             }
         }
@@ -429,7 +429,7 @@ document.getElementsByClassName("back ID_TASKID")[0].onclick = e => {
 document.getElementsByClassName("parent ID_TASKID")[0].onclick = e => {
     if (mem.address !== "") {
         try {
-            mem.explorerInit(mem.dirObject.conf.from, "TASKID")
+            mem.explorerInit(mem.dirObject.cfg.from, "TASKID")
         } catch (e1) {
             try {
                 let newDir = mem.address.replace(/\/(?:.(?!\/))+$/gim, "")
@@ -512,7 +512,7 @@ mem.new = function(e, _this, Type, name){
 				}
             )
 			editFrom.new(Type,name,newFileIcon)
-            editFrom.cont[name].render("TASKID")
+            editFrom.dir[name].render("TASKID")
             return newFileIcon
 		} else {
 			let exte = name.match(/\.(?:.(?<!\.))+$/s)

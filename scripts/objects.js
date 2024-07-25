@@ -58,7 +58,7 @@ class File {
     
                 steps.push(nextDir)
     
-                expression += ".cont[\""+nextDir+"\"]"
+                expression += ".dir[\""+nextDir+"\"]"
     
                 if (string.length > 0) {
                     to = string.indexOf("/")
@@ -78,7 +78,7 @@ class File {
     
             } else if (to < 0){ //if there's no "/" char
                 if (string.length > 0) {
-                    expression += ".cont[\""+string+"\"]"
+                    expression += ".dir[\""+string+"\"]"
                     steps.push(string)
                     return expression
                 } else if (string === ""){ 
@@ -128,8 +128,8 @@ class File {
     }
 
     static nameAvailable = function (text, _this, from){
-        for ([name, file] of Object.entries(from.cont)){
-            if (file.name == text && file.conf.icon != _this) {
+        for ([name, file] of Object.entries(from.dir)){
+            if (file.name == text && file.cfg.icon != _this) {
                 return true
             }
         }
@@ -137,44 +137,44 @@ class File {
     }
 
     delete() {
-        let parent = File.at(this.conf.from)
+        let parent = File.at(this.cfg.from)
         let child = this
 
-        delete parent.cont[child.name]
+        delete parent.dir[child.name]
         parent.checkCont()
     }
     move(dest) {
         
     }
     rename(rename) {
-        let parent  = File.at(this.conf.from)
-        let newAddress = "" + parent.conf.icon.file + "/" + rename
-        let oldAddress = this.conf.icon.file
+        let parent  = File.at(this.cfg.from)
+        let newAddress = "" + parent.cfg.icon.file + "/" + rename
+        let oldAddress = this.cfg.icon.file
 
-        this.conf.addr = newAddress
-        this.conf.icon.file = newAddress
+        this.cfg.addr = newAddress
+        this.cfg.icon.file = newAddress
 
-        if (this.cont) rerouteChildren(this)
+        if (this.dir) rerouteChildren(this)
 
         function rerouteChildren(parent) {
-            for ([name, file] of Object.entries(parent.cont)) {
-                file.conf.addr = file.conf.addr.replace(oldAddress, newAddress)
-                file.conf.from = file.conf.from.replace(oldAddress, newAddress)
-                file.conf.icon.file = file.conf.icon.file.replace(oldAddress, newAddress)
+            for ([name, file] of Object.entries(parent.dir)) {
+                file.cfg.addr = file.cfg.addr.replace(oldAddress, newAddress)
+                file.cfg.from = file.cfg.from.replace(oldAddress, newAddress)
+                file.cfg.icon.file = file.cfg.icon.file.replace(oldAddress, newAddress)
                 rerouteChildren(file)
             }
         }
 
-        dll.renameKey(parent.cont, this.name, rename)
-        let renamedFile = parent.cont[rename]
-        let extension = (this.conf.type==="Directory") ? "dir" : (rename.match(/\.(?:.(?<!\.))+$/s)!=null) ? rename.match(/(?:.(?<!\.))+$/s)[0] : ""
+        dll.renameKey(parent.dir, this.name, rename)
+        let renamedFile = parent.dir[rename]
+        let extension = (this.cfg.type==="Directory") ? "dir" : (rename.match(/\.(?:.(?<!\.))+$/s)!=null) ? rename.match(/(?:.(?<!\.))+$/s)[0] : ""
         renamedFile.name = rename
-        renamedFile.conf.exte = extension
-        renamedFile.conf.icon.exte = extension
+        renamedFile.cfg.exte = extension
+        renamedFile.cfg.icon.exte = extension
     }
 
     render(taskid=null) {
-        if (File.at(this.conf.from) === plexos.vtx) { //if is on current vertex / render on desktop
+        if (File.at(this.cfg.from) === plexos.vtx) { //if is on current vertex / render on desktop
             if  (Task.openInstance("Desktop")?.mem.getIcon(this.name)) Task.openInstance("Desktop")?.mem.getIcon(this.name).poseNode()
             else Task.openInstance("Desktop")?.mem.createDesktopIcons([this])
         }
@@ -184,7 +184,7 @@ class File {
     }
 
     open() {
-        dll.runLauncher(cfg.apps[this.conf.exte], {name:this.name, addr:this.conf.addr}, system.mem.var.envfocus)
+        dll.runLauncher(cfg.apps[this.cfg.exte], {name:this.name, addr:this.cfg.addr}, system.mem.var.envfocus)
     }
 }
 
@@ -206,7 +206,7 @@ class Metafile extends File {
     constructor(p) {
         super()
         this.name = p.name
-        this.conf = p.conf
+        this.cfg = p.cfg
 
         this.meta.title         = p.name
         this.meta.app           = p.meta?.app            || this.meta.app
@@ -228,7 +228,7 @@ class JsString extends File {
     constructor(p) {
         super()
         this.name = p.name
-        this.conf = p.conf
+        this.cfg = p.cfg
         this.data = p.data || ""
     }
 }

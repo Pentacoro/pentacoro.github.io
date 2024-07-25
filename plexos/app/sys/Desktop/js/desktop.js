@@ -17,14 +17,14 @@ task.node.style.height = document.body.offsetHeight - cfg.desktop.taskbar.height
 //desktop methods
 mem.createDesktopIcons = async function(array) {
     for(let item of array) {
-        deskIcon = new mem.class.IconDesk(item.conf.icon)
+        deskIcon = new mem.class.IconDesk(item.cfg.icon)
         deskIcon.createNode()
     }
 }
 mem.desktopInit = function (dir, id, act = null) {    
     try {       
         let activeObj = File.at(dir)
-        let dirList   = Object.entries(activeObj.cont)
+        let dirList   = Object.entries(activeObj.dir)
 
         for (let icon of Task.id(id).mem.iconArr){
             document.getElementsByClassName("list ID_"+id)[0].removeChild(icon.node)
@@ -62,7 +62,7 @@ mem.desktopInit = function (dir, id, act = null) {
 }
 
 mem.renderIcons = function() {
-	for (file of Object.entries(plexos.vtx.cont)) {
+	for (file of Object.entries(plexos.vtx.dir)) {
 		file[1].render()
 	}
 }
@@ -79,7 +79,7 @@ mem.refresh = function() {
 		icon.deleteNode()
 	}
     document.getElementById("iconLayer").innerHTML = ""
-	for (file of Object.entries(plexos.vtx.cont)) {
+	for (file of Object.entries(plexos.vtx.dir)) {
 		file[1].render()
 	}
 }
@@ -131,7 +131,7 @@ mem.new = function(e, _this, Type, name){
 				}
 			)
 			let newFile = editFrom.new(Type,name,newFileIcon)
-            let newDesktopIcon = new mem.class.IconDesk(newFile.conf.icon)
+            let newDesktopIcon = new mem.class.IconDesk(newFile.cfg.icon)
 			newDesktopIcon.createNode()
 
 			return newDesktopIcon

@@ -16,7 +16,7 @@ class Directory extends File {
         return new Directory(
         {
             name : "core",
-            conf : new Configuration (
+            cfg : new Configuration (
             {
                 icon : new Icon ({imag:"plexos/res/images/svg/desktopIcons/vertexPH.svg", name:"core", type:"Directory", stat:0}),
                 from : "",
@@ -26,13 +26,13 @@ class Directory extends File {
             })
         })
     }
-    conf = {}
-    cont = {}
+    cfg = {}
+    dir = {}
     constructor(p) {
         super()
         this.name = p.name
-        this.conf = p.conf || this.conf
-        this.cont = p.cont || this.cont
+        this.cfg = p.cfg || this.cfg
+        this.dir = p.dir || this.dir
     }
 
     new
@@ -53,16 +53,16 @@ class Directory extends File {
 
         if (childConf) { 
             //if conf argument passed use it
-            this.cont[childName] = new Type({name : childName, conf : (new Configuration (childConf))})
+            this.dir[childName] = new Type({name : childName, cfg : (new Configuration (childConf))})
         } else { 
             //if no conf argument passed, create default filetype
-            this.cont[childName] = new Type
+            this.dir[childName] = new Type
             (
                 {
                     name : childName,
-                    conf : new Configuration (
+                    cfg : new Configuration (
                     {
-                        from : (parent===core) ? "" : "" + parent.conf["from"] + "/" + parent.name,
+                        from : (parent===core) ? "" : "" + parent.cfg["from"] + "/" + parent.name,
                         type : confType,
                         move : true,
                         exte : (confType=="Directory") ? "dir" : childName.match(/(?:.(?<!\.))+$/s)[0],
@@ -79,11 +79,11 @@ class Directory extends File {
                 }
             )
         }
-        this.cont[childName].conf.addr = this.cont[childName].conf["from"] + "/" + childName
-        this.cont[childName].conf["icon"].file = this.cont[childName].conf["from"] + "/" + childName
+        this.dir[childName].cfg.addr = this.dir[childName].cfg["from"] + "/" + childName
+        this.dir[childName].cfg["icon"].file = this.dir[childName].cfg["from"] + "/" + childName
 
         if (childCont) {
-            this.cont[childName][skeyName] = childCont
+            this.dir[childName][skeyName] = childCont
         }
 
         try {
@@ -92,14 +92,14 @@ class Directory extends File {
             console.log(e)
         }
 
-        return this.cont[childName]
+        return this.dir[childName]
     }
 
     checkCont(){ //this function swaps default dir icons whether it contains files or not
-        if (Object.keys(this.cont).length > 0 && this.conf.icon.imag == File.typeDefaults(Directory).iconImag) {
-            this.conf.icon.imag = File.typeDefaults(Directory).iconImag.replace("DIR", "DIRc")
-        } else if (Object.keys(this.cont).length == 0 && this.conf.icon.imag == File.typeDefaults(Directory).iconImag.replace("DIR", "DIRc")) {
-            this.conf.icon.imag = File.typeDefaults(Directory).iconImag
+        if (Object.keys(this.dir).length > 0 && this.cfg.icon.imag == File.typeDefaults(Directory).iconImag) {
+            this.cfg.icon.imag = File.typeDefaults(Directory).iconImag.replace("DIR", "DIRc")
+        } else if (Object.keys(this.dir).length == 0 && this.cfg.icon.imag == File.typeDefaults(Directory).iconImag.replace("DIR", "DIRc")) {
+            this.cfg.icon.imag = File.typeDefaults(Directory).iconImag
         }
     }
 

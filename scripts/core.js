@@ -42,15 +42,15 @@ function downloadCoreJSON(exportName="core") {
     downloadAnchorNode.remove();
 }
 
-function recreateFiles(dir, newDir) {
-    for (file of Object.values(dir.cont)) {
+system.init.recreateFiles = function (dir, newDir) {
+    for (file of Object.values(dir.dir)) {
         let Type = null 
         let Skey = null
 
-        switch (file.conf.type) {
+        switch (file.cfg.type) {
             case "Directory":
                 Type = Directory
-                Skey = "cont"
+                Skey = "dir"
                 break
             case "Metafile":
                 Type = Metafile
@@ -67,102 +67,45 @@ function recreateFiles(dir, newDir) {
         }
 
         //recreate file object
-        newDir.new(Type,file.name,null,file.conf,file[Skey])
-        let newFile = newDir.cont[file.name]
+        newDir.new(Type,file.name,null,file.cfg,file[Skey])
+        let newFile = newDir.dir[file.name]
 
         //recreate icon object
-        let oldIcon = newFile.conf.icon
+        let oldIcon = newFile.cfg.icon
         oldIcon.exte = newFile.exte
-        newFile.conf.icon = new Icon (oldIcon)
+        newFile.cfg.icon = new Icon (oldIcon)
 
         if (Type === Directory) {
-            newFile.cont = {}
-            recreateFiles(dir.cont[file.name], newFile)
+            newFile.dir = {}
+            system.init.recreateFiles(dir.dir[file.name], newFile)
         }
     }
 }
 
-function defineCore(){
-    
-    if (dll.storageAvailable('localStorage')) {
+system.init.defineCore = function () {
+    return new Promise ((resolve, reject) => {
+        if (dll.storageAvailable('localStorage')) {
         
-        if(window.localStorage.getItem("core")) {
-            let jsonCore = JSON.parse(window.localStorage.core)
-            let newCore  = Directory.coreTemplate()
-    
-            recreateFiles(jsonCore, newCore)
+            if(window.localStorage.getItem("core")) {
+                let jsonCore = JSON.parse(window.localStorage.core)
+                let newCore  = Directory.coreTemplate()
         
-            return newCore
-        } else {
-            core = Directory.coreTemplate()
-    
-            core.new   
-            (
-                Directory,
-                "vertex",  
-                null,
-                new Configuration ({
-                    icon : new Icon ({imag:"plexos/res/images/svg/desktopIcons/vertexPH.svg", name:"vertex", type:"Directory", stat:0}),
-                    from : "",
-                    type : "Directory",
-                    vert : true,
-                    move : false
+                system.init.recreateFiles(jsonCore, newCore)
+            
+                resolve(newCore)
+            } else {
+                let corePromise = dll.ajaxReturn("GET","/core.json")
+                corePromise
+                .then(data=>{
+                    if (data.status >= 200 && data.status < 300) throw data
+                    core = Directory.coreTemplate()
+                    system.init.recreateFiles(JSON.parse(data),core)
+                    resolve(core)
                 })
-            )
-            core.new   
-            (
-                Directory,
-                "trash",
-                null,
-                new Configuration ({
-                    icon : new Icon ({imag:"plexos/res/images/svg/desktopIcons/trashPH.svg", name:"trash", type:"Directory", stat:0}),
-                    from : "",
-                    type : "Directory",
-                    plex : true,
-                    move : false
-                })
-            )
-            core.new   
-            (
-                Directory,
-                "stash",
-                null,
-                new Configuration ({
-                    icon : new Icon ({imag:"plexos/res/images/svg/desktopIcons/stashPH.svg", name:"stash", type:"Directory", stat:0}),
-                    from : "",
-                    type : "Directory",
-                    plex : true,
-                    move : false
-                })
-            )
-            core.new   
-            (
-                Directory,
-                "config",
-                null,
-                new Configuration ({
-                    icon : new Icon ({imag:"plexos/res/images/svg/desktopIcons/systemPH.svg", name:"config", type:"Directory", stat:0}),
-                    from : "",
-                    type : "Directory",
-                    plex : true,
-                    move : false
-                })
-            )
-        
-            core.cont["vertex"].new(Directory, "Folder 1")
-            core.cont["vertex"].new(Directory, "Folder 2")
-            core.cont["vertex"].new(Directory, "Folder 3")
-        
-            core.cont["vertex"].cont["Folder 1"].new(Directory, "uwu")
-            core.cont["vertex"].cont["Folder 1"].new(Directory, "unu")
-            core.cont["vertex"].cont["Folder 1"].new(Directory, "owo")
-        
-            core.cont["vertex"].cont["Folder 1"].cont["owo"].new(Directory, "rawr")
-
-            return core
+            }
         }
-    }
-        else {
-        // Too bad, no localStorage for us
-    }
+            else {
+            // Too bad, no localStorage for us
+        }
+    }) 
 }
