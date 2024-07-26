@@ -21,7 +21,7 @@
 	height: 100%;
 
 	display: grid;
-	grid-template-rows: 46px auto 0px;
+	grid-template-rows: 38px auto 0px;
 
     outline: 1px solid #4f6169;
 
@@ -30,12 +30,14 @@
 }
 
 .windowInner>.header {
+	container-name: header;
+	container-type: size;
+
 	position: sticky;
 	top: 0%;
 
-    display: grid;
-    grid-template-columns: auto 36px 36px 36px;
-    grid-column-gap: 0px;
+	display: flex;
+	align-items: center;
 
     box-sizing: initial;
 
@@ -59,15 +61,25 @@
     border-top-color: #7ba4bd;
     border-right-color: #7ba4bd;
 }
+.windowInner>.header>.headerIcon {
+	container: header;
+	height: 100cqh;
+	width: 100cqh;
 
-.windowInner>.header>.windowName{
+	flex-shrink: 0;
+
+	background-repeat: no-repeat;
+	background-position: center;
+	background-size: 60%;
+}
+.windowInner>.header>.headerText {
+	height: fit-content;
+
+	flex-grow: 1;
+	flex-shrink: 2;
+
     color: #FFFFFF;
-	font-size: 20px;
-
-    padding: .4em;
-	margin-bottom: 4px;
-
-    min-width: 36px;
+	font-size: 16px;
 
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -75,15 +87,24 @@
 
     user-select: none;
 }
-.windowInner>.header>.windowButton{
+.windowInner>.header>.headerButtons {
+	align-self: flex-end;
+	display: flex;
+
+	height: 100%;
+}
+.windowInner>.header>.headerButtons>.windowButton{
+	container: header;
     display: inline-block;
-    margin: 4px 4px 4px 0px;
+
+	height: 100cqh;
+	width: 100cqh;
 
     background-color: #FFFFFF;
 }
 
 /*BUTTONS ----------------------*/
-.windowInner>.header>.X{
+.windowInner>.header>.headerButtons>.X{
     background-color: #FF5189;
     background-image: url("../plexos/res/images/svg/windowUI/headerClose.svg");
 	background-repeat: no-repeat;
@@ -99,7 +120,7 @@
 
     user-select: auto;
 }
-.windowInner>.header>.X.mousedown:hover{
+.windowInner>.header>.headerButtons>.X.mousedown:hover{
     background-color: #f02263;
 
     border-top-color: #be003c;
@@ -109,7 +130,7 @@
     border-style: solid;
     border-width: 2px;
 }
-.windowInner>.header>.O{
+.windowInner>.header>.headerButtons>.O{
     background-color: #f0ca2200;
     background-image: url("../plexos/res/images/svg/windowUI/headerFullscreen.svg");
 	background-repeat: no-repeat;
@@ -125,7 +146,7 @@
 
     user-select: auto;
 }
-.windowInner>.header>.O.mousedown:hover{
+.windowInner>.header>.headerButtons>.O.mousedown:hover{
     background-color: #e0ab18;
 
     border-top-color: #d37d0d;
@@ -135,7 +156,7 @@
     border-style: solid;
     border-width: 2px;
 }
-.windowInner>.header>._{
+.windowInner>.header>.headerButtons>._{
     background-color: #f0ca2200;
     background-image: url("../plexos/res/images/svg/windowUI/headerMinimize-01.svg");
 	background-repeat: no-repeat;
@@ -152,7 +173,7 @@
     user-select: auto;
 	image-rendering: pixelated;
 }
-.windowInner>.header>._.mousedown:hover{
+.windowInner>.header>.headerButtons>._.mousedown:hover{
     background-color: #6e8a9b;
 
     border-top-color: #526c7a;

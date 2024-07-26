@@ -1,6 +1,6 @@
 class Window {
 	stat = 1
-	uiux = 3
+	uiux = []
 	posX = 200
 	posY = 200
     constructor(p){
@@ -20,6 +20,7 @@ class Window {
         this.minH = p.minH
         
         this.task = p.task
+		this.icon = p.icon || "/plexos/res/images/svg/desktopIcons/defaultFile.svg"
         
         this.name = p.name
 		this.move = p.move || []
@@ -40,47 +41,38 @@ class Window {
 		newWindowInner.setAttribute("class", "windowInner")
 		newWindow.appendChild(newWindowInner)
 	
-		if (this.uiux > 0) {
+		if (this.uiux) {
 			let newHeader = document.createElement("div")
 			newHeader.setAttribute("class", "header")
 			newWindowInner.appendChild(newHeader)
 			this.move.push(newHeader)
+
+			let newHeaderIcon = document.createElement("div")
+			newHeaderIcon.setAttribute("class", "headerIcon")
+			newHeaderIcon.setAttribute("style", `background-image: url('${this.icon}')`)
+			newHeader.appendChild(newHeaderIcon)
+
+			let newHeaderText = document.createElement("span")
+			newHeaderText.setAttribute("class", "headerText")
+			newHeader.appendChild(newHeaderText)
+			let newWindowTextNode = document.createTextNode(this.name)
+			newHeaderText.appendChild(newWindowTextNode)
+
+			let newHeaderButtons = document.createElement("div")
+			newHeaderButtons.setAttribute("class", "headerButtons")
+			newHeader.appendChild(newHeaderButtons)
 	
-				let newWindowText = document.createElement("span")
-				newWindowText.setAttribute("class", "windowName")
-				let newWindowTextNode = document.createTextNode(this.name)
-				newWindowText.appendChild(newWindowTextNode)
-				newHeader.appendChild(newWindowText)
-	
-				if (this.uiux > 1){
-					let newWindow_ = document.createElement("button")
-					newWindow_.setAttribute("class", "windowButton _")
-					newHeader.appendChild(newWindow_)
+				for (let button of this.uiux) {
+					console.log(button)
+					let newWindowButton = document.createElement("button")
+					newWindowButton.setAttribute("class", "windowButton"+" "+button.class)
+					newHeaderButtons.appendChild(newWindowButton)
+					newWindowButton.onclick = button.function
 				}
-				if (this.uiux > 2){
-					let newWindowO = document.createElement("button")
-					newWindowO.setAttribute("class", "windowButton O")
-					newHeader.appendChild(newWindowO)
-				}
-				if (this.uiux > 0){
-					let newWindowX = document.createElement("button")
-					newWindowX.setAttribute("class", "windowButton X")
-					newHeader.appendChild(newWindowX)
-				}
-				switch (this.uiux){
-					case 0:
-						newHeader.style.gridTemplateColumns = ""
-						break
-					case 1:
-						newHeader.style.gridTemplateColumns = "auto 36px"
-						break
-					case 2:
-						newHeader.style.gridTemplateColumns = "auto 36px 36px"
-						break
-					case 3:
-						newHeader.style.gridTemplateColumns = "auto 36px 36px 36px"
-						break
-				}
+
+				let newWindowX = document.createElement("button")
+				newWindowX.setAttribute("class", "windowButton X")
+				newHeaderButtons.appendChild(newWindowX)
 		}
 			let newContent = document.createElement("div")
 			newContent.setAttribute("class", "content")

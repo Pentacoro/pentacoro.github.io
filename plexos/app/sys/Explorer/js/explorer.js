@@ -395,7 +395,8 @@ mem.explorerInit = function (dir, id, act = null) {
         dirPlex.sort  ((a, b) => a.name.localeCompare(b.name))
 
         document.getElementsByClassName("address ID_"+id)[0].innerHTML = dir
-        document.getElementsByClassName("window ID_"+id)[0].children[0].children[0].children[0].innerHTML = activeObj.name
+        document.getElementsByClassName("window ID_"+id)[0].children[0].children[0].children[1].innerHTML = activeObj.name
+        document.getElementsByClassName("window ID_"+id)[0].children[0].children[0].children[0].setAttribute("style", `background-image: url('${activeObj.cfg.icon.imag}')`)
 
         mem.createExplorerIcons(dirPlex).then( e => mem.createExplorerIcons(dirFolder).then(e => mem.createExplorerIcons(dirFile)))
         

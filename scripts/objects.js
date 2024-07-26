@@ -88,7 +88,8 @@ class File {
             }
         }
     
-        return eval(expression)
+        //return file if expression indeed finds a file, otherwise return null
+        return (Object.getPrototypeOf(Object.getPrototypeOf(eval(expression))).constructor.name === "File") ? eval(expression) : null
     }
 
     static typeDefaults(Type) {
