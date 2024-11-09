@@ -12,12 +12,12 @@ mem.var.hLengthHTML = document.getElementById("ID_TASKID.grid.hLength")
 mem.var.vLengthHTML = document.getElementById("ID_TASKID.grid.vLength")
 
 //set values to html
-mem.var.widthHTML.innerText = cfg.desktop.grid.width
-mem.var.heightHTML.innerText = cfg.desktop.grid.height
-mem.var.hMarginHTML.innerText = cfg.desktop.grid.hMargin
-mem.var.vMarginHTML.innerText = cfg.desktop.grid.vMargin
-mem.var.hLengthHTML.innerText = cfg.desktop.grid.hLength
-mem.var.vLengthHTML.innerText = cfg.desktop.grid.vLength
+mem.var.widthHTML.value = cfg.desktop.grid.width
+mem.var.heightHTML.value = cfg.desktop.grid.height
+mem.var.hMarginHTML.value = cfg.desktop.grid.hMargin
+mem.var.vMarginHTML.value = cfg.desktop.grid.vMargin
+mem.var.hLengthHTML.value = cfg.desktop.grid.hLength
+mem.var.vLengthHTML.value = cfg.desktop.grid.vLength
 
 //preload graph2 images
 mem.var.graph2images = 

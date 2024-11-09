@@ -26,7 +26,7 @@ document.getElementById("ID_TASKID.tabResizing").addEventListener("click", e => 
 //edit buttons functionality
 for (option of document.getElementsByClassName("optionValue")){
     option.onclick = (e) => mem.editContent(e.target.parentElement)
-    option.parentElement.children[2].children[0].onclick = (e) => mem.editContent(e.target.parentElement.parentElement)
+    //option.parentElement.children[2].children[0].onclick = (e) => mem.editContent(e.target.parentElement.parentElement)
 }
 
 //booleans functionality
@@ -44,6 +44,7 @@ for(i = 0; i < document.getElementsByClassName("ID_TASKID optbool_box").length; 
 }
 
 //footer buttons funcitonality
+/*
 document.getElementById("ID_TASKID.marginButton").onclick = e => {
     cfg.desktop.grid.autoHmargin = true
     cfg.desktop.grid.autoVmargin = true
@@ -93,14 +94,12 @@ document.getElementById("ID_TASKID.lengthCheckbox").onclick = e => {
         desktop.mem.grid.realTimeGridEval()
     }
 }
+*/
 
 //graph incteractives updating
-document.getElementsByClassName("ID_TASKID grid_graph")[1].children[9].firstChild.onclick = e => {
-    mem.UpdateGraph2()
-}
 document.getElementsByClassName("ID_TASKID grid_graph")[1].children[7].onmousedown = e => {
     let pX = e.target.offsetLeft
-    let mX = Math.round((e.clientX)/33)*33 + 8
+    let mX = Math.round((e.clientX)/33)*33 + 9
     let dot = e.target
     let line = document.getElementsByClassName("ID_TASKID grid_graph")[1].children[6]
 
@@ -115,13 +114,13 @@ document.getElementsByClassName("ID_TASKID grid_graph")[1].children[7].onmousedo
 
         let nX = pX + e.clientX - mX
         
-        if(nX >= 107 && nX <= 206) dot.style.left = nX + "px"
-        if(nX <= 107) dot.style.left = 107 + "px"
-        if(nX >= 206) dot.style.left = 206 + "px"
+        if(nX >= 105 && nX <= 207) dot.style.left = nX + "px"
+        if(nX <= 108) dot.style.left = 108 + "px"
+        if(nX >= 207) dot.style.left = 207 + "px"
         
-        dot.style.left = (Math.round((dot.offsetLeft)/33)*33 + 8) + "px"
+        dot.style.left = (Math.round((dot.offsetLeft)/33)*33 + 9) + "px"
 
-        line.style.width = 206 - dot.offsetLeft + "px"
+        line.style.width = 207 - dot.offsetLeft + "px"
         line.style.left = dot.offsetLeft + 5 + "px"
 
         mem.UpdateGraph2()

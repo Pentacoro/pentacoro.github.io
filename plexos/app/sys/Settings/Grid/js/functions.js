@@ -3,15 +3,10 @@ let mem  = Task.id("TASKID").mem
 
 mem.editContent = function(option){
     let value = option.children[1]
-    let button = option.children[2]
     value.setAttribute("contenteditable", "true")
     value.setAttribute("spellcheck", "false")
 
     dll.selectText(value)
-
-    button.children[0].classList.add("hidden")
-    button.children[1].classList.remove("hidden")
-    button.children[2].classList.remove("hidden")
 
     value.onkeydown = e => {
         if(e.key == "Enter"){
@@ -22,13 +17,6 @@ mem.editContent = function(option){
             buttonCancel()
             return false
         }
-    }
-
-    button.children[1].onclick = e => {
-        buttonAccept()
-    }
-    button.children[2].onclick = e => {
-        buttonCancel()
     }
     
     function buttonAccept(){
@@ -69,9 +57,6 @@ mem.editContent = function(option){
             mem.UpdateGraph()
 
             value.setAttribute("contenteditable", "false")
-            button.children[0].classList.remove("hidden")
-            button.children[1].classList.add("hidden")
-            button.children[2].classList.add("hidden")
         } else {
             value.focus()
             let range = document.createRange()
@@ -129,7 +114,6 @@ mem.UpdateGraph2 = function(num = false){
     document.getElementsByClassName("ID_TASKID grid_graph")[1].children[1].innerText = cfg.desktop.grid.vLength
     document.getElementsByClassName("ID_TASKID grid_graph")[1].children[5].style.backgroundImage = (cfg.desktop.grid.sendStash) ? "url('./assets/deskIconGrid_stash.svg')" : "url('./assets/deskIconGrid_bin.svg')"
 
-    let chk = document.getElementsByClassName("ID_TASKID grid_graph")[1].children[9].firstChild
     let dot = document.getElementsByClassName("ID_TASKID grid_graph")[1].children[7]
     let dir = document.getElementsByClassName("ID_TASKID grid_graph")[1].children[4]
     let img = document.getElementsByClassName("ID_TASKID grid_graph")[1]
@@ -137,39 +121,20 @@ mem.UpdateGraph2 = function(num = false){
     mem.var.hLengthHTML.innerText = cfg.desktop.grid.hLength
     mem.var.vLengthHTML.innerText = cfg.desktop.grid.vLength
 
-    if (chk.checked === false) {
-        if (dot.offsetLeft > 174) {
-            img.style.backgroundImage = "url('./assets/deskIconGridGraph2/deskIconGridGraph2_00.svg')"
-            dir.innerText = "+0"
-        }
-        if (dot.offsetLeft <= 174 && dot.offsetLeft > 141) {
-            img.style.backgroundImage = (cfg.desktop.grid.sendBorder) ? "url('./assets/deskIconGridGraph2/deskIconGridGraph2_02-1.svg')" : "url('./assets/deskIconGridGraph2/deskIconGridGraph2_02-2.svg')"
-            dir.innerText = "+0"
-        }
-        if (dot.offsetLeft <= 141 && dot.offsetLeft > 107) {
-            img.style.backgroundImage = (cfg.desktop.grid.sendBorder) ? "url('./assets/deskIconGridGraph2/deskIconGridGraph2_03-1.svg')" : "url('./assets/deskIconGridGraph2/deskIconGridGraph2_03-2.svg')"
-            dir.innerText = "+1"
-        }
-        if (dot.offsetLeft === 107) {
-            img.style.backgroundImage = "url('./assets/deskIconGridGraph2/deskIconGridGraph2_01.svg')"
-            dir.innerText = "+4"
-        }
-    } else {
-        if (dot.offsetLeft > 174) {
-            img.style.backgroundImage = "url('./assets/deskIconGridGraph2/deskIconGridGraph2_00.svg')"
-            dir.innerText = "+0"
-        }
-        if (dot.offsetLeft <= 174 && dot.offsetLeft > 141) {
-            img.style.backgroundImage = "url('./assets/deskIconGridGraph2/deskIconGridGraph2_02-3.svg')"
-            dir.innerText = "+3"
-        }
-        if (dot.offsetLeft <= 141 && dot.offsetLeft > 107) {
-            img.style.backgroundImage = "url('./assets/deskIconGridGraph2/deskIconGridGraph2_03-3.svg')"
-            dir.innerText = "+3"
-        }
-        if (dot.offsetLeft === 107) {
-            img.style.backgroundImage = "url('./assets/deskIconGridGraph2/deskIconGridGraph2_01.svg')"
-            dir.innerText = "+4"
-        }
+    if (dot.offsetLeft > 174) {
+        img.style.backgroundImage = "url('./assets/deskIconGridGraph2/deskIconGridGraph2_00.svg')"
+        dir.innerText = "+0"
+    }
+    if (dot.offsetLeft <= 174 && dot.offsetLeft > 141) {
+        img.style.backgroundImage = (cfg.desktop.grid.sendBorder) ? "url('./assets/deskIconGridGraph2/deskIconGridGraph2_02-1.svg')" : "url('./assets/deskIconGridGraph2/deskIconGridGraph2_02-2.svg')"
+        dir.innerText = "+0"
+    }
+    if (dot.offsetLeft <= 141 && dot.offsetLeft > 108) {
+        img.style.backgroundImage = (cfg.desktop.grid.sendBorder) ? "url('./assets/deskIconGridGraph2/deskIconGridGraph2_03-1.svg')" : "url('./assets/deskIconGridGraph2/deskIconGridGraph2_03-2.svg')"
+        dir.innerText = "+1"
+    }
+    if (dot.offsetLeft === 108) {
+        img.style.backgroundImage = "url('./assets/deskIconGridGraph2/deskIconGridGraph2_01.svg')"
+        dir.innerText = "+4"
     }
 }

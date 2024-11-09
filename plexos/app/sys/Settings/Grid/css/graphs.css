@@ -1,0 +1,173 @@
+/*first graph-------------------*/
+.ID_TASKID.grid_graph.n1{
+    position: relative;
+    background-image: url("./assets/deskIconGridGraph1.svg");
+    background-position: 50% 70%;
+    background-size: 95%;
+}
+.ID_TASKID.grid_graph>span{
+    user-select: none;
+    position: absolute;
+    color: white;
+    text-align: center;
+}
+.ID_TASKID.grid_graph.n1>span>*{
+    position: inherit;
+}
+.ID_TASKID.grid_graph.n1>span:nth-child(1){
+    position: initial;
+    display: block;
+    margin-top: 10px;
+    width: 100%;
+}
+.ID_TASKID.grid_graph.n1>span:nth-child(1)>span{
+    background-color: #0F7B9B;
+}
+.ID_TASKID.grid_graph.n1>span:nth-child(2){
+    top: 82px;
+    right: 228px;
+    background-color: #0F7B9B;
+}
+.ID_TASKID.grid_graph.n1>span:nth-child(3){
+    top: 66px;
+    left: 213px;
+    background-color: #888888;
+}
+.ID_TASKID.grid_graph.n1>span:nth-child(4){
+    top: 139px;
+    right: 172px;
+    background-color: #888888;
+}
+.ID_TASKID.grid_graph.n1>span:nth-child(5){
+    top: 98px;
+    left: 213px;
+    color: #888888;
+}
+.ID_TASKID.grid_graph.n1>span:nth-child(6){
+    top: 139px;
+    left: 172px;
+    color: #888888;
+}
+
+/*-------------------first graph*/
+
+/*second graph------------------*/
+.ID_TASKID.grid_graph.n2{
+    position: relative;
+    background-image: url("./assets/deskIconGridGraph2/deskIconGridGraph2_00.svg");
+    background-position: 50% 50%;
+    background-size: 90%;
+}
+.ID_TASKID.grid_graph.n2>span{
+    position: absolute;
+    color: white;
+    text-align: center;
+}
+.ID_TASKID.grid_graph.n2>span>*{
+    position: inherit;
+}
+.ID_TASKID.grid_graph.n2>span:nth-child(1){
+    position: initial;
+    display: block;
+    margin-top: 10px;
+    width: 100%;
+}
+.ID_TASKID.grid_graph.n2>span:nth-child(1)>span{
+    background-color: #0F7B9B;
+}
+.ID_TASKID.grid_graph.n2>span:nth-child(2){
+    top: 82px;
+    right: 228px;
+    background-color: #0F7B9B;
+}
+.ID_TASKID.grid_graph.n2>span:nth-child(3){
+    display: block;
+    transform: scale(.7);
+    top: 38px;
+    left: 97px;
+    width: 1.15em;
+    height: 1.15em;
+    background-color: #0F7B9B;
+    font-size: 16px;
+}
+.ID_TASKID.grid_graph.n2>span:nth-child(4){
+    display: block;
+    transform: scale(.7);
+    top: 24px;
+    left: 111px;
+    width: 1.15em;
+    height: 1.15em;
+    background-color: #0F7B9B;
+    font-size: 16px;
+}
+.ID_TASKID.grid_graph.n2>span:nth-child(5){
+    top: 60px;
+    left: 220px;
+    color: #888888;
+}
+.ID_TASKID.grid_graph.n2>div:nth-child(6){
+    position: absolute;
+    display: block;
+    top: 77px;
+    left: 214px;
+    width: 30px;
+    height: 30px;
+}
+.ID_TASKID.grid_graph.n2>div:nth-child(7){
+    position: absolute;
+    top: 152px;
+    left: 107px;
+    width: 0px;
+    height: 6px;;
+    background-color: #888888;
+    z-index: 1;
+}
+.ID_TASKID.grid_graph.n2>div:nth-child(8){
+    position: absolute;
+    transform: rotate(45deg);
+    top: 149px;
+    left: 207px;
+    width: 12px;
+    height: 12px;
+    background-color: #888888;
+    cursor: w-resize;
+    z-index: 2;
+}
+.ID_TASKID.grid_graph.n2>div:nth-child(9)>div{
+    position: absolute;
+    top: 150px;
+    width: 5px;
+    height: 10px;;
+    background-color: #888888;
+    z-index: 1;
+}
+.ID_TASKID.grid_graph.n2>div:nth-child(9)>div:nth-child(1){
+    left: 112px;
+}
+.ID_TASKID.grid_graph.n2>div:nth-child(9)>div:nth-child(2){
+    left: 145px;
+}
+.ID_TASKID.grid_graph.n2>div:nth-child(9)>div:nth-child(3){
+    left: 177px;
+}
+.ID_TASKID.grid_graph.n2>div:nth-child(9)>div:nth-child(4){
+    left: 210px;
+}
+.ID_TASKID.grid_graph.n2>div:nth-child(10){
+    position: absolute;
+    top: 109px;
+    left: 222px;
+    width: 4px;
+    height: 9px;
+    z-index: 1;
+}
+.ID_TASKID.grid_graph.n2>div:nth-child(11){
+    position: absolute;
+    top: 152px;
+    left: 115px;
+    width: 96px;
+    height: 6px;;
+    background-color: #c7c7c7;
+    z-index: 0;
+}
+/*------------------second graph*/

@@ -65,6 +65,7 @@
 	container: header;
 	height: 100cqh;
 	width: 100cqh;
+	margin: 4px 0px 4px 4px;
 
 	flex-shrink: 0;
 
@@ -74,6 +75,7 @@
 }
 .windowInner>.header>.headerText {
 	height: fit-content;
+	margin-left: 4px;
 
 	flex-grow: 1;
 	flex-shrink: 2;

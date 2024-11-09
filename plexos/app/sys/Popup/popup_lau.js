@@ -37,7 +37,7 @@ try {
             task : id, 
             rezi : false, 
             uiux : [], 
-            icon : (params.icon) ? params.icon : "",
+            icon : (params.icon) ? params.icon : null,
             stat : 1, 
             widt : 400, 
             heig : 150, 

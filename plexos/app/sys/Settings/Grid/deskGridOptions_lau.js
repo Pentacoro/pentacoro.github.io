@@ -41,7 +41,7 @@ try {
             uiux : [], 
             icon : "/plexos/res/images/svg/desktopIcons/settingsPlaceholder.svg",
             stat : 1, 
-            widt : 350, 
+            widt : 361, 
             heig : 490, 
         }
     )

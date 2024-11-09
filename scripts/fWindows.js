@@ -20,7 +20,7 @@ class Window {
         this.minH = p.minH
         
         this.task = p.task
-		this.icon = p.icon || "/plexos/res/images/svg/desktopIcons/defaultFile.svg"
+		this.icon = p.icon || null
         
         this.name = p.name
 		this.move = p.move || []
@@ -47,10 +47,12 @@ class Window {
 			newWindowInner.appendChild(newHeader)
 			this.move.push(newHeader)
 
-			let newHeaderIcon = document.createElement("div")
-			newHeaderIcon.setAttribute("class", "headerIcon")
-			newHeaderIcon.setAttribute("style", `background-image: url('${this.icon}')`)
-			newHeader.appendChild(newHeaderIcon)
+			if (this.icon) {
+				let newHeaderIcon = document.createElement("div")
+				newHeaderIcon.setAttribute("class", "headerIcon")
+				newHeaderIcon.setAttribute("style", `background-image: url('${this.icon}')`)
+				newHeader.appendChild(newHeaderIcon)
+			}
 
 			let newHeaderText = document.createElement("span")
 			newHeaderText.setAttribute("class", "headerText")
@@ -73,6 +75,7 @@ class Window {
 				let newWindowX = document.createElement("button")
 				newWindowX.setAttribute("class", "windowButton X")
 				newHeaderButtons.appendChild(newWindowX)
+				newWindowX.onclick = ()=>Task.id(this.task).end()
 		}
 			let newContent = document.createElement("div")
 			newContent.setAttribute("class", "content")
@@ -142,13 +145,6 @@ class Window {
 					window.onmouseup = null
 				}
 			}
-			button.onclick = e => {
-				switch (button.classList[1]) {
-					case "_": //console.log("_"); break;
-					case "O": //console.log("O"); break;
-					case "X": Task.id(this.task).end(); break;
-				}
-			}	
 		}
 		
 		this.node = newWindow

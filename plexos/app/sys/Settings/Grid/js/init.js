@@ -5,6 +5,7 @@ let mem  = Task.id("TASKID").mem
 document.getElementById("ID_TASKID.tabResizing").checked = true
 
 //set values to booleans
+/*
 if (cfg.desktop.grid.sendStash === true) {
     document.getElementById("ID_TASKID.optboolStash").checked = true
 } else {
@@ -28,6 +29,7 @@ if (cfg.desktop.grid.autoHlength && cfg.desktop.grid.autoVlength) {
 } else {
     document.getElementById("ID_TASKID.lengthCheckbox").checked = false
 }
+*/
 
 mem.UpdateGraph()
 mem.UpdateGraphAuto()

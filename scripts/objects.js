@@ -103,7 +103,7 @@ class File {
             case Directory:
                 defaults.iconImag = "plexos/res/images/svg/desktopIcons/defaultDIR.svg"
                 defaults.confType = "Directory"
-                defaults.skeyName = "cont"
+                defaults.skeyName = "dir"
                 break
             case Metafile: 
                 defaults.iconImag = "plexos/res/images/svg/desktopIcons/defaultMSF.svg"
