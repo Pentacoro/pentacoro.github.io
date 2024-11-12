@@ -1,5 +1,5 @@
 /*first graph-------------------*/
-.ID_TASKID.grid_graph.n1{
+.ID_TASKID.grid_graph.n2{
     position: relative;
     background-image: url("./assets/deskIconGridGraph1.svg");
     background-position: 50% 70%;
@@ -7,58 +7,6 @@
 }
 .ID_TASKID.grid_graph>span{
     user-select: none;
-    position: absolute;
-    color: white;
-    text-align: center;
-}
-.ID_TASKID.grid_graph.n1>span>*{
-    position: inherit;
-}
-.ID_TASKID.grid_graph.n1>span:nth-child(1){
-    position: initial;
-    display: block;
-    margin-top: 10px;
-    width: 100%;
-}
-.ID_TASKID.grid_graph.n1>span:nth-child(1)>span{
-    background-color: #0F7B9B;
-}
-.ID_TASKID.grid_graph.n1>span:nth-child(2){
-    top: 82px;
-    right: 228px;
-    background-color: #0F7B9B;
-}
-.ID_TASKID.grid_graph.n1>span:nth-child(3){
-    top: 66px;
-    left: 213px;
-    background-color: #888888;
-}
-.ID_TASKID.grid_graph.n1>span:nth-child(4){
-    top: 139px;
-    right: 172px;
-    background-color: #888888;
-}
-.ID_TASKID.grid_graph.n1>span:nth-child(5){
-    top: 98px;
-    left: 213px;
-    color: #888888;
-}
-.ID_TASKID.grid_graph.n1>span:nth-child(6){
-    top: 139px;
-    left: 172px;
-    color: #888888;
-}
-
-/*-------------------first graph*/
-
-/*second graph------------------*/
-.ID_TASKID.grid_graph.n2{
-    position: relative;
-    background-image: url("./assets/deskIconGridGraph2/deskIconGridGraph2_00.svg");
-    background-position: 50% 50%;
-    background-size: 90%;
-}
-.ID_TASKID.grid_graph.n2>span{
     position: absolute;
     color: white;
     text-align: center;
@@ -81,6 +29,58 @@
     background-color: #0F7B9B;
 }
 .ID_TASKID.grid_graph.n2>span:nth-child(3){
+    top: 66px;
+    left: 213px;
+    background-color: #888888;
+}
+.ID_TASKID.grid_graph.n2>span:nth-child(4){
+    top: 139px;
+    right: 172px;
+    background-color: #888888;
+}
+.ID_TASKID.grid_graph.n2>span:nth-child(5){
+    top: 98px;
+    left: 213px;
+    color: #888888;
+}
+.ID_TASKID.grid_graph.n2>span:nth-child(6){
+    top: 139px;
+    left: 172px;
+    color: #888888;
+}
+
+/*-------------------first graph*/
+
+/*second graph------------------*/
+.ID_TASKID.grid_graph.n1{
+    position: relative;
+    background-image: url("./assets/deskIconGridGraph2/deskIconGridGraph2_00.svg");
+    background-position: 50% 50%;
+    background-size: 90%;
+}
+.ID_TASKID.grid_graph.n1>span{
+    position: absolute;
+    color: white;
+    text-align: center;
+}
+.ID_TASKID.grid_graph.n1>span>*{
+    position: inherit;
+}
+.ID_TASKID.grid_graph.n1>span:nth-child(1){
+    position: initial;
+    display: block;
+    margin-top: 10px;
+    width: 100%;
+}
+.ID_TASKID.grid_graph.n1>span:nth-child(1)>span{
+    background-color: #0F7B9B;
+}
+.ID_TASKID.grid_graph.n1>span:nth-child(2){
+    top: 82px;
+    right: 228px;
+    background-color: #0F7B9B;
+}
+.ID_TASKID.grid_graph.n1>span:nth-child(3){
     display: block;
     transform: scale(.7);
     top: 38px;
@@ -90,7 +90,7 @@
     background-color: #0F7B9B;
     font-size: 16px;
 }
-.ID_TASKID.grid_graph.n2>span:nth-child(4){
+.ID_TASKID.grid_graph.n1>span:nth-child(4){
     display: block;
     transform: scale(.7);
     top: 24px;
@@ -100,12 +100,12 @@
     background-color: #0F7B9B;
     font-size: 16px;
 }
-.ID_TASKID.grid_graph.n2>span:nth-child(5){
+.ID_TASKID.grid_graph.n1>span:nth-child(5){
     top: 60px;
     left: 220px;
     color: #888888;
 }
-.ID_TASKID.grid_graph.n2>div:nth-child(6){
+.ID_TASKID.grid_graph.n1>div:nth-child(6){
     position: absolute;
     display: block;
     top: 77px;
@@ -113,7 +113,7 @@
     width: 30px;
     height: 30px;
 }
-.ID_TASKID.grid_graph.n2>div:nth-child(7){
+.ID_TASKID.grid_graph.n1>div:nth-child(7){
     position: absolute;
     top: 152px;
     left: 107px;
@@ -122,7 +122,7 @@
     background-color: #888888;
     z-index: 1;
 }
-.ID_TASKID.grid_graph.n2>div:nth-child(8){
+.ID_TASKID.grid_graph.n1>div:nth-child(8){
     position: absolute;
     transform: rotate(45deg);
     top: 149px;
@@ -133,7 +133,7 @@
     cursor: w-resize;
     z-index: 2;
 }
-.ID_TASKID.grid_graph.n2>div:nth-child(9)>div{
+.ID_TASKID.grid_graph.n1>div:nth-child(9)>div{
     position: absolute;
     top: 150px;
     width: 5px;
@@ -141,19 +141,19 @@
     background-color: #888888;
     z-index: 1;
 }
-.ID_TASKID.grid_graph.n2>div:nth-child(9)>div:nth-child(1){
+.ID_TASKID.grid_graph.n1>div:nth-child(9)>div:nth-child(1){
     left: 112px;
 }
-.ID_TASKID.grid_graph.n2>div:nth-child(9)>div:nth-child(2){
+.ID_TASKID.grid_graph.n1>div:nth-child(9)>div:nth-child(2){
     left: 145px;
 }
-.ID_TASKID.grid_graph.n2>div:nth-child(9)>div:nth-child(3){
+.ID_TASKID.grid_graph.n1>div:nth-child(9)>div:nth-child(3){
     left: 177px;
 }
-.ID_TASKID.grid_graph.n2>div:nth-child(9)>div:nth-child(4){
+.ID_TASKID.grid_graph.n1>div:nth-child(9)>div:nth-child(4){
     left: 210px;
 }
-.ID_TASKID.grid_graph.n2>div:nth-child(10){
+.ID_TASKID.grid_graph.n1>div:nth-child(10){
     position: absolute;
     top: 109px;
     left: 222px;
@@ -161,7 +161,7 @@
     height: 9px;
     z-index: 1;
 }
-.ID_TASKID.grid_graph.n2>div:nth-child(11){
+.ID_TASKID.grid_graph.n1>div:nth-child(11){
     position: absolute;
     top: 152px;
     left: 115px;

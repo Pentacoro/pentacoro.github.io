@@ -120,6 +120,7 @@ dll.loadFront = async function({url, taskid, data, replacementPairs = [], contai
             function getScriptContent(script) {
                 return new Promise (async (resolve, reject) => {
                     let js = null
+                    let src = null
                     let imported = true
                     if (script.innerText) {
                         js = script.innerText
@@ -132,6 +133,7 @@ dll.loadFront = async function({url, taskid, data, replacementPairs = [], contai
                         //await eval("const runScript = async function(){return new Promise (async (resolve, reject)=>{\n"+js+"\nresolve()})}; runScript();console.log('wow')")
                     } else if (script.getAttribute("src")) {
                         js = await dll.ajaxReturn("get", script.getAttribute("src"))
+                        src = script.getAttribute("src")
                         if (!script.classList.contains("imported")) {
                             imported = false
                             js = dll.repDir(js,url)
@@ -140,7 +142,7 @@ dll.loadFront = async function({url, taskid, data, replacementPairs = [], contai
                         }
                         //await eval("const runScript = async function(){return new Promise (async (resolve, reject)=>{\n"+js+"\nresolve()})}; runScript();console.log('wow')")
                     }
-                    resolve({js,imported})
+                    resolve({js,src,imported})
                 })
             }
 
@@ -150,17 +152,20 @@ dll.loadFront = async function({url, taskid, data, replacementPairs = [], contai
 
             let scriptContents = await Promise.all(promiseScriptArray)
 
-            for({js,imported} of scriptContents){
-                let count = 0
+            let count = 1
+
+            for({js,src,imported} of scriptContents){
+                
                 try {
                     if (!imported) {
-                        await eval("const runScript = async function(){return new Promise (async (resolve, reject)=>{"+js+";resolve()})}; runScript();")
+                        await eval("const runScript = async function(){"+js+"}; runScript();")
                     } else {
                         await eval(js)
                     }
                     if (Task.id(taskid)) system.mem.focus(Task.id(taskid))
                 } catch (e) {
                     e.taskId = taskid
+                    e.source = src
                     dll.evalErrorPopup
                     (
                         js,

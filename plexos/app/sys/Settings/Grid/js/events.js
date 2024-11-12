@@ -1,6 +1,14 @@
 let desktop = Task.openInstance("Desktop")
 let mem  = Task.id("TASKID").mem
 
+//on app close
+Task.id("TASKID").appEnd = function () {
+    new Function(mem.var.config +" = JSON.parse(File.at('"+mem.var.configFile+"').data)")()
+    cfg.desktop.grid.visibleNodes = false
+    File.at(mem.var.configFile).data = JSON.stringify(eval(mem.var.config), null, "\t")
+    Task.openInstance("Desktop").mem.grid.evaluateIconGrid(3)
+}
+
 //deselection
 document.onmousedown = e => {
     if (window.getSelection) {window.getSelection().removeAllRanges()}
@@ -8,100 +16,92 @@ document.onmousedown = e => {
 }
 
 //tabs functionality
-document.getElementById("ID_TASKID.tabPositioning").addEventListener("click", e => {
-    if (e.target.checked) {
-        document.getElementById("ID_TASKID.tabContent1").classList.remove("hidden")
-        document.getElementById("ID_TASKID.tabContent2").classList.add("hidden")
-        return
-    }
-})
-document.getElementById("ID_TASKID.tabResizing").addEventListener("click", e => {
-    if (e.target.checked) {
-        document.getElementById("ID_TASKID.tabContent2").classList.remove("hidden")
-        document.getElementById("ID_TASKID.tabContent1").classList.add("hidden")
-        return
-    }
-})
-
-//edit buttons functionality
-for (option of document.getElementsByClassName("optionValue")){
-    option.onclick = (e) => mem.editContent(e.target.parentElement)
-    //option.parentElement.children[2].children[0].onclick = (e) => mem.editContent(e.target.parentElement.parentElement)
-}
-
-//booleans functionality
-for (option of document.getElementsByClassName("ID_TASKID editBoolean")){
-    option.onclick = (e) => mem.editBoolean(e.target)
-}
-for(i = 0; i < document.getElementsByClassName("ID_TASKID optbool_box").length; i++){
-    document.getElementsByClassName("ID_TASKID optbool_box")[i].addEventListener("mouseup", (e) => {
-        if(e.target.classList.contains("ID_TASKID optbool_box")) {
-            e.target.parentElement.children[0].checked = true
-        } else {
-            e.target.parentElement.parentElement.children[0].checked = true
+for (tab of document.getElementsByClassName("config-tab")) {
+    let value = tab.children[0].value
+    let input = tab.children[0]
+    tab.addEventListener("click", e => {
+        if (input.checked) {
+            for (content of document.getElementsByClassName("tabContent")) {content.classList.add("hidden")}
+            document.getElementById(value).classList.remove("hidden")
+            return
         }
     })
 }
 
-//footer buttons funcitonality
-/*
-document.getElementById("ID_TASKID.marginButton").onclick = e => {
-    cfg.desktop.grid.autoHmargin = true
-    cfg.desktop.grid.autoVmargin = true
-    mem.UpdateGraphAuto()
-    desktop.mem.grid.evaluateIconGrid(null,1)
-    cfg.desktop.grid.autoHmargin = false
-    cfg.desktop.grid.autoVmargin = false
+//footer buttons 
+document.getElementsByClassName("footer-accept")[0].onclick = (e)=> {
+    File.at(mem.var.configFile).data = JSON.stringify(eval(mem.var.config), null, "\t")
+    Task.id("TASKID").end()
 }
-document.getElementById("ID_TASKID.marginCheckbox").onclick = e => {
-    if(e.target.checked == true){
-        cfg.desktop.grid.autoHmargin = true
-        cfg.desktop.grid.autoVmargin = true
-        mem.UpdateGraphAuto()
-        desktop.mem.grid.realTimeGridEval()
+document.getElementsByClassName("footer-cancel")[0].onclick = (e)=> {
+    Task.id("TASKID").end()
+}
+document.getElementsByClassName("footer-apply")[0].onclick = (e)=> {
+    File.at(mem.var.configFile).data = JSON.stringify(eval(mem.var.config), null, "\t")
+    document.getElementsByClassName("footer-apply")[0].disabled = true
+    document.getElementsByClassName("footer-apply")[0].classList.add("disabled")
+}
 
-        desktop.mem.grid.evaluateIconGrid(null,1)
-    } else {
-        cfg.desktop.grid.autoHmargin = false
-        cfg.desktop.grid.autoVmargin = false
-        cfg.desktop.grid.modHmargin = 0
-        cfg.desktop.grid.modVmargin = 0
-        mem.UpdateGraphAuto()
-        desktop.mem.grid.realTimeGridEval()
+//integer input 
+for (input of document.getElementsByClassName("optionValue")) {
+    let inputbox = input
+    let variable = inputbox.getAttribute("name")
+    inputbox.onchange = (e) => {
+        new Function(variable + " = " + Number(inputbox.value))()
+        mem.onChange()
+    }
+    inputbox.addEventListener("focusout", (e) => {
+        new Function(variable + " = " + Number(inputbox.value))
+    })
+}
 
-        desktop.mem.grid.evaluateIconGrid(null,2)
+//auto button and auto checkbox
+for (button of document.getElementsByClassName("optionButton")) {
+    let variable = button.getAttribute("name")
+    button.onclick = (e) => {
+        new Function(variable + " = " + true)()
+        mem.onChange()
+        new Function(variable + " = " + false)()
     }
 }
-document.getElementById("ID_TASKID.lengthButton").onclick = e => {
-    cfg.desktop.grid.autoHlength = true
-    cfg.desktop.grid.autoVlength = true
-    desktop.mem.grid.evaluateIconGrid(null,1)
-    mem.UpdateGraph2()
-    cfg.desktop.grid.autoHlength = false
-    cfg.desktop.grid.autoVlength = false
-}
-document.getElementById("ID_TASKID.lengthCheckbox").onclick = e => {
-    if(e.target.checked == true){
-        cfg.desktop.grid.autoHlength = true
-        cfg.desktop.grid.autoVlength = true
-        desktop.mem.grid.realTimeGridEval()
-        
-        desktop.mem.grid.evaluateIconGrid(null,1)
-        mem.UpdateGraph2()
-    } else {
-        cfg.desktop.grid.autoHlength = false
-        cfg.desktop.grid.autoVlength = false
-        desktop.mem.grid.realTimeGridEval()
+
+for (box of document.getElementsByClassName("optionCheck")) {
+    let variable = box.getAttribute("name")
+    let checkbox = box
+    if (eval(variable)) checkbox.checked = true
+    checkbox.onclick = (e) => {
+        if (!checkbox.checked) {
+            new Function(variable + " = " + false)()
+            mem.onChange()
+            return
+        }
+        new Function(variable + " = " + true)()
+        mem.onChange()
     }
 }
-*/
 
-//graph incteractives updating
-document.getElementsByClassName("ID_TASKID grid_graph")[1].children[7].onmousedown = e => {
+//auto margin reset on uncheck
+document.getElementsByName("cfg.desktop.grid.autoHmargin")[1].addEventListener("click", e=>{
+    if (e.target.checked) return
+    cfg.desktop.grid.modHmargin = 0
+    cfg.desktop.grid.hMargin = Number(mem.var.hMarginHTML.value)
+    mem.updateGraphAuto()
+    desktop.mem.grid.evaluateIconGrid(2)
+})
+document.getElementsByName("cfg.desktop.grid.autoVmargin")[1].addEventListener("click", e=>{
+    if (e.target.checked) return
+    cfg.desktop.grid.modVmargin = 0
+    cfg.desktop.grid.vMargin = Number(mem.var.vMarginHTML.value)
+    mem.updateGraphAuto()
+    desktop.mem.grid.evaluateIconGrid(2)
+})
+
+//graph1 interactive drag
+document.getElementsByClassName("ID_TASKID grid_graph n1")[0].children[7].onmousedown = e => {
     let pX = e.target.offsetLeft
     let mX = Math.round((e.clientX)/33)*33 + 9
     let dot = e.target
-    let line = document.getElementsByClassName("ID_TASKID grid_graph")[1].children[6]
+    let line = document.getElementsByClassName("ID_TASKID grid_graph n1")[0].children[6]
 
     document.onmousemove = dragDot
     document.onmouseup = dragEnd
@@ -123,7 +123,7 @@ document.getElementsByClassName("ID_TASKID grid_graph")[1].children[7].onmousedo
         line.style.width = 207 - dot.offsetLeft + "px"
         line.style.left = dot.offsetLeft + 5 + "px"
 
-        mem.UpdateGraph2()
+        mem.updateGraph()
     }
     function dragEnd(e){
         document.onmousemove = null

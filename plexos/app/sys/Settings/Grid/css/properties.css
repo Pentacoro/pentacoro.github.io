@@ -15,7 +15,7 @@
 
     background-color: #d8d8d8;
 }
-.appcontent.ID_TASKID>.tabs{
+.appcontent.ID_TASKID>.config-tabs{
     display: flex;
     flex-direction: row;
     justify-content: flex-start;
@@ -28,7 +28,7 @@
 
     background: linear-gradient(0deg, #c7c7c7 80%, #d8d8d8 80%);
 }
-.appcontent.ID_TASKID>.tabs>.tab{
+.appcontent.ID_TASKID>.config-tabs>.config-tab{
     height: 100%;
     width: 100%;
 
@@ -37,7 +37,7 @@
     display: flex;
     align-items: flex-end;
 }
-.tab.ID_TASKID>.tabRadio_box{
+.config-tab.ID_TASKID>.tabRadio_box{
     height: 80%;
     width: 100%;
 
@@ -55,7 +55,7 @@
     cursor: pointer;
     user-select: none;
 }
-.tab.ID_TASKID>.tabRadio_box>span{
+.config-tab.ID_TASKID>.tabRadio_box>span{
     transform: translate(0px, 0px);
     text-align: center;
     transition: transform .075s;

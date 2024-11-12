@@ -17,9 +17,8 @@ cfg = {
             autoHmargin: false,
             autoVmargin: false,
     
-            sendStash: true,
-            sendBorder: true,
-            sendForce: false,
+            hideOnShrink: true,
+            stickToBorder: true,
     
             borderRadius: 8,
             visibleNodes: false,

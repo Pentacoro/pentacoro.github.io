@@ -58,6 +58,9 @@
             if (Task.id(taskid).mem.var.error.taskId){
                 document.getElementsByClassName("details ID_TASKID")[0].children[0].innerHTML+="<b>taskId: </b>" + Task.id(taskid).mem.var.error.taskId + "<br>"
             }
+            if (Task.id(taskid).mem.var.error.source) {
+                document.getElementsByClassName("details ID_TASKID")[0].children[0].innerHTML+="<b>source: </b>" + Task.id(taskid).mem.var.error.source + "<br>"
+            }
             document.getElementsByClassName("details ID_TASKID")[0].children[0].innerHTML += "<b>lineNumber: </b>" + Task.id(taskid).mem.var.error.lineNumber + "<br><br><hr><br>"
             document.getElementsByClassName("details ID_TASKID")[0].children[0].innerHTML += "<b>stack: </b><br>" + Task.id(taskid).mem.var.error.stack + "<br>"
             document.getElementsByClassName("details ID_TASKID")[0].children[0].innerHTML += "<button class='error ID_TASKID'>console.error()</button><br>"

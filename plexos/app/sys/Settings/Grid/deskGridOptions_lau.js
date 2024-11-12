@@ -7,18 +7,18 @@ let html = root + "/deskGridOptions.html"
 //on app init
 function ini() {
     cfg.desktop.grid.visibleNodes = true
-    Task.openInstance("Desktop").mem.grid.evaluateIconGrid(null, 2)
+    Task.openInstance("Desktop").mem.grid.evaluateIconGrid(3)
 }
 //on app end
 function end() {
     cfg.desktop.grid.visibleNodes = false
-    Task.openInstance("Desktop").mem.grid.evaluateIconGrid(null, 2)
+    Task.openInstance("Desktop").mem.grid.evaluateIconGrid(3)
 }
 
 //task creation
 let task = new Task(
     {
-        name : "Settings",
+        name : "Desktop Grid Settings",
         inst : false,
         appEnd : end,
         node : null,

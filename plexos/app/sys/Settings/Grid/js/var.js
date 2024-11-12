@@ -3,13 +3,18 @@ let mem  = Task.id("TASKID").mem
 mem.apps = "exp"
 mem.var = {}
 
+//configuration
+mem.var.config = "cfg.desktop.grid"
+mem.var.configFile = "config/desktop/grid.json"
+mem.var.configClone= JSON.parse(File.at(mem.var.configFile).data)
+
 //html references
-mem.var.widthHTML = document.getElementById("ID_TASKID.grid.width")
-mem.var.heightHTML = document.getElementById("ID_TASKID.grid.height")
-mem.var.hMarginHTML = document.getElementById("ID_TASKID.grid.hMargin")
-mem.var.vMarginHTML = document.getElementById("ID_TASKID.grid.vMargin")
-mem.var.hLengthHTML = document.getElementById("ID_TASKID.grid.hLength")
-mem.var.vLengthHTML = document.getElementById("ID_TASKID.grid.vLength")
+mem.var.widthHTML = document.getElementsByName("cfg.desktop.grid.width")[0]
+mem.var.heightHTML = document.getElementsByName("cfg.desktop.grid.height")[0]
+mem.var.hMarginHTML = document.getElementsByName("cfg.desktop.grid.hMargin")[0]
+mem.var.vMarginHTML = document.getElementsByName("cfg.desktop.grid.vMargin")[0]
+mem.var.hLengthHTML = document.getElementsByName("cfg.desktop.grid.hLength")[0]
+mem.var.vLengthHTML = document.getElementsByName("cfg.desktop.grid.vLength")[0]
 
 //set values to html
 mem.var.widthHTML.value = cfg.desktop.grid.width

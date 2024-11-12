@@ -40,6 +40,7 @@ mem.desktopInit = function (dir, id, act = null) {
         for (let item of dirList) itemList.push(item[1])
 
         mem.grid.evaluateIconGrid()
+		mem.grid.realTimeGridEval()
         mem.createDesktopIcons(itemList)
         
     } catch (e) {
