@@ -46,13 +46,13 @@ try {
         }
     )
 
-    ini()
-
-    dll.displayComponent({
+    await dll.displayComponent({
         url:html,
         taskid:id,
         container:task.node,
     })
+
+    ini()
 } catch (e) {
     dll.evalErrorPopup
     (

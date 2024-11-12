@@ -52,9 +52,6 @@ desktop.mem.grid.evaluateIconGrid = function (
         for (var i = 0; i < desktop.mem.grid.gridArr.length; i++) {
             desktop.mem.grid.gridArr[i] = new Array(cfg.desktop.grid.vLength)
         }
-
-        //cfg.desktop.grid.hLength = gridHorizontal
-        //cfg.desktop.grid.vLength = gridVertical
         
         //fill each coordinate with an object
         for (x = 0; x < desktop.mem.grid.gridArr.length; x++){
@@ -74,7 +71,8 @@ desktop.mem.grid.evaluateIconGrid = function (
     if( (autowm || autohm) || a === 2 || a === 3) {
     
         //if the grid app is open update graph
-        if (gridSettings) gridSettings.mem.updateGraph2
+        if (gridSettings) gridSettings.mem.updateGraph2()
+        if (gridSettings) gridSettings.mem.updateGraphAuto()
 
         for (x = 0; x < desktop.mem.grid.gridArr.length; x++){
             for(y = 0; y < desktop.mem.grid.gridArr[x].length; y++){

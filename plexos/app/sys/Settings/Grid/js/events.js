@@ -3,7 +3,19 @@ let mem  = Task.id("TASKID").mem
 
 //on app close
 Task.id("TASKID").appEnd = function () {
+    //clone config to last state
+    mem.var.configClone = { ...eval(mem.var.config)}
+
+    //make active config object reflect data from its source file
     new Function(mem.var.config +" = JSON.parse(File.at('"+mem.var.configFile+"').data)")()
+
+    //if auto grid size is active, correct length values to their latest state
+    if (mem.var.configClone.autoHlength || mem.var.configClone.autoVlength) {
+        cfg.desktop.grid.hLength = mem.var.configClone.hLength
+        cfg.desktop.grid.vLength = mem.var.configClone.vLength
+    }
+
+    //always revert node visibility
     cfg.desktop.grid.visibleNodes = false
     File.at(mem.var.configFile).data = JSON.stringify(eval(mem.var.config), null, "\t")
     Task.openInstance("Desktop").mem.grid.evaluateIconGrid(3)
@@ -48,6 +60,12 @@ for (input of document.getElementsByClassName("optionValue")) {
     let variable = inputbox.getAttribute("name")
     inputbox.onchange = (e) => {
         new Function(variable + " = " + Number(inputbox.value))()
+        if (inputbox.parentElement.children[3]) {
+            new Function(inputbox.parentElement.children[3].name + " = " + false)()
+            inputbox.parentElement.children[3].checked = false
+            mem.onChange()
+            return
+        }
         mem.onChange()
     }
     inputbox.addEventListener("focusout", (e) => {
