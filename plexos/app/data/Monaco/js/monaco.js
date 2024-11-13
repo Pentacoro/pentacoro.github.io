@@ -7,6 +7,18 @@ mem.fileData = ARG_TEXTDATA
 mem.var = {}
 mem.var.continuousContext = false
 
+function setLanguage(ext) {
+	console.log(ext)
+	switch (ext) {
+		case "js": {
+			return "javascript"
+		}
+		default: {
+			return ext
+		}
+	}
+}
+
 require.config({ paths: { 'vs': 'https://unpkg.com/monaco-editor@latest/min/vs' } })
 window.MonacoEnvironment = { getWorkerUrl: () => proxy }
 
@@ -18,9 +30,10 @@ let proxy = URL.createObjectURL(new Blob([`
 `], { type: 'text/javascript' }))
 
 require(["vs/editor/editor.main"], function () {
+	let extension = File.at("ARG_FILEADDR").cfg.exte
 	mem.editor = monaco.editor.create(document.getElementsByClassName('editor ID_TASKID')[0], {
 		value: mem.fileData,
-		language: 'javascript',
+		language: setLanguage(extension),
 		fontFamily: "Fira Mono, DejaVu Sans Mono, Menlo, Consolas, Liberation Mono, Monaco, Lucida Console, monospace",
 		fontSize: "12px",
 		theme: 'vs-dark',

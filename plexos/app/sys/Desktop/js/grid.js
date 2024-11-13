@@ -25,20 +25,24 @@ desktop.mem.grid.evaluateIconGrid = function (
     //check open instance of grid settings
     let gridSettings = Task.openInstance("Desktop Grid Settings")
     if (!gridSettings) cfg.desktop.grid.visibleNodes = false
+
+    //set margin to modified margins if set
+    if (cfg.desktop.grid.modHmargin && !autowm) wm = cfg.desktop.grid.modHmargin
+    if (cfg.desktop.grid.modVmargin && !autohm) hm = cfg.desktop.grid.modVmargin
     
     //optimal number of icons that can fit in a row / column
     let gridHorizontal = Math.round((windowW-(w+wm*3)/2)/(w+wm))
     let gridVertical = Math.round((windowH-(h+hm*3)/2)/(h+hm))
     
     //evaluate optimal margin if enabled
-    if(autowm || cfg.desktop.grid.modHmargin > 0){
+    if(autowm){
         ewm = (autowl) ? Math.round(windowW - w * gridHorizontal) / (gridHorizontal+1) : Math.round(windowW - w * wl) / (wl+1)
         if (ewm < wm) ewm = wm
         if (autowm) cfg.desktop.grid.modHmargin = ewm
     } else {
         ewm = wm
     }
-    if(autohm || cfg.desktop.grid.modVmargin > 0){
+    if(autohm){
         ehm = (autohl) ? Math.round(windowH - h * gridVertical) / (gridVertical+1) : Math.round(windowH - h * hl) / (hl+1)
         if (ehm < hm) ehm = hm
         if (autohm) cfg.desktop.grid.modVmargin = ehm
@@ -67,7 +71,7 @@ desktop.mem.grid.evaluateIconGrid = function (
             }
         }
     }
-    //if updating object is necessary
+    //if auto margin is on
     if( (autowm || autohm) || a === 2 || a === 3) {
     
         //if the grid app is open update graph
@@ -92,7 +96,7 @@ desktop.mem.grid.evaluateIconGrid = function (
             }
         }
     }
-    //if array lengths change
+    //if auto length is on
     if( (autowl || autohl) || a == 1 || a === 3) {
         let gridArrX = null
         let gridArrY = null
@@ -125,7 +129,8 @@ desktop.mem.grid.evaluateIconGrid = function (
             }
         }
 
-        if( (autowl || autohl) || a == 1 || a === 3) {
+        if( (autowl) || a == 1 || a === 3) {
+            cfg.desktop.grid.hLength = gridHFinal
             //if shorter row
             if (gridHdiff < 0){
                 handleShorterRow()
@@ -136,7 +141,8 @@ desktop.mem.grid.evaluateIconGrid = function (
             }
         }
 
-        if( (autowl || autohl) || a == 1 || a === 3) {
+        if( (autohl) || a == 1 || a === 3) {
+            cfg.desktop.grid.vLength = gridVFinal
             //if shorter column 
             if (gridVdiff < 0){
                 handleShorterColumn()
@@ -364,18 +370,15 @@ desktop.mem.grid.evaluateIconGrid = function (
             })
         }
 
-        if (Task.openInstance("Settings")) {
-            let task = Task.openInstance("Settings")
-            if (task.mem.updateGraph2) task.mem.updateGraph2()
+        if (gridSettings) {
+            if (gridSettings.mem.updateGraph2) gridSettings.mem.updateGraph2()
             
-            if (document.getElementsByClassName(task.id+".grid_graph")[1]) {
-                document.getElementsByClassName(task.id+".grid_graph")[1].children[0].children[0].innerText = cfg.desktop.grid.hLength
-                document.getElementsByClassName(task.id+".grid_graph")[1].children[1].innerText = cfg.desktop.grid.vLength
+            if (document.getElementsByClassName(gridSettings.id+".grid_graph")[1]) {
+                document.getElementsByClassName(gridSettings.id+".grid_graph")[1].children[0].children[0].innerText = cfg.desktop.grid.hLength
+                document.getElementsByClassName(gridSettings.id+".grid_graph")[1].children[1].innerText = cfg.desktop.grid.vLength
             }
         }
     }
-
-    desktop.mem.grid.checkGridGap()
 
     //graph array elements on the DOM
     function createGridNode(object) {
@@ -408,6 +411,12 @@ desktop.mem.grid.evaluateIconGrid = function (
         if (cfg.desktop.grid.visibleNodes === true) updGrid.style.backgroundColor = "rgba(127,127,127,0.5)"
         if (cfg.desktop.grid.visibleNodes === false)updGrid.style.backgroundColor = "rgba(127,127,127,0)"
     }
+
+    //check border gap
+    desktop.mem.grid.checkGridGap()
+
+    //save changes in config source file
+    if (!gridSettings) File.at("/config/desktop/grid.json").data = JSON.stringify(eval(cfg.desktop.grid), null, "\t")
 }
 
 desktop.mem.grid.realTimeGridEval = function(){
@@ -473,14 +482,12 @@ desktop.mem.grid.autoLength = function() {
     cfg.desktop.grid.autoHlength = true
     cfg.desktop.grid.autoVlength = true
     desktop.mem.grid.evaluateIconGrid(1)
-    //deskGrid_updateGraph2()
     cfg.desktop.grid.autoHlength = false
     cfg.desktop.grid.autoVlength = false
 }
 desktop.mem.grid.autoMargin = function() {
     cfg.desktop.grid.autoHmargin = true
     cfg.desktop.grid.autoVmargin = true
-    //deskGrid_updateGraphAuto()
     desktop.mem.grid.evaluateIconGrid(1)
     cfg.desktop.grid.autoHmargin = false
     cfg.desktop.grid.autoVmargin = false

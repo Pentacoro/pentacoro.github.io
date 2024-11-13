@@ -3,22 +3,21 @@ let mem  = Task.id("TASKID").mem
 
 //on app close
 Task.id("TASKID").appEnd = function () {
-    //clone config to last state
+    //clone config to current state
     mem.var.configClone = { ...eval(mem.var.config)}
 
-    //make active config object reflect data from its source file
-    new Function(mem.var.config +" = JSON.parse(File.at('"+mem.var.configFile+"').data)")()
-
-    //if auto grid size is active, correct length values to their latest state
-    if (mem.var.configClone.autoHlength || mem.var.configClone.autoVlength) {
-        cfg.desktop.grid.hLength = mem.var.configClone.hLength
-        cfg.desktop.grid.vLength = mem.var.configClone.vLength
-    }
+    //if auto checks are active, correct values to their latest state
+    /* 
+    if (mem.var.configClone.autoHlength) cfg.desktop.grid.hLength = mem.var.configClone.hLength
+    if (mem.var.configClone.autoVlength) cfg.desktop.grid.vLength = mem.var.configClone.vLength
+    if (mem.var.configClone.autoHmargin) cfg.desktop.grid.modHmargin = mem.var.configClone.modHmargin
+    if (mem.var.configClone.autoVmargin) cfg.desktop.grid.modVmargin = mem.var.configClone.modVmargin
+     */
 
     //always revert node visibility
     cfg.desktop.grid.visibleNodes = false
-    File.at(mem.var.configFile).data = JSON.stringify(eval(mem.var.config), null, "\t")
     Task.openInstance("Desktop").mem.grid.evaluateIconGrid(3)
+    File.at(mem.var.configFile).data = JSON.stringify(eval(mem.var.config), null, "\t")
 }
 
 //deselection
@@ -46,10 +45,12 @@ document.getElementsByClassName("footer-accept")[0].onclick = (e)=> {
     Task.id("TASKID").end()
 }
 document.getElementsByClassName("footer-cancel")[0].onclick = (e)=> {
+    new Function(mem.var.config +" = Task.id('TASKID').mem.var.configClone")()
     Task.id("TASKID").end()
 }
 document.getElementsByClassName("footer-apply")[0].onclick = (e)=> {
     File.at(mem.var.configFile).data = JSON.stringify(eval(mem.var.config), null, "\t")
+    mem.var.configClone = { ...eval(mem.var.config)}
     document.getElementsByClassName("footer-apply")[0].disabled = true
     document.getElementsByClassName("footer-apply")[0].classList.add("disabled")
 }
@@ -73,16 +74,18 @@ for (input of document.getElementsByClassName("optionValue")) {
     })
 }
 
-//auto button and auto checkbox
+//auto button
 for (button of document.getElementsByClassName("optionButton")) {
     let variable = button.getAttribute("name")
     button.onclick = (e) => {
+        if (eval(variable)) return
         new Function(variable + " = " + true)()
         mem.onChange()
         new Function(variable + " = " + false)()
     }
 }
 
+//auto checkbox
 for (box of document.getElementsByClassName("optionCheck")) {
     let variable = box.getAttribute("name")
     let checkbox = box
@@ -98,7 +101,7 @@ for (box of document.getElementsByClassName("optionCheck")) {
     }
 }
 
-//auto margin reset on uncheck
+//auto margin reset on uncheck and on input change
 document.getElementsByName("cfg.desktop.grid.autoHmargin")[1].addEventListener("click", e=>{
     if (e.target.checked) return
     cfg.desktop.grid.modHmargin = 0
@@ -108,6 +111,18 @@ document.getElementsByName("cfg.desktop.grid.autoHmargin")[1].addEventListener("
 })
 document.getElementsByName("cfg.desktop.grid.autoVmargin")[1].addEventListener("click", e=>{
     if (e.target.checked) return
+    cfg.desktop.grid.modVmargin = 0
+    cfg.desktop.grid.vMargin = Number(mem.var.vMarginHTML.value)
+    mem.updateGraphAuto()
+    desktop.mem.grid.evaluateIconGrid(2)
+})
+document.getElementsByName("cfg.desktop.grid.hMargin")[0].addEventListener("click", e=>{
+    cfg.desktop.grid.modHmargin = 0
+    cfg.desktop.grid.hMargin = Number(mem.var.hMarginHTML.value)
+    mem.updateGraphAuto()
+    desktop.mem.grid.evaluateIconGrid(2)
+})
+document.getElementsByName("cfg.desktop.grid.vMargin")[0].addEventListener("click", e=>{
     cfg.desktop.grid.modVmargin = 0
     cfg.desktop.grid.vMargin = Number(mem.var.vMarginHTML.value)
     mem.updateGraphAuto()

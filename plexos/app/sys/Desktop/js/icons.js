@@ -73,7 +73,7 @@ mem.class.IconDesk = class IconDesk {
     deleteNode(fromGrid = false){
         this.node.parentNode.removeChild(this.node);
         
-        if (fromGrid == false) {
+        if (!fromGrid) {
             desktop.mem.grid.gridArr[this.coor.ax][this.coor.ay].used = false;
             desktop.mem.grid.gridArr[this.coor.ax][this.coor.ay].icon = null;
         }

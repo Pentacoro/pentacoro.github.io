@@ -47,7 +47,7 @@ class ContextMenu {
         ContextMenu.menu     = []
     }
     static applyTemplates = function (e, target, menu=null) {
-        let menuTemplates = eval(File.at(ContextMenu.configAddr + "/templates.json").data)
+        let menuTemplates = eval(File.at(ContextMenu.configAddr + "/templates.js").data)
         //find matching template class
         for (let template of menuTemplates) {
             if (target.constructor.name === template.class) {

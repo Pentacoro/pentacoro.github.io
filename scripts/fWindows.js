@@ -65,7 +65,6 @@ class Window {
 			newHeader.appendChild(newHeaderButtons)
 	
 				for (let button of this.uiux) {
-					console.log(button)
 					let newWindowButton = document.createElement("button")
 					newWindowButton.setAttribute("class", "windowButton"+" "+button.class)
 					newHeaderButtons.appendChild(newWindowButton)

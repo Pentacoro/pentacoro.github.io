@@ -49,9 +49,9 @@ class IconDir {
         Task.id(this.task).pocket = Task.id(this.task).pocket.remove(this)
         Task.id(this.task).mem.iconArray = Task.id(this.task).mem.iconArray.remove(this)
         
-        if (File.at(File.at(this.file)?.cfg.from) === plexos.vtx) { //delete desktop icon if file is from vertex
-            let rawr = File.at(this.file).cfg.icon
-            rawr.deleteNode()
+        if (File.at(File.at(this.file)?.cfg.from) === plexos.vtx && Task.openInstance("Desktop")) { //delete desktop icon if file is from vertex
+            let icon = Task.openInstance("Desktop").mem.getIcon(File.at(this.file).cfg.icon.name)
+            icon.deleteNode()
         }
     }
     statNode(num){

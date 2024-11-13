@@ -6,7 +6,7 @@ mem.var = {}
 //configuration
 mem.var.config = "cfg.desktop.grid"
 mem.var.configFile = "config/desktop/grid.json"
-mem.var.configClone= JSON.parse(File.at(mem.var.configFile).data)
+mem.var.configClone = { ...eval(mem.var.config)}
 
 //html references
 mem.var.widthHTML = document.getElementsByName("cfg.desktop.grid.width")[0]
