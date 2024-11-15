@@ -6,14 +6,6 @@ Task.id("TASKID").appEnd = function () {
     //clone config to current state
     mem.var.configClone = { ...eval(mem.var.config)}
 
-    //if auto checks are active, correct values to their latest state
-    /* 
-    if (mem.var.configClone.autoHlength) cfg.desktop.grid.hLength = mem.var.configClone.hLength
-    if (mem.var.configClone.autoVlength) cfg.desktop.grid.vLength = mem.var.configClone.vLength
-    if (mem.var.configClone.autoHmargin) cfg.desktop.grid.modHmargin = mem.var.configClone.modHmargin
-    if (mem.var.configClone.autoVmargin) cfg.desktop.grid.modVmargin = mem.var.configClone.modVmargin
-     */
-
     //always revert node visibility
     cfg.desktop.grid.visibleNodes = false
     Task.openInstance("Desktop").mem.grid.evaluateIconGrid(3)
@@ -106,61 +98,25 @@ document.getElementsByName("cfg.desktop.grid.autoHmargin")[1].addEventListener("
     if (e.target.checked) return
     cfg.desktop.grid.modHmargin = 0
     cfg.desktop.grid.hMargin = Number(mem.var.hMarginHTML.value)
-    mem.updateGraphAuto()
+    mem.updateTileGraphAuto()
     desktop.mem.grid.evaluateIconGrid(2)
 })
 document.getElementsByName("cfg.desktop.grid.autoVmargin")[1].addEventListener("click", e=>{
     if (e.target.checked) return
     cfg.desktop.grid.modVmargin = 0
     cfg.desktop.grid.vMargin = Number(mem.var.vMarginHTML.value)
-    mem.updateGraphAuto()
+    mem.updateTileGraphAuto()
     desktop.mem.grid.evaluateIconGrid(2)
 })
 document.getElementsByName("cfg.desktop.grid.hMargin")[0].addEventListener("click", e=>{
     cfg.desktop.grid.modHmargin = 0
     cfg.desktop.grid.hMargin = Number(mem.var.hMarginHTML.value)
-    mem.updateGraphAuto()
+    mem.updateTileGraphAuto()
     desktop.mem.grid.evaluateIconGrid(2)
 })
 document.getElementsByName("cfg.desktop.grid.vMargin")[0].addEventListener("click", e=>{
     cfg.desktop.grid.modVmargin = 0
     cfg.desktop.grid.vMargin = Number(mem.var.vMarginHTML.value)
-    mem.updateGraphAuto()
+    mem.updateTileGraphAuto()
     desktop.mem.grid.evaluateIconGrid(2)
 })
-
-//graph1 interactive drag
-document.getElementsByClassName("ID_TASKID grid_graph n1")[0].children[7].onmousedown = e => {
-    let pX = e.target.offsetLeft
-    let mX = Math.round((e.clientX)/33)*33 + 9
-    let dot = e.target
-    let line = document.getElementsByClassName("ID_TASKID grid_graph n1")[0].children[6]
-
-    document.onmousemove = dragDot
-    document.onmouseup = dragEnd
-
-    function dragDot(e){
-        e = e || window.event
-        e.preventDefault()
-
-        dot.parentElement.style.cursor = "w-resize"
-
-        let nX = pX + e.clientX - mX
-        
-        if(nX >= 105 && nX <= 207) dot.style.left = nX + "px"
-        if(nX <= 108) dot.style.left = 108 + "px"
-        if(nX >= 207) dot.style.left = 207 + "px"
-        
-        dot.style.left = (Math.round((dot.offsetLeft)/33)*33 + 9) + "px"
-
-        line.style.width = 207 - dot.offsetLeft + "px"
-        line.style.left = dot.offsetLeft + 5 + "px"
-
-        mem.updateGraph()
-    }
-    function dragEnd(e){
-        document.onmousemove = null
-        document.onmouseup = null
-        dot.parentElement.style.cursor = ""
-    }
-}

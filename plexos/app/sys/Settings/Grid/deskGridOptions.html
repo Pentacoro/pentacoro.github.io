@@ -5,7 +5,6 @@
     <title>Desk Grid Options</title>
     <link rel="stylesheet" href="./css/properties.css">
     <link rel="stylesheet" href="./css/inputs.css">
-    <link rel="stylesheet" href="./css/graphs.css">
 </head>
 <body>
     <div class="ID_TASKID appcontent">
@@ -21,19 +20,7 @@
         </div>
 
         <div class="ID_TASKID tabContent" id="ID_TASKID.tabContent1">
-            <div class="ID_TASKID grid_graph n1">
-                <span><span class="ID_TASKID graph_item">123</span></span>
-                <span class="ID_TASKID graph_item">456</span>
-                <span class="ID_TASKID graph_item">Y</span>
-                <span class="ID_TASKID graph_item">X</span>
-                <span class="ID_TASKID graph_item">+0</span>
-                <div class="ID_TASKID graph_item"></div>
-                <div class="ID_TASKID graph_sizeDir"></div>
-                <div class="ID_TASKID graph_sizeDot"></div>
-                <div class="ID_TASKID graph_sizeRuler"> <div></div> <div></div> <div></div> <div></div> </div>
-                <div class="ID_TASKID graph_sizeCheck"></div>
-                <div class="ID_TASKID graph_sizeLine"></div>
-            </div>
+            <div class="ID_TASKID grid_graph_container graph_container"></div>
             <div class="ID_TASKID grid_editable">
                 <div class="h5line"> <div></div> <h5>LENGTH</h5> <div></div> </div>
                 <span class="ID_TASKID config-option config-int"><div class="ID_TASKID optionName"><h4>X-Axis: </h4></div>
@@ -51,23 +38,18 @@
                 <div class="h5line"> <div></div> <h5>SHIFT</h5> <div></div> </div>
                 <span class="ID_TASKID config-option config-bool"><div class="ID_TASKID optionName"><h4>Stick to border: </h4></div>
                     <input type="checkbox" class="ID_TASKID optionCheck" name="cfg.desktop.grid.stickToBorder">
+                    <span>Stick icons to borders on resize</span>
                 </span>
-
+                <!-- 
                 <span class="ID_TASKID config-option config-bool"><div class="ID_TASKID optionName"><h4>Hide on shrink: </h4></div>
                     <input type="checkbox" class="ID_TASKID optionCheck" name="cfg.desktop.grid.hideOnShrink">
                 </span>
+                 -->
             </div>
         </div>
 
         <div class="ID_TASKID tabContent hidden" id="ID_TASKID.tabContent2">
-            <div class="ID_TASKID grid_graph n2">
-                <span><span class="ID_TASKID graph_item">123</span></span>
-                <span class="ID_TASKID graph_item">456</span>
-                <span class="ID_TASKID graph_item">789</span>
-                <span class="ID_TASKID graph_item">123</span>
-                <span class="ID_TASKID graph_item">456</span>
-                <span class="ID_TASKID graph_item">789</span>
-            </div>
+            <div class="ID_TASKID tile_graph_container graph_container"></div>
             <div class="ID_TASKID grid_editable">
                 <div class="h5line"> <div></div> <h5>SIZE</h5> <div></div> </div>
                 <span class="ID_TASKID config-option config-int"><div class="ID_TASKID optionName"><h4>Width: </h4></div> 

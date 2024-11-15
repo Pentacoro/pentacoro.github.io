@@ -26,7 +26,7 @@ desktop.mem.grid.evaluateIconGrid = function (
     let gridSettings = Task.openInstance("Desktop Grid Settings")
     if (!gridSettings) cfg.desktop.grid.visibleNodes = false
 
-    //set margin to modified margins if set
+    //set margin to modified margins if set without auto
     if (cfg.desktop.grid.modHmargin && !autowm) wm = cfg.desktop.grid.modHmargin
     if (cfg.desktop.grid.modVmargin && !autohm) hm = cfg.desktop.grid.modVmargin
     
@@ -75,8 +75,8 @@ desktop.mem.grid.evaluateIconGrid = function (
     if( (autowm || autohm) || a === 2 || a === 3) {
     
         //if the grid app is open update graph
-        if (gridSettings) gridSettings.mem.updateGraph2()
-        if (gridSettings) gridSettings.mem.updateGraphAuto()
+        if (gridSettings) gridSettings.mem.updateTileGraph()
+        if (gridSettings) gridSettings.mem.updateTileGraphAuto()
 
         for (x = 0; x < desktop.mem.grid.gridArr.length; x++){
             for(y = 0; y < desktop.mem.grid.gridArr[x].length; y++){
@@ -117,17 +117,6 @@ desktop.mem.grid.evaluateIconGrid = function (
         
         let gridHFinal= (autowl) ? gridHorizontal : wl
         let gridVFinal= (autohl) ? gridVertical : hl
-
-        //if the grid app is open update values
-        if (gridSettings) {
-            let taskid = gridSettings.id
-            if (document.getElementsByClassName("ID_"+taskid+" grid_graph n1")[0]) {
-                document.getElementsByClassName("ID_"+taskid+" grid_graph n1")[0].children[0].children[0].innerText = gridHFinal
-                document.getElementsByClassName("ID_"+taskid+" grid_graph n1")[0].children[1].innerText             = gridVFinal
-                document.getElementsByName("cfg.desktop.grid.hLength")[0].value = gridHFinal
-                document.getElementsByName("cfg.desktop.grid.vLength")[0].value = gridVFinal
-            }
-        }
 
         if( (autowl) || a == 1 || a === 3) {
             cfg.desktop.grid.hLength = gridHFinal
@@ -371,12 +360,10 @@ desktop.mem.grid.evaluateIconGrid = function (
         }
 
         if (gridSettings) {
-            if (gridSettings.mem.updateGraph2) gridSettings.mem.updateGraph2()
-            
-            if (document.getElementsByClassName(gridSettings.id+".grid_graph")[1]) {
-                document.getElementsByClassName(gridSettings.id+".grid_graph")[1].children[0].children[0].innerText = cfg.desktop.grid.hLength
-                document.getElementsByClassName(gridSettings.id+".grid_graph")[1].children[1].innerText = cfg.desktop.grid.vLength
-            }
+            if (gridSettings.mem.updateTileGraph) gridSettings.mem.updateTileGraph()
+            if (gridSettings.mem.updateTileGraph) gridSettings.mem.updateGridGraph()
+            document.getElementsByName("cfg.desktop.grid.hLength")[0].value = gridHFinal
+            document.getElementsByName("cfg.desktop.grid.vLength")[0].value = gridVFinal
         }
     }
 

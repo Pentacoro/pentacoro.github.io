@@ -23,21 +23,3 @@ mem.var.hMarginHTML.value = cfg.desktop.grid.hMargin
 mem.var.vMarginHTML.value = cfg.desktop.grid.vMargin
 mem.var.hLengthHTML.value = cfg.desktop.grid.hLength
 mem.var.vLengthHTML.value = cfg.desktop.grid.vLength
-
-//preload graph2 images
-mem.var.graph2images = 
-[
-    "./assets/deskIconGrid_stash.svg",
-    "./assets/deskIconGrid_bin.svg",
-    "./assets/deskIconGridGraph2/deskIconGridGraph2_00.svg",
-    "./assets/deskIconGridGraph2/deskIconGridGraph2_01.svg",
-    "./assets/deskIconGridGraph2/deskIconGridGraph2_02-1.svg",
-    "./assets/deskIconGridGraph2/deskIconGridGraph2_02-2.svg",
-    "./assets/deskIconGridGraph2/deskIconGridGraph2_02-3.svg",
-    "./assets/deskIconGridGraph2/deskIconGridGraph2_03-1.svg",
-    "./assets/deskIconGridGraph2/deskIconGridGraph2_03-2.svg",
-    "./assets/deskIconGridGraph2/deskIconGridGraph2_03-3.svg",
-]
-for (image of mem.var.graph2images){
-    dll.preloadImage(image)
-}
