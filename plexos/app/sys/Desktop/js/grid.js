@@ -121,7 +121,9 @@ desktop.mem.grid.evaluateIconGrid = function (
 
         let rowsCanContain = (gridHorizontal+1+gridHdiff)*(hl) >= mem.iconArr.length
         let colsCanContain = (gridVertical+1+gridVdiff)*(wl) >= mem.iconArr.length
-        let gridCanContain = (gridVertical)*(gridHorizontal) >= mem.iconArr.length
+        let autoCanContain = (gridVertical)*(gridHorizontal) >= mem.iconArr.length
+        let gridCanContain = gridHFinal*gridVFinal >= mem.iconArr.length
+        console.log(gridCanContain)
 
         let columnHandledByRow = false
 
@@ -131,25 +133,36 @@ desktop.mem.grid.evaluateIconGrid = function (
         if( (autowl) || a == 1 || a === 3) {
             //if shorter row AND still can contain all icons
             if (gridHdiff < 0 && (rowsCanContain || cfg.desktop.grid.hideOnShrink)){
-                handleShorterRow()
+                if (gridCanContain) {
+                    handleShorterRow()
+                } else {
+                    gridHFinal = Math.ceil(mem.iconArr.length/gridVFinal)
+                    handleShorterRow()
+                }
             }
             //if longer row
             if (gridHdiff > 0){
-                handleLongerRow(true)
-                if (gridCanContain && gridVdiff < 0 && autohl) handleShorterColumn(true)
+                handleLongerRow()
+                if (autoCanContain && gridVdiff < 0 && autohl) handleShorterColumn()
             }
         }
 
-        if( ((autohl) || a == 1 || a === 3) && !columnHandledByRow) {
+        if( (autohl) || a == 1 || a === 3) {
             //if shorter column AND still can contain all icons
             if (gridVdiff < 0 && (colsCanContain || cfg.desktop.grid.hideOnShrink)){
-                handleShorterColumn()
-                if(gridHdiff > 0 && autowl) handleLongerRow()
+                if (gridCanContain) {
+                    handleShorterColumn()
+                    if(gridHdiff > 0 && autowl) handleLongerRow()
+                } else {
+                    gridVFinal = Math.ceil(mem.iconArr.length/gridHFinal)
+                    handleShorterColumn()
+                    if(gridHdiff > 0 && autowl) handleLongerRow()
+                }
             }
             //if longer column
             if (gridVdiff > 0){
                 handleLongerColumn()
-                if (gridCanContain && gridHdiff < 0 && autowl) handleShorterRow()
+                if (autoCanContain && gridHdiff < 0 && autowl) handleShorterRow()
             }   
         }
 
@@ -257,8 +270,6 @@ desktop.mem.grid.evaluateIconGrid = function (
             columnHandledByRow = true
 
             desktop.mem.grid.gridArr.forEach(column => {
-                console.log(column)
-
                 for (i = 0; i > gridVdiff; i--) {
                     let delRows = column.splice(gridVFinal+(gridVdiff*-1 + i - 1), 1)
                     delRows.forEach(object =>{

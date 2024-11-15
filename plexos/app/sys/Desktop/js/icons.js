@@ -531,6 +531,8 @@ mem.repositionIcons = function(icons, mustSet = false, hasPrev = true){
                 coords.ty = newGrid.posY
                 coords.ax = tx
                 coords.ay = ty
+
+                File.at(icon.file).cfg.coor = coords
             }
         } else {
             //if the position is invalid
@@ -562,6 +564,8 @@ mem.repositionIcons = function(icons, mustSet = false, hasPrev = true){
             coords.ty = coords.py
             coords.ax = px
             coords.ay = py
+
+            File.at(icon.file).cfg.coor = coords
         }else if(mustSet){
             newGrid = mem.orderIconPosition()
             if (newGrid === undefined) {
@@ -576,6 +580,8 @@ mem.repositionIcons = function(icons, mustSet = false, hasPrev = true){
             coords.ty = newGrid[0].posY
             coords.ax = newGrid[1]
             coords.ay = newGrid[2]
+
+            File.at(icon.file).cfg.coor = coords
         }
     }
 
