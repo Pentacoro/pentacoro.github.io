@@ -564,7 +564,10 @@ mem.repositionIcons = function(icons, mustSet = false, hasPrev = true){
             coords.ay = py
         }else if(mustSet){
             newGrid = mem.orderIconPosition()
-            if (newGrid === undefined) return
+            if (newGrid === undefined) {
+                console.log(icon)
+                return
+            }
             newGrid[0].used = true
             newGrid[0].icon = icon
             coords.px = newGrid[0].posX

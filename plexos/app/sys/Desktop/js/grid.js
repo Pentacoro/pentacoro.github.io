@@ -33,19 +33,43 @@ desktop.mem.grid.evaluateIconGrid = function (
     //optimal number of icons that can fit in a row / column
     let gridHorizontal = Math.round((windowW-(w+wm*3)/2)/(w+wm))
     let gridVertical = Math.round((windowH-(h+hm*3)/2)/(h+hm))
-    
+
+    let gridArrX = null
+    let gridArrY = null
+    if(desktop.mem.grid.gridArr) gridArrX = desktop.mem.grid.gridArr.length
+    if(desktop.mem.grid.gridArr[0]) gridArrY = desktop.mem.grid.gridArr[0].length
+
+    let rowsCanContain = (gridHorizontal+1+(gridHorizontal-gridArrX))*(gridVertical) >= mem.iconArr.length
+    let colsCanContain = (gridVertical+1+(gridVertical-gridArrY))*(gridHorizontal) >= mem.iconArr.length
+
     //evaluate optimal margin if enabled
     if(autowm){
-        ewm = (autowl) ? Math.round(windowW - w * gridHorizontal) / (gridHorizontal+1) : Math.round(windowW - w * wl) / (wl+1)
+        if (
+            autowl && 
+            (rowsCanContain || 
+            cfg.desktop.grid.hideOnShrink)
+        ) { 
+            ewm = Math.round(windowW - w * gridHorizontal) / (gridHorizontal+1)
+        } else {
+            ewm = Math.round(windowW - w * wl) / (wl+1)
+        }
         if (ewm < wm) ewm = wm
-        if (autowm) cfg.desktop.grid.modHmargin = ewm
+        cfg.desktop.grid.modHmargin = ewm
     } else {
         ewm = wm
     }
     if(autohm){
-        ehm = (autohl) ? Math.round(windowH - h * gridVertical) / (gridVertical+1) : Math.round(windowH - h * hl) / (hl+1)
+        if (
+            autohl && 
+            (colsCanContain || 
+            cfg.desktop.grid.hideOnShrink)
+        ) { 
+            ehm = Math.round(windowH - h * gridVertical) / (gridVertical+1)
+        } else {
+            ehm = Math.round(windowH - h * hl) / (hl+1)
+        }
         if (ehm < hm) ehm = hm
-        if (autohm) cfg.desktop.grid.modVmargin = ehm
+        cfg.desktop.grid.modVmargin = ehm
     } else {
         ehm = hm
     }
@@ -72,30 +96,7 @@ desktop.mem.grid.evaluateIconGrid = function (
         }
     }
     //if auto margin is on
-    if( (autowm || autohm) || a === 2 || a === 3) {
-    
-        //if the grid app is open update graph
-        if (gridSettings) gridSettings.mem.updateTileGraph()
-        if (gridSettings) gridSettings.mem.updateTileGraphAuto()
-
-        for (x = 0; x < desktop.mem.grid.gridArr.length; x++){
-            for(y = 0; y < desktop.mem.grid.gridArr[x].length; y++){
-                desktop.mem.grid.gridArr[x][y].posX = (x+1) * ewm + x * w
-                desktop.mem.grid.gridArr[x][y].posY = (y+1) * ehm + y * h
-                desktop.mem.grid.gridArr[x][y].widt = w
-                desktop.mem.grid.gridArr[x][y].heig = h
-                updateGridNode(desktop.mem.grid.gridArr[x][y])
-
-                if(desktop.mem.grid.gridArr[x][y].icon){
-                    desktop.mem.grid.gridArr[x][y].icon.coor.px = desktop.mem.grid.gridArr[x][y].posX
-                    desktop.mem.grid.gridArr[x][y].icon.coor.py = desktop.mem.grid.gridArr[x][y].posY
-                    desktop.mem.grid.gridArr[x][y].icon.coor.tx = desktop.mem.grid.gridArr[x][y].posX
-                    desktop.mem.grid.gridArr[x][y].icon.coor.ty = desktop.mem.grid.gridArr[x][y].posY
-                    desktop.mem.grid.gridArr[x][y].icon.poseNode()
-                }
-            }
-        }
-    }
+    if( (autowm || autohm) || a === 2 || a === 3) shiftTiles()
     //if auto length is on
     if( (autowl || autohl) || a == 1 || a === 3) {
         let gridArrX = null
@@ -103,50 +104,57 @@ desktop.mem.grid.evaluateIconGrid = function (
         if(desktop.mem.grid.gridArr) gridArrX = desktop.mem.grid.gridArr.length
         if(desktop.mem.grid.gridArr[0]) gridArrY = desktop.mem.grid.gridArr[0].length
 
-        if (cfg.desktop.grid.modHmargin > 0){
+        if (cfg.desktop.grid.modHmargin > 0 && !autowm){
             ewm = cfg.desktop.grid.modHmargin - 0.001
             gridHorizontal = Math.round((windowW*1-(w+ewm*3)/2)/(w+ewm))
         }
-        if (cfg.desktop.grid.modVmargin > 0){
+        if (cfg.desktop.grid.modVmargin > 0  && !autohm){
             ehm = cfg.desktop.grid.modVmargin - 0.001
             gridVertical = Math.round((windowH*1-(h+ehm*3)/2)/(h+ehm)); 
         }
-
+    
         let gridHdiff = (autowl) ? gridHorizontal - gridArrX : wl - gridArrX
         let gridVdiff = (autohl) ? gridVertical - gridArrY : hl - gridArrY
         
         let gridHFinal= (autowl) ? gridHorizontal : wl
         let gridVFinal= (autohl) ? gridVertical : hl
 
+        let rowsCanContain = (gridHorizontal+1+gridHdiff)*(hl) >= mem.iconArr.length
+        let colsCanContain = (gridVertical+1+gridVdiff)*(wl) >= mem.iconArr.length
+        let gridCanContain = (gridVertical)*(gridHorizontal) >= mem.iconArr.length
+
+        let columnHandledByRow = false
+
+        let iconsForShiftLate = []
+
+        //check for row/column length changes
         if( (autowl) || a == 1 || a === 3) {
-            cfg.desktop.grid.hLength = gridHFinal
-            //if shorter row
-            if (gridHdiff < 0){
+            //if shorter row AND still can contain all icons
+            if (gridHdiff < 0 && (rowsCanContain || cfg.desktop.grid.hideOnShrink)){
                 handleShorterRow()
             }
             //if longer row
-            if (gridHdiff > 0 && gridVdiff >= 0){
-                handleLongerRow()
+            if (gridHdiff > 0){
+                handleLongerRow(true)
+                if (gridCanContain && gridVdiff < 0 && autohl) handleShorterColumn(true)
             }
         }
 
-        if( (autohl) || a == 1 || a === 3) {
-            cfg.desktop.grid.vLength = gridVFinal
-            //if shorter column 
-            if (gridVdiff < 0){
+        if( ((autohl) || a == 1 || a === 3) && !columnHandledByRow) {
+            //if shorter column AND still can contain all icons
+            if (gridVdiff < 0 && (colsCanContain || cfg.desktop.grid.hideOnShrink)){
                 handleShorterColumn()
-                if(gridHdiff > 0) handleLongerRow()
+                if(gridHdiff > 0 && autowl) handleLongerRow()
             }
             //if longer column
             if (gridVdiff > 0){
                 handleLongerColumn()
+                if (gridCanContain && gridHdiff < 0 && autowl) handleShorterRow()
             }   
         }
 
         function handleShorterRow(){
             cfg.desktop.grid.hLength = gridHFinal;
-
-            let iconsForShiftLate = []
 
             for (i = 0; i > gridHdiff; i--) {
                 let delColumns = desktop.mem.grid.gridArr.splice(gridHFinal+(gridHdiff*-1 + i - 1), 1)
@@ -155,7 +163,6 @@ desktop.mem.grid.evaluateIconGrid = function (
                         let objectNode = document.getElementById(object.id)
                         objectNode.parentElement.removeChild(objectNode)
 
-                        /*if(object.icon){*/
                         if(object.icon && cfg.desktop.grid.stickToBorder){
                             iconsForShift = []
 
@@ -194,17 +201,12 @@ desktop.mem.grid.evaluateIconGrid = function (
                         }
                     })
                 })
-                mem.repositionIcons(iconsForShiftLate,true,false)
-                for(icon of iconsForShiftLate) {
-                    icon.poseNode()
-                    icon.statNode()
-                }
             }
         }
         function handleLongerRow(){
             cfg.desktop.grid.hLength = gridHFinal
             for (x = desktop.mem.grid.gridArr.length; x < gridHFinal; x++){
-                desktop.mem.grid.gridArr.push(new Array(gridVFinal))
+                desktop.mem.grid.gridArr.push(new Array(cfg.desktop.grid.vLength))
                 for(y = 0; y < desktop.mem.grid.gridArr[x].length; y++){
                     desktop.mem.grid.gridArr[x][y] = {
                         posX:(x+1) * ewm + x * w,
@@ -252,9 +254,10 @@ desktop.mem.grid.evaluateIconGrid = function (
         function handleShorterColumn(){
             cfg.desktop.grid.vLength = gridVFinal
 
-            let iconsForShiftLate = []
+            columnHandledByRow = true
 
             desktop.mem.grid.gridArr.forEach(column => {
+                console.log(column)
 
                 for (i = 0; i > gridVdiff; i--) {
                     let delRows = column.splice(gridVFinal+(gridVdiff*-1 + i - 1), 1)
@@ -263,9 +266,6 @@ desktop.mem.grid.evaluateIconGrid = function (
                         let objectNode = document.getElementById(object.id); 
                         objectNode.parentElement.removeChild(objectNode);
 
-                        /*if(object.icon){
-                            dlteIconNode(object.icon, true)
-                        }*/
                         if(object.icon && cfg.desktop.grid.stickToBorder){
                             iconsForShift = []
 
@@ -305,11 +305,6 @@ desktop.mem.grid.evaluateIconGrid = function (
                     })
                 }
             })
-            mem.repositionIcons(iconsForShiftLate,true,false)
-            for(icon of iconsForShiftLate) {
-                icon.poseNode()
-                icon.statNode()
-            }
         }
         function handleLongerColumn(){
             cfg.desktop.grid.vLength = gridVFinal
@@ -359,15 +354,54 @@ desktop.mem.grid.evaluateIconGrid = function (
             })
         }
 
+        mem.repositionIcons(iconsForShiftLate,true,false)
+        for(icon of iconsForShiftLate) {
+            icon.poseNode()
+            icon.statNode()
+        }
+
         if (gridSettings) {
             if (gridSettings.mem.updateTileGraph) gridSettings.mem.updateTileGraph()
             if (gridSettings.mem.updateTileGraph) gridSettings.mem.updateGridGraph()
-            document.getElementsByName("cfg.desktop.grid.hLength")[0].value = gridHFinal
-            document.getElementsByName("cfg.desktop.grid.vLength")[0].value = gridVFinal
+            document.getElementsByName("cfg.desktop.grid.hLength")[0].value = cfg.desktop.grid.hLength
+            document.getElementsByName("cfg.desktop.grid.vLength")[0].value = cfg.desktop.grid.vLength
         }
+
+        if(autowm){
+            if (
+                autowl && 
+                (rowsCanContain || 
+                cfg.desktop.grid.hideOnShrink)
+            ) { 
+                ewm = Math.round(windowW - w * gridHorizontal) / (gridHorizontal+1)
+            } else {
+                ewm = Math.round(windowW - w * wl) / (wl+1)
+            }
+            if (ewm < wm) ewm = wm
+            cfg.desktop.grid.modHmargin = ewm
+        } else {
+            ewm = wm
+        }
+        if(autohm){
+            if (
+                autohl && 
+                (colsCanContain || 
+                cfg.desktop.grid.hideOnShrink)
+            ) { 
+                ehm = Math.round(windowH - h * gridVertical) / (gridVertical+1)
+            } else {
+                ehm = Math.round(windowH - h * hl) / (hl+1)
+            }
+            if (ehm < hm) ehm = hm
+            cfg.desktop.grid.modVmargin = ehm
+        } else {
+            ehm = hm
+        }
+
+        if (autowm || autohm) shiftTiles()
     }
 
-    //graph array elements on the DOM
+    //draw array elements on the DOM
     function createGridNode(object) {
         let gridLayer = document.getElementById("gridLayer")
 
@@ -397,6 +431,29 @@ desktop.mem.grid.evaluateIconGrid = function (
         updGrid.style.height = object.heig + "px"
         if (cfg.desktop.grid.visibleNodes === true) updGrid.style.backgroundColor = "rgba(127,127,127,0.5)"
         if (cfg.desktop.grid.visibleNodes === false)updGrid.style.backgroundColor = "rgba(127,127,127,0)"
+    }
+    function shiftTiles() {
+        //if the grid app is open update graph
+        if (gridSettings) gridSettings.mem.updateTileGraph()
+        if (gridSettings) gridSettings.mem.updateTileGraphAuto()
+
+        for (x = 0; x < desktop.mem.grid.gridArr.length; x++){
+            for(y = 0; y < desktop.mem.grid.gridArr[x].length; y++){
+                desktop.mem.grid.gridArr[x][y].posX = (x+1) * ewm + x * w
+                desktop.mem.grid.gridArr[x][y].posY = (y+1) * ehm + y * h
+                desktop.mem.grid.gridArr[x][y].widt = w
+                desktop.mem.grid.gridArr[x][y].heig = h
+                updateGridNode(desktop.mem.grid.gridArr[x][y])
+
+                if(desktop.mem.grid.gridArr[x][y].icon){
+                    desktop.mem.grid.gridArr[x][y].icon.coor.px = desktop.mem.grid.gridArr[x][y].posX
+                    desktop.mem.grid.gridArr[x][y].icon.coor.py = desktop.mem.grid.gridArr[x][y].posY
+                    desktop.mem.grid.gridArr[x][y].icon.coor.tx = desktop.mem.grid.gridArr[x][y].posX
+                    desktop.mem.grid.gridArr[x][y].icon.coor.ty = desktop.mem.grid.gridArr[x][y].posY
+                    desktop.mem.grid.gridArr[x][y].icon.poseNode()
+                }
+            }
+        }
     }
 
     //check border gap
