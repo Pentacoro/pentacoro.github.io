@@ -1,16 +1,3 @@
-class Configuration {
-    constructor(p){
-        this.type = p.type
-        this.addr = p.addr || ""
-        this.from = p.from || ""
-        this.exte = (p.exte!=undefined) ? p.exte : (p.type==="Directory") ? "dir" : ""
-        this.icon = (p.icon!=undefined) ? p.icon : null
-        this.move = (p.move!=undefined) ? p.move : true
-        this.vert = (p.vert!=undefined) ? p.vert : false
-        this.plex = (p.plex!=undefined) ? p.plex : false
-    }
-}
-
 class Directory extends File {
     static coreTemplate(){ 
         return new Directory(
@@ -19,10 +6,11 @@ class Directory extends File {
             cfg : new Configuration (
             {
                 icon : new Icon ({imag:"plexos/res/images/svg/desktopIcons/vertexPH.svg", name:"core", type:"Directory", stat:0}),
-                from : "",
                 type : "Directory",
-                vert : true,
-                move : false
+                move : false,
+                parent : "",
+                vertex : true,
+                system : true
             })
         })
     }
@@ -62,7 +50,7 @@ class Directory extends File {
                     name : childName,
                     cfg : new Configuration (
                     {
-                        from : (parent===core) ? "" : "" + parent.cfg["from"] + "/" + parent.name,
+                        parent : (parent===core) ? "" : "" + parent.cfg["parent"] + "/" + parent.name,
                         type : confType,
                         move : true,
                         exte : (confType=="Directory") ? "dir" : childName.match(/(?:.(?<!\.))+$/s)[0],
@@ -79,8 +67,8 @@ class Directory extends File {
                 }
             )
         }
-        this.dir[childName].cfg.addr = this.dir[childName].cfg["from"] + "/" + childName
-        this.dir[childName].cfg["icon"].file = this.dir[childName].cfg["from"] + "/" + childName
+        this.dir[childName].cfg.addr = this.dir[childName].cfg["parent"] + "/" + childName
+        this.dir[childName].cfg["icon"].file = this.dir[childName].cfg["parent"] + "/" + childName
 
         if (childCont) {
             this.dir[childName][skeyName] = childCont

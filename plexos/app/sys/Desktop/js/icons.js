@@ -367,7 +367,7 @@ mem.class.IconDesk = class IconDesk {
     rename(e){
         let iconText = this.node.childNodes[1]
         let editFile = File.at(this.file)
-        let editFrom = File.at(editFile.cfg.from)
+        let editFrom = File.at(editFile.cfg.parent)
         let thisIcon = this
         //make h3 editable --------------------|
         iconText.setAttribute("contenteditable", "true")

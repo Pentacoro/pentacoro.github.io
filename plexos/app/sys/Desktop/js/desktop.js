@@ -52,7 +52,7 @@ mem.desktopInit = function (dir, id, act = null) {
              name:"Error",
              type:false,
              title:"Couldn't load directory",
-             description:"This directory seems to no longer exist. It might have been moved, or a parent directory been renamed",
+             description:"This directory seems to no longer exist. It might have been deleted, moved, or a parent directory been renamed",
              taskid:"TASKID",
              icon:""
             }

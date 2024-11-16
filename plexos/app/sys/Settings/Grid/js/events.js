@@ -120,3 +120,6 @@ document.getElementsByName("cfg.desktop.grid.vMargin")[0].addEventListener("clic
     mem.updateTileGraphAuto()
     desktop.mem.grid.evaluateIconGrid(2)
 })
+document.getElementsByName("cfg.desktop.grid.stickToBorder")[0].addEventListener("click", e=>{
+    mem.updateGridGraphDrag()
+})

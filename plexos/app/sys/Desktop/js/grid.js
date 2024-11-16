@@ -123,9 +123,6 @@ desktop.mem.grid.evaluateIconGrid = function (
         let colsCanContain = (gridVertical+1+gridVdiff)*(wl) >= mem.iconArr.length
         let autoCanContain = (gridVertical)*(gridHorizontal) >= mem.iconArr.length
         let gridCanContain = gridHFinal*gridVFinal >= mem.iconArr.length
-        console.log(gridCanContain)
-
-        let columnHandledByRow = false
 
         let iconsForShiftLate = []
 

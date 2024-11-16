@@ -1,11 +1,56 @@
 let mem  = Task.id("TASKID").mem
 
-mem.updateGridGraph = function(num = false){
+mem.updateGridGraph = function(){
     document.getElementsByClassName("ID_TASKID grid_graph")[0].children[0].children[0].innerText = cfg.desktop.grid.hLength
     document.getElementsByClassName("ID_TASKID grid_graph")[0].children[1].innerText = cfg.desktop.grid.vLength
 
     mem.var.hLengthHTML.innerText = cfg.desktop.grid.hLength
     mem.var.vLengthHTML.innerText = cfg.desktop.grid.vLength
+}
+mem.updateGridGraphDrag = function () {
+    let dot = document.getElementsByClassName("ID_TASKID grid_graph")[0].children[7]
+    let dir = document.getElementsByClassName("ID_TASKID grid_graph")[0].children[4]
+    let hid = document.getElementsByClassName("ID_TASKID grid_graph")[0].children[5]
+    let img = document.getElementsByClassName("ID_TASKID grid_graph")[0]
+
+    if (dot.offsetLeft > 174) {
+        img.style.backgroundImage = "url('./grid_graph_00.svg')"
+        hid.classList.add("hidden")
+        dir.classList.add("hidden")
+        dir.innerText = "0"
+        return
+    }
+    if (dot.offsetLeft <= 174 && dot.offsetLeft > 141) {
+        img.style.backgroundImage = (cfg.desktop.grid.stickToBorder) ? "url('./grid_graph_02-1.svg')" : "url('./grid_graph_02-2.svg')"
+        hid.classList.add("hidden")
+        dir.classList.add("hidden")
+        dir.innerText = "0"
+        return
+    }
+    if (dot.offsetLeft <= 141 && dot.offsetLeft > 108) {
+        if (!cfg.desktop.grid.hideOnShrink ) {
+            img.style.backgroundImage = (cfg.desktop.grid.stickToBorder) ? "url('./grid_graph_02-1.svg')" : "url('./grid_graph_02-2.svg')"
+            return
+        }else{
+            img.style.backgroundImage = (cfg.desktop.grid.stickToBorder) ? "url('./grid_graph_03-1.svg')" : "url('./grid_graph_03-2.svg')"
+            hid.classList.remove("hidden")
+            dir.classList.remove("hidden")
+            dir.innerText = "1"
+            return
+        }
+    }
+    if (dot.offsetLeft === 108) {
+        if (!cfg.desktop.grid.hideOnShrink ) {
+            img.style.backgroundImage = (cfg.desktop.grid.stickToBorder) ? "url('./grid_graph_02-1.svg')" : "url('./grid_graph_02-2.svg')"
+            return
+        } else {
+            img.style.backgroundImage = "url('./grid_graph_01.svg')"
+            hid.classList.remove("hidden")
+            dir.classList.remove("hidden")
+            dir.innerText = "4"
+            return
+        }
+    }
 }
 //interactive drag
 document.getElementsByClassName("ID_TASKID graph_sizeDot")[0].onmousedown = e => {
@@ -34,34 +79,7 @@ document.getElementsByClassName("ID_TASKID graph_sizeDot")[0].onmousedown = e =>
         line.style.width = 207 - dot.offsetLeft + "px"
         line.style.left = dot.offsetLeft + 5 + "px"
 
-        let dir = document.getElementsByClassName("ID_TASKID grid_graph")[0].children[4]
-        let hid = document.getElementsByClassName("ID_TASKID grid_graph")[0].children[5]
-        let img = document.getElementsByClassName("ID_TASKID grid_graph")[0]
-
-        if (dot.offsetLeft > 174) {
-            hid.classList.add("hidden")
-            img.style.backgroundImage = "url('./grid_graph_00.svg')"
-            dir.classList.add("hidden")
-            dir.innerText = "0"
-        }
-        if (dot.offsetLeft <= 174 && dot.offsetLeft > 141) {
-            hid.classList.add("hidden")
-            img.style.backgroundImage = (cfg.desktop.grid.stickToBorder) ? "url('./grid_graph_02-1.svg')" : "url('./grid_graph_02-2.svg')"
-            dir.classList.add("hidden")
-            dir.innerText = "0"
-        }
-        if (dot.offsetLeft <= 141 && dot.offsetLeft > 108) {
-            hid.classList.remove("hidden")
-            img.style.backgroundImage = (cfg.desktop.grid.stickToBorder) ? "url('./grid_graph_03-1.svg')" : "url('./grid_graph_03-2.svg')"
-            dir.classList.remove("hidden")
-            dir.innerText = "1"
-        }
-        if (dot.offsetLeft === 108) {
-            hid.classList.remove("hidden")
-            img.style.backgroundImage = "url('./grid_graph_01.svg')"
-            dir.classList.remove("hidden")
-            dir.innerText = "4"
-        }
+        mem.updateGridGraphDrag()
     }
     function dragEnd(e){
         document.onmousemove = null

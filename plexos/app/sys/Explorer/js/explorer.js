@@ -49,7 +49,7 @@ class IconDir {
         Task.id(this.task).pocket = Task.id(this.task).pocket.remove(this)
         Task.id(this.task).mem.iconArray = Task.id(this.task).mem.iconArray.remove(this)
         
-        if (File.at(File.at(this.file)?.cfg.from) === plexos.vtx && Task.openInstance("Desktop")) { //delete desktop icon if file is from vertex
+        if (File.at(File.at(this.file)?.cfg.parent) === plexos.vtx && Task.openInstance("Desktop")) { //delete desktop icon if file is from vertex
             let icon = Task.openInstance("Desktop").mem.getIcon(File.at(this.file).cfg.icon.name)
             icon.deleteNode()
         }
@@ -202,7 +202,7 @@ class IconDir {
     rename(e){
         let iconText = this.node.childNodes[1]
         let editFile = File.at(this.file)
-        let editFrom = File.at(editFile.cfg.from)
+        let editFrom = File.at(editFile.cfg.parent)
         let thisIcon = this
         //make h3 editable --------------------|
         iconText.setAttribute("contenteditable", "true")
@@ -375,7 +375,7 @@ mem.explorerInit = function (dir, id, act = null) {
         Task.id(id).pocket = []
 
         for (item of dirList) {
-            if(item[1].cfg.type === "Directory" && !item[1].cfg.plex) {
+            if(item[1].cfg.type === "Directory" && !item[1].cfg.system) {
                 dirFolder.push(item[1])
             }
         }
@@ -385,7 +385,7 @@ mem.explorerInit = function (dir, id, act = null) {
             }
         }
         for (item of dirList) {
-            if(item[1].cfg.plex) {
+            if(item[1].cfg.system) {
                 dirPlex.push(item[1])
             }
         }
@@ -408,7 +408,7 @@ mem.explorerInit = function (dir, id, act = null) {
              name:"Error",
              type:false,
              title:"Couldn't load directory",
-             description:"This directory seems to no longer exist. It might have been moved, or a parent directory been renamed",
+             description:"This directory seems to no longer exist. It might have been deleted, moved, or a parent directory been renamed",
              taskid:"TASKID",
              icon:""
             }
@@ -430,7 +430,7 @@ document.getElementsByClassName("back ID_TASKID")[0].onclick = e => {
 document.getElementsByClassName("parent ID_TASKID")[0].onclick = e => {
     if (mem.address !== "") {
         try {
-            mem.explorerInit(mem.dirObject.cfg.from, "TASKID")
+            mem.explorerInit(mem.dirObject.cfg.parent, "TASKID")
         } catch (e1) {
             try {
                 let newDir = mem.address.replace(/\/(?:.(?!\/))+$/gim, "")
@@ -438,7 +438,7 @@ document.getElementsByClassName("parent ID_TASKID")[0].onclick = e => {
             } catch (e) {
                 mem.var.error  = e
                 mem.var.errorB = [["Okay"]]
-                dll.runLauncher("/plexos/app/sys/Popup/popup_lau.js",{name:"Error",type:false,title:"Couldn't load directory", description:"This directory seems to no longer exist. It might have been moved, or a parent directory been renamed",taskid:"TASKID",icon:""})
+                dll.runLauncher("/plexos/app/sys/Popup/popup_lau.js",{name:"Error",type:false,title:"Couldn't load directory", description:"This directory seems to no longer exist. It might have been deleted, moved, or a parent directory been renamed",taskid:"TASKID",icon:""})
 
                 mem.explorerInit("", "TASKID")
             }

@@ -31,7 +31,7 @@ system.ini.setVertex = function (address) {
     })
 }
 system.ini.run = function () {
-    dll.remoteEval("/scripts/init.js")
+    dll.remoteEval("/plexos/ini/init.js")
 }
 
 function downloadCoreJSON(exportName="core") {
