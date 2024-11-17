@@ -3,10 +3,6 @@ let mem  = Task.id("TASKID").mem
 
 //on app close
 Task.id("TASKID").appEnd = function () {
-    //clone config to current state
-    mem.var.configClone = { ...eval(mem.var.config)}
-
-    //always revert node visibility
     cfg.desktop.grid.visibleNodes = false
     Task.openInstance("Desktop").mem.grid.evaluateIconGrid(3)
     File.at(mem.var.configFile).data = JSON.stringify(eval(mem.var.config), null, "\t")
@@ -121,5 +117,8 @@ document.getElementsByName("cfg.desktop.grid.vMargin")[0].addEventListener("clic
     desktop.mem.grid.evaluateIconGrid(2)
 })
 document.getElementsByName("cfg.desktop.grid.stickToBorder")[0].addEventListener("click", e=>{
+    mem.updateGridGraphDrag()
+})
+document.getElementsByName("cfg.desktop.grid.hideOnShrink")[0].addEventListener("click", e=>{
     mem.updateGridGraphDrag()
 })

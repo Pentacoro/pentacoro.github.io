@@ -71,12 +71,13 @@ mem.class.IconDesk = class IconDesk {
         this.clic()
     }
     deleteNode(fromGrid = false){
-        this.node.parentNode.removeChild(this.node);
-        
+        this.node.remove()
+
         if (!fromGrid) {
-            desktop.mem.grid.gridArr[this.coor.ax][this.coor.ay].used = false;
-            desktop.mem.grid.gridArr[this.coor.ax][this.coor.ay].icon = null;
+            desktop.mem.grid.gridArr[this.coor.ax][this.coor.ay].used = false
+            desktop.mem.grid.gridArr[this.coor.ax][this.coor.ay].icon = null
         }
+
         desktop.mem.iconArr = desktop.mem.iconArr.remove(this)
         desktop.pocket = desktop.pocket.remove(this)
     }
@@ -503,6 +504,7 @@ mem.repositionIcons = function(icons, mustSet = false, hasPrev = true){
     let hm = (cfg.desktop.grid.modVmargin == 0) ? cfg.desktop.grid.vMargin : cfg.desktop.grid.modVmargin
     
     let invalidIcons = []
+    let validatedIcons = []
     let iconAmount   = icons.length
 
     for(icon of icons) validateIconPosition(icon)
@@ -533,6 +535,7 @@ mem.repositionIcons = function(icons, mustSet = false, hasPrev = true){
                 coords.ay = ty
 
                 File.at(icon.file).cfg.coor = coords
+                validatedIcons.push(icon)
             }
         } else {
             //if the position is invalid
@@ -566,10 +569,11 @@ mem.repositionIcons = function(icons, mustSet = false, hasPrev = true){
             coords.ay = py
 
             File.at(icon.file).cfg.coor = coords
+            validatedIcons.push(icon)
         }else if(mustSet){
             newGrid = mem.orderIconPosition()
             if (newGrid === undefined) {
-                console.log(icon)
+                icon.deleteNode(true)
                 return
             }
             newGrid[0].used = true
@@ -582,9 +586,10 @@ mem.repositionIcons = function(icons, mustSet = false, hasPrev = true){
             coords.ay = newGrid[2]
 
             File.at(icon.file).cfg.coor = coords
+            validatedIcons.push(icon)
         }
     }
-
+    
     if(cfg.audio.icons && system.mem.var.dragging) {
         if(invalidIcons.length == iconAmount) {
             plexos.Sound[1].play()
@@ -594,6 +599,8 @@ mem.repositionIcons = function(icons, mustSet = false, hasPrev = true){
             plexos.Sound[3].play()
         }
     }
+    
+    return validatedIcons
 }
 
 mem.orderIconPosition = function(){

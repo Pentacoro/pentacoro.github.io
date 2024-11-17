@@ -1,3 +1,6 @@
+const eventMenuOpen = new Event ("openmenu")
+const eventMenuClose = new Event ("closemenu")
+
 //close context menu on mousedown anywhere
 window.addEventListener("mousedown", (e) => {
 	if (e.target.parentElement.parentElement){

@@ -26,14 +26,10 @@ mem.desktopInit = function (dir, id, act = null) {
         let activeObj = File.at(dir)
         let dirList   = Object.entries(activeObj.dir)
 
-        for (let icon of Task.id(id).mem.iconArr){
-            document.getElementsByClassName("list ID_"+id)[0].removeChild(icon.node)
-        }
-
-        Task.id(id).mem.iconArr = []
-        Task.id(id).mem.address = dir
-        Task.id(id).mem.dirObject = File.at(dir)
-        Task.id(id).mem.var.dirname = activeObj.name
+        mem.iconArr = []
+        mem.address = dir
+        mem.dirObject = File.at(dir)
+        mem.var.dirname = activeObj.name
         Task.id(id).pocket = []
 
         let itemList = []
@@ -41,7 +37,23 @@ mem.desktopInit = function (dir, id, act = null) {
 
         mem.grid.evaluateIconGrid()
 		mem.grid.realTimeGridEval()
-        mem.createDesktopIcons(itemList)
+
+		//if the grid is too small to fit initial amount of icons, find optimal size
+		if (cfg.desktop.grid.hLength*cfg.desktop.grid.vLength < itemList.length) {
+			let initialAutoH = cfg.desktop.grid.autoHlength
+			let initialAutoV = cfg.desktop.grid.autoVlength
+			cfg.desktop.grid.hLength = Math.ceil (Math.sqrt(itemList.length))
+			cfg.desktop.grid.vLength = Math.round(Math.sqrt(itemList.length))
+			cfg.desktop.grid.autoHlength = false
+			cfg.desktop.grid.autoVlength = false
+			mem.grid.evaluateIconGrid(3)
+			mem.createDesktopIcons(itemList)
+			cfg.desktop.grid.autoHlength = initialAutoH
+			cfg.desktop.grid.autoVlength = initialAutoV
+			mem.grid.evaluateIconGrid(3)
+		} else {
+			mem.createDesktopIcons(itemList)
+		}
         
     } catch (e) {
         mem.var.error = e
