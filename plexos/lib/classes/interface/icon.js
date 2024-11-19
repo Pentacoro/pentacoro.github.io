@@ -1,17 +1,8 @@
 class Icon {
     stat = 0
-    coor = 
-    {
-        px : -1,
-        py : -1,
-        tx : -1,
-        ty : -1,
-        ax : null,
-        ay : null
-    }
     constructor(p){
         this.stat = p.stat || this.stat
-        this.coor = p.coor || this.coor
+        this.coor = p.coor || null
 
         this.file = p.file || ""
         this.imag = p.imag

@@ -19,6 +19,7 @@ system.mem.focus = function (env) {
     system.mem.var.envfocus = env
     system.mem.var.envfocus.focus()
 }
+system.bus = new EventBus()
 system.ini = {}
 system.ini.setVertex = function (address) {
     plexos.vtx = File.at(address)

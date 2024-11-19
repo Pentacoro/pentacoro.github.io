@@ -1,5 +1,4 @@
-let mem  = Task.id("TASKID").mem
-
+let mem  = task.mem
 mem.updateTileGraph = function(){
     document.getElementsByClassName("ID_TASKID tile_graph")[0].children[0].children[0].innerText = cfg.desktop.grid.width
     document.getElementsByClassName("ID_TASKID tile_graph")[0].children[1].innerText = cfg.desktop.grid.height

@@ -1,4 +1,3 @@
-let task = Task.id("TASKID")
 let mem  = task.mem
 
 mem.menubarRender = function () {
@@ -40,7 +39,7 @@ mem.menubarRender = function () {
             buttonMenuOpen(e)
         }
         button.onmouseover = e => {
-            if (mem.menubar.targetElement) mem.menubar.targetElement.dispatchEvent(eventMenuClose)
+            if (mem.menubar.targetElement) mem.menubar.targetElement.dispatchEvent(contextMenuClose)
             if (mem.menubar.continuousContext) buttonMenuOpen(e)
         }
         button.addEventListener("closemenu", e=>{buttonMenuClose(e)})

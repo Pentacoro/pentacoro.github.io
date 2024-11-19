@@ -165,7 +165,7 @@ dll.loadFront = async function({url, taskid, data, replacementPairs = [], contai
                 
                 try {
                     if (!imported) {
-                        await eval("const runScript = async function(){"+js+"}; runScript();")
+                        await eval("const runScript = async function(){let task = Task.id('"+taskid+"');"+js+"}; runScript();")
                     } else {
                         await eval(js)
                     }

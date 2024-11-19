@@ -1,22 +1,12 @@
-let task = Task.id("TASKID")
 let mem  = task.mem
 mem.class = {}
 let desktop = task
 
 mem.class.IconDesk = class IconDesk {
     stat = 0
-    coor = 
-    {
-        px : -1,
-        py : -1,
-        tx : -1,
-        ty : -1,
-        ax : null,
-        ay : null
-    }
     constructor(p){
         this.stat = p.stat || this.stat
-        this.coor = p.coor || this.coor
+        this.coor = p.coor || null
 
         this.file = p.file || ""
         this.imag = p.imag
@@ -29,13 +19,10 @@ mem.class.IconDesk = class IconDesk {
     createNode(){
         //Icon HTML structure-----|
         if (desktop.mem.iconArr.includes(this)) return
-        if (this.coor.ax==null||this.coor.ay==null) {
-            mem.repositionIcons([this],true,false)
-        } else {
-            mem.repositionIcons([this],true,true)
-        }
 
         let newIcon = document.createElement("div")
+        this.node = newIcon
+
         newIcon.setAttribute("class", "icon")
         newIcon.setAttribute("title", this.name)
         newIcon.setAttribute("id", "Icon: "+this.name)
@@ -71,7 +58,8 @@ mem.class.IconDesk = class IconDesk {
         this.clic()
     }
     deleteNode(fromGrid = false){
-        this.node.remove()
+        if (this.node) this.node.remove()
+        delete this.node
 
         if (!fromGrid) {
             desktop.mem.grid.gridArr[this.coor.ax][this.coor.ay].used = false
@@ -351,12 +339,11 @@ mem.class.IconDesk = class IconDesk {
             system.mem.var.dragging = false
         }
     }
-    gray(coin){
-        if ( coin ) {
-            this.node?.classList.add("blur")
-        } else {
-            this.node?.classList.remove("blur")      
-        }
+    focus(){
+        this.node?.classList.remove("blur")  
+    }
+    blur(){
+        this.node?.classList.add("blur")
     }
     highlight(coin) {
         if (coin) {
@@ -523,7 +510,7 @@ mem.repositionIcons = function(icons, mustSet = false, hasPrev = true){
             //if object exists and is not used (valid position)
             let newGrid = desktop.mem.grid.gridArr[tx][ty]
     
-            if(mustSet) {
+            if(mustSet && coords) {
                 newGrid.used = true
                 newGrid.icon = icon
     
@@ -546,7 +533,7 @@ mem.repositionIcons = function(icons, mustSet = false, hasPrev = true){
     for(icon of invalidIcons) reintegrateInvalidIcon(icon)
 
     function reintegrateInvalidIcon(icon){
-        let coords = icon.coor;
+        let coords = icon.coor
     
         //get previous position in grid array
         px = Math.round((coords.px - wm)/(w + wm))
@@ -560,7 +547,7 @@ mem.repositionIcons = function(icons, mustSet = false, hasPrev = true){
             }
         }
 
-        if(mustSet && hasPrev && !oldGrid.used){
+        if(mustSet && hasPrev && coords && !oldGrid.used){
             oldGrid.used = true
             oldGrid.icon = icon
             coords.tx = coords.px
@@ -574,6 +561,9 @@ mem.repositionIcons = function(icons, mustSet = false, hasPrev = true){
             newGrid = mem.orderIconPosition()
             if (newGrid === undefined) {
                 icon.deleteNode(true)
+                icon.coor = null
+                File.at(icon.file).cfg.coor = null
+                mem.var.hiddenIcons = mem.var.hiddenIcons + 1
                 return
             }
             newGrid[0].used = true
@@ -599,7 +589,7 @@ mem.repositionIcons = function(icons, mustSet = false, hasPrev = true){
             plexos.Sound[3].play()
         }
     }
-    
+
     return validatedIcons
 }
 

@@ -1,4 +1,3 @@
-let task = Task.id("TASKID")
 let mem  = task.mem
 mem.var = {}
 mem.iconArr = []
@@ -17,44 +16,31 @@ task.node.style.height = document.body.offsetHeight - cfg.desktop.taskbar.height
 //desktop methods
 mem.createDesktopIcons = async function(array) {
     for(let item of array) {
-        deskIcon = new mem.class.IconDesk(item.cfg.icon)
-        deskIcon.createNode()
+		deskIcon = new mem.class.IconDesk(item.cfg.icon)
+		deskIcon.createNode()
     }
+	let validatedIcons = mem.repositionIcons(mem.iconArr,true)
+	for (icon of validatedIcons) {
+		icon.poseNode()
+		icon.statNode()
+	}
 }
 mem.desktopInit = function (dir, id, act = null) {    
     try {       
-        let activeObj = File.at(dir)
-        let dirList   = Object.entries(activeObj.dir)
-
         mem.iconArr = []
         mem.address = dir
-        mem.dirObject = File.at(dir)
-        mem.var.dirname = activeObj.name
+        mem.dirObject   = File.at(dir)
+        mem.var.dirname = File.at(dir).name
+		mem.var.hiddenIcons = 0
         Task.id(id).pocket = []
 
         let itemList = []
+        let dirList = Object.entries(mem.dirObject.dir)
         for (let item of dirList) itemList.push(item[1])
-
-        mem.grid.evaluateIconGrid()
-		mem.grid.realTimeGridEval()
-
-		//if the grid is too small to fit initial amount of icons, find optimal size
-		if (cfg.desktop.grid.hLength*cfg.desktop.grid.vLength < itemList.length) {
-			let initialAutoH = cfg.desktop.grid.autoHlength
-			let initialAutoV = cfg.desktop.grid.autoVlength
-			cfg.desktop.grid.hLength = Math.ceil (Math.sqrt(itemList.length))
-			cfg.desktop.grid.vLength = Math.round(Math.sqrt(itemList.length))
-			cfg.desktop.grid.autoHlength = false
-			cfg.desktop.grid.autoVlength = false
-			mem.grid.evaluateIconGrid(3)
-			mem.createDesktopIcons(itemList)
-			cfg.desktop.grid.autoHlength = initialAutoH
-			cfg.desktop.grid.autoVlength = initialAutoV
-			mem.grid.evaluateIconGrid(3)
-		} else {
-			mem.createDesktopIcons(itemList)
-		}
-        
+			
+		//if the grid is too small to fit initial amount of icons, find optimal size	
+		if (!mem.checkIfGridCanFit(itemList)) mem.initialGridDrawingSquared(itemList)
+        else mem.initialGridDrawingProcedual(itemList)
     } catch (e) {
         mem.var.error = e
         mem.var.errorB = [["Okay"]]
@@ -74,6 +60,61 @@ mem.desktopInit = function (dir, id, act = null) {
     }
 }
 
+mem.initialGridDrawingProcedual = function(itemList) {
+	let initialAutoHl = cfg.desktop.grid.autoHlength
+	let initialAutoVl = cfg.desktop.grid.autoVlength
+	let initialAutoHm = cfg.desktop.grid.autoHlength
+	let initialAutoVm = cfg.desktop.grid.autoVlength
+	cfg.desktop.grid.autoHlength = false
+	cfg.desktop.grid.autoVlength = false
+	cfg.desktop.grid.autoHmargin = false
+	cfg.desktop.grid.autoVmargin = false
+
+	mem.grid.evaluateIconGrid(0)
+	mem.createDesktopIcons(itemList)
+
+ 	cfg.desktop.grid.autoHlength = initialAutoHl
+	cfg.desktop.grid.autoVlength = initialAutoVl
+	cfg.desktop.grid.autoHmargin = initialAutoHm
+	cfg.desktop.grid.autoVmargin = initialAutoVm
+
+	mem.grid.evaluateIconGrid(3)
+	mem.grid.realTimeGridEval()
+}
+mem.initialGridDrawingSquared = function(itemList) {
+	//if the grid is too small to fit initial amount of icons, find optimal size
+	//if (cfg.desktop.grid.hLength*cfg.desktop.grid.vLength < itemList.length) { 
+	let initialAutoH = cfg.desktop.grid.autoHlength
+	let initialAutoV = cfg.desktop.grid.autoVlength
+	cfg.desktop.grid.hLength = Math.ceil (Math.sqrt(itemList.length))
+	cfg.desktop.grid.vLength = Math.round(Math.sqrt(itemList.length))
+	cfg.desktop.grid.autoHlength = false
+	cfg.desktop.grid.autoVlength = false
+	mem.grid.evaluateIconGrid(3)
+	mem.createDesktopIcons(itemList)
+	cfg.desktop.grid.autoHlength = initialAutoH
+	cfg.desktop.grid.autoVlength = initialAutoV
+	mem.grid.evaluateIconGrid(3)
+	mem.grid.realTimeGridEval()
+}
+mem.checkIfGridCanFit = function(itemList) {
+	w      = cfg.desktop.grid.width 
+    h      = cfg.desktop.grid.height
+    wm     = cfg.desktop.grid.hMargin
+    hm     = cfg.desktop.grid.vMargin
+    let windowW = task.node.offsetWidth
+    let windowH = task.node.offsetHeight
+    //set margin to modified margins if set without auto
+    if (cfg.desktop.grid.modHmargin && !cfg.desktop.grid.autoHmargin) wm = cfg.desktop.grid.modHmargin
+    if (cfg.desktop.grid.modVmargin && !cfg.desktop.grid.autoVmargin) hm = cfg.desktop.grid.modVmargin
+    
+    //evaluate optimal grid length if enabled
+    let gridHorizontal = Math.round((windowW-(w+wm*3)/2)/(w+wm))
+    let gridVertical = Math.round((windowH-(h+hm*3)/2)/(h+hm))
+
+	return gridHorizontal*gridVertical >= itemList.length
+}
+
 mem.renderIcons = function() {
 	for (file of Object.entries(plexos.vtx.dir)) {
 		file[1].render()
@@ -87,23 +128,27 @@ mem.getIcon = function(name){
 
 mem.refresh = function() {
     task.pocket = []
+	mem.var.hiddenIcons = 0
 
 	for (icon of mem.iconArr) {
-		icon.deleteNode()
+		if (icon.node) icon.deleteNode()
 	}
-    document.getElementById("iconLayer").innerHTML = ""
-	for (file of Object.entries(plexos.vtx.dir)) {
-		file[1].render()
+
+	let itemList = []
+	let dirList = Object.entries(mem.dirObject.dir)
+	for (let item of dirList) itemList.push(item[1])
+	mem.createDesktopIcons(itemList)
+
+	task.emit("desktop-refresh")
+}
+task.node.focus = e => {
+	for (icon of mem.iconArr) {
+		icon.focus()
 	}
 }
-task.node.onfocus = e => {
+task.node.blur = e => {
 	for (icon of mem.iconArr) {
-		icon.gray(false)
-	}
-}
-task.node.onblur = e => {
-	for (icon of mem.iconArr) {
-		icon.gray(true)
+		icon.blur()
 	}
 }
 
@@ -133,19 +178,13 @@ mem.new = function(e, _this, Type, name){
 					name : name,
 					type : typeDefaults.confType,
 					stat : 0,
-					coor : {
-						px : iconPosX,
-						py : iconPosY,
-						tx : iconPosX,
-						ty : iconPosY,
-						ax : null,
-						ay : null,
-					} 
+					coor : null
 				}
 			)
 			let newFile = editFrom.new(Type,name,newFileIcon)
             let newDesktopIcon = new mem.class.IconDesk(newFile.cfg.icon)
 			newDesktopIcon.createNode()
+			repositionIcons([newDesktopIcon])
 
 			return newDesktopIcon
 		} else {

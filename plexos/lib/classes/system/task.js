@@ -33,12 +33,6 @@ class Task {
         let find = plexos.Tasks.filter(task => task.id === id)
         return find[0]
     }
-    appEnd = null 
-    name = null
-    inst = null
-    node = null
-    from = null 
-    id = null
     constructor(p) {
         //check if instance allowed
         if (!Task.canInstance(p.name)) {
@@ -60,6 +54,7 @@ class Task {
         this.mem = {
             var: {} 
         }
+        this.listeners = []
         this.id = (p.id !== null) ? p.id : dll.genRanHex(16)
         Task.checkUniqueID(this)
         
@@ -79,7 +74,22 @@ class Task {
         if (document.getElementsByClassName("ID_"+this.id).length > 0) {
             plexos.Windows[parseInt(document.getElementsByClassName("ID_"+this.id)[0].id.match(/(\d+)/)[0])].deleteNode()
         }
+        this.cleanupListeners()
         plexos.Tasks = plexos.Tasks.remove(Task.id(this.id))
+    }
+    on(eventName, callback, priority = 0) {
+        const wrappedCallback = (...args) => callback(...args, this)
+        system.bus.on(eventName, wrappedCallback, priority)
+        this.listeners.push({ eventName, callback: wrappedCallback})
+    }
+    emit(eventName, ...args) {
+        system.bus.emit(eventName, ...args)
+    }
+    cleanupListeners() {
+        this.listeners.forEach(({ eventName, callback }) => {
+            system.bus.off(eventName, callback)
+        })
+        this.listeners = []
     }
     loader(op) {
         (op) ? this.load++ : this.load--

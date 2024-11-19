@@ -1,4 +1,3 @@
-let task = Task.id("TASKID")
 let mem  = task.mem
 let desktop = task
 
@@ -30,7 +29,7 @@ desktop.mem.grid.evaluateIconGrid = function (
     if (cfg.desktop.grid.modHmargin && !autowm) wm = cfg.desktop.grid.modHmargin
     if (cfg.desktop.grid.modVmargin && !autohm) hm = cfg.desktop.grid.modVmargin
     
-    //optimal number of icons that can fit in a row / column
+    //evaluate optimal grid length if enabled
     let gridHorizontal = Math.round((windowW-(w+wm*3)/2)/(w+wm))
     let gridVertical = Math.round((windowH-(h+hm*3)/2)/(h+hm))
 
@@ -81,6 +80,7 @@ desktop.mem.grid.evaluateIconGrid = function (
             desktop.mem.grid.gridArr[i] = new Array(cfg.desktop.grid.vLength)
         }
         
+        console.log("wow")
         //fill each coordinate with an object
         for (x = 0; x < desktop.mem.grid.gridArr.length; x++){
             for(y = 0; y < desktop.mem.grid.gridArr[x].length; y++){
@@ -369,12 +369,7 @@ desktop.mem.grid.evaluateIconGrid = function (
             }
         }
 
-        if (gridSettings) {
-            if (gridSettings.mem.updateTileGraph) gridSettings.mem.updateTileGraph()
-            if (gridSettings.mem.updateTileGraph) gridSettings.mem.updateGridGraph()
-            document.getElementsByName("cfg.desktop.grid.hLength")[0].value = cfg.desktop.grid.hLength
-            document.getElementsByName("cfg.desktop.grid.vLength")[0].value = cfg.desktop.grid.vLength
-        }
+        task.emit("desktop-grid-length-change")
 
         if(autowm){
             if (
@@ -442,10 +437,6 @@ desktop.mem.grid.evaluateIconGrid = function (
         if (cfg.desktop.grid.visibleNodes === false)updGrid.style.backgroundColor = "rgba(127,127,127,0)"
     }
     function shiftTiles() {
-        //if the grid app is open update graph
-        if (gridSettings) gridSettings.mem.updateTileGraph()
-        if (gridSettings) gridSettings.mem.updateTileGraphAuto()
-
         for (x = 0; x < desktop.mem.grid.gridArr.length; x++){
             for(y = 0; y < desktop.mem.grid.gridArr[x].length; y++){
                 desktop.mem.grid.gridArr[x][y].posX = (x+1) * ewm + x * w
@@ -463,6 +454,7 @@ desktop.mem.grid.evaluateIconGrid = function (
                 }
             }
         }
+        task.emit("desktop-grid-margin-change")
     }
 
     //check border gap

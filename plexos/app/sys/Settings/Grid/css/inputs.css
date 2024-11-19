@@ -38,15 +38,19 @@
 .optionName>h4{
     margin-top: auto;
     margin-bottom: auto;
+    text-align: left;
+    font-weight: 100;
+    font-size: 1em;
 }
 .optionName{
     display: flex;
-    width: 110px;
+    width: 80px;
 
     flex-shrink: 0;
-    justify-content: center;
+    justify-content: left;
+    padding-left: 6px;
 
-    background-color: #c7c7c7;
+    background-color: #D8D8D8;
 }
 .optionValue{
     width: 80px;

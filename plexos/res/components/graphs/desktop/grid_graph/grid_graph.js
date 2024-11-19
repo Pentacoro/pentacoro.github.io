@@ -1,48 +1,47 @@
-let mem  = Task.id("TASKID").mem
-
+let mem  = task.mem
 mem.updateGridGraph = function(){
     document.getElementsByClassName("ID_TASKID grid_graph")[0].children[0].children[0].innerText = cfg.desktop.grid.hLength
     document.getElementsByClassName("ID_TASKID grid_graph")[0].children[1].innerText = cfg.desktop.grid.vLength
 
+    let dir = document.getElementsByClassName("ID_TASKID grid_graph")[0].children[4]
+    let hid = document.getElementsByClassName("ID_TASKID grid_graph")[0].children[5]
+
     mem.var.hLengthHTML.innerText = cfg.desktop.grid.hLength
     mem.var.vLengthHTML.innerText = cfg.desktop.grid.vLength
+
+    if (Task.openInstance("Desktop").mem.var.hiddenIcons > 0) {
+        hid.classList.remove("hidden")
+        dir.classList.remove("hidden")
+        dir.innerText = Task.openInstance("Desktop").mem.var.hiddenIcons
+    } else {
+        hid.classList.add("hidden")
+        dir.classList.add("hidden")
+        dir.innerText = "0"
+    }
 }
 mem.updateGridGraphDrag = function () {
     let sll = document.getElementsByClassName("ID_TASKID grid_graph")[0].children[12]
     let dot = document.getElementsByClassName("ID_TASKID grid_graph")[0].children[7]
-    let dir = document.getElementsByClassName("ID_TASKID grid_graph")[0].children[4]
-    let hid = document.getElementsByClassName("ID_TASKID grid_graph")[0].children[5]
     let img = document.getElementsByClassName("ID_TASKID grid_graph")[0]
 
     if (dot.offsetLeft > 174) {
         img.style.backgroundImage = "url('./grid_graph_00.svg')"
         sll.style.backgroundImage = "url('./grid_graph_scroll_00.svg')"
-        hid.classList.add("hidden")
-        dir.classList.add("hidden")
-        dir.innerText = "0"
         return
     }
     if (dot.offsetLeft <= 174 && dot.offsetLeft > 141) {
         img.style.backgroundImage = (cfg.desktop.grid.stickToBorder) ? "url('./grid_graph_02-1.svg')" : "url('./grid_graph_02-2.svg')"
         sll.style.backgroundImage = "url('./grid_graph_scroll_01.svg')"
-        hid.classList.add("hidden")
-        dir.classList.add("hidden")
-        dir.innerText = "0"
         return
     }
     if (dot.offsetLeft <= 141 && dot.offsetLeft > 108) {
         if (!cfg.desktop.grid.hideOnShrink ) {
             img.style.backgroundImage = (cfg.desktop.grid.stickToBorder) ? "url('./grid_graph_02-1.svg')" : "url('./grid_graph_02-2.svg')"
             sll.style.backgroundImage = "url('./grid_graph_scroll_02-1.svg')"
-            hid.classList.add("hidden")
-            dir.classList.add("hidden")
             return
         }else{
             img.style.backgroundImage = (cfg.desktop.grid.stickToBorder) ? "url('./grid_graph_03-1.svg')" : "url('./grid_graph_03-2.svg')"
             sll.style.backgroundImage = "url('./grid_graph_scroll_02-2.svg')"
-            hid.classList.remove("hidden")
-            dir.classList.remove("hidden")
-            dir.innerText = "1"
             return
         }
     }
@@ -50,15 +49,10 @@ mem.updateGridGraphDrag = function () {
         if (!cfg.desktop.grid.hideOnShrink ) {
             img.style.backgroundImage = (cfg.desktop.grid.stickToBorder) ? "url('./grid_graph_02-1.svg')" : "url('./grid_graph_02-2.svg')"
             sll.style.backgroundImage = "url('./grid_graph_scroll_03-1.svg')"
-            hid.classList.add("hidden")
-            dir.classList.add("hidden")
             return
         } else {
             img.style.backgroundImage = "url('./grid_graph_01.svg')"
             sll.style.backgroundImage = "url('./grid_graph_scroll_03-2.svg')"
-            hid.classList.remove("hidden")
-            dir.classList.remove("hidden")
-            dir.innerText = "4"
             return
         }
     }

@@ -1,5 +1,5 @@
-const eventMenuOpen = new Event ("openmenu")
-const eventMenuClose = new Event ("closemenu")
+const contextMenuOpen = new Event ("openmenu")
+const contextMenuClose = new Event ("closemenu")
 
 //close context menu on mousedown anywhere
 window.addEventListener("mousedown", (e) => {

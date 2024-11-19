@@ -25,7 +25,7 @@ class ContextMenu {
         //handle hover context transfer
         if (contextVar) {
             if (contextVar.continuousContext!=undefined) contextVar.continuousContext = true
-            contextVar.targetElement.dispatchEvent(eventMenuOpen)
+            contextVar.targetElement.dispatchEvent(contextMenuOpen)
             ContextMenu.contextVar = contextVar
         }
 
@@ -37,7 +37,7 @@ class ContextMenu {
         //handle hover context transfer
         if (ContextMenu.contextVar) {
             if (ContextMenu.contextVar.continuousContext!=undefined) ContextMenu.contextVar.continuousContext = false
-            ContextMenu.contextVar.targetElement.dispatchEvent(eventMenuClose)
+            ContextMenu.contextVar.targetElement.dispatchEvent(contextMenuClose)
             ContextMenu.contextVar = null
         }
         document.getElementById("contextLayer").innerHTML = ""

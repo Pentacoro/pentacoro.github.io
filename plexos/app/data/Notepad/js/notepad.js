@@ -1,4 +1,3 @@
-let task = Task.id("TASKID")
 let mem  = task.mem
 
 task.apps = "plx"

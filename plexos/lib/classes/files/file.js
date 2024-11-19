@@ -139,8 +139,11 @@ class File {
 
     render(taskid=null) {
         if (File.at(this.cfg.parent) === plexos.vtx) { //if is on current vertex / render on desktop
-            if  (Task.openInstance("Desktop")?.mem.getIcon(this.name)) Task.openInstance("Desktop")?.mem.getIcon(this.name).poseNode()
-            else Task.openInstance("Desktop")?.mem.createDesktopIcons([this])
+            let desktop = Task.openInstance("Desktop")
+            if (desktop) {
+                if  (desktop.mem.getIcon(this.name)?.node) desktop.mem.getIcon(this.name).poseNode()
+                else desktop.mem.createDesktopIcons([this])
+            }
         }
         if (taskid) { //if is on any other directory / render on explorer
             Task.id(taskid).mem.createExplorerIcons([this])

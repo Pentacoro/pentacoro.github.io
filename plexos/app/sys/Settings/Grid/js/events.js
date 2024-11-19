@@ -1,10 +1,10 @@
 let desktop = Task.openInstance("Desktop")
-let mem  = Task.id("TASKID").mem
+let mem  = task.mem
 
 //on app close
-Task.id("TASKID").appEnd = function () {
+task.appEnd = function () {
     cfg.desktop.grid.visibleNodes = false
-    Task.openInstance("Desktop").mem.grid.evaluateIconGrid(3)
+    task.emit("desktop-grid-settings-closed")
     File.at(mem.var.configFile).data = JSON.stringify(eval(mem.var.config), null, "\t")
 }
 
@@ -30,11 +30,11 @@ for (tab of document.getElementsByClassName("config-tab")) {
 //footer buttons 
 document.getElementsByClassName("footer-accept")[0].onclick = (e)=> {
     File.at(mem.var.configFile).data = JSON.stringify(eval(mem.var.config), null, "\t")
-    Task.id("TASKID").end()
+    task.end()
 }
 document.getElementsByClassName("footer-cancel")[0].onclick = (e)=> {
     new Function(mem.var.config +" = Task.id('TASKID').mem.var.configClone")()
-    Task.id("TASKID").end()
+    task.end()
 }
 document.getElementsByClassName("footer-apply")[0].onclick = (e)=> {
     File.at(mem.var.configFile).data = JSON.stringify(eval(mem.var.config), null, "\t")
