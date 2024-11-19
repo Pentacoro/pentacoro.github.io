@@ -3,7 +3,6 @@ let mem  = task.mem
 
 //on app close
 task.appEnd = function () {
-    cfg.desktop.grid.visibleNodes = false
     task.emit("desktop-grid-settings-closed")
     File.at(mem.var.configFile).data = JSON.stringify(eval(mem.var.config), null, "\t")
 }

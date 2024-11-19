@@ -80,7 +80,6 @@ desktop.mem.grid.evaluateIconGrid = function (
             desktop.mem.grid.gridArr[i] = new Array(cfg.desktop.grid.vLength)
         }
         
-        console.log("wow")
         //fill each coordinate with an object
         for (x = 0; x < desktop.mem.grid.gridArr.length; x++){
             for(y = 0; y < desktop.mem.grid.gridArr[x].length; y++){

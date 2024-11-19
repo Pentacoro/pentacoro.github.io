@@ -6,13 +6,7 @@ let html = root + "/deskGridOptions.html"
 
 //on app init
 function ini() {
-    cfg.desktop.grid.visibleNodes = true
-    Task.openInstance("Desktop").mem.grid.evaluateIconGrid(3)
-}
-//on app end
-function end() {
-    cfg.desktop.grid.visibleNodes = false
-    Task.openInstance("Desktop").mem.grid.evaluateIconGrid(3)
+    task.emit("desktop-grid-settings-open")
 }
 
 //task creation
@@ -20,7 +14,6 @@ let task = new Task(
     {
         name : "Desktop Grid Settings",
         inst : false,
-        appEnd : end,
         node : null,
         from : "plx", 
         id   : taskid

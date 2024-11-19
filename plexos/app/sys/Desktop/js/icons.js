@@ -26,10 +26,10 @@ mem.class.IconDesk = class IconDesk {
         newIcon.setAttribute("class", "icon")
         newIcon.setAttribute("title", this.name)
         newIcon.setAttribute("id", "Icon: "+this.name)
-        newIcon.setAttribute("style",   "left:"+this.coor.px+"px;"+
-                                        "top:"+this.coor.py+"px;"+
-                                        "width:"+cfg.desktop.grid.width+"px;"+
-                                        "height:"+cfg.desktop.grid.height+"px;")
+        if (this.coor) newIcon.setAttribute("style",    "left:"+this.coor.px+"px;"+
+                                                        "top:"+this.coor.py+"px;"+
+                                                        "width:"+cfg.desktop.grid.width+"px;"+
+                                                        "height:"+cfg.desktop.grid.height+"px;")
 
         let newIconImage = document.createElement("div")
         let newIconFrame = document.createElement("div")
@@ -53,8 +53,6 @@ mem.class.IconDesk = class IconDesk {
         this.node = document.getElementById("Icon: "+this.name)
         if (system.mem.var.envfocus!=desktop) this.node.classList.add("blur")
 
-        this.statNode()
-        this.poseNode()
         this.clic()
     }
     deleteNode(fromGrid = false){
@@ -101,6 +99,7 @@ mem.class.IconDesk = class IconDesk {
         }
     }
     poseNode(){
+        if (!this.node) return
         let node = this.node
 
         node.style.left = this.coor.tx + "px"
@@ -484,7 +483,7 @@ mem.class.IconDesk = class IconDesk {
 }
 
 //icon behavior------------------------------------------------------------------------|
-mem.repositionIcons = function(icons, mustSet = false, hasPrev = true){
+mem.repositionIcons = function(icons, mustSet = false){
     let w = cfg.desktop.grid.width
     let h = cfg.desktop.grid.height
     let wm = (cfg.desktop.grid.modHmargin == 0) ? cfg.desktop.grid.hMargin : cfg.desktop.grid.modHmargin
@@ -497,10 +496,17 @@ mem.repositionIcons = function(icons, mustSet = false, hasPrev = true){
     for(icon of icons) validateIconPosition(icon)
 
     function validateIconPosition(icon){
-        let coords = icon.coor
+        if (!icon.coor) icon.coor = {
+            px:-1,
+            py:-1,
+            tx:-1,
+            ty:-1,
+            ax:null,
+            ay:null
+        }
         //find closest grid for its tPos
-        x = Math.round((coords.tx + desktop.node.scrollLeft - wm)/(w + wm))*(w + wm) + wm
-        y = Math.round((coords.ty + desktop.node.scrollTop  - hm)/(h + hm))*(h + hm) + hm
+        x = Math.round((icon.coor.tx + desktop.node.scrollLeft - wm)/(w + wm))*(w + wm) + wm
+        y = Math.round((icon.coor.ty + desktop.node.scrollTop  - hm)/(h + hm))*(h + hm) + hm
         
         //get its spot in grid array
         tx = Math.round((x - wm)/(w + wm))
@@ -510,18 +516,18 @@ mem.repositionIcons = function(icons, mustSet = false, hasPrev = true){
             //if object exists and is not used (valid position)
             let newGrid = desktop.mem.grid.gridArr[tx][ty]
     
-            if(mustSet && coords) {
+            if(mustSet && icon.coor) {
                 newGrid.used = true
                 newGrid.icon = icon
     
-                coords.px = newGrid.posX
-                coords.py = newGrid.posY
-                coords.tx = newGrid.posX
-                coords.ty = newGrid.posY
-                coords.ax = tx
-                coords.ay = ty
+                icon.coor.px = newGrid.posX
+                icon.coor.py = newGrid.posY
+                icon.coor.tx = newGrid.posX
+                icon.coor.ty = newGrid.posY
+                icon.coor.ax = tx
+                icon.coor.ay = ty
 
-                File.at(icon.file).cfg.coor = coords
+                File.at(icon.file).cfg.coor = icon.coor
                 validatedIcons.push(icon)
             }
         } else {
@@ -533,11 +539,18 @@ mem.repositionIcons = function(icons, mustSet = false, hasPrev = true){
     for(icon of invalidIcons) reintegrateInvalidIcon(icon)
 
     function reintegrateInvalidIcon(icon){
-        let coords = icon.coor
+        if (!icon.coor) icon.coor = {
+            px:-1,
+            py:-1,
+            tx:-1,
+            ty:-1,
+            ax:null,
+            ay:null
+        }
     
         //get previous position in grid array
-        px = Math.round((coords.px - wm)/(w + wm))
-        py = Math.round((coords.py - hm)/(h + hm))
+        px = Math.round((icon.coor.px - wm)/(w + wm))
+        py = Math.round((icon.coor.py - hm)/(h + hm))
 
         let oldGrid = {used: true}
 
@@ -547,15 +560,15 @@ mem.repositionIcons = function(icons, mustSet = false, hasPrev = true){
             }
         }
 
-        if(mustSet && hasPrev && coords && !oldGrid.used){
+        if(mustSet && icon.coor && !oldGrid.used){
             oldGrid.used = true
             oldGrid.icon = icon
-            coords.tx = coords.px
-            coords.ty = coords.py
-            coords.ax = px
-            coords.ay = py
+            icon.coor.tx = icon.coor.px
+            icon.coor.ty = icon.coor.py
+            icon.coor.ax = px
+            icon.coor.ay = py
 
-            File.at(icon.file).cfg.coor = coords
+            File.at(icon.file).cfg.coor = icon.coor
             validatedIcons.push(icon)
         }else if(mustSet){
             newGrid = mem.orderIconPosition()
@@ -568,14 +581,14 @@ mem.repositionIcons = function(icons, mustSet = false, hasPrev = true){
             }
             newGrid[0].used = true
             newGrid[0].icon = icon
-            coords.px = newGrid[0].posX
-            coords.py = newGrid[0].posY
-            coords.tx = newGrid[0].posX
-            coords.ty = newGrid[0].posY
-            coords.ax = newGrid[1]
-            coords.ay = newGrid[2]
+            icon.coor.px = newGrid[0].posX
+            icon.coor.py = newGrid[0].posY
+            icon.coor.tx = newGrid[0].posX
+            icon.coor.ty = newGrid[0].posY
+            icon.coor.ax = newGrid[1]
+            icon.coor.ay = newGrid[2]
 
-            File.at(icon.file).cfg.coor = coords
+            File.at(icon.file).cfg.coor = icon.coor
             validatedIcons.push(icon)
         }
     }

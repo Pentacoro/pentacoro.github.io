@@ -15,11 +15,13 @@ task.node.style.height = document.body.offsetHeight - cfg.desktop.taskbar.height
 
 //desktop methods
 mem.createDesktopIcons = async function(array) {
+	let iconsToCreate = []
     for(let item of array) {
 		deskIcon = new mem.class.IconDesk(item.cfg.icon)
 		deskIcon.createNode()
+		iconsToCreate.push(deskIcon)
     }
-	let validatedIcons = mem.repositionIcons(mem.iconArr,true)
+	let validatedIcons = mem.repositionIcons(iconsToCreate,true)
 	for (icon of validatedIcons) {
 		icon.poseNode()
 		icon.statNode()
@@ -178,13 +180,22 @@ mem.new = function(e, _this, Type, name){
 					name : name,
 					type : typeDefaults.confType,
 					stat : 0,
-					coor : null
+					coor : {
+						px : iconPosX,
+						py : iconPosY,
+						tx : iconPosX,
+						ty : iconPosY,
+						ax : null,
+						ay : null,
+					} 
 				}
 			)
 			let newFile = editFrom.new(Type,name,newFileIcon)
             let newDesktopIcon = new mem.class.IconDesk(newFile.cfg.icon)
 			newDesktopIcon.createNode()
-			repositionIcons([newDesktopIcon])
+			mem.repositionIcons([newDesktopIcon],true)
+			newDesktopIcon.statNode()
+			newDesktopIcon.poseNode()
 
 			return newDesktopIcon
 		} else {
