@@ -53,7 +53,8 @@
 }
 .ID_TASKID.grid_graph>span:nth-child(5){
     top: 64px;
-    left: 225px;
+    left: 210px;
+    width: 39px;
     color: #888888;
 }
 .ID_TASKID.grid_graph>div:nth-child(6){

@@ -10,3 +10,6 @@ task.on("desktop-grid-margin-change", ()=> {
 task.on("desktop-refresh", ()=> {
     task.mem.updateGridGraph()
 })
+task.on("desktop-icon-hidden", ()=> {
+    task.mem.updateGridGraph()
+})

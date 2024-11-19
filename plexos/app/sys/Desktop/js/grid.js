@@ -182,6 +182,7 @@ desktop.mem.grid.evaluateIconGrid = function (
                     column.forEach(object => {
                         let objectNode = document.getElementById(object.id)
                         objectNode.parentElement.removeChild(objectNode)
+                        let validatedIcons = []
                         if(object.icon && cfg.desktop.grid.stickToBorder){
                             iconsForShift = []
                             iconsForShift.push(object.icon)
@@ -198,8 +199,8 @@ desktop.mem.grid.evaluateIconGrid = function (
                                             desktop.mem.grid.gridArr[icon.coor.ax][icon.coor.ay].used = false
                                         }
                                     }
-                                    mem.repositionIcons(iconsForShift,true,false)
-                                    for(icon of iconsForShift) {
+                                    validatedIcons = mem.repositionIcons(iconsForShift,true,false)
+                                    for(icon of validatedIcons) {
                                         icon.poseNode()
                                         icon.statNode()
                                     }
@@ -210,8 +211,8 @@ desktop.mem.grid.evaluateIconGrid = function (
                             checkNextSlot(object)
                         } else if (object.icon) {
                             iconsForShift = [object.icon]
-                            mem.repositionIcons(iconsForShift,true,false)
-                            for(icon of iconsForShift) {
+                            validatedIcons = mem.repositionIcons(iconsForShift,true,false)
+                            for(icon of validatedIcons) {
                                 icon.poseNode()
                                 icon.statNode()
                             }
@@ -272,10 +273,9 @@ desktop.mem.grid.evaluateIconGrid = function (
                 for (i = 0; i > gridVdiff; i--) {
                     let delRows = column.splice(gridVFinal+(gridVdiff*-1 + i - 1), 1)
                     delRows.forEach(object =>{
-
-                        let objectNode = document.getElementById(object.id); 
-                        objectNode.parentElement.removeChild(objectNode);
-
+                        let objectNode = document.getElementById(object.id);
+                        objectNode.parentElement.removeChild(objectNode)
+                        let validatedIcons = []
                         if(object.icon && cfg.desktop.grid.stickToBorder){
                             iconsForShift = []
                             iconsForShift.push(object.icon)
@@ -292,8 +292,8 @@ desktop.mem.grid.evaluateIconGrid = function (
                                             desktop.mem.grid.gridArr[icon.coor.ax][icon.coor.ay].used = false
                                         }
                                     }
-                                    mem.repositionIcons(iconsForShift,true,false)
-                                    for(icon of iconsForShift) {
+                                    validatedIcons = mem.repositionIcons(iconsForShift,true,false)
+                                    for(icon of validatedIcons) {
                                         icon.poseNode()
                                         icon.statNode()
                                     }
@@ -304,7 +304,7 @@ desktop.mem.grid.evaluateIconGrid = function (
                             checkNextSlot(object)
                         } else if (object.icon) {
                             iconsForShift = [object.icon]
-                            mem.repositionIcons(iconsForShift,true,false)
+                            validatedIcons = mem.repositionIcons(validatedIcons,true,false)
                             for(icon of iconsForShift) {
                                 icon.poseNode()
                                 icon.statNode()

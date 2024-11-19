@@ -352,6 +352,7 @@ mem.class.IconDesk = class IconDesk {
         this.node.classList.remove("highlight")
     }
     rename(e){
+        if (!this.node) return
         let iconText = this.node.childNodes[1]
         let editFile = File.at(this.file)
         let editFrom = File.at(editFile.cfg.parent)
@@ -577,6 +578,7 @@ mem.repositionIcons = function(icons, mustSet = false){
                 icon.coor = null
                 File.at(icon.file).cfg.coor = null
                 mem.var.hiddenIcons = mem.var.hiddenIcons + 1
+                task.emit("desktop-icon-hidden")
                 return
             }
             newGrid[0].used = true

@@ -194,9 +194,10 @@ mem.new = function(e, _this, Type, name){
             let newDesktopIcon = new mem.class.IconDesk(newFile.cfg.icon)
 			newDesktopIcon.createNode()
 			mem.repositionIcons([newDesktopIcon],true)
-			newDesktopIcon.statNode()
-			newDesktopIcon.poseNode()
-
+			if (newDesktopIcon.node) {
+				newDesktopIcon.poseNode()
+				newDesktopIcon.statNode()
+			}
 			return newDesktopIcon
 		} else {
 			let exte = name.match(/\.(?:.(?<!\.))+$/s)
