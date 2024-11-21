@@ -2,89 +2,91 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Desk Grid Options</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="./css/properties.css">
     <link rel="stylesheet" href="./css/inputs.css">
+    <title>Desk Grid Options</title>
 </head>
 <body>
-    <div class="ID_TASKID appcontent">
-        <div class="ID_TASKID config-tabs">
-            <label class="ID_TASKID config-tab" for="ID_TASKID.tab1">
-                <input class="ID_TASKID tabRadio_input" type="radio" name="config-grid-tab" id="ID_TASKID.tab1" value="ID_TASKID.tabContent1">
-                <div class="ID_TASKID tabRadio_box"><span>Grid</span></div>
+    <div class="appcontent">
+        <div class="config-tabs">
+            <label class="config-tab" for="ID_TASKID_tab1">
+                <input class="tabRadio_input" type="radio" name="config-grid-tab" id="ID_TASKID_tab1" value="ID_TASKID_tabContent1">
+                <div class="tabRadio_box"><span>Grid</span></div>
             </label>
-            <label class="ID_TASKID config-tab" for="ID_TASKID.tab2">
-                <input class="ID_TASKID tabRadio_input" type="radio" name="config-grid-tab" id="ID_TASKID.tab2" value="ID_TASKID.tabContent2">
-                <div class="ID_TASKID tabRadio_box"><span>Tile</span></div>
+            <label class="config-tab" for="ID_TASKID_tab2">
+                <input class="tabRadio_input" type="radio" name="config-grid-tab" id="ID_TASKID_tab2" value="ID_TASKID_tabContent2">
+                <div class="tabRadio_box"><span>Tile</span></div>
             </label>
         </div>
 
-        <div class="ID_TASKID tabContent" id="ID_TASKID.tabContent1">
-            <div class="ID_TASKID grid_graph_container graph_container"></div>
-            <div class="ID_TASKID grid_editable">
+        <div class="tabContent" id="ID_TASKID_tabContent1">
+            <div class="grid_graph_container graph_container"></div>
+            <div class="grid_editable">
                 <div class="h5line"> <div></div> <h5>LENGTH</h5> <div></div> </div>
-                <span class="ID_TASKID config-option config-int"><div class="ID_TASKID optionName"><h4>X-Axis: </h4></div>
-                    <input type="number" class="ID_TASKID optionValue" name="cfg.desktop.grid.hLength" pattern="\d*" min="0">
-                    <input class="ID_TASKID optionButton" type="button" name="cfg.desktop.grid.autoHlength" value="Auto">
-                    <input class="ID_TASKID optionCheck" type="checkbox" name="cfg.desktop.grid.autoHlength">
+                <span class="config-option config-int"><div class="optionName"><h4>X-Axis: </h4></div>
+                    <input type="number" class="optionValue" name="cfg.desktop.grid.hLength" pattern="\d*" min="0">
+                    <input class="optionButton" type="button" name="cfg.desktop.grid.autoHlength" value="Auto">
+                    <input class="optionCheck" type="checkbox" name="cfg.desktop.grid.autoHlength">
                 </span>
 
-                <span class="ID_TASKID config-option config-int"><div class="ID_TASKID optionName"><h4>Y-Axis: </h4></div>
-                    <input type="number" class="ID_TASKID optionValue" name="cfg.desktop.grid.vLength" pattern="\d*" min="0">
-                    <input class="ID_TASKID optionButton" type="button" name="cfg.desktop.grid.autoVlength" value="Auto">
-                    <input class="ID_TASKID optionCheck" type="checkbox" name="cfg.desktop.grid.autoVlength">
+                <span class="config-option config-int"><div class="optionName"><h4>Y-Axis: </h4></div>
+                    <input type="number" class="optionValue" name="cfg.desktop.grid.vLength" pattern="\d*" min="0">
+                    <input class="optionButton" type="button" name="cfg.desktop.grid.autoVlength" value="Auto">
+                    <input class="optionCheck" type="checkbox" name="cfg.desktop.grid.autoVlength">
                 </span>
 
                 <div class="h5line"> <div></div> <h5>ICONS</h5> <div></div> </div>
-                <span class="ID_TASKID config-option config-bool"><div class="ID_TASKID optionName"><h4>Sticky: </h4></div>
-                    <input type="checkbox" class="ID_TASKID optionCheck" name="cfg.desktop.grid.stickToBorder">
+                <span class="config-option config-bool"><div class="optionName"><h4>Sticky: </h4></div>
+                    <input type="checkbox" class="optionCheck" name="cfg.desktop.grid.stickToBorder">
                     <span>Stick icons to end borders on resize</span>
                 </span>
-                <span class="ID_TASKID config-option config-bool"><div class="ID_TASKID optionName"><h4>Hide: </h4></div>
-                    <input type="checkbox" class="ID_TASKID optionCheck" name="cfg.desktop.grid.hideOnShrink">
+                <span class="config-option config-bool"><div class="optionName"><h4>Hide: </h4></div>
+                    <input type="checkbox" class="optionCheck" name="cfg.desktop.grid.hideOnShrink">
                     <span>Hide icons left off the grid (desk only)</span>
                 </span>
             </div>
         </div>
 
-        <div class="ID_TASKID tabContent hidden" id="ID_TASKID.tabContent2">
-            <div class="ID_TASKID tile_graph_container graph_container"></div>
-            <div class="ID_TASKID grid_editable">
+        <div class="tabContent hidden" id="ID_TASKID_tabContent2">
+            <div class="tile_graph_container graph_container"></div>
+            <div class="grid_editable">
                 <div class="h5line"> <div></div> <h5>SIZE</h5> <div></div> </div>
-                <span class="ID_TASKID config-option config-int"><div class="ID_TASKID optionName"><h4>Width: </h4></div> 
-                    <input type="number" class="ID_TASKID optionValue" name="cfg.desktop.grid.width" pattern="\d*" min="10">
+                <span class="config-option config-int"><div class="optionName"><h4>Width: </h4></div> 
+                    <input type="number" class="optionValue" name="cfg.desktop.grid.width" pattern="\d*" min="10">
                 </span>
 
-                <span class="ID_TASKID config-option config-int"><div class="ID_TASKID optionName"><h4>Height: </h4></div>
-                    <input type="number" class="ID_TASKID optionValue" name="cfg.desktop.grid.height" pattern="\d*" min="10"> 
+                <span class="config-option config-int"><div class="optionName"><h4>Height: </h4></div>
+                    <input type="number" class="optionValue" name="cfg.desktop.grid.height" pattern="\d*" min="10"> 
                 </span>
 
                 <div class="h5line"> <div></div> <h5>MARGIN</h5> <div></div> </div>
-                <span class="ID_TASKID config-option config-int"><div class="ID_TASKID optionName"><h4>Horizontal: </h4></div>
-                    <input type="number" class="ID_TASKID optionValue" name="cfg.desktop.grid.hMargin" pattern="\d*" min="0"> 
-                    <input class="ID_TASKID optionButton" type="button" name="cfg.desktop.grid.autoHmargin" value="Auto">
-                    <input class="ID_TASKID optionCheck" type="checkbox" name="cfg.desktop.grid.autoHmargin">
+                <span class="config-option config-int"><div class="optionName"><h4>Horizontal: </h4></div>
+                    <input type="number" class="optionValue" name="cfg.desktop.grid.hMargin" pattern="\d*" min="0"> 
+                    <input class="optionButton" type="button" name="cfg.desktop.grid.autoHmargin" value="Auto">
+                    <input class="optionCheck" type="checkbox" name="cfg.desktop.grid.autoHmargin">
                 </span>
 
-                <span class="ID_TASKID config-option config-int"><div class="ID_TASKID optionName"><h4>Vertical: </h4></div>
-                    <input type="number" class="ID_TASKID optionValue" name="cfg.desktop.grid.vMargin" pattern="\d*" min="0"> 
-                    <input class="ID_TASKID optionButton" type="button" name="cfg.desktop.grid.autoVmargin" value="Auto">
-                    <input class="ID_TASKID optionCheck" type="checkbox" name="cfg.desktop.grid.autoVmargin">
+                <span class="config-option config-int"><div class="optionName"><h4>Vertical: </h4></div>
+                    <input type="number" class="optionValue" name="cfg.desktop.grid.vMargin" pattern="\d*" min="0"> 
+                    <input class="optionButton" type="button" name="cfg.desktop.grid.autoVmargin" value="Auto">
+                    <input class="optionCheck" type="checkbox" name="cfg.desktop.grid.autoVmargin">
                 </span>
             </div>
         </div>
 
-        <div class="ID_TASKID config-footer">
+        <div class="config-footer">
             <button class="config-footer-button footer-accept">Accept</button>
             <button class="config-footer-button footer-cancel">Cancel</button>
             <button class="config-footer-button footer-apply disabled" disabled>Apply</button>
         </div>
     </div>
 
-    <script src="./js/var.js"></script>
-    <script src="./js/functions.js"></script>
-    <script src="./js/events.js"></script>
-    <script src="./js/listeners.js"></script>
-    <script src="./js/init.js"></script>
+    <script type="module" src="./js/var.js"></script>
+    <script type="module" src="./js/functions.js"></script>
+    <script type="module" src="./js/events.js"></script>
+    <script type="module" src="./js/listeners.js"></script>
+    <script type="module" src="./js/init.js"></script>
 </body>
 </html>

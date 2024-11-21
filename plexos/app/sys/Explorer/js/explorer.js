@@ -1,3 +1,9 @@
+import Task from "/plexos/lib/classes/system/task.js"
+import File from "/plexos/lib/classes/files/file.js"
+import ContextMenu from "/plexos/lib/classes/interface/contextmenu.js"
+import Icon from "/plexos/lib/classes/interface/icon.js"
+
+let task = Task.id("TASKID")
 let mem  = task.mem
 task.apps = "exp"
 mem.var = {}
@@ -34,7 +40,7 @@ class IconDir {
         newIconText.appendChild(newIconTextNode)
         newIcon.appendChild(newIconText)
 
-        document.getElementsByClassName("list ID_TASKID")[0].appendChild(newIcon)
+        task.node.getElementsByClassName("list")[0].appendChild(newIcon)
         //------------------------|
 
         this.node = newIcon
@@ -48,8 +54,8 @@ class IconDir {
         Task.id(this.task).pocket = Task.id(this.task).pocket.remove(this)
         Task.id(this.task).mem.iconArray = Task.id(this.task).mem.iconArray.remove(this)
         
-        if (File.at(File.at(this.file)?.cfg.parent) === plexos.vtx && Task.openInstance("Desktop")) { //delete desktop icon if file is from vertex
-            let icon = Task.openInstance("Desktop").mem.getIcon(File.at(this.file).cfg.icon.name)
+        if (File.at(File.at(this.file)?.cfg.parent) === plexos.vtx && Task.get("Desktop")) { //delete desktop icon if file is from vertex
+            let icon = Task.get("Desktop").mem.getIcon(File.at(this.file).cfg.icon.name)
             icon.deleteNode()
         }
     }
@@ -83,7 +89,7 @@ class IconDir {
             //when mousedown on selected icon
             if (_this.stat === 1) {
                 //managing selected icons
-                for (icon of Task.id(_this.task).pocket) {
+                for (let icon of Task.id(_this.task).pocket) {
                     //light up all hover border onmousedown:-|
                     icon.highlight(true)
                     //---------------------------------------|
@@ -95,7 +101,7 @@ class IconDir {
                     
                     //when mousedown on unselected icon
                     if(!e.ctrlKey) {
-                        for (icon of Task.id(_this.task).pocket){
+                        for (let icon of Task.id(_this.task).pocket){
                             Task.id(_this.task).pocket = Task.id(_this.task).pocket.remove(icon)
                             icon.statNode(0)
                             icon.highlight(false)
@@ -117,7 +123,7 @@ class IconDir {
             function dragMouseMove(e, node) {
                 e.preventDefault()
 
-                for (icon of Task.id(_this.task).pocket){
+                for (let icon of Task.id(_this.task).pocket){
                     icon.statNode(2)
                 }
 
@@ -163,14 +169,14 @@ class IconDir {
     
                 //unselect other folders on mouseup W/O drag UNLESS ctrl
                 if(e.ctrlKey == false && system.mem.var.dragging == false && e.button == 0) {
-                    for (icon of Task.id(_this.task).pocket){
+                    for (let icon of Task.id(_this.task).pocket){
                         Task.id(_this.task).pocket = Task.id(_this.task).pocket.remove(icon)
                         icon.statNode(0)
                         icon.highlight(false)
                     }
                     _this.statNode(1)
                 } else {
-                    for (icon of Task.id(_this.task).pocket){
+                    for (let icon of Task.id(_this.task).pocket){
                         icon.statNode(1)
                         icon.highlight(false)
                     }
@@ -266,15 +272,15 @@ class IconDir {
                 //insert into fylesystem
                 if (iconText.textContent != editFile.name) { //if the name changed
                     if (editFrom === plexos.vtx){
-                        Task.openInstance("Desktop").mem.getIcon(editFile.name).file = editFrom.cfg.addr +"/"+ iconText.textContent
-                        Task.openInstance("Desktop").mem.getIcon(editFile.name).name = iconText.textContent
+                        Task.get("Desktop").mem.getIcon(editFile.name).file = editFrom.cfg.addr +"/"+ iconText.textContent
+                        Task.get("Desktop").mem.getIcon(editFile.name).name = iconText.textContent
                     }
                     editFile.rename(iconText.textContent)
                     if (thisIcon.task) {
-                        taskid = thisIcon.task
+                        let taskid = thisIcon.task
                         task   = Task.id(taskid)
                         task.mem.iconArray = task.mem.iconArray.remove(thisIcon)
-                        document.getElementsByClassName("list ID_"+taskid)[0].removeChild(thisIcon.node)
+                        task.node.getElementsByClassName("list")[0].removeChild(thisIcon.node)
     
                         editFile.render(taskid)
                         thisIcon = task.mem.iconArray[task.mem.iconArray.length-1]
@@ -308,14 +314,14 @@ class IconDir {
                 }
                 function iconRenamingInsist(){
                     if (thisIcon.task) {
-                        for (icon of Task.id(thisIcon.task).mem.iconArray){
+                        for (let icon of Task.id(thisIcon.task).mem.iconArray){
                             icon.statNode(0)
                             Task.id(thisIcon.task).pocket = Task.id(thisIcon.task).pocket.remove(icon)
                         }
                     } else {
-                        for (icon of Task.openInstance("Desktop")?.mem.iconArr){
+                        for (let icon of Task.get("Desktop")?.mem.iconArr){
                             icon.statNode(0)
-                            Task.openInstance("Desktop").pocket = Task.openInstance("Desktop").pocket.remove(icon)
+                            Task.get("Desktop").pocket = Task.get("Desktop").pocket.remove(icon)
                         }
                     }
                     thisIcon.statNode(1)
@@ -331,7 +337,7 @@ class IconDir {
 
 //local functions
 mem.createExplorerIcons = async function(array) {
-    for(item of array) {
+    for(let item of array) {
         let itemIcon = item.cfg.icon
         let dirIcon  = new IconDir(
             {           
@@ -363,8 +369,8 @@ mem.explorerInit = function (dir, id, act = null) {
         let dirFile   = []
         let dirPlex   = []
 
-        for (icon of Task.id(id).mem.iconArray){
-            document.getElementsByClassName("list ID_"+id)[0].removeChild(icon.node)
+        for (let icon of Task.id(id).mem.iconArray){
+            task.node.getElementsByClassName("list")[0].removeChild(icon.node)
         }
 
         Task.id(id).mem.iconArray = []
@@ -373,17 +379,17 @@ mem.explorerInit = function (dir, id, act = null) {
         Task.id(id).mem.var.dirname = activeObj.name
         Task.id(id).pocket = []
 
-        for (item of dirList) {
+        for (let item of dirList) {
             if(item[1].cfg.type === "Directory" && !item[1].cfg.system) {
                 dirFolder.push(item[1])
             }
         }
-        for (item of dirList) {
+        for (let item of dirList) {
             if(item[1].cfg.type !=  "Directory") {
                 dirFile.push(item[1])
             }
         }
-        for (item of dirList) {
+        for (let item of dirList) {
             if(item[1].cfg.system) {
                 dirPlex.push(item[1])
             }
@@ -393,13 +399,14 @@ mem.explorerInit = function (dir, id, act = null) {
         dirFile.sort  ((a, b) => a.name.localeCompare(b.name))
         dirPlex.sort  ((a, b) => a.name.localeCompare(b.name))
 
-        document.getElementsByClassName("address ID_"+id)[0].innerHTML = dir
-        document.getElementsByClassName("window ID_"+id)[0].children[0].children[0].children[1].innerHTML = activeObj.name
-        document.getElementsByClassName("window ID_"+id)[0].children[0].children[0].children[0].setAttribute("style", `background-image: url('${activeObj.cfg.icon.imag}')`)
+        task.node.getElementsByClassName("address")[0].innerHTML = dir
+        task.window.node.children[0].children[0].children[1].innerHTML = activeObj.name
+        task.window.node.children[0].children[0].children[0].setAttribute("style", `background-image: url('${activeObj.cfg.icon.imag}')`)
 
         mem.createExplorerIcons(dirPlex).then( e => mem.createExplorerIcons(dirFolder).then(e => mem.createExplorerIcons(dirFile)))
         
     } catch (e) {
+        console.error(e)
         mem.var.error = e
         mem.var.errorB = [["Okay"]]
         dll.runLauncher("/plexos/app/sys/Popup/popup_lau.js",
@@ -422,11 +429,11 @@ mem.explorerInit("xcorex", "TASKID")
 //nav buttons ---------------|
 
 //history back [<]
-document.getElementsByClassName("back ID_TASKID")[0].onclick = e => {
+task.node.getElementsByClassName("back")[0].onclick = e => {
 
 }
 //parent dir
-document.getElementsByClassName("parent ID_TASKID")[0].onclick = e => {
+task.node.getElementsByClassName("parent")[0].onclick = e => {
     if (mem.address !== "") {
         try {
             mem.explorerInit(mem.dirObject.cfg.parent, "TASKID")
@@ -437,7 +444,16 @@ document.getElementsByClassName("parent ID_TASKID")[0].onclick = e => {
             } catch (e) {
                 mem.var.error  = e
                 mem.var.errorB = [["Okay"]]
-                dll.runLauncher("/plexos/app/sys/Popup/popup_lau.js",{name:"Error",type:false,title:"Couldn't load directory", description:"This directory seems to no longer exist. It might have been deleted, moved, or a parent directory been renamed",taskid:"TASKID",icon:""})
+                dll.runLauncher("/plexos/app/sys/Popup/popup_lau.js",
+                    {
+                     name:"Error",
+                     type:false,
+                     title:"Couldn't load directory",
+                     description:"This directory seems to no longer exist. It might have been deleted, moved, or a parent directory been renamed",
+                     taskid:"TASKID",
+                     icon:""
+                    }
+                )
 
                 mem.explorerInit("", "TASKID")
             }
@@ -447,20 +463,20 @@ document.getElementsByClassName("parent ID_TASKID")[0].onclick = e => {
     }
 }
 //refresh
-document.getElementsByClassName("refresh ID_TASKID")[0].onclick = e => {
+task.node.getElementsByClassName("refresh")[0].onclick = e => {
     mem.refresh()
 }
 
 //background click listeners
-document.getElementsByClassName("list ID_TASKID")[0].onmousedown = e => {
+task.node.getElementsByClassName("list")[0].onmousedown = e => {
     if (e.target.classList.contains("list")) {
-        for (icon of task.pocket) {
+        for (let icon of task.pocket) {
             icon.statNode(0)
             task.pocket = task.pocket.remove(icon)
         }
     }
 }
-document.getElementsByClassName("list ID_TASKID")[0].oncontextmenu = e => {
+task.node.getElementsByClassName("list")[0].oncontextmenu = e => {
     if (e.target.classList.contains("list")) {
         let envfocus = system.mem.var.envfocus
 
@@ -472,9 +488,9 @@ document.getElementsByClassName("list ID_TASKID")[0].oncontextmenu = e => {
             {name: "file", list: [
                 {name:"New",icon:"url('plexos/res/images/svg/contextMenu/new2.svg')",func: [
                     {name: "new", list: [
-                        {name:"Directory",icon:"url('plexos/res/images/svg/contextMenu/directory.svg')",func:() => envfocus.mem.new(e,task,Directory,"New Folder")},
-                        {name:"Metafile",icon:"url('plexos/res/images/svg/contextMenu/metafile.svg')",func:() => envfocus.mem.new(e,task,Metafile,"New Metafile.msf")},
-                        {name:"Text Document",icon:"url('plexos/res/images/svg/contextMenu/textfile.svg')",func:() => envfocus.mem.new(e,task,JsString,"New Text Document.txt")},
+                        {name:"Directory",icon:"url('plexos/res/images/svg/contextMenu/directory.svg')",func:() => envfocus.mem.new(e,task,"Directory","New Folder")},
+                        {name:"Metafile",icon:"url('plexos/res/images/svg/contextMenu/metafile.svg')",func:() => envfocus.mem.new(e,task,"Metafile","New Metafile.msf")},
+                        {name:"Text Document",icon:"url('plexos/res/images/svg/contextMenu/textfile.svg')",func:() => envfocus.mem.new(e,task,"JsString","New Text Document.txt")},
                     ]}
                 ]},
                 {name:"Paste",icon:"url('plexos/res/images/svg/contextMenu/paste.svg')",func: () => {return} },
@@ -528,7 +544,7 @@ mem.new = function(e, _this, Type, name){
 	}
     
     let newFileIcon = createExplorerFile(name)
-    //mem.createExplorerIcons([File.at(newFileIcon.file)])
+
     let createdIcon = mem.iconArray[mem.iconArray.length - 1]
     createdIcon.rename()
 }

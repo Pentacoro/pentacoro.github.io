@@ -1,4 +1,10 @@
-class Directory extends File {
+import Configuration from "./configuration.js"
+import Icon from "../interface/icon.js"
+import File from "./file.js"
+import Metafile from "./metafile.js"
+import JsString from "./jsonstring.js"
+
+export default class Directory extends File {
     static coreTemplate(){ 
         return new Directory(
         {
@@ -36,6 +42,11 @@ class Directory extends File {
         let iconImag = defaults.iconImag
         let confType = defaults.confType
         let skeyName = defaults.skeyName
+        switch (Type) {
+            case "Directory": Type = Directory; break
+            case "Metafile":  Type = Metafile; break
+            case "JsString":  Type = JsString; break
+        }
 
         childName = childName + (((confType!="Directory") && !childName.includes(".")) ? "." + childName.match(/(?:.(?<!\.))+$/s)[0] : "")
 
@@ -50,7 +61,7 @@ class Directory extends File {
                     name : childName,
                     cfg : new Configuration (
                     {
-                        parent : (parent===core) ? "" : "" + parent.cfg["parent"] + "/" + parent.name,
+                        parent : (parent===plexos.core) ? "" : "" + parent.cfg["parent"] + "/" + parent.name,
                         type : confType,
                         move : true,
                         exte : (confType=="Directory") ? "dir" : childName.match(/(?:.(?<!\.))+$/s)[0],
@@ -84,10 +95,10 @@ class Directory extends File {
     }
 
     checkCont(){ //this function swaps default dir icons whether it contains files or not
-        if (Object.keys(this.dir).length > 0 && this.cfg.icon.imag == File.typeDefaults(Directory).iconImag) {
-            this.cfg.icon.imag = File.typeDefaults(Directory).iconImag.replace("DIR", "DIRc")
-        } else if (Object.keys(this.dir).length == 0 && this.cfg.icon.imag == File.typeDefaults(Directory).iconImag.replace("DIR", "DIRc")) {
-            this.cfg.icon.imag = File.typeDefaults(Directory).iconImag
+        if (Object.keys(this.dir).length > 0 && this.cfg.icon.imag == File.typeDefaults("Directory").iconImag) {
+            this.cfg.icon.imag = File.typeDefaults("Directory").iconImag.replace("DIR", "DIRc")
+        } else if (Object.keys(this.dir).length == 0 && this.cfg.icon.imag == File.typeDefaults("Directory").iconImag.replace("DIR", "DIRc")) {
+            this.cfg.icon.imag = File.typeDefaults("Directory").iconImag
         }
     }
 

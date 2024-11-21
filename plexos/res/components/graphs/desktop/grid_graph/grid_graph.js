@@ -1,18 +1,22 @@
-let mem  = task.mem
-mem.updateGridGraph = function(){
-    document.getElementsByClassName("ID_TASKID grid_graph")[0].children[0].children[0].innerText = cfg.desktop.grid.hLength
-    document.getElementsByClassName("ID_TASKID grid_graph")[0].children[1].innerText = cfg.desktop.grid.vLength
+import Task from "/plexos/lib/classes/system/task.js"
 
-    let dir = document.getElementsByClassName("ID_TASKID grid_graph")[0].children[4]
-    let hid = document.getElementsByClassName("ID_TASKID grid_graph")[0].children[5]
+let task = Task.id("TASKID")
+let mem  = task.mem
+
+mem.updateGridGraph = function(){
+    document.getElementsByClassName("grid_graph")[0].children[0].children[0].innerText = cfg.desktop.grid.hLength
+    document.getElementsByClassName("grid_graph")[0].children[1].innerText = cfg.desktop.grid.vLength
+
+    let dir = document.getElementsByClassName("grid_graph")[0].children[4]
+    let hid = document.getElementsByClassName("grid_graph")[0].children[5]
 
     mem.var.hLengthHTML.innerText = cfg.desktop.grid.hLength
     mem.var.vLengthHTML.innerText = cfg.desktop.grid.vLength
 
-    if (Task.openInstance("Desktop").mem.var.hiddenIcons > 0) {
+    if (Task.get("Desktop").mem.var.hiddenIcons > 0) {
         hid.classList.remove("hidden")
         dir.classList.remove("hidden")
-        dir.innerText = Task.openInstance("Desktop").mem.var.hiddenIcons
+        dir.innerText = Task.get("Desktop").mem.var.hiddenIcons
     } else {
         hid.classList.add("hidden")
         dir.classList.add("hidden")
@@ -20,9 +24,9 @@ mem.updateGridGraph = function(){
     }
 }
 mem.updateGridGraphDrag = function () {
-    let sll = document.getElementsByClassName("ID_TASKID grid_graph")[0].children[12]
-    let dot = document.getElementsByClassName("ID_TASKID grid_graph")[0].children[7]
-    let img = document.getElementsByClassName("ID_TASKID grid_graph")[0]
+    let sll = document.getElementsByClassName("grid_graph")[0].children[12]
+    let dot = document.getElementsByClassName("grid_graph")[0].children[7]
+    let img = document.getElementsByClassName("grid_graph")[0]
 
     if (dot.offsetLeft > 174) {
         img.style.backgroundImage = "url('./grid_graph_00.svg')"
@@ -58,11 +62,11 @@ mem.updateGridGraphDrag = function () {
     }
 }
 //interactive drag
-document.getElementsByClassName("ID_TASKID graph_sizeDot")[0].onmousedown = e => {
+document.getElementsByClassName("graph_sizeDot")[0].onmousedown = e => {
     let pX = e.target.offsetLeft
     let mX = Math.round((e.clientX)/33)*33 + 9
     let dot = e.target
-    let line = document.getElementsByClassName("ID_TASKID grid_graph")[0].children[6]
+    let line = document.getElementsByClassName("grid_graph")[0].children[6]
 
     document.onmousemove = dragDot
     document.onmouseup = dragEnd
@@ -109,6 +113,6 @@ mem.var.graph2images =
     "./grid_graph_scroll_03-1.svg",
     "./grid_graph_scroll_03-2.svg",
 ]
-for (image of mem.var.graph2images){
+for (let image of mem.var.graph2images){
     dll.preloadImage(image)
 }

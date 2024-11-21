@@ -1,4 +1,7 @@
-let desktop = Task.openInstance("Desktop")
+import Task from "/plexos/lib/classes/system/task.js"
+
+let desktop = Task.get("Desktop")
+let task = Task.id("TASKID")
 let mem  = Task.id("TASKID").mem
 mem.apps = "exp"
 mem.var = {}
@@ -9,12 +12,12 @@ mem.var.configFile = "config/desktop/grid.json"
 mem.var.configClone = { ...eval(mem.var.config)}
 
 //html references
-mem.var.widthHTML = document.getElementsByName("cfg.desktop.grid.width")[0]
-mem.var.heightHTML = document.getElementsByName("cfg.desktop.grid.height")[0]
-mem.var.hMarginHTML = document.getElementsByName("cfg.desktop.grid.hMargin")[0]
-mem.var.vMarginHTML = document.getElementsByName("cfg.desktop.grid.vMargin")[0]
-mem.var.hLengthHTML = document.getElementsByName("cfg.desktop.grid.hLength")[0]
-mem.var.vLengthHTML = document.getElementsByName("cfg.desktop.grid.vLength")[0]
+mem.var.widthHTML = task.node.getElementsByName("cfg.desktop.grid.width")[0]
+mem.var.heightHTML = task.node.getElementsByName("cfg.desktop.grid.height")[0]
+mem.var.hMarginHTML = task.node.getElementsByName("cfg.desktop.grid.hMargin")[0]
+mem.var.vMarginHTML = task.node.getElementsByName("cfg.desktop.grid.vMargin")[0]
+mem.var.hLengthHTML = task.node.getElementsByName("cfg.desktop.grid.hLength")[0]
+mem.var.vLengthHTML = task.node.getElementsByName("cfg.desktop.grid.vLength")[0]
 
 //set values to html
 mem.var.widthHTML.value = cfg.desktop.grid.width

@@ -1,4 +1,6 @@
-class Icon {
+import File from "../files/file.js"
+
+export default class Icon {
     stat = 0
     constructor(p){
         this.stat = p.stat || this.stat

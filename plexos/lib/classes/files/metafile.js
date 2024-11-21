@@ -1,4 +1,5 @@
-class Metafile extends File {
+import File from "./file.js"
+export default class Metafile extends File {
     meta = {
         title : null,
         app  : null,

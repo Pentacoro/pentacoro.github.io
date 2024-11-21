@@ -1,4 +1,5 @@
-class JsString extends File {
+import File from "./file.js"
+export default class JsString extends File {
     data = {}
     constructor(p) {
         super()

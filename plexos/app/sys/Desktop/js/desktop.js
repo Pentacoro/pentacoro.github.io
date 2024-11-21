@@ -1,28 +1,25 @@
+import Task from "/plexos/lib/classes/system/Task.js"
+import File from "/plexos/lib/classes/files/file.js"
+import Icon from "/plexos/lib/classes/interface/icon.js"
+
+let task = Task.id("TASKID")
 let mem  = task.mem
+
 mem.var = {}
 mem.iconArr = []
 mem.dirObject = {}
 mem.address = "xcorex"
 
-window.addEventListener("resize", e => {
-	task.node.style.width = document.body.offsetWidth + "px"
-    task.node.style.height = document.body.offsetHeight - cfg.desktop.taskbar.height + "px"
-})
-
-//set background size
-task.node.style.width = document.body.offsetWidth + "px"
-task.node.style.height = document.body.offsetHeight - cfg.desktop.taskbar.height + "px"
-
 //desktop methods
 mem.createDesktopIcons = async function(array) {
 	let iconsToCreate = []
     for(let item of array) {
-		deskIcon = new mem.class.IconDesk(item.cfg.icon)
+		let deskIcon = new mem.class.IconDesk(item.cfg.icon)
 		deskIcon.createNode()
 		iconsToCreate.push(deskIcon)
     }
 	let validatedIcons = mem.repositionIcons(iconsToCreate,true)
-	for (icon of validatedIcons) {
+	for (let icon of validatedIcons) {
 		icon.poseNode()
 		icon.statNode()
 	}
@@ -100,10 +97,10 @@ mem.initialGridDrawingSquared = function(itemList) {
 	mem.grid.realTimeGridEval()
 }
 mem.checkIfGridCanFit = function(itemList) {
-	w      = cfg.desktop.grid.width 
-    h      = cfg.desktop.grid.height
-    wm     = cfg.desktop.grid.hMargin
-    hm     = cfg.desktop.grid.vMargin
+	let w      = cfg.desktop.grid.width 
+    let h      = cfg.desktop.grid.height
+    let wm     = cfg.desktop.grid.hMargin
+    let hm     = cfg.desktop.grid.vMargin
     let windowW = task.node.offsetWidth
     let windowH = task.node.offsetHeight
     //set margin to modified margins if set without auto
@@ -118,7 +115,7 @@ mem.checkIfGridCanFit = function(itemList) {
 }
 
 mem.renderIcons = function() {
-	for (file of Object.entries(plexos.vtx.dir)) {
+	for (let file of Object.entries(plexos.vtx.dir)) {
 		file[1].render()
 	}
 }
@@ -132,7 +129,7 @@ mem.refresh = function() {
     task.pocket = []
 	mem.var.hiddenIcons = 0
 
-	for (icon of mem.iconArr) {
+	for (let icon of mem.iconArr) {
 		if (icon.node) icon.deleteNode()
 	}
 
@@ -143,13 +140,13 @@ mem.refresh = function() {
 
 	task.emit("desktop-refresh")
 }
-task.node.focus = e => {
-	for (icon of mem.iconArr) {
+task.focus = e => {
+	for (let icon of mem.iconArr) {
 		icon.focus()
 	}
 }
-task.node.blur = e => {
-	for (icon of mem.iconArr) {
+task.blur = e => {
+	for (let icon of mem.iconArr) {
 		icon.blur()
 	}
 }
@@ -215,4 +212,7 @@ mem.new = function(e, _this, Type, name){
 	createDesktopFile(name).rename()
 }
 
+//run
+task.node.style.width = document.body.offsetWidth + "px"
+task.node.style.height = document.body.offsetHeight - cfg.desktop.taskbar.height + "px"
 mem.desktopInit("xcorex", "TASKID")

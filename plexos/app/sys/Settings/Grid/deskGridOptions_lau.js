@@ -1,35 +1,37 @@
-let params = /PARAMS/
-let taskid = /TASKID/
-let addr = /ADDR/
-let root = /ROOT/
-let html = root + "/deskGridOptions.html"
+import Task from "/plexos/lib/classes/system/task.js"
+import Window from "/plexos/lib/classes/interface/window.js"
+import dll from "/plexos/lib/functions/dll.js"
 
-//on app init
-function ini() {
-    task.emit("desktop-grid-settings-open")
-}
+export function initialize(){
+    let params = /PARAMS/
+    let taskid = /TASKID/
+    let addr = /ADDR/
+    let root = /ROOT/
+    let html = root + "/deskGridOptions.html"
 
-//task creation
-let task = new Task(
-    {
-        name : "Desktop Grid Settings",
-        inst : false,
-        node : null,
-        from : "plx", 
-        id   : taskid
+    //on app init
+    function ini() {
+        task.emit("desktop-grid-settings-open")
     }
-)
-if (!task.id) return
 
-try {
-    let id = task.id
+    //task creation
+    let task = new Task(
+        {
+            name : "Desktop Grid Settings",
+            inst : false,
+            node : null,
+            from : "plx", 
+            id   : taskid
+        }
+    )
+    if (!task.id) return
 
     //window generation
     new Window
     (
         {
             name : "Desktop Grid Settings",
-            task : id, 
+            task : task.id, 
             resi : false, 
             uiux : [], 
             icon : "/plexos/res/images/svg/desktopIcons/settingsPlaceholder.svg",
@@ -39,19 +41,11 @@ try {
         }
     )
 
-    await dll.displayComponent({
+    dll.displayComponent({
         url:html,
-        taskid:id,
+        taskid:task.id,
         container:task.node,
     })
 
     ini()
-} catch (e) {
-    dll.evalErrorPopup
-    (
-        document.getElementById("appLauncher").getElementsByTagName("script")[0].innerText,
-        "The application launcher at: <i>'" + addr + "'</i> failed evaluation.",
-        e
-    )
-    task.end()
 }

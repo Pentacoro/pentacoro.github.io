@@ -10,22 +10,15 @@
             width: 100%;
             height: 100%;
         }
-        iframe.TASKID {
+        iframe {
             width: 100%;
             height: 100%;
         }
     </style>
 </head>
 <body>
-    <iframe class="TASKID" src="" frameborder="0"></iframe>
+    <iframe src="" frameborder="0"></iframe>
     
-    <script>
-        let url  = File.at(arg[1]).meta.file
-        let mem  = Task.id("TASKID").mem
-
-        mem.url  = url
-
-        document.getElementsByClassName("TASKID")[0].setAttribute("src", url)
-    </script>
+    <script type="module" src="./iframer.js"></script>
 </body>
 </html>

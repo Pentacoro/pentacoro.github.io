@@ -1,4 +1,6 @@
-class Task {
+import File from "../files/file.js"
+
+export default class Task {
     static checkUniqueID(task){
         for (let i = 0; i < plexos.Tasks.length; i++){
             if (plexos.Tasks[i].id == task.id && plexos.Tasks[i] != task){
@@ -13,7 +15,7 @@ class Task {
         }
         return true
     }
-    static openInstance(appName){
+    static get(appName){
         for (let i = 0; i < plexos.Tasks.length; i++){
             if (plexos.Tasks[i].name === appName) return plexos.Tasks[i]
         }
@@ -23,7 +25,7 @@ class Task {
         Task.id(id).end()
     }
     static deleteSelectedNodes(pocket){
-        for(icon of pocket){
+        for(let icon of pocket){
             icon.deleteNode()
             //delete from filesystem
             if(File.at(icon.file)!=undefined) File.at(icon.file).delete()
@@ -36,7 +38,7 @@ class Task {
     constructor(p) {
         //check if instance allowed
         if (!Task.canInstance(p.name)) {
-            system.mem.focus(Task.openInstance(p.name))
+            Task.get("system").mem.focus(Task.get(p.name))
             delete this
             return
         }
@@ -50,9 +52,11 @@ class Task {
 
         this.load = 0
         this.pocket = []
+        this.blobList = []
 
         this.mem = {
-            var: {} 
+            var: {},
+            sfx: [],
         }
         this.listeners = []
         this.id = (p.id !== null) ? p.id : dll.genRanHex(16)
@@ -71,25 +75,30 @@ class Task {
             styleTag.parentElement.removeChild(styleTag)
         }
         //close window
-        if (document.getElementsByClassName("ID_"+this.id).length > 0) {
-            plexos.Windows[parseInt(document.getElementsByClassName("ID_"+this.id)[0].id.match(/(\d+)/)[0])].deleteNode()
+        if (this.window) {
+            this.window.deleteNode()
         }
+
         this.cleanupListeners()
+        this.cleanupBlobUrls()
         plexos.Tasks = plexos.Tasks.remove(Task.id(this.id))
     }
     on(eventName, callback, priority = 0) {
         const wrappedCallback = (...args) => callback(...args, this)
-        system.bus.on(eventName, wrappedCallback, priority)
+        Task.get("system").bus.on(eventName, wrappedCallback, priority)
         this.listeners.push({ eventName, callback: wrappedCallback})
     }
     emit(eventName, ...args) {
-        system.bus.emit(eventName, ...args)
+        Task.get("system").bus.emit(eventName, ...args)
     }
     cleanupListeners() {
         this.listeners.forEach(({ eventName, callback }) => {
-            system.bus.off(eventName, callback)
+            Task.get("system").bus.off(eventName, callback)
         })
         this.listeners = []
+    }
+    cleanupBlobUrls() {
+        for (let url of this.blobList) URL.revokeObjectURL(url)
     }
     loader(op) {
         (op) ? this.load++ : this.load--
@@ -103,9 +112,9 @@ class Task {
     }
     focus() {
         window.getSelection().removeAllRanges()
-        if (this.wndw) {
-            this.wndw.focus(true)
-            this.wndw.statNode()
+        if (this.window) {
+            this.window.focus(true)
+            this.window.statNode()
             //restore select ranges
 			let taskRange = this.mem.selectionRange
 			if (taskRange && taskRange.commonAncestorContainer instanceof HTMLElement) {
@@ -119,7 +128,7 @@ class Task {
         if (this.node?.onfocus) this.node.onfocus()
     }
     blur() {
-        if (this.wndw) {
+        if (this.window) {
             //store select ranges
 			if (window.getSelection().rangeCount) {
 				this.mem.selectionRange = window.getSelection().getRangeAt(0).cloneRange()
@@ -128,7 +137,7 @@ class Task {
 				this.mem.selectionRange.commonAncestorContainer.blur()
 				//dll.selectRange(taskRange)
 			}
-            this.wndw.focus(false)
+            this.window.focus(false)
 			this.node.blur()
             if (this.node?.onblur) this.node.onblur()
         }

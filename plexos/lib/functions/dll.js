@@ -1,3 +1,6 @@
+import Task from "../classes/system/task.js"
+export default dll = {}
+
 dll.ajax = function(method, url, callback = null, arg = null){
     let xhr = new XMLHttpRequest;
     xhr.open(method,url)
@@ -10,7 +13,7 @@ dll.ajax = function(method, url, callback = null, arg = null){
             }
         }
     }
-    xhr.send();
+    xhr.send()
 }
 
 dll.ajaxReturn = function(method, url) {
@@ -39,15 +42,19 @@ dll.ajaxReturn = function(method, url) {
     })
 }
 
-dll.remoteEval = async function(url) {
-    let script = dll.ajaxReturn("get", url)
-    await script.then( data=>{
-        eval(data)
-    })
+dll.remoteEval = async function(array) {
+    for (url of array) {
+        let script = dll.ajaxReturn("get", url)
+        await script.then(data=>{
+            try {
+                eval(data)
+            } catch (e) {
+                console.error(e)
+            }
+        })
+    }
 }
-
-dll.genRanHex = size => [...Array(size)].map(() => Math.floor(Math.random() * 16).toString(16)).join('');
-
+dll.genRanHex = size => [...Array(size)].map(() => Math.floor(Math.random() * 16).toString(16)).join('')
 dll.displayComponent = async function({url, taskid, container, replacementPairs, env}){
     let appHTML = dll.ajaxReturn("get", url)
     await appHTML.then( async data => {
@@ -61,19 +68,7 @@ dll.displayComponent = async function({url, taskid, container, replacementPairs,
         })
     })
     await appHTML.catch( e => {
-        system.mem.var.error = e
-        system.mem.var.errorB = [["Okay"]]
-        dll.runLauncher("/plexos/app/sys/Popup/popup_lau.js",
-            {
-                name:e.status,
-                type:false,
-                title:"Component: " + e.statusText, 
-                description:"Failed to load component at: <i>'" + e.statusUrl + "'</i>",
-                taskid:system.id,
-                icon:""
-            }
-        )
-        Task.id(id).end()
+        console.err(e)
     })
 }
 dll.loadFront = async function({url, taskid, data, replacementPairs = [], container, env = null}){
@@ -92,12 +87,12 @@ dll.loadFront = async function({url, taskid, data, replacementPairs = [], contai
                     if (link.getAttribute("rel")=="stylesheet") {
                         link.remove()
                         let stylesheet = await dll.ajaxReturn("get", link.getAttribute("href"))
-                        resolve("/*" + link.getAttribute("href") + "*/" + stylesheet)
+                        resolve(stylesheet)
                     } 
                 })
             }
 
-            for(i = 0; i < linkArray.length; i++){
+            for(let i = 0; i < linkArray.length; i++){
                 promiseStyleArray.push(getStyleContent(linkArray[i]))
             }
             
@@ -107,15 +102,21 @@ dll.loadFront = async function({url, taskid, data, replacementPairs = [], contai
                 let style = document.createElement("style")
                 cont.appendChild(style)
             }
-            //let newStyleElement = document.createElement("style")
-            //newStyleElement.classList.add("ID_"+taskid)
-            //document.head.appendChild(newStyleElement)
+
             for(let css of styleContents) {
-                css = dll.repTid(css,taskid)
                 css = dll.repDir(css,url)
+
+                if (Task.id(taskid).window){
+                    let regex = /([^\r\n,{}]+)(,(?=[^}]*{)|\s*{)/g
+                    let selectors = [...css.matchAll(regex)].map(match => match[1].trim())
+                    let classList = ".window.ID_"+taskid+""
+                    for (let selector of selectors) {
+                        css = css.replace(selector, `${classList} ${selector}`)
+                    }
+                }
+    
                 if (replacementPairs) css = dll.repArr(css, replacementPairs)
                 cont.getElementsByTagName("style")[0].innerHTML = cont.getElementsByTagName("style")[0].innerText + css
-                //newStyleElement.innerHTML = cont.getElementsByTagName("style")[0].innerText
             }
             resolve(cont)
     })}
@@ -128,53 +129,46 @@ dll.loadFront = async function({url, taskid, data, replacementPairs = [], contai
                 return new Promise (async (resolve, reject) => {
                     let js = null
                     let src = null
-                    let imported = true
-                    if (script.innerText) {
+                    let module = script.getAttribute("type") === "module"
+                    let imported = script.classList.contains("imported")
+                    if (script.innerText) { //script written on html
                         js = script.innerText
-                        if (!script.classList.contains("imported")) {
-                            imported = false
-                            js = dll.repDir(js,url)
-                            js = dll.repTid(js,taskid)
-                            js = dll.repArr(js,replacementPairs)
-                        }
-                        //await eval("const runScript = async function(){return new Promise (async (resolve, reject)=>{\n"+js+"\nresolve()})}; runScript();console.log('wow')")
-                    } else if (script.getAttribute("src")) {
+                    } else if (script.getAttribute("src")) { //script
                         js = await dll.ajaxReturn("get", script.getAttribute("src"))
                         src = script.getAttribute("src")
-                        if (!script.classList.contains("imported")) {
-                            imported = false
-                            js = dll.repDir(js,url)
-                            js = dll.repTid(js,taskid)
-                            js = dll.repArr(js,replacementPairs)
-                        }
-                        //await eval("const runScript = async function(){return new Promise (async (resolve, reject)=>{\n"+js+"\nresolve()})}; runScript();console.log('wow')")
                     }
-                    resolve({js,src,imported})
+                    if (!imported) {
+                        js = dll.repDir(js,url)
+                        js = dll.repTid(js,taskid)
+                        js = dll.repArr(js,replacementPairs)
+                    }
+                    resolve({js,src,module,imported})
                 })
             }
-
-            for(i = 0; i < scriptArray.length; i++){
+            for(let i = 0; i < scriptArray.length; i++){
                 promiseScriptArray.push(getScriptContent(scriptArray[i]))
             }
 
-            let scriptContents = await Promise.all(promiseScriptArray)
-
             let count = 1
-
-            for({js,src,imported} of scriptContents){
+            let scriptContents = await Promise.all(promiseScriptArray)
+            for(let {js,src,module,imported} of scriptContents){
                 
                 try {
-                    if (!imported) {
-                        await eval("const runScript = async function(){let task = Task.id('"+taskid+"');"+js+"}; runScript();")
+                    if (imported) {
+                        await window.eval(js)
+                    } else if (module) {
+                        let proxy = await dll.blobModule(js)
+                        Task.id(taskid).blobList.push(proxy)
+                        await import(proxy)
                     } else {
-                        await eval(js)
+                        await window.eval(`(async () => { ${js} \n})()`)
                     }
-                    if (Task.id(taskid)) system.mem.focus(Task.id(taskid))
+                    if (Task.id(taskid)) Task.get("system").mem.focus(Task.id(taskid))
                 } catch (e) {
                     e.taskId = taskid
                     e.source = src
-                    dll.evalErrorPopup
-                    (
+                    console.error(e)
+                    dll.evalErrorPopup(
                         js,
                         "The script number <i>"+count+"</i> from the <i>"+Task.id(taskid).name+"</i> application failed evaluation.",
                         e
@@ -197,9 +191,16 @@ dll.loadFront = async function({url, taskid, data, replacementPairs = [], contai
     container.style.opacity = 1
     if (env) env.loader(false)
 }
+dll.blobModule = async function(data) {
+    data = data.replace(/import\s+([^'"]+)\s+from\s+['"]([^'"]+)['"]/g, (match, what, path) => {
+        const absolutePath = new URL(path, cfg.system.basePath).href
+        return `import ${what} from '${absolutePath}'`
+    })
+    return URL.createObjectURL(new Blob([`${data}`], { type: 'text/javascript' }))
+}
 dll.runLauncher = async function(url, args = {}, env = null, name = ""){
     if (!Task.canInstance(name)) {
-        system.mem.focus(Task.openInstance(name))
+        Task.get("system").mem.focus(Task.get(name))
         return
     }
 
@@ -210,47 +211,41 @@ dll.runLauncher = async function(url, args = {}, env = null, name = ""){
     let appID = { id : dll.genRanHex(16)}
     Task.checkUniqueID(appID)
 
-    //place arguments on system task
-    system.mem.lau[appID.id] = args
+    //place arguments on Task.get("system") task
+    Task.get("system").mem.lau[appID.id] = args
 
     //get _lau file
     let appLauncher = dll.ajaxReturn("get", url)
 
-    appLauncher.then( oData => {
-        nData = oData.replace("/PARAMS/", `system.mem.lau["${appID.id}"]`)
+    appLauncher.then( async oData => {
+        let nData = oData.replace("/PARAMS/", `Task.get("system").mem.lau["${appID.id}"]`)
         nData = nData.replace("/TASKID/", `"${appID.id}"`)
         nData = nData.replace("/ADDR/", `"${url}"`)
         nData = nData.replace("/ROOT/", `"${url.replace(url.match(/\/(?:.(?<!\/))+$/s),"")}"`)
 
-        //put launcher code here to later be referenced
-        document.getElementById("appLauncher").innerHTML = "<script>"+nData+"</script>"
-        
+        let proxy  = await dll.blobModule(nData)
+        let module = await import(proxy)
         try {
-            eval("const runScript = async function(){return new Promise (async (resolve, reject)=>{"+nData+";resolve()})}; runScript();")
+            module.initialize()
             if (env) env.loader(false)
+
         } catch (e) {
-            dll.evalErrorPopup
-            (
-                nData,
-                "The application launcher at: <i>'" + url + "'</i> failed evaluation.",
-                e
-            )
+            console.error(e)
+
         }
+        URL.revokeObjectURL(proxy)
     })
     appLauncher.catch( e => {
-        system.mem.var.error = e
-        system.mem.var.errorB = [["Okay"]]
+        console.err(e)
+        //Task.get("system").mem.var.error = e
+        //Task.get("system").mem.var.errorB = [["Okay"]]
         
-        dll.runLauncher("./plexos/app/sys/Popup/popup_lau.js",
-            {
-                name:e.status,
-                type:false,
-                title:"Launcher: " + e.statusText, 
-                description:"Failed to load launcher at: <i>'" + url + "'</i>.",
-                taskid:system.id,
-                icon:""
-            }
-        )
+         dll.evalErrorPopup
+        (
+            nData,
+            "The application launcher at: <i>'" + url + "'</i> failed evaluation.",
+            e
+        ) 
     })
     appLauncher.finally( e => {
         if (env) env.loader(false)
@@ -264,7 +259,7 @@ dll.evalErrorPopup = function(code, desc, err) {
     coder = coder.replace(/[>]/g, "&gt;")
     let script = coder.lines()
     let colour = "\n"
-    for (y = 0; y < script.length; y++) {
+    for (let y = 0; y < script.length; y++) {
         colour += (y === (err.lineNumber - 1)) ?    "<span style='display:flex'><span style='color:red;display:inline;font-size:10px'>"+
                                                     script[y]+
                                                     "</span><span style='color:green;display:inline;font-size:10px'> // <b style='font-size:10px'>← ERROR !</b></span></span>" 
@@ -273,14 +268,14 @@ dll.evalErrorPopup = function(code, desc, err) {
 
     //add it to typeError stack
     err.script = colour
-    system.mem.var.error = err
+    Task.get("system").mem.var.error = err
     dll.runLauncher("./plexos/app/sys/Popup/popup_lau.js",
         {
             name:"Error",
             type:true,
             title:"Evaluation Failed", 
             description:desc,
-            taskid:system.id,
+            taskid:Task.get("system").id,
             icon:""
         }
     )
@@ -305,7 +300,7 @@ dll.repTid = function (data, taskId){ //place the task id on element classList f
 }
 dll.repArr = function (data, replacementPairs) { //replace all required instances listed as regex and text pairs
     let newData = data
-    for (pair of replacementPairs) {
+    for (let pair of replacementPairs) {
         newData = newData.replace(pair.regex,pair.text)
     }
     return newData
@@ -363,7 +358,7 @@ dll.wait = function (ms){
 dll.iframeAntiHover = function (bool) {
     let tagIframe = document.getElementsByTagName("iframe")
 
-    for (i = 0; i < tagIframe.length; i++) {
+    for (let i = 0; i < tagIframe.length; i++) {
         if (bool == true) {
             tagIframe[i].className += "antiHover"
         }

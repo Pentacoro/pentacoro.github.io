@@ -1,4 +1,4 @@
-.menubar_container.ID_TASKID {
+.menubar_container {
     top: 0px;
     height: fit-content;
     width: 100%;
@@ -10,7 +10,7 @@
 
     user-select: none;
 }
-.menubar_container.ID_TASKID>button{
+.menubar_container>button{
     background-color: rgb(195, 203, 221);
     height: 20px;
     border: 0px;
@@ -22,15 +22,15 @@
 
     user-select: none;
 }
-.menubar_container.ID_TASKID>button:active{
+.menubar_container>button:active{
     color: rgb(123, 140, 156);
 }
-.menubar_container.ID_TASKID>button:hover{
+.menubar_container>button:hover{
     background-color: rgb(162, 166, 177);
 }
 
 /*>>>>>>> Anything that changes on blur goes here <<<<<<<*/
-.content.blur>.container.ID_TASKID{
+.content.blur>.container{
     opacity: 1;
 }
 /*>>>>>>>-----------------------------------------<<<<<<<*/

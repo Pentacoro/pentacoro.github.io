@@ -1,4 +1,7 @@
 cfg = {
+    system: {
+        basePath: window.location
+    },
     audio: {
         icons: false,
     },

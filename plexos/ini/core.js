@@ -1,4 +1,13 @@
-const system = new Task(
+import Task from "../lib/classes/system/task.js"
+import EventBus from "../lib/classes/system/eventbus.js"
+import WorkerPool from "../lib/classes/system/workerpool.js"
+import File from "../lib/classes/files/file.js"
+import Directory from "../lib/classes/files/directory.js"
+import Icon from "../lib/classes/interface/icon.js"
+import dll from "../lib/functions/dll.js"
+import initialize from "./init.js"
+
+system = new Task(
     {
 		name : "system",
 		inst : false,
@@ -27,45 +36,33 @@ system.ini.setVertex = function (address) {
         await dll.runLauncher("./plexos/app/sys/Desktop/desktop_lau.js",{addr:address})
     })
     promiseInit.then( () => {
-        Task.openInstance("Desktop").mem.grid.evaluateIconGrid()
-        Task.openInstance("Desktop").mem.renderIcons()
+        Task.get("Desktop").mem.grid.evaluateIconGrid()
+        Task.get("Desktop").mem.renderIcons()
     })
 }
 system.ini.run = function () {
-    dll.remoteEval("/plexos/ini/init.js")
+    initialize()
 }
-
-function downloadCoreJSON(exportName="core") {
-    let jsonCore = JSON.parse(window.localStorage.core)
-    let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(jsonCore));
-    let downloadAnchorNode = document.createElement('a');
-    downloadAnchorNode.setAttribute("href",     dataStr);
-    downloadAnchorNode.setAttribute("download", exportName + ".json");
-    document.body.appendChild(downloadAnchorNode); // required for firefox
-    downloadAnchorNode.click();
-    downloadAnchorNode.remove();
-}
-
 system.ini.recreateFiles = function (dir, newDir) {
-    for (file of Object.values(dir.dir)) {
+    for (let file of Object.values(dir.dir)) {
         let Type = null 
         let Skey = null
 
         switch (file.cfg.type) {
             case "Directory":
-                Type = Directory
+                Type = "Directory"
                 Skey = "dir"
                 break
             case "Metafile":
-                Type = Metafile
+                Type = "Metafile"
                 Skey = "meta"
                 break
             case "JsString":
-                Type = JsString
+                Type = "JsString"
                 Skey = "data"
                 break 
             default:
-                Type = JsString
+                Type = "JsString"
                 Skey = "data"
                 break 
         }
@@ -79,13 +76,12 @@ system.ini.recreateFiles = function (dir, newDir) {
         oldIcon.exte = newFile.exte
         newFile.cfg.icon = new Icon (oldIcon)
 
-        if (Type === Directory) {
+        if (Type === "Directory") {
             newFile.dir = {}
             system.ini.recreateFiles(dir.dir[file.name], newFile)
         }
     }
 }
-
 system.ini.defineCore = function () {
     return new Promise ((resolve, reject) => {
         if (dll.storageAvailable('localStorage')) {
@@ -114,21 +110,22 @@ system.ini.defineCore = function () {
     }) 
 }
 
+plexos.core = {}
 if (dll.getValue("core")) {
     let corePromise = dll.ajaxReturn("GET",dll.getValue("core"))
     corePromise
     .then(data=>{
         if (data.status >= 200 && data.status < 300) throw data
-        core = Directory.coreTemplate()
+        plexos.core = Directory.coreTemplate()
         system.ini.recreateFiles(JSON.parse(data),core)
-        plexos.vtx = core.dir["vertex"]
+        plexos.vtx = plexos.core.dir["vertex"]
         system.ini.run()
     })
     .catch(()=>{
         let corePromise = system.ini.defineCore()
         corePromise
         .then(data=>{
-            core = data
+            plexos.core = data
             system.ini.run()
         })
     })
@@ -136,7 +133,18 @@ if (dll.getValue("core")) {
     let corePromise = system.ini.defineCore()
     corePromise
     .then(data=>{
-        core = data
+        plexos.core = data
         system.ini.run()
     })
+}
+
+function downloadCoreJSON(exportName="core") {
+    let jsonCore = JSON.parse(window.localStorage.core)
+    let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(jsonCore));
+    let downloadAnchorNode = document.createElement('a');
+    downloadAnchorNode.setAttribute("href",     dataStr);
+    downloadAnchorNode.setAttribute("download", exportName + ".json");
+    document.body.appendChild(downloadAnchorNode); // required for firefox
+    downloadAnchorNode.click();
+    downloadAnchorNode.remove();
 }

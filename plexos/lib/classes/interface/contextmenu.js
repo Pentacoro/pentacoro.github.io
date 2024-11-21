@@ -1,4 +1,7 @@
-class ContextMenu {
+import Task from "../system/task.js" //file explorer deletion
+import File from "../files/file.js"
+
+export default class ContextMenu {
     static configAddr = "/config/context"
     static contextVar = null
     static subMenus   = 0
@@ -25,7 +28,7 @@ class ContextMenu {
         //handle hover context transfer
         if (contextVar) {
             if (contextVar.continuousContext!=undefined) contextVar.continuousContext = true
-            contextVar.targetElement.dispatchEvent(contextMenuOpen)
+            //contextVar.targetElement.dispatchEvent(contextMenuOpen)
             ContextMenu.contextVar = contextVar
         }
 
@@ -37,7 +40,7 @@ class ContextMenu {
         //handle hover context transfer
         if (ContextMenu.contextVar) {
             if (ContextMenu.contextVar.continuousContext!=undefined) ContextMenu.contextVar.continuousContext = false
-            ContextMenu.contextVar.targetElement.dispatchEvent(contextMenuClose)
+            //ContextMenu.contextVar.targetElement.dispatchEvent(contextMenuClose)
             ContextMenu.contextVar = null
         }
         document.getElementById("contextLayer").innerHTML = ""

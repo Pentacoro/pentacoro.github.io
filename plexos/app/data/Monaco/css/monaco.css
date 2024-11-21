@@ -1,4 +1,4 @@
-.container.ID_TASKID {
+.container {
     position: absolute;
     height: 100%;
     width: 100%;
@@ -7,7 +7,7 @@
     display: flex;
     flex-direction: column;
 }
-.toolbar.ID_TASKID {
+.toolbar {
     top: 0px;
     height: fit-content;
     width: 100%;
@@ -17,7 +17,7 @@
     background-color: rgb(195, 203, 221);
     z-index: 100;
 }
-.toolbar.ID_TASKID>button{
+.toolbar>button{
     background-color: rgb(195, 203, 221);
     height: 20px;
     border: 0px;
@@ -27,23 +27,20 @@
     padding-left:  .5em;
     padding-right: .5em;
 }
-.toolbar.ID_TASKID>button:active{
+.toolbar>button:active{
     color: rgb(123, 140, 156);
 }
-.toolbar.ID_TASKID>button:hover{
+.toolbar>button:hover{
     background-color: rgb(162, 166, 177);
 }
-.editor.ID_TASKID {
+.editor {
     font-family: initial;
     display: block;
     height: 100%;
     width: 100%;
 }
-span.ID_TASKID {
-    font-family: initial;
-}
 /*---------------------------------------*/
-.background.ID_TASKID {
+.background {
     position: relative;
     overflow: hidden;
     flex-grow: 2;
@@ -51,7 +48,7 @@ span.ID_TASKID {
     width: 100%;
 }
 /*>>>>>>> Anything that changes on blur goes here <<<<<<<*/
-.content.blur>.container.ID_TASKID{
+.content.blur>.container{
     opacity: 1;
 }
 /*>>>>>>>--------------------------------------------<<<<<<<*/

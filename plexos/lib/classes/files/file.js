@@ -1,11 +1,14 @@
-class File {
+import dll from  "../../functions/dll.js"
+import Task from "../system/task.js"
+
+export default class File {
     static at(addr = "") {
         //string: where we'll devour addr one dir at a time as we build expression
         let string = addr
         //steps: where we'll store each of the dirs extracted from string (useless for now)
         let steps = []
         //expression: where we'll build the object reference from the core to later be eval()
-        let expression = "core"
+        let expression = "plexos.core"
         
         //find first "/"
         let to = string.indexOf("/")
@@ -52,7 +55,7 @@ class File {
         }
     
         //return file if expression indeed finds a file, otherwise return null
-        return (Object.getPrototypeOf(Object.getPrototypeOf(eval(expression))).constructor.name === "File") ? eval(expression) : null
+        return (eval(expression)!=undefined) ? eval(expression) : null
     }
 
     static typeDefaults(Type) {
@@ -63,17 +66,17 @@ class File {
         }
         
         switch (Type) {
-            case Directory:
+            case "Directory":
                 defaults.iconImag = "plexos/res/images/svg/desktopIcons/defaultDIR.svg"
                 defaults.confType = "Directory"
                 defaults.skeyName = "dir"
                 break
-            case Metafile: 
+            case "Metafile": 
                 defaults.iconImag = "plexos/res/images/svg/desktopIcons/defaultMSF.svg"
                 defaults.confType = "Metafile"
                 defaults.skeyName = "meta"
                 break
-            case JsString:
+            case "JsString":
                 defaults.iconImag = "plexos/res/images/svg/desktopIcons/defaultTXT.svg"
                 defaults.confType = "JsString"
                 defaults.skeyName = "data"
@@ -92,7 +95,7 @@ class File {
     }
 
     static nameAvailable = function (text, _this, from){
-        for ([name, file] of Object.entries(from.dir)){
+        for (let [name, file] of Object.entries(from.dir)){
             if (file.name == text && file.cfg.icon != _this) {
                 return true
             }
@@ -139,7 +142,7 @@ class File {
 
     render(taskid=null) {
         if (File.at(this.cfg.parent) === plexos.vtx) { //if is on current vertex / render on desktop
-            let desktop = Task.openInstance("Desktop")
+            let desktop = Task.get("Desktop")
             if (desktop) {
                 if  (desktop.mem.getIcon(this.name)?.node) desktop.mem.getIcon(this.name).poseNode()
                 else desktop.mem.createDesktopIcons([this])

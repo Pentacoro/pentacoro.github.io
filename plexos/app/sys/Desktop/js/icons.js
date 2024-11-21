@@ -1,6 +1,11 @@
-let mem  = task.mem
-mem.class = {}
+import Task from "/plexos/lib/classes/system/task.js"
+import File from "/plexos/lib/classes/files/file.js"
+import ContextMenu from "/plexos/lib/classes/interface/contextmenu.js"
+
+let task    = Task.id("TASKID")
 let desktop = task
+let mem     = task.mem
+mem.class   = {}
 
 mem.class.IconDesk = class IconDesk {
     stat = 0
@@ -231,7 +236,7 @@ mem.class.IconDesk = class IconDesk {
             //when mousedown on selected icon
             if (_this.stat == 1) {
                 //managing selected icons
-                for (icon of desktop.pocket) {
+                for (let icon of desktop.pocket) {
                     //light up all hover border onmousedown:-|
                     icon.highlight(true)
                     //---------------------------------------|
@@ -244,7 +249,7 @@ mem.class.IconDesk = class IconDesk {
                     
                     //when mousedown on unselected icon
                     if(!e.ctrlKey) {
-                        for (icon of desktop.pocket){
+                        for (let icon of desktop.pocket){
                             desktop.pocket = desktop.pocket.remove(icon)
                             icon.statNode(0)
                         }
@@ -283,7 +288,7 @@ mem.class.IconDesk = class IconDesk {
             
             
             //managing selected icons
-            for (icon of desktop.pocket){
+            for (let icon of desktop.pocket){
                 //dragLayer layer
                 document.getElementById("dragLayer").appendChild(icon.node)
                 //set position for selected icons:------------|
@@ -307,7 +312,7 @@ mem.class.IconDesk = class IconDesk {
             let iconsToValidate = []
     
             //send all icons to position evaluation
-            for (icon of desktop.pocket){
+            for (let icon of desktop.pocket){
                 if (cfg.desktop.grid.enabled && icon.stat == 2) {
                     iconsToValidate.push(icon)
                 }
@@ -315,21 +320,21 @@ mem.class.IconDesk = class IconDesk {
             mem.repositionIcons(iconsToValidate, true, true)
     
             //update HTML of icons after evaluation
-            for (icon of desktop.pocket){
+            for (let icon of desktop.pocket){
                 icon.poseNode()
                 icon.statNode(1)
             }
             
             //unselect other folders on mouseup W/O drag UNLESS ctrl
             if(e.ctrlKey == false && system.mem.var.dragging == false && e.button == 0) {
-                for (icon of desktop.pocket){
+                for (let icon of desktop.pocket){
                     if (icon != _this) desktop.pocket = desktop.pocket.remove(icon)
                     icon.statNode(0)
                     icon.highlight(false)
                 }
                 _this.statNode(1)
             } else {
-                for (icon of desktop.pocket){
+                for (let icon of desktop.pocket){
                     icon.highlight(false)
                 }
                 _this.statNode(1)
@@ -420,8 +425,8 @@ mem.class.IconDesk = class IconDesk {
                 //insert into fylesystem
                 if (iconText.textContent != editFile.name) { //if the name changed
                     if (editFrom === plexos.vtx){
-                        Task.openInstance("Desktop").mem.getIcon(editFile.name).file = editFrom.cfg.addr +"/"+ iconText.textContent
-                        Task.openInstance("Desktop").mem.getIcon(editFile.name).name = iconText.textContent
+                        Task.get("Desktop").mem.getIcon(editFile.name).file = editFrom.cfg.addr +"/"+ iconText.textContent
+                        Task.get("Desktop").mem.getIcon(editFile.name).name = iconText.textContent
                     }
                     editFile.rename(iconText.textContent)
                     if (thisIcon.task) {
@@ -433,7 +438,7 @@ mem.class.IconDesk = class IconDesk {
                         editFile.render(taskid)
                         thisIcon = task.mem.iconArray[task.mem.iconArray.length-1]
     
-                        for (icon of task.mem.iconArray) {
+                        for (let icon of task.mem.iconArray) {
                             if (icon.name == iconText.textContent) {
                                 icon.statNode(1)
                                 task.pocket.push(icon)
@@ -462,14 +467,14 @@ mem.class.IconDesk = class IconDesk {
                 }
                 function iconRenamingInsist(){
                     if (thisIcon.task) {
-                        for (icon of Task.id(thisIcon.task).mem.iconArray){
+                        for (let icon of Task.id(thisIcon.task).mem.iconArray){
                             icon.statNode(0)
                             Task.id(thisIcon.task).pocket = Task.id(thisIcon.task).pocket.remove(icon)
                         }
                     } else {
-                        for (icon of Task.openInstance("Desktop")?.mem.iconArr){
+                        for (let icon of Task.get("Desktop")?.mem.iconArr){
                             icon.statNode(0)
-                            Task.openInstance("Desktop").pocket = Task.openInstance("Desktop").pocket.remove(icon)
+                            Task.get("Desktop").pocket = Task.get("Desktop").pocket.remove(icon)
                         }
                     }
                     thisIcon.statNode(1)
@@ -494,7 +499,7 @@ mem.repositionIcons = function(icons, mustSet = false){
     let validatedIcons = []
     let iconAmount   = icons.length
 
-    for(icon of icons) validateIconPosition(icon)
+    for(let icon of icons) validateIconPosition(icon)
 
     function validateIconPosition(icon){
         if (!icon.coor) icon.coor = {
@@ -506,12 +511,12 @@ mem.repositionIcons = function(icons, mustSet = false){
             ay:null
         }
         //find closest grid for its tPos
-        x = Math.round((icon.coor.tx + desktop.node.scrollLeft - wm)/(w + wm))*(w + wm) + wm
-        y = Math.round((icon.coor.ty + desktop.node.scrollTop  - hm)/(h + hm))*(h + hm) + hm
+        let x = Math.round((icon.coor.tx + desktop.node.scrollLeft - wm)/(w + wm))*(w + wm) + wm
+        let y = Math.round((icon.coor.ty + desktop.node.scrollTop  - hm)/(h + hm))*(h + hm) + hm
         
         //get its spot in grid array
-        tx = Math.round((x - wm)/(w + wm))
-        ty = Math.round((y - hm)/(h + hm))
+        let tx = Math.round((x - wm)/(w + wm))
+        let ty = Math.round((y - hm)/(h + hm))
 
         if(desktop.mem.grid.gridAvailable(tx, ty)) {
             //if object exists and is not used (valid position)
@@ -537,7 +542,7 @@ mem.repositionIcons = function(icons, mustSet = false){
         }
     }
 
-    for(icon of invalidIcons) reintegrateInvalidIcon(icon)
+    for(let icon of invalidIcons) reintegrateInvalidIcon(icon)
 
     function reintegrateInvalidIcon(icon){
         if (!icon.coor) icon.coor = {
@@ -550,8 +555,8 @@ mem.repositionIcons = function(icons, mustSet = false){
         }
     
         //get previous position in grid array
-        px = Math.round((icon.coor.px - wm)/(w + wm))
-        py = Math.round((icon.coor.py - hm)/(h + hm))
+        let px = Math.round((icon.coor.px - wm)/(w + wm))
+        let py = Math.round((icon.coor.py - hm)/(h + hm))
 
         let oldGrid = {used: true}
 
@@ -572,7 +577,7 @@ mem.repositionIcons = function(icons, mustSet = false){
             File.at(icon.file).cfg.coor = icon.coor
             validatedIcons.push(icon)
         }else if(mustSet){
-            newGrid = mem.orderIconPosition()
+            let newGrid = mem.orderIconPosition()
             if (newGrid === undefined) {
                 icon.deleteNode(true)
                 icon.coor = null
@@ -609,8 +614,8 @@ mem.repositionIcons = function(icons, mustSet = false){
 }
 
 mem.orderIconPosition = function(){
-    for (x = 0; x < desktop.mem.grid.gridArr.length; x++){
-        for(y = 0; y < desktop.mem.grid.gridArr[x].length; y++){
+    for (let x = 0; x < desktop.mem.grid.gridArr.length; x++){
+        for(let y = 0; y < desktop.mem.grid.gridArr[x].length; y++){
             if (desktop.mem.grid.gridArr[x][y].used == false){
                 return [desktop.mem.grid.gridArr[x][y],x,y]
             }

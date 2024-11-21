@@ -1,3 +1,7 @@
+import Task from "/plexos/lib/classes/system/task.js"
+import File from "/plexos/lib/classes/files/file.js"
+
+let task = Task.id("TASKID")
 let mem  = task.mem
 
 mem.menubar = {}
@@ -95,5 +99,5 @@ mem.menubar.contextOptions = function (button) {
 await dll.displayComponent({
     url:"/plexos/res/components/menubar/menubar.html",
     taskid:task.id,
-    container:document.getElementsByClassName("component_menubar ID_TASKID")[0]
+    container:task.node.getElementsByClassName("component_menubar")[0]
 })

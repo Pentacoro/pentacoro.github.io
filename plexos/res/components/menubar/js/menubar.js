@@ -1,18 +1,22 @@
+import Task from "/plexos/lib/classes/system/task.js"
+import ContextMenu from "/plexos/lib/classes/interface/contextmenu.js"
+
+let task = Task.id("TASKID")
 let mem  = task.mem
 
 mem.menubarRender = function () {
-    let menuBar = document.getElementsByClassName("menubar_container ID_TASKID")[0]
+    let menuBar = document.getElementsByClassName("menubar_container")[0]
     menuBar.innerHTML = ""
     for (const buttonName of mem.menubar.menubarButtons) {
         let newButton = document.createElement("button")
         newButton.classList.add(buttonName)
-        newButton.classList.add("ID_TASKID")
+        newButton.classList.add(task.id)
         newButton.innerText = buttonName
         menuBar.appendChild(newButton)
     }
     function buttonMenuOpen(e) {
         e.preventDefault()
-        button = e.target
+        let button = e.target
         mem.menubar.targetElement = button
         let bound = button.getBoundingClientRect()
         let param = {
@@ -29,7 +33,7 @@ mem.menubarRender = function () {
     }
     function buttonMenuClose(e) {
         e.preventDefault()
-        button = e.target
+        let button = e.target
         button.onmousedown = e => {
             buttonMenuOpen(e)
         }
@@ -39,7 +43,7 @@ mem.menubarRender = function () {
             buttonMenuOpen(e)
         }
         button.onmouseover = e => {
-            if (mem.menubar.targetElement) mem.menubar.targetElement.dispatchEvent(contextMenuClose)
+            if (mem.menubar.targetElement) mem.menubar.targetElement.dispatchEvent(new Event ("closemenu"))
             if (mem.menubar.continuousContext) buttonMenuOpen(e)
         }
         button.addEventListener("closemenu", e=>{buttonMenuClose(e)})

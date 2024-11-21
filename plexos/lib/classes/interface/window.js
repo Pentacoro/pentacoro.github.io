@@ -1,4 +1,6 @@
-class Window {
+import Task from "../system/task.js"
+
+export default class Window {
 	stat = 1
 	uiux = []
 	posX = 200
@@ -29,8 +31,8 @@ class Window {
 		plexos.Windows.push(this)
 		this.createNode()
 
-		Task.id(this.task).wndw = this 
-		Task.id(this.task).node = this.cont
+		Task.id(this.task).window = this 
+		Task.id(this.task).node   = this.cont
     }
     createNode(){
 		let newWindow = document.createElement("div")
@@ -145,6 +147,30 @@ class Window {
 				}
 			}
 		}
+
+		const queryMethods = [
+			'getElementsByName',
+			'getElementById',
+			'getElementsByClassName',
+			'querySelector',
+			'querySelectorAll',
+		]
+		
+		newContent['getElementById'] = function (id) {
+			return document.querySelector(`#${newWindow.id} .${newContent.classList[0]} #${id}`)
+		}
+		newContent['getElementsByClassName'] = function (cls) {
+			return document.querySelectorAll(`#${newWindow.id} .${newContent.classList[0]} .${cls}`)
+		}
+		newContent['getElementsByName'] = function (name) {
+			return document.querySelectorAll(`#${newWindow.id} .${newContent.classList[0]} [name="${name}"]`)
+		}
+		newContent['querySelector'] = function (qry) {
+			return document.querySelector(`#${newWindow.id} .${newContent.classList[0]} ${qry}`)
+		}
+		newContent['querySelectorAll'] = function (qry) {
+			return document.querySelectorAll(`#${newWindow.id} .${newContent.classList[0]} ${qry}`)
+		}
 		
 		this.node = newWindow
 		this.cont = newContent
@@ -159,7 +185,6 @@ class Window {
 		this.drag()
 		this.size()
 		this.focus(true)
-		/*this.menu();*/
     }
     deleteNode(){
 		//delete window
@@ -171,20 +196,20 @@ class Window {
 			if (plexos.Windows.length > 0) {
 				system.mem.focus(Task.id(plexos.Windows[0].task))
 			} else {
-				system.mem.focus(Task.openInstance("Desktop"))
+				system.mem.focus(Task.get("Desktop"))
 			}
 		}
 
-		if (this.node) this.node.parentNode.removeChild(this.node)
+		if (this.node) this.node.parentElement.removeChild(this.node)
 
 		//make DOM elements's IDs and zIndex match new object arrangement
-		for(let wndw of document.getElementsByClassName("window")){ 
-			let windowId = wndw.id.match(/(\d+)/)[0]
+		for(let window of document.getElementsByClassName("window")){ 
+			let windowId = window.id.match(/(\d+)/)[0]
 			let windowInt= parseInt(windowId)
 			
 			if(windowInt > thisIndex){
-				wndw.id = "window_" + (windowInt - 1)
-				wndw.style.zIndex = (windowInt - 1) *-1
+				window.id = "window_" + (windowInt - 1)
+				window.style.zIndex = (windowInt - 1) *-1
 			}
 		}
     }
@@ -197,13 +222,13 @@ class Window {
 			plexos.Windows.unshift(this)
 
 			//make DOM elements's IDs and zIndex match new object arrangement
-			for(let wndw of document.getElementsByClassName("window")){ 
-				let windowId = wndw.id.match(/(\d+)/)[0]
+			for(let window of document.getElementsByClassName("window")){ 
+				let windowId = window.id.match(/(\d+)/)[0]
 				let windowInt= parseInt(windowId)
 
-				if(wndw != this.node && windowInt < thisIndex){
-					wndw.id = "window_" + (windowInt + 1)
-					wndw.style.zIndex = (windowInt + 1) *-1
+				if(window != this.node && windowInt < thisIndex){
+					window.id = "window_" + (windowInt + 1)
+					window.style.zIndex = (windowInt + 1) *-1
 				}
 			}
 			//make this window's ID and zIndex match its object position
@@ -250,7 +275,7 @@ class Window {
     }
     drag(){
 		let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0
-		let wndw = this.node
+		let window = this.node
 		let _this = this
 		
 		for (let node of this.move) {
@@ -300,10 +325,10 @@ class Window {
     }
     size(){
 		let startX, startY, startWidth, startHeight, startLeft, startTop, border
-		let wndw = this.node
+		let window = this.node
 		let _this = this
 	
-		let windowBorder = wndw.getElementsByClassName("windowBorder")[0]
+		let windowBorder = window.getElementsByClassName("windowBorder")[0]
 	
 		windowBorder.childNodes.forEach((border) => {
 			if(
@@ -314,7 +339,6 @@ class Window {
 		});
 	
 		function initResize(e) {
-			e = e || window.event
 			e.preventDefault()
 	
 			_this.statNode()
@@ -336,12 +360,11 @@ class Window {
 		}
 		
 		function doResize(e) {
-			e = e || window.event
 			e.preventDefault()
 	
-			//get int for wndw min-height and min-width css values
-			let minHeight = parseInt(window.getComputedStyle(wndw,null).getPropertyValue("min-height"))
-			let minWidth = parseInt(window.getComputedStyle(wndw,null).getPropertyValue("min-width"))
+			//get int for window min-height and min-width css values
+			let minHeight = parseInt(window.getComputedStyle(window,null).getPropertyValue("min-height"))
+			let minWidth = parseInt(window.getComputedStyle(window,null).getPropertyValue("min-width"))
 			
 			//when sizing towards →
 			if (border == "windowErig" || border == "windowCbr" || border == "windowCtr") {
@@ -359,7 +382,7 @@ class Window {
 					_this.heig = minHeight
 				}
 			}
-			//when sizing towards ← ---------- [accounting for wndw min-width]
+			//when sizing towards ← ---------- [accounting for window min-width]
 			if (border == "windowElef" || border == "windowCtl" || border == "windowCbl") {
 				if (startLeft + e.clientX - startX < startLeft + (startWidth - minWidth)){
 					_this.posX = startLeft + e.clientX - startX
@@ -369,7 +392,7 @@ class Window {
 					_this.posX = startLeft + (startWidth - minWidth)
 					_this.widt = minWidth
 				}
-			//when sizing towards ↑ ---------- [accounting for wndw min-height]
+			//when sizing towards ↑ ---------- [accounting for window min-height]
 			}
 			if (border == "windowEtop" || border == "windowCtl" || border == "windowCtr") {
 				if (startTop + e.clientY - startY < startTop + (startHeight - minHeight)){

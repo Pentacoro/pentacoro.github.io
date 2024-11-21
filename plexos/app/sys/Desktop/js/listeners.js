@@ -1,3 +1,7 @@
+import Task from "/plexos/lib/classes/system/task.js"
+
+let task = Task.id("TASKID")
+
 task.on("desktop-grid-settings-open", ()=> {
     cfg.desktop.grid.visibleNodes = true
     task.mem.grid.evaluateIconGrid(3)

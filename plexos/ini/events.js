@@ -1,5 +1,5 @@
-const contextMenuOpen = new Event ("openmenu")
-const contextMenuClose = new Event ("closemenu")
+import dll from "../lib/functions/dll.js"
+import ContextMenu from "../lib/classes/interface/contextmenu.js"
 
 //close context menu on mousedown anywhere
 window.addEventListener("mousedown", (e) => {

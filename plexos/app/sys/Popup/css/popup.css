@@ -1,10 +1,10 @@
-*.ID_TASKID{
+*{
     font-family: Arial, Helvetica, sans-serif;
     margin: 0;
     box-sizing: border-box;
     cursor: default;
 }
-.appcontent.ID_TASKID{
+.appcontent{
     position: relative;
     display: grid;
     grid-template-rows: 100px 30px 50px;
@@ -14,12 +14,12 @@
 
     background-color: #e8e8e8;
 }
-.container.ID_TASKID {
+.container {
     display: grid;
     grid-template-columns: 60px auto;
     padding: 20px;
 }
-.message.ID_TASKID {
+.message {
     margin-left: 20px;
     display: flex;
     flex-direction: column;
@@ -28,10 +28,10 @@
     word-wrap: break-word;
     overflow: hidden;
 }
-.message.ID_TASKID>p{
+.message>p{
     width: 100%;
 }
-.buttons.ID_TASKID{
+.buttons{
     display: flex;
     align-items: center;
     justify-content: center;
@@ -42,7 +42,7 @@
     width: 100%;
     height: 100%;
 }
-.option.ID_TASKID{
+.option{
     width: 100%;
     height: 100%;
     border: 0;
@@ -51,14 +51,14 @@
 
     cursor: pointer;
 }
-.option.ID_TASKID:active{
+.option:active{
     width: 100%;
     height: 100%;
     border: 0;
     border-radius: 0;
     background-color: #b6b6b6;
 }
-.details.ID_TASKID{
+.details{
     margin: 0px 20px 0px 20px;
     padding: 10px;
     height: 300px;
@@ -68,16 +68,16 @@
     text-overflow: clip;
     overflow: scroll;
 }
-.details.ID_TASKID>p, .details.ID_TASKID>span{
+.details>p, .details>span{
     font-size: 10px;
     cursor: text;
     user-select: text;
 }
-.details.ID_TASKID>p>b{
+.details>p>b{
     font-size: 10px;
     color: blue;
 }
-.expand.ID_TASKID{
+.expand{
     width: 100%;
     height: 100%;
     border: 0;
@@ -86,7 +86,7 @@
 
     cursor: pointer;
 }
-.expand.ID_TASKID:active{
+.expand:active{
     width: 100%;
     height: 100%;
     border: 0;

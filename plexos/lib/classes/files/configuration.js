@@ -1,4 +1,4 @@
-class Configuration {
+export default class Configuration {
     constructor(p){
         this.type = p.type
         this.addr = p.addr     || ""

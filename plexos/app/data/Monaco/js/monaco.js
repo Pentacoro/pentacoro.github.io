@@ -1,4 +1,8 @@
-let mem = task.mem
+import Task from "/plexos/lib/classes/system/task.js"
+import File from "/plexos/lib/classes/files/file.js"
+
+let task = Task.id("TASKID")
+let mem  = task.mem
 
 task.apps = ""
 mem.fileAddress = "ARG_FILEADDR"
@@ -7,7 +11,6 @@ mem.var = {}
 mem.var.continuousContext = false
 
 function setLanguage(ext) {
-	console.log(ext)
 	switch (ext) {
 		case "js": {
 			return "javascript"
@@ -30,7 +33,7 @@ let proxy = URL.createObjectURL(new Blob([`
 
 require(["vs/editor/editor.main"], function () {
 	let extension = File.at("ARG_FILEADDR").cfg.exte
-	mem.editor = monaco.editor.create(document.getElementsByClassName('editor ID_TASKID')[0], {
+	mem.editor = monaco.editor.create(task.node.getElementsByClassName('editor')[0], {
 		value: mem.fileData,
 		language: setLanguage(extension),
 		fontFamily: "Fira Mono, DejaVu Sans Mono, Menlo, Consolas, Liberation Mono, Monaco, Lucida Console, monospace",
@@ -41,12 +44,12 @@ require(["vs/editor/editor.main"], function () {
 
 	mem.editor.focus()
 	mem.selectionRange = window.getSelection().getRangeAt(0)
-	task.wndw.node.onfocus = e => {
+	task.window.node.onfocus = e => {
 		mem.editor.focus()
 		task.node.getElementsByClassName("editor ID_TASKID")[0]?.children[0]?.classList.add("focused")
 		task.node.getElementsByClassName("editor ID_TASKID")[0]?.getElementsByClassName("view-overlays")[0]?.classList.add("focused")
 	}
-	task.wndw.node.onblur = e => {
+	task.window.node.onblur = e => {
 		task.node.getElementsByClassName("editor ID_TASKID")[0]?.children[0]?.classList.remove("focused")
 		task.node.getElementsByClassName("editor ID_TASKID")[0]?.getElementsByClassName("view-overlays focused")[0]?.classList.remove("focused")
 	}

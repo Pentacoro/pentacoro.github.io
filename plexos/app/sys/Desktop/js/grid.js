@@ -1,5 +1,9 @@
-let mem  = task.mem
+import Task from "/plexos/lib/classes/system/task.js"
+import File from "/plexos/lib/classes/files/file.js"
+
+let task    = Task.id("TASKID")
 let desktop = task
+let mem     = task.mem
 
 desktop.mem.grid = {}
 desktop.mem.grid.gridArr = []
@@ -7,22 +11,24 @@ desktop.mem.grid.evaluateIconGrid = function (
     a = null, 
 ){
     //take existing config values
-    w      = cfg.desktop.grid.width 
-    h      = cfg.desktop.grid.height
-    wm     = cfg.desktop.grid.hMargin
-    hm     = cfg.desktop.grid.vMargin
-    wl     = cfg.desktop.grid.hLength
-    hl     = cfg.desktop.grid.vLength
-    autowm = cfg.desktop.grid.autoHmargin
-    autohm = cfg.desktop.grid.autoVmargin
-    autowl = cfg.desktop.grid.autoHlength
-    autohl = cfg.desktop.grid.autoVlength
+    let w      = cfg.desktop.grid.width 
+    let h      = cfg.desktop.grid.height
+    let wm     = cfg.desktop.grid.hMargin
+    let hm     = cfg.desktop.grid.vMargin
+    let ewm    = null
+    let ehm    = null
+    let wl     = cfg.desktop.grid.hLength
+    let hl     = cfg.desktop.grid.vLength
+    let autowm = cfg.desktop.grid.autoHmargin
+    let autohm = cfg.desktop.grid.autoVmargin
+    let autowl = cfg.desktop.grid.autoHlength
+    let autohl = cfg.desktop.grid.autoVlength
     
     let windowW = desktop.node.offsetWidth
     let windowH = desktop.node.offsetHeight
 
     //check open instance of grid settings
-    let gridSettings = Task.openInstance("Desktop Grid Settings")
+    let gridSettings = Task.get("Desktop Grid Settings")
     if (!gridSettings) cfg.desktop.grid.visibleNodes = false
 
     //set margin to modified margins if set without auto
@@ -76,13 +82,13 @@ desktop.mem.grid.evaluateIconGrid = function (
     //get first array and HTML elements if not made yet
     if(desktop.mem.grid.gridArr.length === 0 || a === 0) {
         desktop.mem.grid.gridArr = new Array(cfg.desktop.grid.hLength)
-        for (var i = 0; i < desktop.mem.grid.gridArr.length; i++) {
+        for (let i = 0; i < desktop.mem.grid.gridArr.length; i++) {
             desktop.mem.grid.gridArr[i] = new Array(cfg.desktop.grid.vLength)
         }
         
         //fill each coordinate with an object
-        for (x = 0; x < desktop.mem.grid.gridArr.length; x++){
-            for(y = 0; y < desktop.mem.grid.gridArr[x].length; y++){
+        for (let x = 0; x < desktop.mem.grid.gridArr.length; x++){
+            for(let y = 0; y < desktop.mem.grid.gridArr[x].length; y++){
                 desktop.mem.grid.gridArr[x][y] = {
                     posX:(x+1) * ewm + x * w,
                     posY:(y+1) * ehm + y * h,
@@ -176,23 +182,23 @@ desktop.mem.grid.evaluateIconGrid = function (
 
         function handleShorterRow(){
             cfg.desktop.grid.hLength = gridHFinal
-            for (i = 0; i > gridHdiff; i--) {
+            for (let i = 0; i > gridHdiff; i--) {
                 let delColumns = desktop.mem.grid.gridArr.splice(gridHFinal+(gridHdiff*-1 + i - 1), 1)
                 delColumns.forEach(column => {
                     column.forEach(object => {
                         let objectNode = document.getElementById(object.id)
                         objectNode.parentElement.removeChild(objectNode)
                         let validatedIcons = []
+                        let iconsForShift = []
                         if(object.icon && cfg.desktop.grid.stickToBorder){
-                            iconsForShift = []
                             iconsForShift.push(object.icon)
                             let checkNextSlot = function(obj) {
-                                nextSlot = (obj.arrX != 0) ? desktop.mem.grid.gridArr[obj.arrX - 1][obj.arrY] : {icon: null}
+                                let nextSlot = (obj.arrX != 0) ? desktop.mem.grid.gridArr[obj.arrX - 1][obj.arrY] : {icon: null}
                                 if (nextSlot.icon) {
                                     iconsForShift.push(nextSlot.icon)
                                     checkNextSlot(nextSlot)
                                 } else if (obj.arrX != 0) {
-                                    for(icon of iconsForShift) {
+                                    for(let icon of iconsForShift) {
                                         icon.coor.tx = icon.coor.tx - w - ewm
                                         if (icon.coor.ax < gridHFinal+(gridHdiff*-1 + i - 1)) {
                                             desktop.mem.grid.gridArr[icon.coor.ax][icon.coor.ay].icon = null
@@ -200,7 +206,7 @@ desktop.mem.grid.evaluateIconGrid = function (
                                         }
                                     }
                                     validatedIcons = mem.repositionIcons(iconsForShift,true,false)
-                                    for(icon of validatedIcons) {
+                                    for(let icon of validatedIcons) {
                                         icon.poseNode()
                                         icon.statNode()
                                     }
@@ -212,7 +218,7 @@ desktop.mem.grid.evaluateIconGrid = function (
                         } else if (object.icon) {
                             iconsForShift = [object.icon]
                             validatedIcons = mem.repositionIcons(iconsForShift,true,false)
-                            for(icon of validatedIcons) {
+                            for(let icon of validatedIcons) {
                                 icon.poseNode()
                                 icon.statNode()
                             }
@@ -223,9 +229,9 @@ desktop.mem.grid.evaluateIconGrid = function (
         }
         function handleLongerRow(){
             cfg.desktop.grid.hLength = gridHFinal
-            for (x = desktop.mem.grid.gridArr.length; x < gridHFinal; x++){
+            for (let x = desktop.mem.grid.gridArr.length; x < gridHFinal; x++){
                 desktop.mem.grid.gridArr.push(new Array(cfg.desktop.grid.vLength))
-                for(y = 0; y < desktop.mem.grid.gridArr[x].length; y++){
+                for(let y = 0; y < desktop.mem.grid.gridArr[x].length; y++){
                     desktop.mem.grid.gridArr[x][y] = {
                         posX:(x+1) * ewm + x * w,
                         posY:(y+1) * ehm + y * h,
@@ -239,15 +245,15 @@ desktop.mem.grid.evaluateIconGrid = function (
 
             desktop.mem.grid.gridArr[gridHFinal - gridHdiff - 1].forEach(object => {
                 if(object.icon && cfg.desktop.grid.stickToBorder){
-                    iconsForShift = []
+                    let iconsForShift = []
                     iconsForShift.push(object.icon)
                     let checkNextSlot = function(obj) {
-                        nextSlot = (obj.arrX != 0) ? desktop.mem.grid.gridArr[obj.arrX - 1][obj.arrY] : {icon: null}
+                        let nextSlot = (obj.arrX != 0) ? desktop.mem.grid.gridArr[obj.arrX - 1][obj.arrY] : {icon: null}
                         if (nextSlot.icon) {
                             iconsForShift.push(nextSlot.icon)
                             checkNextSlot(nextSlot)
                         } else if (obj.arrX != 0) {
-                            for(icon of iconsForShift) {
+                            for(let icon of iconsForShift) {
                                 icon.coor.tx = icon.coor.tx + w*gridHdiff + ewm*gridHdiff
                                 if (icon.coor.ax < gridHFinal) {
                                     desktop.mem.grid.gridArr[icon.coor.ax][icon.coor.ay].icon = null
@@ -255,7 +261,7 @@ desktop.mem.grid.evaluateIconGrid = function (
                                 }
                             }
                             mem.repositionIcons(iconsForShift,true,true)
-                            for(icon of iconsForShift) {
+                            for(let icon of iconsForShift) {
                                 icon.poseNode()
                                 icon.statNode()
                             }
@@ -270,22 +276,22 @@ desktop.mem.grid.evaluateIconGrid = function (
         function handleShorterColumn(){
             cfg.desktop.grid.vLength = gridVFinal
             desktop.mem.grid.gridArr.forEach(column => {
-                for (i = 0; i > gridVdiff; i--) {
+                for (let i = 0; i > gridVdiff; i--) {
                     let delRows = column.splice(gridVFinal+(gridVdiff*-1 + i - 1), 1)
                     delRows.forEach(object =>{
                         let objectNode = document.getElementById(object.id);
                         objectNode.parentElement.removeChild(objectNode)
                         let validatedIcons = []
+                        let iconsForShift = []
                         if(object.icon && cfg.desktop.grid.stickToBorder){
-                            iconsForShift = []
                             iconsForShift.push(object.icon)
                             let checkNextSlot = function(obj) {
-                                nextSlot = (obj.arrY != 0) ? desktop.mem.grid.gridArr[obj.arrX][obj.arrY - 1] : {icon: null}
+                                let nextSlot = (obj.arrY != 0) ? desktop.mem.grid.gridArr[obj.arrX][obj.arrY - 1] : {icon: null}
                                 if (nextSlot.icon) {
                                     iconsForShift.push(nextSlot.icon)
                                     checkNextSlot(nextSlot)
                                 } else if (obj.arrY != 0) {
-                                    for(icon of iconsForShift) {
+                                    for(let icon of iconsForShift) {
                                         icon.coor.ty = icon.coor.ty - h - ehm
                                         if (icon.coor.ay < gridVFinal+(gridVdiff*-1 + i - 1)) {
                                             desktop.mem.grid.gridArr[icon.coor.ax][icon.coor.ay].icon = null
@@ -293,7 +299,7 @@ desktop.mem.grid.evaluateIconGrid = function (
                                         }
                                     }
                                     validatedIcons = mem.repositionIcons(iconsForShift,true,false)
-                                    for(icon of validatedIcons) {
+                                    for(let icon of validatedIcons) {
                                         icon.poseNode()
                                         icon.statNode()
                                     }
@@ -305,7 +311,7 @@ desktop.mem.grid.evaluateIconGrid = function (
                         } else if (object.icon) {
                             iconsForShift = [object.icon]
                             validatedIcons = mem.repositionIcons(validatedIcons,true,false)
-                            for(icon of iconsForShift) {
+                            for(let icon of iconsForShift) {
                                 icon.poseNode()
                                 icon.statNode()
                             }
@@ -316,8 +322,8 @@ desktop.mem.grid.evaluateIconGrid = function (
         }
         function handleLongerColumn(){
             cfg.desktop.grid.vLength = gridVFinal
-            for (x = 0; x < desktop.mem.grid.gridArr.length; x++){
-                for(y = desktop.mem.grid.gridArr[x].length; y < gridVFinal; y++){
+            for (let x = 0; x < desktop.mem.grid.gridArr.length; x++){
+                for(let y = desktop.mem.grid.gridArr[x].length; y < gridVFinal; y++){
                     desktop.mem.grid.gridArr[x].push({
                         posX:(x+1) * ewm + x * w,
                         posY:(y+1) * ehm + y * h,
@@ -331,15 +337,15 @@ desktop.mem.grid.evaluateIconGrid = function (
             desktop.mem.grid.gridArr.forEach(column => {
                 let object = column[gridVFinal - gridVdiff - 1]
                 if(object.icon && cfg.desktop.grid.stickToBorder){
-                    iconsForShift = []
+                    let iconsForShift = []
                     iconsForShift.push(object.icon)
                     let checkNextSlot = function(obj) {
-                        nextSlot = (obj.arrY != 0) ? desktop.mem.grid.gridArr[obj.arrX][obj.arrY - 1] : {icon: null}
+                        let nextSlot = (obj.arrY != 0) ? desktop.mem.grid.gridArr[obj.arrX][obj.arrY - 1] : {icon: null}
                         if (nextSlot.icon) {
                             iconsForShift.push(nextSlot.icon)
                             checkNextSlot(nextSlot)
                         } else if (obj.arrY != 0) {
-                            for(icon of iconsForShift) {
+                            for(let icon of iconsForShift) {
                                 icon.coor.ty = icon.coor.ty + h*gridVdiff + ehm*gridVdiff
                                 if (icon.coor.ay < gridVFinal) {
                                     desktop.mem.grid.gridArr[icon.coor.ax][icon.coor.ay].icon = null
@@ -347,7 +353,7 @@ desktop.mem.grid.evaluateIconGrid = function (
                                 }
                             }
                             mem.repositionIcons(iconsForShift,true,true)
-                            for(icon of iconsForShift) {
+                            for(let icon of iconsForShift) {
                                 icon.poseNode()
                                 icon.statNode()
                             }
@@ -362,7 +368,7 @@ desktop.mem.grid.evaluateIconGrid = function (
 
         if (iconsForShiftLate.length > 0){
             let validatedIcons = mem.repositionIcons(iconsForShiftLate,true,false)
-            for(icon of validatedIcons) {
+            for(let icon of validatedIcons) {
                 icon.poseNode()
                 icon.statNode()
             }
@@ -436,8 +442,8 @@ desktop.mem.grid.evaluateIconGrid = function (
         if (cfg.desktop.grid.visibleNodes === false)updGrid.style.backgroundColor = "rgba(127,127,127,0)"
     }
     function shiftTiles() {
-        for (x = 0; x < desktop.mem.grid.gridArr.length; x++){
-            for(y = 0; y < desktop.mem.grid.gridArr[x].length; y++){
+        for (let x = 0; x < desktop.mem.grid.gridArr.length; x++){
+            for(let y = 0; y < desktop.mem.grid.gridArr[x].length; y++){
                 desktop.mem.grid.gridArr[x][y].posX = (x+1) * ewm + x * w
                 desktop.mem.grid.gridArr[x][y].posY = (y+1) * ehm + y * h
                 desktop.mem.grid.gridArr[x][y].widt = w
