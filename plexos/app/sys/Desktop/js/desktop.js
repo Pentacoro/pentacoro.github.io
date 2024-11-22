@@ -1,4 +1,4 @@
-import Task from "/plexos/lib/classes/system/Task.js"
+import Task from "/plexos/lib/classes/system/task.js"
 import File from "/plexos/lib/classes/files/file.js"
 import Icon from "/plexos/lib/classes/interface/icon.js"
 
