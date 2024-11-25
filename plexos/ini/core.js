@@ -98,7 +98,7 @@ system.ini.defineCore = function () {
                 corePromise
                 .then(data=>{
                     if (data.status >= 200 && data.status < 300) throw data
-                    core = Directory.coreTemplate()
+                    plexos.core = Directory.coreTemplate()
                     system.ini.recreateFiles(JSON.parse(data),core)
                     resolve(core)
                 })
