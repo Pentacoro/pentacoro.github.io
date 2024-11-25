@@ -99,8 +99,8 @@ system.ini.defineCore = function () {
                 .then(data=>{
                     if (data.status >= 200 && data.status < 300) throw data
                     plexos.core = Directory.coreTemplate()
-                    system.ini.recreateFiles(JSON.parse(data),core)
-                    resolve(core)
+                    system.ini.recreateFiles(JSON.parse(data),plexos.core)
+                    resolve(plexos.core)
                 })
             }
         }
@@ -117,7 +117,7 @@ if (dll.getValue("core")) {
     .then(data=>{
         if (data.status >= 200 && data.status < 300) throw data
         plexos.core = Directory.coreTemplate()
-        system.ini.recreateFiles(JSON.parse(data),core)
+        system.ini.recreateFiles(JSON.parse(data),plexos.core)
         plexos.vtx = plexos.core.dir["vertex"]
         system.ini.run()
     })
