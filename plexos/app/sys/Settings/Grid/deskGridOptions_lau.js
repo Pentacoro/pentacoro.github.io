@@ -1,6 +1,6 @@
 import Task from "/plexos/lib/classes/system/task.js"
 import Window from "/plexos/lib/classes/interface/window.js"
-import dll from "/plexos/lib/functions/dll.js"
+import {displayComponent} from "/plexos/lib/functions/dll.js"
 
 export function initialize(){
     let params = /PARAMS/
@@ -41,7 +41,7 @@ export function initialize(){
         }
     )
 
-    dll.displayComponent({
+    displayComponent({
         url:html,
         taskid:task.id,
         container:task.node,

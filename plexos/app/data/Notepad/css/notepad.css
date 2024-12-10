@@ -22,6 +22,7 @@ textarea {
     overflow-y:scroll;
     resize: none;
     outline: none;
+    border: 0;
 }
 /*---------------------------------------*/
 .background {

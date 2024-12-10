@@ -1,6 +1,9 @@
+import {getTask} from "/plexos/lib/functions/dll.js"
+import {plexos} from "/plexos/ini/system.js"
 import Task from "/plexos/lib/classes/system/task.js"
+let cfg  = plexos.cfg
 
-let task = Task.id("TASKID")
+let task = getTask(/TASKID/)
 let mem  = task.mem
 
 mem.updateTileGraph = function(){

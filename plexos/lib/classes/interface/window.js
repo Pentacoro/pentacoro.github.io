@@ -1,4 +1,8 @@
+import {plexos} from "/plexos/ini/system.js"
+import {nodeGetters, iframeAntiHover} from "/plexos/lib/functions/dll.js"
 import Task from "../system/task.js"
+
+let System = plexos.System
 
 export default class Window {
 	stat = 1
@@ -116,7 +120,7 @@ export default class Window {
 	
 		document.getElementById("windowLayer").appendChild(newWindow)
 
-		system.mem.focus(Task.id(this.task))
+		System.mem.focus(Task.id(this.task))
 		
 		//Getting minimum size to apply to the content,
 		//instead of the window node, by comparing the 
@@ -156,27 +160,13 @@ export default class Window {
 			'querySelectorAll',
 		]
 		
-		newContent['getElementById'] = function (id) {
-			return document.querySelector(`#${newWindow.id} .${newContent.classList[0]} #${id}`)
-		}
-		newContent['getElementsByClassName'] = function (cls) {
-			return document.querySelectorAll(`#${newWindow.id} .${newContent.classList[0]} .${cls}`)
-		}
-		newContent['getElementsByName'] = function (name) {
-			return document.querySelectorAll(`#${newWindow.id} .${newContent.classList[0]} [name="${name}"]`)
-		}
-		newContent['querySelector'] = function (qry) {
-			return document.querySelector(`#${newWindow.id} .${newContent.classList[0]} ${qry}`)
-		}
-		newContent['querySelectorAll'] = function (qry) {
-			return document.querySelectorAll(`#${newWindow.id} .${newContent.classList[0]} ${qry}`)
-		}
+		nodeGetters(newContent, newContent.classList[0], newWindow.classList[1])
 		
 		this.node = newWindow
 		this.cont = newContent
 
 		this.node.onmousedown = e => {
-			system.mem.focus(Task.id(this.task))
+			System.mem.focus(Task.id(this.task))
 			this.statNode()
 		}
 	
@@ -194,9 +184,9 @@ export default class Window {
 		//if the window was focused, shift focus behind it
 		if (thisIndex === 0) {
 			if (plexos.Windows.length > 0) {
-				system.mem.focus(Task.id(plexos.Windows[0].task))
+				System.mem.focus(Task.id(plexos.Windows[0].task))
 			} else {
-				system.mem.focus(Task.get("Desktop"))
+				System.mem.focus(Task.get("Desktop"))
 			}
 		}
 
@@ -296,7 +286,7 @@ export default class Window {
 	
 				document.onmouseup = closeDragWindow
 				document.onmousemove = windowDrag
-				dll.iframeAntiHover(true)
+				iframeAntiHover(true)
 			}
 		}
 		
@@ -320,7 +310,7 @@ export default class Window {
 			//stop moving when mouse button is released:
 			document.onmouseup = null
 			document.onmousemove = null
-			dll.iframeAntiHover(false)
+			iframeAntiHover(false)
 		}
     }
     size(){
@@ -356,15 +346,15 @@ export default class Window {
 			
 			document.onmouseup = stopResize
 			document.onmousemove = doResize
-			dll.iframeAntiHover(true)
+			iframeAntiHover(true)
 		}
 		
 		function doResize(e) {
 			e.preventDefault()
 	
 			//get int for window min-height and min-width css values
-			let minHeight = parseInt(window.getComputedStyle(window,null).getPropertyValue("min-height"))
-			let minWidth = parseInt(window.getComputedStyle(window,null).getPropertyValue("min-width"))
+			let minHeight = parseInt(getComputedStyle(_this.node,null).getPropertyValue("min-height"))
+			let minWidth = parseInt(getComputedStyle(_this.node,null).getPropertyValue("min-width"))
 			
 			//when sizing towards →
 			if (border == "windowErig" || border == "windowCbr" || border == "windowCtr") {
@@ -411,7 +401,7 @@ export default class Window {
 		function stopResize() {
 			document.onmouseup = null
 			document.onmousemove = null
-			dll.iframeAntiHover(false)
+			iframeAntiHover(false)
 		}
     }
 	focus(bool){

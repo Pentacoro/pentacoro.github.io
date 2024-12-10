@@ -1,7 +1,7 @@
 import Task from "/plexos/lib/classes/system/task.js"
 import Window from "/plexos/lib/classes/interface/window.js"
 import File from "/plexos/lib/classes/files/file.js"
-import dll from "/plexos/lib/functions/dll.js"
+import {displayComponent} from "/plexos/lib/functions/dll.js"
 
 export function initialize() {
     let params = /PARAMS/ //name, addr, type, file
@@ -12,7 +12,10 @@ export function initialize() {
 
     //on app init
     function ini() {
+        let task = Task.id(taskid)
+        let arg  = task.mem.arg
 
+        arg.address = params.addr
     }
     //on app end
     function end() {
@@ -49,13 +52,10 @@ export function initialize() {
     )
 
     ini()
-
-    let replacementPairs = [{regex:/xcorex/g,text:params.addr}]
-
-    dll.displayComponent({
+    
+    displayComponent({
         url:html,
         taskid:task.id,
-        replacementPairs:replacementPairs,
         container:task.node
     })
 }

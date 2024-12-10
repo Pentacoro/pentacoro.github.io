@@ -1,14 +1,14 @@
-import Task from "/plexos/lib/classes/system/task.js"
+import {plexos, cfg} from "/plexos/ini/system.js"
+import {getTask, runLauncher} from "/plexos/lib/functions/dll.js"
 import File from "/plexos/lib/classes/files/file.js"
 import Icon from "/plexos/lib/classes/interface/icon.js"
 
-let task = Task.id("TASKID")
+let task = getTask(/TASKID/)
 let mem  = task.mem
+let arg  = mem.arg
 
-mem.var = {}
 mem.iconArr = []
 mem.dirObject = {}
-mem.address = "xcorex"
 
 //desktop methods
 mem.createDesktopIcons = async function(array) {
@@ -24,14 +24,14 @@ mem.createDesktopIcons = async function(array) {
 		icon.statNode()
 	}
 }
-mem.desktopInit = function (dir, id, act = null) {    
+mem.desktopInit = function (dir) {    
     try {       
         mem.iconArr = []
-        mem.address = dir
+        arg.address = dir
         mem.dirObject   = File.at(dir)
         mem.var.dirname = File.at(dir).name
 		mem.var.hiddenIcons = 0
-        Task.id(id).pocket = []
+        task.pocket = []
 
         let itemList = []
         let dirList = Object.entries(mem.dirObject.dir)
@@ -44,18 +44,16 @@ mem.desktopInit = function (dir, id, act = null) {
         mem.var.error = e
         mem.var.errorB = [["Okay"]]
         console.log(e)
-        dll.runLauncher("/plexos/app/sys/Popup/popup_lau.js",
+        runLauncher("/plexos/app/sys/Popup/popup_lau.js",
             {
              name:"Error",
              type:false,
              title:"Couldn't load directory",
              description:"This directory seems to no longer exist. It might have been deleted, moved, or a parent directory been renamed",
-             taskid:"TASKID",
+             taskid:task.id,
              icon:""
             }
         )
-
-        if (act === "refresh") mem.desktopInit("", "TASKID")
     }
 }
 
@@ -78,11 +76,9 @@ mem.initialGridDrawingProcedual = function(itemList) {
 	cfg.desktop.grid.autoVmargin = initialAutoVm
 
 	mem.grid.evaluateIconGrid(3)
-	mem.grid.realTimeGridEval()
 }
 mem.initialGridDrawingSquared = function(itemList) {
 	//if the grid is too small to fit initial amount of icons, find optimal size
-	//if (cfg.desktop.grid.hLength*cfg.desktop.grid.vLength < itemList.length) { 
 	let initialAutoH = cfg.desktop.grid.autoHlength
 	let initialAutoV = cfg.desktop.grid.autoVlength
 	cfg.desktop.grid.hLength = Math.ceil (Math.sqrt(itemList.length))
@@ -94,7 +90,6 @@ mem.initialGridDrawingSquared = function(itemList) {
 	cfg.desktop.grid.autoHlength = initialAutoH
 	cfg.desktop.grid.autoVlength = initialAutoV
 	mem.grid.evaluateIconGrid(3)
-	mem.grid.realTimeGridEval()
 }
 mem.checkIfGridCanFit = function(itemList) {
 	let w      = cfg.desktop.grid.width 
@@ -103,6 +98,7 @@ mem.checkIfGridCanFit = function(itemList) {
     let hm     = cfg.desktop.grid.vMargin
     let windowW = task.node.offsetWidth
     let windowH = task.node.offsetHeight
+
     //set margin to modified margins if set without auto
     if (cfg.desktop.grid.modHmargin && !cfg.desktop.grid.autoHmargin) wm = cfg.desktop.grid.modHmargin
     if (cfg.desktop.grid.modVmargin && !cfg.desktop.grid.autoVmargin) hm = cfg.desktop.grid.modVmargin
@@ -211,8 +207,3 @@ mem.new = function(e, _this, Type, name){
 
 	createDesktopFile(name).rename()
 }
-
-//run
-task.node.style.width = document.body.offsetWidth + "px"
-task.node.style.height = document.body.offsetHeight - cfg.desktop.taskbar.height + "px"
-mem.desktopInit("xcorex", "TASKID")

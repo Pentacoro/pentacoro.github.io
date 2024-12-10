@@ -1,14 +1,14 @@
-import Task from "/plexos/lib/classes/system/task.js"
+import {plexos} from "/plexos/ini/system.js"
+import {getTask, displayComponent} from "/plexos/lib/functions/dll.js"
 import File from "/plexos/lib/classes/files/file.js"
 
-let task = Task.id("TASKID")
+let task = getTask(/TASKID/)
 let mem  = task.mem
 
 mem.menubar = {}
-mem.menubar.continuousContext = false
 mem.menubar.menubarButtons = ["File","Edit","Format","View","Help"]
 mem.menubar.contextOptions = function (button) {
-    let envfocus = system.mem.var.envfocus
+    let envfocus = plexos.System.mem.var.envfocus
     switch (button.innerText) {
         case "File":
             return {
@@ -17,7 +17,7 @@ mem.menubar.contextOptions = function (button) {
                         {name:"New",icon:"url('')",func: () => {return}},
                         {name:"New Window",icon:"url('')",func: () => {return}},
                         {name:"Open...",icon:"url('')",func: () => {return} },
-                        {name:"Save",icon:"url('')",func: () => File.at(mem.fileAddress).data = task.node.getElementsByTagName("textarea")[0].value },
+                        {name:"Save",icon:"url('')",func: () => File.at(mem.arg.fileAddr).data = task.node.getElementsByTagName("textarea")[0].value },
                         {name:"Save As...",icon:"url('')",func: () => {return} },
                     ]},
                     {name: "exit", list: [
@@ -96,7 +96,7 @@ mem.menubar.contextOptions = function (button) {
             }
     }
 }
-await dll.displayComponent({
+await displayComponent({
     url:"/plexos/res/components/menubar/menubar.html",
     taskid:task.id,
     container:task.node.getElementsByClassName("component_menubar")[0]

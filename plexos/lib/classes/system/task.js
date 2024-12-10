@@ -1,10 +1,15 @@
+import {plexos} from "../../../ini/system.js"
+import {genRanHex} from "/plexos/lib/functions/dll.js"
 import File from "../files/file.js"
+import Component from "../interface/component.js"
+let System = plexos.System
 
 export default class Task {
     static checkUniqueID(task){
         for (let i = 0; i < plexos.Tasks.length; i++){
             if (plexos.Tasks[i].id == task.id && plexos.Tasks[i] != task){
-                task.id = dll.genRanHex(16)
+                console.log(task)
+                task.id = genRanHex(16)
                 Task.checkUniqueID(task)
             }
         }
@@ -38,7 +43,7 @@ export default class Task {
     constructor(p) {
         //check if instance allowed
         if (!Task.canInstance(p.name)) {
-            Task.get("system").mem.focus(Task.get(p.name))
+            Task.get("System").mem.focus(Task.get(p.name))
             delete this
             return
         }
@@ -50,16 +55,22 @@ export default class Task {
         this.inst = (p.inst===null) ? true : p.inst
         this.node = p.node || this.node
 
+        this.window = null
+
         this.load = 0
+        this.tasks = []
         this.pocket = []
+        this.windows = []
         this.blobList = []
+        this.components = []
 
         this.mem = {
             var: {},
+            arg: {},
             sfx: [],
         }
         this.listeners = []
-        this.id = (p.id !== null) ? p.id : dll.genRanHex(16)
+        this.id = (p.id !== undefined) ? p.id : genRanHex(16)
         Task.checkUniqueID(this)
         
         //end task
@@ -85,15 +96,15 @@ export default class Task {
     }
     on(eventName, callback, priority = 0) {
         const wrappedCallback = (...args) => callback(...args, this)
-        Task.get("system").bus.on(eventName, wrappedCallback, priority)
+        Task.get("System").bus.on(eventName, wrappedCallback, priority)
         this.listeners.push({ eventName, callback: wrappedCallback})
     }
     emit(eventName, ...args) {
-        Task.get("system").bus.emit(eventName, ...args)
+        Task.get("System").bus.emit(eventName, ...args)
     }
     cleanupListeners() {
         this.listeners.forEach(({ eventName, callback }) => {
-            Task.get("system").bus.off(eventName, callback)
+            Task.get("System").bus.off(eventName, callback)
         })
         this.listeners = []
     }
@@ -119,7 +130,7 @@ export default class Task {
 			let taskRange = this.mem.selectionRange
 			if (taskRange && taskRange.commonAncestorContainer instanceof HTMLElement) {
 				taskRange.commonAncestorContainer.focus()
-				//dll.selectRange(taskRange)
+				//selectRange(taskRange)
 			} else {
 				taskRange = null
 			}
@@ -135,11 +146,43 @@ export default class Task {
 			}
 			if (this.mem.selectionRange && this.mem.selectionRange.commonAncestorContainer instanceof HTMLElement) {
 				this.mem.selectionRange.commonAncestorContainer.blur()
-				//dll.selectRange(taskRange)
+				//selectRange(taskRange)
 			}
             this.window.focus(false)
 			this.node.blur()
             if (this.node?.onblur) this.node.onblur()
         }
+    }
+    newWindow(arg) {
+        let newWindow = new Window(arg)
+        this.windows.push(newWindow)
+        //INCOMPLETE
+    }
+    async newComponent({url,container,args}) {
+        let component = new Component ({
+            url:url,
+            task:this,
+            args:args,
+            container:container,
+        })
+        await component.display()
+    }
+    getComponent(id){
+        let find = this.components.filter(component => component.id === id)
+        return find[0]
+    }
+    popup({e, buttons, arg}) {
+        this.mem.var.error = e
+        this.mem.var.errorB = buttons
+        runLauncher("/plexos/app/sys/Popup/popup_lau.js",
+            {
+                name:arg.name,
+                type:arg.type,
+                title:arg.title,
+                description:arg.description,
+                icon:arg.icon,
+                taskid:this.id,
+            }
+        )
     }
 }

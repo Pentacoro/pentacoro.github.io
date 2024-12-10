@@ -1,19 +1,16 @@
-import Task from "/plexos/lib/classes/system/task.js"
+import {getTask, selectText} from "/plexos/lib/functions/dll.js"
 
-let task = Task.id("TASKID")
+let task = getTask(/TASKID/)
 let mem  = task.mem
 
-task.apps = "plx"
-mem.fileAddress = "ARG_FILEADDR"
-mem.var = {}
-
-mem.var.textarea = task.node.getElementsByTagName("textarea")[0]
+mem.textArea = task.node.getElementsByTagName("textarea")[0]
 task.window.node.addEventListener("onfocus", e => {
     console.log(window.getSelection())
-    mem.var.textarea.focus()
-    dll.selectText(mem.var.textarea)
+    mem.textArea.focus()
+    selectText(mem.textArea)
 })
 task.window.node.addEventListener("blur", e => {
     mem.var.selectionRange = window.getSelection()
     task.node.blur()
 })
+mem.textArea.textContent = mem.arg.textData

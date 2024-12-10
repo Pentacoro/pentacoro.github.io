@@ -1,9 +1,11 @@
-import Task from "/plexos/lib/classes/system/task.js"
+import {getTask} from "/plexos/lib/functions/dll.js"
+import {plexos} from "/plexos/ini/system.js"
 import File from "/plexos/lib/classes/files/file.js"
+let cfg  = plexos.cfg
 
-let desktop = Task.get("Desktop")
-let task = Task.id("TASKID")
+let task = getTask(/TASKID/)
 let mem  = task.mem
+let desktop = task
 
 //on app close
 task.appEnd = function () {
@@ -36,7 +38,7 @@ task.node.getElementsByClassName("footer-accept")[0].onclick = (e)=> {
     task.end()
 }
 task.node.getElementsByClassName("footer-cancel")[0].onclick = (e)=> {
-    eval(mem.var.config +" = Task.id('TASKID').mem.var.configClone")
+    eval(mem.var.config +" = task.mem.var.configClone")
     task.end()
 }
 task.node.getElementsByClassName("footer-apply")[0].onclick = (e)=> {
@@ -51,9 +53,9 @@ for (let input of task.node.getElementsByClassName("optionValue")) {
     let inputbox = input
     let variable = inputbox.getAttribute("name")
     inputbox.onchange = (e) => {
-        new Function(variable + " = " + Number(inputbox.value))()
+        eval(variable + " = " + Number(inputbox.value))
         if (inputbox.parentElement.children[3]) {
-            new Function(inputbox.parentElement.children[3].name + " = " + false)()
+            eval(inputbox.parentElement.children[3].name + " = " + false)
             inputbox.parentElement.children[3].checked = false
             mem.onChange()
             return
@@ -61,7 +63,7 @@ for (let input of task.node.getElementsByClassName("optionValue")) {
         mem.onChange()
     }
     inputbox.addEventListener("focusout", (e) => {
-        new Function(variable + " = " + Number(inputbox.value))
+        eval(variable + " = " + Number(inputbox.value))
     })
 }
 
@@ -70,9 +72,9 @@ for (let button of task.node.getElementsByClassName("optionButton")) {
     let variable = button.getAttribute("name")
     button.onclick = (e) => {
         if (eval(variable)) return
-        new Function(variable + " = " + true)()
+        eval(variable + " = " + true)
         mem.onChange()
-        new Function(variable + " = " + false)()
+        eval(variable + " = " + false)
     }
 }
 
@@ -83,11 +85,11 @@ for (let box of task.node.getElementsByClassName("optionCheck")) {
     if (eval(variable)) checkbox.checked = true
     checkbox.onclick = (e) => {
         if (!checkbox.checked) {
-            new Function(variable + " = " + false)()
+            eval(variable + " = " + false)
             mem.onChange()
             return
         }
-        new Function(variable + " = " + true)()
+        eval(variable + " = " + true)
         mem.onChange()
     }
 }

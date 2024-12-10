@@ -1,6 +1,6 @@
-import Task from "/plexos/lib/classes/system/task.js"
+import {getTask} from "/plexos/lib/functions/dll.js"
 
-let task = Task.id("TASKID")
+let task = getTask(/TASKID/)
 let mem  = task.mem
 
 mem.onChange = function() {

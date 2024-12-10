@@ -1,10 +1,8 @@
-import Task from "/plexos/lib/classes/system/task.js"
-import File from "/plexos/lib/classes/files/file.js"
+import {getTask} from "/plexos/lib/functions/dll.js"
 
-let task = Task.id("TASKID")
-let url  = File.at(arg[1]).meta.file
+let task = getTask(/TASKID/)
 let mem  = task.mem
 
-mem.url  = url
+mem.var.url  = mem.arg.file.meta.file
 
-document.getElementsByTagName("iframe")[0].setAttribute("src", url)
+task.node.getElementsByTagName("iframe")[0].setAttribute("src", mem.var.url)

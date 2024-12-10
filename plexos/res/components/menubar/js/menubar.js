@@ -1,11 +1,12 @@
-import Task from "/plexos/lib/classes/system/task.js"
+import {getTask} from "/plexos/lib/functions/dll.js"
 import ContextMenu from "/plexos/lib/classes/interface/contextmenu.js"
 
-let task = Task.id("TASKID")
+let task = getTask(/TASKID/)
 let mem  = task.mem
 
+mem.menubar.continuousContext = false
 mem.menubarRender = function () {
-    let menuBar = document.getElementsByClassName("menubar_container")[0]
+    let menuBar = task.node.getElementsByClassName("menubar_container")[0]
     menuBar.innerHTML = ""
     for (const buttonName of mem.menubar.menubarButtons) {
         let newButton = document.createElement("button")

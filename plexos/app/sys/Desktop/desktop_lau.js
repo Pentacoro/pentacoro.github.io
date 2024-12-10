@@ -1,5 +1,5 @@
 import Task from "/plexos/lib/classes/system/task.js"
-import dll from "/plexos/lib/functions/dll.js"
+import {displayComponent} from "/plexos/lib/functions/dll.js"
 
 export function initialize() {
     let params = /PARAMS/
@@ -15,6 +15,8 @@ export function initialize() {
         mem.sfx.push(new Audio("plexos/res/sounds/Norrum - Interfaz Item errOr v1.mp3"))
         mem.sfx.push(new Audio("plexos/res/sounds/Norrum - Interfaz Item OK c_ v1.mp3"))
         mem.sfx.push(new Audio("plexos/res/sounds/Norrum - Interfaz Item alMost.mp3"))
+
+        mem.arg.address = params.addr
     }
     //on app end
     function end() {}
@@ -34,11 +36,9 @@ export function initialize() {
 
     ini()
 
-    let replacementPairs = [{regex:/xcorex/g,text:params.addr}]
-    dll.displayComponent({
+    displayComponent({
         url:html,
         taskid:task.id,
-        replacementPairs:replacementPairs,
         container:task.node
     })
 }

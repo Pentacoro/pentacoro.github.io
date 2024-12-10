@@ -1,21 +1,19 @@
-var plexos = {
+import cfg from "./config.js"
+
+let plexos = {
+    System: {},
     Windows: [],
     Tasks: [],
     sfx: [],
     vtx: {},
     reg: {},
-    cfg: {},
+    cfg: cfg,
     dll: {},
 }
-
-var system = null
-
-var Windows = plexos.Windows
-var Tasks = plexos.Tasks
-var sfx = plexos.sfx
-var vtx = plexos.vtx
-var reg = plexos.reg
-var cfg = plexos.cfg
-var dll = plexos.dll
+export {plexos, cfg}
 
 plexos.sfx.push(new Audio("plexos/res/sounds/Norrum - Interfaz Startup 2 v1.mp3"))
+
+import("../lib/functions/prototype.js")
+import("./events.js")
+import("./core.js")

@@ -1,4 +1,5 @@
-import dll from "../lib/functions/dll.js"
+import {plexos} from "./system.js"
+import {clearSelection, storageAvailable} from "../lib/functions/dll.js"
 import ContextMenu from "../lib/classes/interface/contextmenu.js"
 
 //close context menu on mousedown anywhere
@@ -10,21 +11,21 @@ window.addEventListener("mousedown", (e) => {
             !e.target.contextMenu
 		) {
 			ContextMenu.close()
-			dll.clearSelection()
+			clearSelection()
 		}
 	} else{
 		ContextMenu.close()
-        dll.clearSelection()
+        clearSelection()
 	}
 })
 
-if (dll.storageAvailable('localStorage')) {
+if (storageAvailable('localStorage')) {
         
     // Yippee! We can use localStorage awesomeness
     window.addEventListener("keydown", e => {
         if (e.key === "," && e.ctrlKey) {  
             e.preventDefault()
-            window.localStorage.core = JSON.stringify(core)
+            window.localStorage.core = JSON.stringify(plexos.core)
             alert("Saved to localStorage")
         } 
     })
@@ -38,7 +39,7 @@ if (dll.storageAvailable('localStorage')) {
     window.addEventListener("keydown", e => {
         if (e.key === "s" && e.ctrlKey) {  
             e.preventDefault()
-            downloadCoreJSON()
+            plexos.System.mem.downloadCoreJSON()
             alert("Downloading Core JSON")
         } 
     })

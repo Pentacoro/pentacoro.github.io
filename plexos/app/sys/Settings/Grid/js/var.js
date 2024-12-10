@@ -1,8 +1,9 @@
-import Task from "/plexos/lib/classes/system/task.js"
+import {getTask} from "/plexos/lib/functions/dll.js"
+import {plexos} from "/plexos/ini/system.js"
+let cfg  = plexos.cfg
 
-let desktop = Task.get("Desktop")
-let task = Task.id("TASKID")
-let mem  = Task.id("TASKID").mem
+let task = getTask(/TASKID/)
+let mem  = task.mem
 mem.apps = "exp"
 mem.var = {}
 

@@ -1,6 +1,8 @@
-import Task from "/plexos/lib/classes/system/task.js"
+import {getTask} from "/plexos/lib/functions/dll.js"
+import {plexos} from "/plexos/ini/system.js"
 
-let task = Task.id("TASKID")
+let cfg  = plexos.cfg
+let task = getTask(/TASKID/)
 
 task.on("desktop-grid-length-change", ()=> {
     task.mem.updateGridGraph()

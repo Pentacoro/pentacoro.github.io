@@ -1,0 +1,90 @@
+.parsed-code{
+    position: relative;
+    height: fit-content;
+    white-space: pre;
+    overflow-x: auto;
+}
+.codeBox {
+    display: flex;
+    flex-direction: column;
+    width: fit-content;
+    height: fit-content;
+    min-width: 100%;
+
+    overflow: auto;
+    user-select: text;
+}
+.codeLine, .codeLine>span {
+    width: fit-content;
+    min-width: 100%;
+
+    margin: 0;
+    color: white;
+    font-family: 'Courier New', Courier, monospace !important;
+    font-size: 11px;
+}
+.codeLine {
+    cursor: text;
+}
+.codeLine>.lineNum {
+    color: rgb(155, 155, 155);
+    border-right: 1px solid rgb(98, 98, 98);
+    margin-right: 2px;
+
+    user-select: none;
+    cursor: default;
+}
+.codeLine.error>.lineNum {
+    color: rgb(255, 255, 255);
+    border-right: 1px solid rgb(255, 58, 58);
+}
+.codeLine:nth-child(even) {
+    background-color: rgb(59, 59, 59);
+}
+.codeLine:nth-child(odd) {
+    background-color: rgb(49, 49, 49);
+}
+.codeLine.error {
+    background-color: red;
+}
+
+.regex-highlight.keyword,
+.regex-highlight.key {
+    color: rgb(186, 134, 226) !important;
+}
+.regex-highlight.declaration,
+.regex-highlight.literal-value {
+    color: rgb(99, 134, 231) !important;
+}
+
+.regex-highlight.wrapping {
+    color: rgb(214, 146, 83) !important;
+}
+
+.regex-highlight.annotation,
+.regex-highlight.variable,
+.regex-highlight.text,
+.regex-highlight.import {
+    color: rgb(147, 192, 227) !important;
+}
+
+.regex-highlight.number {
+    color: rgb(147, 227, 152) !important;
+}
+.regex-highlight.value,
+.regex-highlight.atom {
+    color: rgb(232, 159, 74) !important;
+}
+.regex-highlight.capital,
+.regex-highlight.class,
+.regex-highlight.special {
+    color: rgb(54, 184, 100) !important;
+}
+
+.regex-highlight.function {
+    color: rgb(227, 230, 144) !important;
+}
+
+.regex-highlight.comment {
+    color: rgb(102, 159, 93) !important;
+}

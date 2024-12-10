@@ -1,7 +1,9 @@
+import {plexos} from "/plexos/ini/system.js"
 import Task from "/plexos/lib/classes/system/task.js"
 import File from "/plexos/lib/classes/files/file.js"
+let cfg     = plexos.cfg
 
-let task    = Task.id("TASKID")
+let task    = Task.id(/TASKID/)
 let desktop = task
 let mem     = task.mem
 
@@ -243,7 +245,7 @@ desktop.mem.grid.evaluateIconGrid = function (
                 }
             }
 
-            desktop.mem.grid.gridArr[gridHFinal - gridHdiff - 1].forEach(object => {
+            desktop.mem.grid.gridArr[gridHFinal - gridHdiff - 1]?.forEach(object => {
                 if(object.icon && cfg.desktop.grid.stickToBorder){
                     let iconsForShift = []
                     iconsForShift.push(object.icon)
@@ -336,7 +338,7 @@ desktop.mem.grid.evaluateIconGrid = function (
             }
             desktop.mem.grid.gridArr.forEach(column => {
                 let object = column[gridVFinal - gridVdiff - 1]
-                if(object.icon && cfg.desktop.grid.stickToBorder){
+                if(object && object.icon && cfg.desktop.grid.stickToBorder){
                     let iconsForShift = []
                     iconsForShift.push(object.icon)
                     let checkNextSlot = function(obj) {
@@ -468,22 +470,6 @@ desktop.mem.grid.evaluateIconGrid = function (
     //save changes in config source file
     if (!gridSettings) File.at("/config/desktop/grid.json").data = JSON.stringify(eval(cfg.desktop.grid), null, "\t")
 }
-
-desktop.mem.grid.realTimeGridEval = function(){
-    if
-    (
-        cfg.desktop.grid.autoHmargin ||
-        cfg.desktop.grid.autoVmargin ||
-        cfg.desktop.grid.autoHlength ||
-        cfg.desktop.grid.autoVlength
-    ){
-        desktop.mem.grid.evaluateIconGrid()
-        window.addEventListener("resize",desktop.mem.grid.evaluateIconGrid)
-        return
-    }
-    window.removeEventListener("resize",desktop.mem.grid.evaluateIconGrid)
-}
-
 desktop.mem.grid.gridAvailable = function(x, y){
     if(desktop.mem.grid.gridExists(x, y)){
         if(desktop.mem.grid.gridArr[x][y].used == false) return true

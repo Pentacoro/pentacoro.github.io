@@ -1,12 +1,15 @@
-import Task from "/plexos/lib/classes/system/task.js"
+import {cfg, plexos} from "/plexos/ini/system.js"
+import {getTask, iframeAntiHover, selectText, clearSelection, nullifyOnEvents} from "/plexos/lib/functions/dll.js"
+import Task from "/plexos/lib/classes/System/task.js"
 import File from "/plexos/lib/classes/files/file.js"
 import ContextMenu from "/plexos/lib/classes/interface/contextmenu.js"
 
-let task    = Task.id("TASKID")
+let System = plexos.System
+let task    = getTask(/TASKID/)
 let desktop = task
 let mem     = task.mem
-mem.class   = {}
 
+mem.class   = {}
 mem.class.IconDesk = class IconDesk {
     stat = 0
     constructor(p){
@@ -56,7 +59,7 @@ mem.class.IconDesk = class IconDesk {
         //------------------------|
 
         this.node = document.getElementById("Icon: "+this.name)
-        if (system.mem.var.envfocus!=desktop) this.node.classList.add("blur")
+        if (System.mem.var.envfocus!=desktop) this.node.classList.add("blur")
 
         this.clic()
     }
@@ -242,7 +245,7 @@ mem.class.IconDesk = class IconDesk {
                     //---------------------------------------|
                 }
             } else {
-                if (system.mem.var.shSelect == true && !system.mem.var.dragging) {
+                if (System.mem.var.shSelect == true && !System.mem.var.dragging) {
                     //light up 1 hover border onmousedown:
                     _this.highlight(true)
                     node.style.backgroundColor = 'rgb(0,0,0,0)'
@@ -264,14 +267,14 @@ mem.class.IconDesk = class IconDesk {
                 }
             }
     
-            if(cfg.audio.icons && !system.mem.var.dragging) {
+            if(cfg.audio.icons && !System.mem.var.dragging) {
                 plexos.Sound[0].volume = 0.5
                 plexos.Sound[0].play()
             }
             
             document.onmouseup = closeDragIcon
             if(e.button == 0) document.onmousemove = iconDrag
-            dll.iframeAntiHover(true)
+            iframeAntiHover(true)
         }								 
     
         function iconDrag(e) {
@@ -284,7 +287,7 @@ mem.class.IconDesk = class IconDesk {
             pos3 = e.clientX
             pos4 = e.clientY
     
-            system.mem.var.dragging = true
+            System.mem.var.dragging = true
             
             
             //managing selected icons
@@ -307,7 +310,7 @@ mem.class.IconDesk = class IconDesk {
             //stop moving when mouse button is released:
             document.onmouseup = null
             document.onmousemove = null
-            dll.iframeAntiHover(false)
+            iframeAntiHover(false)
             
             let iconsToValidate = []
     
@@ -326,7 +329,7 @@ mem.class.IconDesk = class IconDesk {
             }
             
             //unselect other folders on mouseup W/O drag UNLESS ctrl
-            if(e.ctrlKey == false && system.mem.var.dragging == false && e.button == 0) {
+            if(e.ctrlKey == false && System.mem.var.dragging == false && e.button == 0) {
                 for (let icon of desktop.pocket){
                     if (icon != _this) desktop.pocket = desktop.pocket.remove(icon)
                     icon.statNode(0)
@@ -340,7 +343,7 @@ mem.class.IconDesk = class IconDesk {
                 _this.statNode(1)
             }
             
-            system.mem.var.dragging = false
+            System.mem.var.dragging = false
         }
     }
     focus(){
@@ -371,7 +374,7 @@ mem.class.IconDesk = class IconDesk {
         exte = (exte!=null && exte.length > 0) ? exte[0] : ""
         this.statNode(1)
         this.stat = 0
-        dll.selectText(iconText,0, iconText.innerText.replace(exte,"").length)
+        selectText(iconText,0, iconText.innerText.replace(exte,"").length)
     
         iconText.style.textShadow = "none"
         iconText.style.display = "block"
@@ -383,7 +386,7 @@ mem.class.IconDesk = class IconDesk {
             return false
         }}
         function iconRenamingRestore(){
-            system.mem.var.shSelect = true
+            System.mem.var.shSelect = true
             
             thisIcon.statNode()
     
@@ -393,9 +396,9 @@ mem.class.IconDesk = class IconDesk {
             iconText.style.textShadow = ""
     
             iconText.blur();
-            dll.clearSelection();
+            clearSelection();
     
-            dll.nullifyOnEvents(iconText)
+            nullifyOnEvents(iconText)
         }
     
         setTimeout( () => {
@@ -412,7 +415,7 @@ mem.class.IconDesk = class IconDesk {
                 File.validName(iconText.textContent)
             ) {
                 //if the name is allowed --------------------|
-                system.mem.var.shSelect = true;
+                System.mem.var.shSelect = true;
     
                 if (editFrom === plexos.vtx) thisIcon.node.id = "Icon: "+iconText.textContent
                 
@@ -422,16 +425,16 @@ mem.class.IconDesk = class IconDesk {
                 iconText.style.backgroundColor = ""
                 iconText.style.textShadow = ""
     
-                //insert into fylesystem
+                //insert into fyleSystem
                 if (iconText.textContent != editFile.name) { //if the name changed
                     if (editFrom === plexos.vtx){
-                        Task.get("Desktop").mem.getIcon(editFile.name).file = editFrom.cfg.addr +"/"+ iconText.textContent
-                        Task.get("Desktop").mem.getIcon(editFile.name).name = iconText.textContent
+                        task.mem.getIcon(editFile.name).file = editFrom.cfg.addr +"/"+ iconText.textContent
+                        task.mem.getIcon(editFile.name).name = iconText.textContent
                     }
                     editFile.rename(iconText.textContent)
                     if (thisIcon.task) {
-                        taskid = thisIcon.task
-                        task   = Task.id(taskid)
+                        let taskid = thisIcon.task
+                        let task = getTask(taskid)
                         task.mem.iconArray = task.mem.iconArray.remove(thisIcon)
                         document.getElementsByClassName("list ID_"+taskid)[0].removeChild(thisIcon.node)
     
@@ -449,12 +452,12 @@ mem.class.IconDesk = class IconDesk {
     
                 thisIcon.statNode(0)
                 iconText.blur()
-                dll.clearSelection()
+                clearSelection()
     
-                dll.nullifyOnEvents(iconText)
+                nullifyOnEvents(iconText)
             } else {
                 //if the name not allowed --------------------|
-                system.mem.var.shSelect = false
+                System.mem.var.shSelect = false
                 iconText.style.backgroundColor = "#c90000"
     
                 //insist -> keep only edited selected
@@ -467,20 +470,20 @@ mem.class.IconDesk = class IconDesk {
                 }
                 function iconRenamingInsist(){
                     if (thisIcon.task) {
-                        for (let icon of Task.id(thisIcon.task).mem.iconArray){
+                        for (let icon of getTask(thisIcon.task).mem.iconArray){
                             icon.statNode(0)
-                            Task.id(thisIcon.task).pocket = Task.id(thisIcon.task).pocket.remove(icon)
+                            getTask(thisIcon.task).pocket = getTask(thisIcon.task).pocket.remove(icon)
                         }
                     } else {
-                        for (let icon of Task.get("Desktop")?.mem.iconArr){
+                        for (let icon of task?.mem.iconArr){
                             icon.statNode(0)
-                            Task.get("Desktop").pocket = Task.get("Desktop").pocket.remove(icon)
+                            task.pocket = task.pocket.remove(icon)
                         }
                     }
                     thisIcon.statNode(1)
                     thisIcon.stat = 0
     
-                    dll.selectText(iconText)
+                    selectText(iconText)
                 }
             }
         }
@@ -581,7 +584,7 @@ mem.repositionIcons = function(icons, mustSet = false){
             if (newGrid === undefined) {
                 icon.deleteNode(true)
                 icon.coor = null
-                File.at(icon.file).cfg.coor = null
+                File.at(icon.file).cfg.icon.coor = null
                 mem.var.hiddenIcons = mem.var.hiddenIcons + 1
                 task.emit("desktop-icon-hidden")
                 return
@@ -600,7 +603,7 @@ mem.repositionIcons = function(icons, mustSet = false){
         }
     }
     
-    if(cfg.audio.icons && system.mem.var.dragging) {
+    if(cfg.audio.icons && System.mem.var.dragging) {
         if(invalidIcons.length == iconAmount) {
             plexos.Sound[1].play()
         } else if (invalidIcons.length == 0) {

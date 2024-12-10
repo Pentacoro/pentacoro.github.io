@@ -1,6 +1,9 @@
+import {getTask, preloadImage} from "/plexos/lib/functions/dll.js"
+import {plexos} from "/plexos/ini/system.js"
 import Task from "/plexos/lib/classes/system/task.js"
+let cfg  = plexos.cfg
 
-let task = Task.id("TASKID")
+let task = getTask(/TASKID/)
 let mem  = task.mem
 
 mem.updateGridGraph = function(){
@@ -114,5 +117,5 @@ mem.var.graph2images =
     "./grid_graph_scroll_03-2.svg",
 ]
 for (let image of mem.var.graph2images){
-    dll.preloadImage(image)
+    preloadImage(image)
 }

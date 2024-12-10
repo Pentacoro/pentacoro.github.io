@@ -1,6 +1,8 @@
+import {plexos} from "/plexos/ini/system.js"
 import Task from "/plexos/lib/classes/system/task.js"
 import Window from "/plexos/lib/classes/interface/window.js"
-import dll from "/plexos/lib/functions/dll.js"
+import {displayComponent} from "/plexos/lib/functions/dll.js"
+let System = plexos.System
 
 export function initialize() {
     let params = /PARAMS/
@@ -11,7 +13,13 @@ export function initialize() {
 
     //on app init
     function ini() {
+        let task = Task.id(taskid)
+        let arg  = task.mem.arg
 
+        arg.title       = params.title
+        arg.description = params.description
+        arg.image       = params.image
+        arg.taskid      = params.taskid || Task.get("System").id
     }
     //on app end
     function end() {
@@ -32,44 +40,32 @@ export function initialize() {
     if (!task.id) return
 
     try {
-        let id = task.id
-
         //window generation
         new Window
         (
             {
                 name : params.name,
-                task : task.id, 
+                task : taskid, 
                 rezi : false, 
                 uiux : [], 
                 icon : (params.icon) ? params.icon : null,
                 stat : 1, 
                 widt : 400, 
-                heig : 150, 
+                heig : 132, 
                 minW : 400,
-                minH : 150
+                minH : 132
             }
         )
             
         ini()
 
-        let replacementPairs = [
-            {regex:/arg\[0\]/,text:JSON.stringify(params.name)},
-            {regex:/arg\[1\]/,text:JSON.stringify(params.type)},
-            {regex:/arg\[2\]/,text:JSON.stringify(params.title)},
-            {regex:/arg\[3\]/,text:JSON.stringify(params.description)},
-            {regex:/arg\[4\]/,text:JSON.stringify(params.taskid)},
-            {regex:/arg\[5\]/,text:JSON.stringify(params.icon)},
-        ]
-
-        dll.displayComponent({
+        displayComponent({
             url:html,
-            taskid:task.id,
-            replacementPairs:replacementPairs,
+            taskid:taskid,
             container:task.node
         })
     } catch (e) {
         console.error(e)
-        console.error(system.mem.var.error)
+        console.error(System.mem.var.error)
     }
 }

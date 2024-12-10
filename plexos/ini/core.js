@@ -1,49 +1,51 @@
+import {plexos} from "./system.js"
+
 import Task from "../lib/classes/system/task.js"
 import EventBus from "../lib/classes/system/eventbus.js"
 import WorkerPool from "../lib/classes/system/workerpool.js"
 import File from "../lib/classes/files/file.js"
 import Directory from "../lib/classes/files/directory.js"
 import Icon from "../lib/classes/interface/icon.js"
-import dll from "../lib/functions/dll.js"
+import {runLauncher, getValue, ajaxReturn, storageAvailable} from "../lib/functions/dll.js"
 import initialize from "./init.js"
 
-system = new Task(
+let System = new Task(
     {
-		name : "system",
+		name : "System",
 		inst : false,
 		appEnd : null,
 		node : null,
-		from : "sys"
+		from : "System"
 	}
 )
 
-system.mem.lau = {}
-system.mem.var.dragging = false
-system.mem.var.shSelect = true
-system.mem.var.envfocus = null
-system.mem.focus = function (env) {
-    if (system.mem.var.envfocus && env != system.mem.var.envfocus){
-        system.mem.var.envfocus.blur()
+System.mem.lau = {}
+System.mem.var.dragging = false
+System.mem.var.shSelect = true
+System.mem.var.envfocus = null
+System.mem.focus = function (env) {
+    if (System.mem.var.envfocus && env != System.mem.var.envfocus){
+        System.mem.var.envfocus.blur()
     }
-    system.mem.var.envfocus = env
-    system.mem.var.envfocus.focus()
+    System.mem.var.envfocus = env
+    System.mem.var.envfocus.focus()
 }
-system.bus = new EventBus()
-system.ini = {}
-system.ini.setVertex = function (address) {
+System.bus = new EventBus()
+System.ini = {}
+System.ini.setVertex = function (address) {
     plexos.vtx = File.at(address)
     let promiseInit = new Promise(async () => {
-        await dll.runLauncher("./plexos/app/sys/Desktop/desktop_lau.js",{addr:address})
+        await runLauncher("./plexos/app/sys/Desktop/desktop_lau.js",{addr:address})
     })
     promiseInit.then( () => {
         Task.get("Desktop").mem.grid.evaluateIconGrid()
         Task.get("Desktop").mem.renderIcons()
     })
 }
-system.ini.run = function () {
+System.ini.run = function () {
     initialize()
 }
-system.ini.recreateFiles = function (dir, newDir) {
+System.ini.recreateFiles = function (dir, newDir) {
     for (let file of Object.values(dir.dir)) {
         let Type = null 
         let Skey = null
@@ -78,28 +80,28 @@ system.ini.recreateFiles = function (dir, newDir) {
 
         if (Type === "Directory") {
             newFile.dir = {}
-            system.ini.recreateFiles(dir.dir[file.name], newFile)
+            System.ini.recreateFiles(dir.dir[file.name], newFile)
         }
     }
 }
-system.ini.defineCore = function () {
+System.ini.defineCore = function () {
     return new Promise ((resolve, reject) => {
-        if (dll.storageAvailable('localStorage')) {
+        if (storageAvailable('localStorage')) {
         
             if(window.localStorage.getItem("core")) {
                 let jsonCore = JSON.parse(window.localStorage.core)
                 let newCore  = Directory.coreTemplate()
         
-                system.ini.recreateFiles(jsonCore, newCore)
+                System.ini.recreateFiles(jsonCore, newCore)
             
                 resolve(newCore)
             } else {
-                let corePromise = dll.ajaxReturn("GET","/core.json")
+                let corePromise = ajaxReturn("GET","/core.json")
                 corePromise
                 .then(data=>{
                     if (data.status >= 200 && data.status < 300) throw data
                     plexos.core = Directory.coreTemplate()
-                    system.ini.recreateFiles(JSON.parse(data),plexos.core)
+                    System.ini.recreateFiles(JSON.parse(data),plexos.core)
                     resolve(plexos.core)
                 })
             }
@@ -109,36 +111,36 @@ system.ini.defineCore = function () {
         }
     }) 
 }
-
+plexos.System = System
 plexos.core = {}
-if (dll.getValue("core")) {
-    let corePromise = dll.ajaxReturn("GET",dll.getValue("core"))
+if (getValue("core")) {
+    let corePromise = ajaxReturn("GET",getValue("core"))
     corePromise
     .then(data=>{
         if (data.status >= 200 && data.status < 300) throw data
         plexos.core = Directory.coreTemplate()
-        system.ini.recreateFiles(JSON.parse(data),plexos.core)
+        System.ini.recreateFiles(JSON.parse(data),plexos.core)
         plexos.vtx = plexos.core.dir["vertex"]
-        system.ini.run()
+        System.ini.run()
     })
     .catch(()=>{
-        let corePromise = system.ini.defineCore()
+        let corePromise = System.ini.defineCore()
         corePromise
         .then(data=>{
             plexos.core = data
-            system.ini.run()
+            System.ini.run()
         })
     })
 } else {
-    let corePromise = system.ini.defineCore()
+    let corePromise = System.ini.defineCore()
     corePromise
     .then(data=>{
         plexos.core = data
-        system.ini.run()
+        System.ini.run()
     })
 }
 
-function downloadCoreJSON(exportName="core") {
+System.mem.downloadCoreJSON = function (exportName="core") {
     let jsonCore = JSON.parse(window.localStorage.core)
     let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(jsonCore));
     let downloadAnchorNode = document.createElement('a');

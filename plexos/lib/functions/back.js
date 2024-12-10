@@ -180,7 +180,6 @@ dll.loadFront = async function({url, taskid, data, replacementPairs = [], contai
                 } catch (e) {
                     e.taskId = taskid
                     e.source = src
-                    console.log(e)
                     dll.evalErrorPopup
                     (
                         js,

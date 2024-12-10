@@ -1,23 +1,25 @@
+import {cfg, plexos} from "/plexos/ini/system.js"
+import {runLauncher, iframeAntiHover, areRectanglesOverlap} from "/plexos/lib/functions/dll.js"
 import Task from "/plexos/lib/classes/system/task.js"
 import ContextMenu from "/plexos/lib/classes/interface/contextmenu.js"
 
-let task    = Task.id("TASKID")
+let System  = plexos.System
+let task    = Task.id(/TASKID/)
 let desktop = task
 let mem     = task.mem
 
 window.addEventListener("resize", e => {
-	task.node.style.width = document.body.offsetWidth + "px"
-    task.node.style.height = document.body.offsetHeight - cfg.desktop.taskbar.height + "px"
+	task.emit("desktop-resize")
 })
 
-//when desktop click-------------------|
+//when desktop click
 desktop.node.addEventListener("mousedown", e => {
-	system.mem.focus(desktop)
-	//if not clicking folder or window--------------|
+	System.mem.focus(desktop)
+	//if not clicking folder or window
 	if(
-		e.target.id == "desktopLayer" &&
+		(e.target.id == "desktopLayer" || e.target.id == "selectBox") &&
 		e.ctrlKey == false &&
-		!system.mem.var.dragging
+		!System.mem.var.dragging
 	) {
 		for (let icon of desktop.pocket){
 			desktop.pocket = desktop.pocket.remove(icon)
@@ -26,10 +28,10 @@ desktop.node.addEventListener("mousedown", e => {
 	} 
 })
 desktop.node.addEventListener("mousedown", e => {
-	//if not clicking folder or window--------------|
+	//if not clicking folder or window
 	if(
-		e.target.id == "desktopLayer" &&
-		!system.mem.var.dragging
+		(e.target.id == "desktopLayer" || e.target.id == "selectBox") &&
+		!System.mem.var.dragging
 	) {
 		desktop.mem.selectBox(e)
 	}
@@ -38,7 +40,7 @@ desktop.node.addEventListener("mousedown", e => {
 //open desk menu on right click background
 desktop.node.oncontextmenu = e => {
 	if(e.target == desktop.node) {
-		let envfocus = system.mem.var.envfocus
+		let envfocus = System.mem.var.envfocus
 
 		let menu = [
 			{name: "view", list: [
@@ -46,7 +48,7 @@ desktop.node.oncontextmenu = e => {
 					{name:"grid", list: [
 						{name:"Auto Length",icon:"url('plexos/res/images/svg/contextMenu/autogrid.svg')",func:() => desktop.mem.grid.autoLength()},
 						{name:"Auto Margin",icon:"url('plexos/res/images/svg/contextMenu/automargin.svg')",func:() => desktop.mem.grid.autoMargin()},
-						{name:"Grid Settings",icon:"url('plexos/res/images/svg/contextMenu/gridsettings.svg')",func:() => dll.runLauncher("/plexos/app/sys/Settings/Grid/deskGridOptions_lau.js",[],envfocus)},
+						{name:"Grid Settings",icon:"url('plexos/res/images/svg/contextMenu/gridsettings.svg')",func:() => runLauncher("/plexos/app/sys/Settings/Grid/deskGridOptions_lau.js",[],envfocus)},
 						]
 					}
 				]},
@@ -74,6 +76,7 @@ desktop.node.oncontextmenu = e => {
 
 //selectBox behavior----------------------------------------------------|
 desktop.mem.selectBox = function(e={ctrlKey:false}) {
+	if (document.getElementById("selectBox")) return
 	let pos1 = 0, pos2 = 0, posxIn = 0, posyIn = 0
 
 	let selectBox = document.createElement("div")
@@ -95,7 +98,7 @@ desktop.mem.selectBox = function(e={ctrlKey:false}) {
 		selectBox.style.top = posyIn + "px"
 		selectBox.style.left = posxIn + "px"
 
-		dll.iframeAntiHover(true)
+		iframeAntiHover(true)
 		document.onmouseup = selectBoxRelease
 		document.onmousemove = selectBoxSizing
 	}
@@ -128,8 +131,8 @@ desktop.mem.selectBox = function(e={ctrlKey:false}) {
 		
 		//iconReaction--------------------------------------------------|
 		for (let icon of desktop.mem.iconArr){
-			if (icon.node != null) { /*otherwise callback argument ruins everything*/
-				if (dll.areRectanglesOverlap(icon.node,selectBox)) {
+			if (icon.node != null) {
+				if (areRectanglesOverlap(icon.node,selectBox)) {
 					//light up colliding icon hover border:
 					icon.highlight(true)
 				} else {
@@ -138,19 +141,17 @@ desktop.mem.selectBox = function(e={ctrlKey:false}) {
 				}
 			}
 		}
-		//--------------------------------------------------iconReaction|
 	}
 	
 	function selectBoxRelease() {
-		dll.iframeAntiHover(false)
+		iframeAntiHover(false)
 		document.onmouseup = null
 		document.onmousemove = null
 
 		//iconReaction--------------------------------------------------|
-		
 		for (let icon of desktop.mem.iconArr){
-			if (icon.node != null) { /*otherwise callback argument ruins everything*/
-				if (dll.areRectanglesOverlap(icon.node, selectBox) && icon.stat === 0) {
+			if (icon.node != null) {
+				if (areRectanglesOverlap(icon.node, selectBox) && icon.stat === 0) {
 					desktop.pocket.push(icon)
 					icon.statNode(1)
 				} else if (wasCtrl == false) {
@@ -160,8 +161,7 @@ desktop.mem.selectBox = function(e={ctrlKey:false}) {
 				icon.highlight(false)
 			}
 		}
-		//--------------------------------------------------iconReaction|
 	
-		selectBox.parentElement.removeChild(selectBox)
+		selectBox.remove()
 	}
 }

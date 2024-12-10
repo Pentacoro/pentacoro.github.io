@@ -1,4 +1,5 @@
-import dll from  "../../functions/dll.js"
+import {plexos, cfg} from "../../../ini/system.js"
+import {renameKey, runLauncher} from  "../../functions/dll.js"
 import Task from "../system/task.js"
 
 export default class File {
@@ -132,7 +133,7 @@ export default class File {
             }
         }
 
-        dll.renameKey(parent.dir, this.name, rename)
+        renameKey(parent.dir, this.name, rename)
         let renamedFile = parent.dir[rename]
         let extension = (this.cfg.type==="Directory") ? "dir" : (rename.match(/\.(?:.(?<!\.))+$/s)!=null) ? rename.match(/(?:.(?<!\.))+$/s)[0] : ""
         renamedFile.name = rename
@@ -154,6 +155,6 @@ export default class File {
     }
 
     open() {
-        dll.runLauncher(cfg.apps[this.cfg.exte], {name:this.name, addr:this.cfg.addr}, system.mem.var.envfocus)
+        runLauncher(cfg.apps[this.cfg.exte], {name:this.name, addr:this.cfg.addr}, plexos.System.mem.var.envfocus)
     }
 }

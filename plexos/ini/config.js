@@ -1,4 +1,4 @@
-cfg = {
+let cfg = {
     system: {
         basePath: window.location
     },
@@ -49,3 +49,4 @@ cfg = {
         js:   "/plexos/app/data/Monaco/monaco_lau.js",
     }
 }
+export default cfg
