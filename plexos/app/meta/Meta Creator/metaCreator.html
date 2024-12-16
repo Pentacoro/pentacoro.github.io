@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./css/metaCreator.css">
+    <link rel="stylesheet" href="./css/inputs.css">
+    <title>Meta Creator</title>
+</head>
+<body>
+    <div class="appcontent">
+        <div class="container">
+            <span class="config-option config-url"><div class="optionName"><h4>URL: </h4></div> 
+                <input type="url" class="optionValue" name="URL" placeholder="Insert URL">
+            </span>
+            <span class="config-option config-drop"><div class="optionName"><h4>Type: </h4></div> 
+                <select class="optionValue" name="Type">
+                    <option value="web">Webpage <i>(.web)</i></option>
+                    <option value="img">Image <i>(.img)</i></option>
+                    <option value="vid">Video <i>(.vid)</i></option>
+                    <option value="aud">Audio <i>(.aud)</i></option>
+                    <option value="dl">Download <i>(.dl)</i></option>
+                </select>
+            </span>
+        </div>
+
+        <div class="buttons">
+            <button id="Accept" class="config-footer-button"><p>Accept</p></button>
+            <button id="Cancel" class="config-footer-button"><p>Cancel</p></button>
+        </div>
+    </div>
+
+    <script type="module" src="./js/metaCreator.js"></script>
+</body>
+</html>

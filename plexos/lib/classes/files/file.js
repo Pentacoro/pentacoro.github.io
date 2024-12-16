@@ -95,13 +95,36 @@ export default class File {
         return false
     }
 
-    static nameAvailable = function (text, _this, from){
+    static nameAvailable = function (text, icon, from){
         for (let [name, file] of Object.entries(from.dir)){
-            if (file.name == text && file.cfg.icon != _this) {
-                return true
+            if (file.name == text && file.cfg.icon != icon) {
+                return false
             }
         }
-        return false
+        return true
+    }
+
+    static returnAvailableName(name,icon,from){
+        if (!File.nameAvailable(name,icon,from)) {
+            //get extension and remove it from name
+            let exte = name.match(/\.(?:.(?<!\.))+$/s)
+            exte = (exte!=null && exte.length > 0) ? exte[0] : ""
+            name = name.replace(exte,"")
+
+            //get name instance amount if there is one
+            let amnt = name.match(/(?<!\w)\d+$/)
+            amnt = (amnt!=null && amnt.length > 0) ? parseInt(amnt[0],10) : ""
+
+            //get number of digits of name instance amount
+            let dgts = (amnt!="") ? (""+amnt).length : 1
+
+            //set name with instance amount, starting from two
+            name = (amnt!="") ? name.slice(0,(name.length)-dgts) + (amnt+1) : name + " 2"
+            name = name + exte
+
+            return File.returnAvailableName(name,icon,from)
+        }
+        return name
     }
 
     delete() {
@@ -116,8 +139,12 @@ export default class File {
     }
     rename(rename) {
         let parent  = File.at(this.cfg.parent)
+
+        rename = File.returnAvailableName(rename,null,File.at(this.cfg.parent))
+
         let newAddress = "" + parent.cfg.icon.file + "/" + rename
         let oldAddress = this.cfg.icon.file
+        let oldName = this.name
 
         this.cfg.addr = newAddress
         this.cfg.icon.file = newAddress
@@ -134,18 +161,31 @@ export default class File {
         }
 
         renameKey(parent.dir, this.name, rename)
+        
         let renamedFile = parent.dir[rename]
         let extension = (this.cfg.type==="Directory") ? "dir" : (rename.match(/\.(?:.(?<!\.))+$/s)!=null) ? rename.match(/(?:.(?<!\.))+$/s)[0] : ""
         renamedFile.name = rename
         renamedFile.cfg.exte = extension
+        renamedFile.cfg.icon.name = rename
         renamedFile.cfg.icon.exte = extension
+
+        if (parent===plexos.vtx) {
+            let desktop = Task.get("Desktop")
+            if  (desktop && desktop.mem.getIcon(oldName)?.node) {
+                desktop.mem.getIcon(oldName).file = newAddress
+                desktop.mem.getIcon(oldName).exte = extension
+                desktop.mem.getIcon(oldName).name = rename
+                desktop.mem.getIcon(rename).node.setAttribute("id", `Icon: ${rename}`)
+                desktop.mem.getIcon(rename).poseNode()
+            }
+        }
     }
 
     render(taskid=null) {
         if (File.at(this.cfg.parent) === plexos.vtx) { //if is on current vertex / render on desktop
             let desktop = Task.get("Desktop")
             if (desktop) {
-                if  (desktop.mem.getIcon(this.name)?.node) desktop.mem.getIcon(this.name).poseNode()
+                if  (desktop.mem.getIcon(this.name)?.node) desktop.mem.getIcon(this.name).render()
                 else desktop.mem.createDesktopIcons([this])
             }
         }

@@ -12,7 +12,7 @@ export default class Directory extends File {
             name : "core",
             cfg : new Configuration (
             {
-                icon : new Icon ({imag:"plexos/res/images/svg/desktopIcons/vertexPH.svg", name:"core", type:"Directory", stat:0}),
+                icon : new Icon ({imag:"plexos/res/images/svg/desktopIcons/defaultDIRc.svg", name:"core", type:"Directory", stat:0}),
                 type : "Directory",
                 move : false,
                 parent : "",
@@ -104,9 +104,18 @@ export default class Directory extends File {
     }
 
     static isOpen = function (addr) {
-        for (task of plexos.Tasks) {
-            if (task.apps === "exp" && task.mem.address === addr) return true
+        for (let task of plexos.Tasks) {
+            if (task.name === "Explorer" && task.mem.address === addr) return task
         }
         return false
+    }
+
+    isNameAvailable = function (text, icon){
+        for (let [name, file] of Object.entries(from.dir)){
+            if (file.name == text && file.cfg.icon != icon) {
+                return false
+            }
+        }
+        return true
     }
 }

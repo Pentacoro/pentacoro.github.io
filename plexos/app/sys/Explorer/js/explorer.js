@@ -111,7 +111,7 @@ mem.new = function(e, _this, Type, name){
     let typeDefaults = File.typeDefaults(Type)
 
     function createExplorerFile(name) {
-		if(!File.nameAvailable(name, null, editFrom)) {
+		if(File.nameAvailable(name, null, editFrom)) {
             let newFileIcon = new Icon (
                 {
                     imag : typeDefaults.iconImag,

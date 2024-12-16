@@ -16,7 +16,7 @@ export default class Window {
 		}
 
         this.stat = p.stat || this.stat // 0 => minimized | 1/2 => open/selected | 3/4 => maximized/selected
-        this.uiux = p.uiux || this.uiux // 0 => no button | 1 =>   only X button | 2 => X and minimize buttons | 3 => X, minimize and maximize buttons
+        this.uiux = p.uiux || this.uiux
         this.posX = p.posX || this.posX
         this.posY = p.posY || this.posY
         
@@ -151,14 +151,6 @@ export default class Window {
 				}
 			}
 		}
-
-		const queryMethods = [
-			'getElementsByName',
-			'getElementById',
-			'getElementsByClassName',
-			'querySelector',
-			'querySelectorAll',
-		]
 		
 		nodeGetters(newContent, newContent.classList[0], newWindow.classList[1])
 		

@@ -78,6 +78,9 @@ export function nodeGetters(node, nodeSelector, id){
     node['querySelectorAll'] = function (qry) {
         return document.querySelectorAll(`.${id} .${nodeSelector} ${qry}`)
     }
+    node['getElementsByTagName'] = function (tag) {
+        return document.querySelectorAll(`.${id} .${nodeSelector} ${tag}`)
+    }
 }
 export async function displayComponent({url, taskid, container, env, compid=null}){
     let appHTML = ajaxReturn("get", url)
@@ -104,7 +107,7 @@ export async function loadFront({url, taskid, data, container, env = null, compi
             let promiseStyleArray = []
             let cont = document.createElement("div")
             cont.innerHTML = data
-            let linkArray = cont.getElementsByTagName("link")
+            let linkArray = cont.querySelectorAll("link")
 
             function getStyleContent(link) {
                 return new Promise (async (resolve, reject) => {
@@ -263,7 +266,7 @@ export async function runLauncher(url, args = {}, env = null, name = ""){
         }
     })
     appLauncher.catch( e => {
-        console.err(e)
+        console.error(e)
         //Task.get("System").mem.var.error = e
         //Task.get("System").mem.var.errorB = [["Okay"]]
         

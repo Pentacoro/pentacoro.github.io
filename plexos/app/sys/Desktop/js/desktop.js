@@ -166,7 +166,7 @@ mem.new = function(e, _this, Type, name){
 	let typeDefaults = File.typeDefaults(Type)
 
 	function createDesktopFile(name) {
-		if(!File.nameAvailable(name, null, editFrom)) {
+		name = File.returnAvailableName(name, null, editFrom)
 			let newFileIcon = new Icon (
 				{
 					imag : typeDefaults.iconImag,
@@ -192,17 +192,6 @@ mem.new = function(e, _this, Type, name){
 				newDesktopIcon.statNode()
 			}
 			return newDesktopIcon
-		} else {
-			let exte = name.match(/\.(?:.(?<!\.))+$/s)
-			exte = (exte!=null && exte.length > 0) ? exte[0] : ""
-			name = name.replace(exte,"")
-			let amnt = name.match(/(?<!\w)\d+$/)
-			amnt = (amnt!=null && amnt.length > 0) ? parseInt(amnt[0],10) : ""
-			let dgts = (amnt!="") ? (""+amnt).length : 1
-			name = (amnt!="") ? name.slice(0,(name.length)-dgts) + (amnt+1) : name + " 2"
-			name = name + exte
-			return createDesktopFile(name)
-		}
 	}
 
 	createDesktopFile(name).rename()

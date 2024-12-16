@@ -15,9 +15,7 @@
     user-select: text;
 }
 .codeLine, .codeLine>span {
-    width: fit-content;
-    min-width: 100%;
-
+    height: auto;
     margin: 0;
     color: white;
     font-family: 'Courier New', Courier, monospace !important;

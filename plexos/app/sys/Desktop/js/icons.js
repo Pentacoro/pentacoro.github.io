@@ -216,6 +216,13 @@ mem.class.IconDesk = class IconDesk {
         File.at(this.file).cfg.icon.coor = this.coor
         this.node.childNodes[1].innerText = this.name
     }
+    render(){
+        this.statNode()
+        this.poseNode()
+
+        this.imag = File.at(this.file).cfg.icon.imag
+        this.node.children[0].children[0].setAttribute("style", "background-image: url('"+this.imag+"');")
+    }
     clic(){
         this.node.oncontextmenu = e => ContextMenu.open(e,this)
         this.node.onmousedown = e => this.drag(e);
@@ -410,7 +417,7 @@ mem.class.IconDesk = class IconDesk {
         }
         function iconRenaming(){
             if(
-                !File.nameAvailable(iconText.textContent, editFile.cfg.icon, editFrom) &&
+                File.nameAvailable(iconText.textContent, editFile.cfg.icon, editFrom) &&
                 File.validName(iconText.textContent)
             ) {
                 //if the name is allowed --------------------|

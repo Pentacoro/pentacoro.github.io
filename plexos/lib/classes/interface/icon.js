@@ -14,6 +14,10 @@ export default class Icon {
 
         this.drop = []
     }
+    setImage(url){
+        this.imag = url
+        File.at(this.file).render()
+    }
     clic(){
         this.node.oncontextmenu = e => ContextMenu.open(e,this)
         this.node.onmousedown = e => this.drag(e);

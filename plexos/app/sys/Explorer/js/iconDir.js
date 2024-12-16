@@ -252,11 +252,11 @@ mem.class.IconDir = class IconDir {
         }
         function iconRenaming(){
             if(
-                !File.nameAvailable(iconText.textContent, editFile.cfg.icon, editFrom) &&
+                File.nameAvailable(iconText.textContent, editFile.cfg.icon, editFrom) &&
                 File.validName(iconText.textContent)
             ) {
                 //if the name is allowed --------------------|
-                System.mem.var.shSelect = true;
+                System.mem.var.shSelect = true
     
                 if (editFrom === plexos.vtx) thisIcon.node.id = "Icon: "+iconText.textContent
                 
@@ -291,6 +291,7 @@ mem.class.IconDir = class IconDir {
                     }
                 }
     
+                mem.refresh()
                 thisIcon.statNode(0)
                 iconText.blur()
                 clearSelection()
