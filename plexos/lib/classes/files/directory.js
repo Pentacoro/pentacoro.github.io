@@ -12,7 +12,7 @@ export default class Directory extends File {
             name : "core",
             cfg : new Configuration (
             {
-                icon : new Icon ({imag:"plexos/res/images/svg/desktopIcons/defaultDIRc.svg", name:"core", type:"Directory", stat:0}),
+                icon : new Icon ({imag:"plexos/res/themes/Plexos Hyper/icons/files/defaultDIRc.svg", name:"core", type:"Directory", stat:0}),
                 type : "Directory",
                 move : false,
                 parent : "",

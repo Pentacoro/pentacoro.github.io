@@ -68,17 +68,17 @@ export default class File {
         
         switch (Type) {
             case "Directory":
-                defaults.iconImag = "plexos/res/images/svg/desktopIcons/defaultDIR.svg"
+                defaults.iconImag = "plexos/res/themes/Plexos Hyper/icons/files/defaultDIR.svg"
                 defaults.confType = "Directory"
                 defaults.skeyName = "dir"
                 break
             case "Metafile": 
-                defaults.iconImag = "plexos/res/images/svg/desktopIcons/defaultMSF.svg"
+                defaults.iconImag = "plexos/res/themes/Plexos Hyper/icons/files/defaultMSF.svg"
                 defaults.confType = "Metafile"
                 defaults.skeyName = "meta"
                 break
             case "JsString":
-                defaults.iconImag = "plexos/res/images/svg/desktopIcons/defaultTXT.svg"
+                defaults.iconImag = "plexos/res/themes/Plexos Hyper/icons/files/defaultTXT.svg"
                 defaults.confType = "JsString"
                 defaults.skeyName = "data"
         }

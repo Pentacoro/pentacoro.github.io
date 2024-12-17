@@ -94,7 +94,7 @@
 /*BUTTONS ----------------------*/
 .windowInner>.header>.headerButtons>.X{
     background-color: #FF5189;
-    background-image: url("../plexos/res/images/svg/windowUI/headerClose.svg");
+    background-image: url("../plexos/res/themes/Plexos Hyper/icons/interface/windowButtons/headerClose.svg");
 	background-repeat: no-repeat;
 	background-position: center;
 	background-size: 70%;
@@ -120,7 +120,7 @@
 }
 .windowInner>.header>.headerButtons>.O{
     background-color: #f0ca2200;
-    background-image: url("../plexos/res/images/svg/windowUI/headerFullscreen.svg");
+    background-image: url("../plexos/res/themes/Plexos Hyper/icons/interface/windowButtons/headerFullscreen.svg");
 	background-repeat: no-repeat;
 	background-position: center;
 	background-size: 70%;
@@ -146,7 +146,7 @@
 }
 .windowInner>.header>.headerButtons>._{
     background-color: #f0ca2200;
-    background-image: url("../plexos/res/images/svg/windowUI/headerMinimize-01.svg");
+    background-image: url("../plexos/res/themes/Plexos Hyper/icons/interface/windowButtons/headerMinimize-01.svg");
 	background-repeat: no-repeat;
 	background-position: center;
 	background-size: 70%;

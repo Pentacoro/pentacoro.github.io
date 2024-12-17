@@ -60,22 +60,22 @@ task.node.getElementsByClassName("list")[0].oncontextmenu = e => {
 
         let menu = [
             {name: "icon", list: [
-                {name:"View",icon:"url('plexos/res/images/svg/contextMenu/grid.svg')",func:envfocus.mem.refresh},
-                {name:"Refresh",icon:"url('plexos/res/images/svg/contextMenu/refresh.svg')",func:envfocus.mem.refresh},
+                {name:"View",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/grid.svg')",func:envfocus.mem.refresh},
+                {name:"Refresh",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/refresh.svg')",func:envfocus.mem.refresh},
             ]},
             {name: "file", list: [
-                {name:"New",icon:"url('plexos/res/images/svg/contextMenu/new2.svg')",func: [
+                {name:"New",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/new2.svg')",func: [
                     {name: "new", list: [
-                        {name:"Directory",icon:"url('plexos/res/images/svg/contextMenu/directory.svg')",func:() => envfocus.mem.new(e,task,"Directory","New Folder")},
-                        {name:"Metafile",icon:"url('plexos/res/images/svg/contextMenu/metafile.svg')",func:() => envfocus.mem.new(e,task,"Metafile","New Metafile.msf")},
-                        {name:"Text Document",icon:"url('plexos/res/images/svg/contextMenu/textfile.svg')",func:() => envfocus.mem.new(e,task,"JsString","New Text Document.txt")},
+                        {name:"Directory",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/directory.svg')",func:() => envfocus.mem.new(e,task,"Directory","New Folder")},
+                        {name:"Metafile",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/metafile.svg')",func:() => envfocus.mem.new(e,task,"Metafile","New Metafile.msf")},
+                        {name:"Text Document",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/textfile.svg')",func:() => envfocus.mem.new(e,task,"JsString","New Text Document.txt")},
                     ]}
                 ]},
-                {name:"Paste",icon:"url('plexos/res/images/svg/contextMenu/paste.svg')",func: () => {return} },
+                {name:"Paste",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/paste.svg')",func: () => {return} },
             ]},
             {name: "info", list: [
-                {name:"About",icon:"url('plexos/res/images/svg/contextMenu/about.svg')",func: () => {return} },
-                {name:"Properties",icon:"url('plexos/res/images/svg/contextMenu/properties.svg')",func: () => {return} }
+                {name:"About",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/about.svg')",func: () => {return} },
+                {name:"Properties",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/properties.svg')",func: () => {return} }
             ]}
         ]
         ContextMenu.open(e, task, menu)

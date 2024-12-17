@@ -42,7 +42,7 @@ export function initialize(){
             task : task.id, 
             resi : true, 
             uiux : [{class:"_", function: ()=>console.log("Minimize")},{class:"O", function: ()=>console.log("Maximize")}], 
-            icon : (File.at(params.addr)) ? File.at(params.addr).cfg.icon.imag : "/plexos/res/images/svg/desktopIcons/defaultFile.svg",
+            icon : (File.at(params.addr)) ? File.at(params.addr).cfg.icon.imag : "/plexos/res/themes/Plexos Hyper/icons/files/defaultFile.svg",
             stat : 1, 
             widt : 700, 
             heig : 460, 

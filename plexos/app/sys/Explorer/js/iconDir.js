@@ -136,7 +136,7 @@ mem.class.IconDir = class IconDir {
                     if (pockImg === 1) {
                         iconShipImg.setAttribute("style", "background-image: url('"+_this.imag+"'); background-size: 68%;")
                     } else {
-                        iconShipImg.setAttribute("style", "background-image: url('/plexos/res/images/svg/miscUI/pocket_ship_"+pockImg+".svg')")
+                        iconShipImg.setAttribute("style", "background-image: url('/plexos/res/themes/Plexos Hyper/icons/interface/fileDrag/pocket_ship_"+pockImg+".svg')")
                     }
     
                     let iconShipSize = document.createElement("div")

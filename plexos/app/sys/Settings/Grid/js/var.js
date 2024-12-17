@@ -9,7 +9,7 @@ mem.var = {}
 
 //configuration
 mem.var.config = "cfg.desktop.grid"
-mem.var.configFile = "config/desktop/grid.json"
+mem.var.configFile = "plexos/cfg/desktop/grid.json"
 mem.var.configClone = { ...eval(mem.var.config)}
 
 //html references

@@ -44,30 +44,30 @@ desktop.node.oncontextmenu = e => {
 
 		let menu = [
 			{name: "view", list: [
-				{name:"Grid",icon:"url('plexos/res/images/svg/contextMenu/grid2.svg')",func:[
+				{name:"Grid",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/grid2.svg')",func:[
 					{name:"grid", list: [
-						{name:"Auto Length",icon:"url('plexos/res/images/svg/contextMenu/autogrid.svg')",func:() => desktop.mem.grid.autoLength()},
-						{name:"Auto Margin",icon:"url('plexos/res/images/svg/contextMenu/automargin.svg')",func:() => desktop.mem.grid.autoMargin()},
-						{name:"Grid Settings",icon:"url('plexos/res/images/svg/contextMenu/gridsettings.svg')",func:() => runLauncher("/plexos/app/sys/Settings/Grid/deskGridOptions_lau.js",[],envfocus)},
+						{name:"Auto Length",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/autogrid.svg')",func:() => desktop.mem.grid.autoLength()},
+						{name:"Auto Margin",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/automargin.svg')",func:() => desktop.mem.grid.autoMargin()},
+						{name:"Grid Settings",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/gridsettings.svg')",func:() => runLauncher("/plexos/app/sys/Settings/Grid/deskGridOptions_lau.js",[],envfocus)},
 						]
 					}
 				]},
-				{name:"Refresh",icon:"url('plexos/res/images/svg/contextMenu/refresh.svg')",func: () => desktop.mem.refresh()},
+				{name:"Refresh",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/refresh.svg')",func: () => desktop.mem.refresh()},
 			]},
 			{name: "file", list: [
-				{name:"New",icon:"url('plexos/res/images/svg/contextMenu/new2.svg')",func:[
+				{name:"New",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/new2.svg')",func:[
 					{name:"new", list: [
-						{name:"Directory",icon:"url('plexos/res/images/svg/contextMenu/directory.svg')",func:() => desktop.mem.new(e,desktop,"Directory","New Folder")},
-						{name:"Metafile",icon:"url('plexos/res/images/svg/contextMenu/metafile.svg')",func:() => desktop.mem.new(e,desktop,"Metafile", "New Metafile.msf")},
-						{name:"Text Document",icon:"url('plexos/res/images/svg/contextMenu/textfile.svg')",func:() => desktop.mem.new(e,desktop,"JsString", "New Text Document.txt")},
+						{name:"Directory",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/directory.svg')",func:() => desktop.mem.new(e,desktop,"Directory","New Folder")},
+						{name:"Metafile",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/metafile.svg')",func:() => desktop.mem.new(e,desktop,"Metafile", "New Metafile.msf")},
+						{name:"Text Document",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/textfile.svg')",func:() => desktop.mem.new(e,desktop,"JsString", "New Text Document.txt")},
 						]
 					}
 				]},
-			{name:"Paste",icon:"url('plexos/res/images/svg/contextMenu/paste.svg')",func: () => {return} },
+			{name:"Paste",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/paste.svg')",func: () => {return} },
 			]},
 			{name: "info", list: [
-				{name:"Settings",icon:"url('plexos/res/images/svg/contextMenu/settings2.svg')",func: () => {return} },
-				{name:"About",icon:"url('plexos/res/images/svg/contextMenu/about.svg')",func: () => {return} }
+				{name:"Settings",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/settings2.svg')",func: () => {return} },
+				{name:"About",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/about.svg')",func: () => {return} }
 			]}
 		]
 		ContextMenu.open(e, desktop, menu)

@@ -468,7 +468,7 @@ desktop.mem.grid.evaluateIconGrid = function (
     desktop.mem.grid.checkGridGap()
 
     //save changes in config source file
-    if (!gridSettings) File.at("/config/desktop/grid.json").data = JSON.stringify(eval(cfg.desktop.grid), null, "\t")
+    if (!gridSettings) File.at("/plexos/cfg/desktop/grid.json").data = JSON.stringify(eval(cfg.desktop.grid), null, "\t")
 }
 desktop.mem.grid.gridAvailable = function(x, y){
     if(desktop.mem.grid.gridExists(x, y)){

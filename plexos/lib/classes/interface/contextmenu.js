@@ -3,7 +3,7 @@ import Task from "../system/task.js" //file explorer deletion
 import File from "../files/file.js"
 
 export default class ContextMenu {
-    static configAddr = "/config/context"
+    static configAddr = "/plexos/cfg/context"
     static contextVar = null
     static subMenus   = 0
     static target     = null

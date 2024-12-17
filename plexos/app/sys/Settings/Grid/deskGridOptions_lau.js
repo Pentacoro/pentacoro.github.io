@@ -34,7 +34,7 @@ export function initialize(){
             task : task.id, 
             resi : false, 
             uiux : [], 
-            icon : "/plexos/res/images/svg/desktopIcons/settingsPlaceholder.svg",
+            icon : "/plexos/res/themes/Plexos Hyper/icons/files/settingsPlaceholder.svg",
             stat : 1, 
             widt : 361, 
             heig : 490, 
