@@ -83,24 +83,15 @@ mem.class.IconDesk = class IconDesk {
                 this.node.classList.remove("active")
                 this.node.classList.remove("moving")
                 this.node.style.backgroundColor = ''
-
-                //back to icon layer
-                document.getElementById("iconLayer").appendChild(this.node)
                 break
             case 1:
                 if(!this.node.classList.contains("active")) this.node.className += " active"
                 if(!desktop.pocket.includes(this)) desktop.pocket.push(this)
                 this.node.classList.remove("moving")
                 this.node.style.backgroundColor = ''
-
-                //back to icon layer
-                document.getElementById("iconLayer").appendChild(this.node)
                 break
             case 2: 
                 if(!this.node.classList.contains("moving")) this.node.className += " moving"
-
-                //dragLayer layer
-                document.getElementById("dragLayer").appendChild(this.node)
                 break
             default: 
         }
@@ -224,8 +215,8 @@ mem.class.IconDesk = class IconDesk {
         this.node.children[0].children[0].setAttribute("style", "background-image: url('"+this.imag+"');")
     }
     clic(){
+        this.node.onmousedown = e => this.drag(e)
         this.node.oncontextmenu = e => ContextMenu.open(e,this)
-        this.node.onmousedown = e => this.drag(e);
         this.node.ondblclick = e => File.at(this.file).open()
     }
     drag(e){
