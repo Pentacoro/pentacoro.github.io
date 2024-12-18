@@ -273,26 +273,12 @@ mem.class.IconDir = class IconDir {
                         Task.get("Desktop").mem.getIcon(editFile.name).name = iconText.textContent
                     }
                     editFile.rename(iconText.textContent)
-                    if (thisIcon.task) {
-                        let taskid = thisIcon.task
-                        task   = Task.id(taskid)
-                        task.mem.iconArray = task.mem.iconArray.remove(thisIcon)
-                        task.node.getElementsByClassName("list")[0].removeChild(thisIcon.node)
-    
-                        editFile.render(taskid)
-                        thisIcon = task.mem.iconArray[task.mem.iconArray.length-1]
-    
-                        for (let icon of task.mem.iconArray) {
-                            if (icon.name == iconText.textContent) {
-                                icon.statNode(1)
-                                task.pocket.push(icon)
-                            }
-                        }
-                    }
+                    thisIcon.file = editFile.cfg.addr
+                    thisIcon.name = iconText.textContent
+                    task.pocket.push(thisIcon)
                 }
     
-                mem.refresh()
-                thisIcon.statNode(0)
+                thisIcon.statNode(1)
                 iconText.blur()
                 clearSelection()
     

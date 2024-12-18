@@ -109,13 +109,4 @@ export default class Directory extends File {
         }
         return false
     }
-
-    isNameAvailable = function (text, icon){
-        for (let [name, file] of Object.entries(from.dir)){
-            if (file.name == text && file.cfg.icon != icon) {
-                return false
-            }
-        }
-        return true
-    }
 }

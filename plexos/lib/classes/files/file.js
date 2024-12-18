@@ -54,7 +54,6 @@ export default class File {
     
             }
         }
-    
         //return file if expression indeed finds a file, otherwise return null
         return (eval(expression)!=undefined) ? eval(expression) : null
     }
@@ -152,11 +151,12 @@ export default class File {
         if (this.dir) rerouteChildren(this)
 
         function rerouteChildren(parent) {
-            for ([name, file] of Object.entries(parent.dir)) {
+            for (let pair of Object.entries(parent.dir)) {
+                let file = pair[1]
                 file.cfg.addr = file.cfg.addr.replace(oldAddress, newAddress)
                 file.cfg.parent = file.cfg.parent.replace(oldAddress, newAddress)
                 file.cfg.icon.file = file.cfg.icon.file.replace(oldAddress, newAddress)
-                rerouteChildren(file)
+                if (file.exte === "dir") rerouteChildren(file)
             }
         }
 
