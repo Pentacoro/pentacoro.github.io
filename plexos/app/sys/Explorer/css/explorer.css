@@ -46,7 +46,7 @@
 }
 .nav>.addressBox{
     background-color: white;
-    border: 3px solid rgb(174, 183, 204);
+    border: 1px solid rgb(174, 183, 204);
     cursor: text;
 
     display: flex;

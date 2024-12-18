@@ -336,6 +336,7 @@ mem.class.IconDesk = class IconDesk {
             } else {
                 for (let icon of desktop.pocket){
                     icon.highlight(false)
+                    document.getElementById("iconLayer").appendChild(icon.node)
                 }
                 _this.statNode(1)
             }

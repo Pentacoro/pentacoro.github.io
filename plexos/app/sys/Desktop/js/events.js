@@ -15,7 +15,7 @@ window.addEventListener("resize", e => {
 //when desktop click
 desktop.node.addEventListener("mousedown", e => {
 	System.mem.focus(desktop)
-	//if not clicking folder or window
+	//if not clicking icon
 	if(
 		(e.target.id == "desktopLayer" || e.target.id == "selectBox") &&
 		e.ctrlKey == false &&
@@ -28,7 +28,7 @@ desktop.node.addEventListener("mousedown", e => {
 	} 
 })
 desktop.node.addEventListener("mousedown", e => {
-	//if not clicking folder or window
+	//if not clicking icon
 	if(
 		(e.target.id == "desktopLayer" || e.target.id == "selectBox") &&
 		!System.mem.var.dragging
