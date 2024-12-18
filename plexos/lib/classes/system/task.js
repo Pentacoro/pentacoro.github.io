@@ -74,15 +74,15 @@ export default class Task {
         Task.checkUniqueID(this)
         
         //end task
-        this.appEnd = p.appEnd || null
+        this.onEnd = p.onEnd || null
 
         plexos.Tasks.push(this)
     }
     end () {
-        if (this.appEnd) this.appEnd()
+        if (this.onEnd) this.onEnd()
 
         //delete style tags
-        for (let styleTag of document.head.getElementsByClassName("ID_"+this.id)) {
+        for (let styleTag of document.head.getElementsByClassName(this.id)) {
             styleTag.parentElement.removeChild(styleTag)
         }
         //close window

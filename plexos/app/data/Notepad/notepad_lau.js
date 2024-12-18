@@ -28,7 +28,7 @@ export function initialize() {
         {
             name : "Notepad",
             inst : true,
-            appEnd : end,
+            onEnd : end,
             node : null,
             from : "Plexus",
             id   : taskid

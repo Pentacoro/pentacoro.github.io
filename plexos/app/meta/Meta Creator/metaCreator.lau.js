@@ -29,7 +29,7 @@ export function initialize() {
         {
             name : "Meta Creator",
             inst : true,
-            appEnd : end,
+            onEnd : end,
             node : null,
             from : "System",
             id   : taskid

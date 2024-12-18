@@ -40,7 +40,7 @@ export default class Window {
     }
     createNode(){
 		let newWindow = document.createElement("div")
-		newWindow.setAttribute("class", "window ID_"+this.task)
+		newWindow.setAttribute("class", "window "+this.task)
 		newWindow.setAttribute("id", "window_" + plexos.Windows.indexOf(this))
 	
 		let newWindowInner = document.createElement("div")

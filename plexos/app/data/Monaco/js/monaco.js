@@ -50,6 +50,6 @@ require(["vs/editor/editor.main"], function () {
 		task.node.getElementsByClassName("editor")[0]?.getElementsByClassName("view-overlays focused")[0]?.classList.remove("focused")
 	}
 })
-task.appEnd = e => {
+task.onEnd = e => {
 	mem.editor.dispose()
 }

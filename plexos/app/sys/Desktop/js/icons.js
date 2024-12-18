@@ -442,7 +442,7 @@ mem.class.IconDesk = class IconDesk {
                         let taskid = thisIcon.task
                         let task = getTask(taskid)
                         task.mem.iconArray = task.mem.iconArray.remove(thisIcon)
-                        document.getElementsByClassName("list ID_"+taskid)[0].removeChild(thisIcon.node)
+                        document.getElementsByClassName("list "+taskid)[0].removeChild(thisIcon.node)
     
                         editFile.render(taskid)
                         thisIcon = task.mem.iconArray[task.mem.iconArray.length-1]

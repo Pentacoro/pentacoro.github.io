@@ -7,7 +7,8 @@ let task = getTask(/TASKID/)
 let mem  = task.mem
 
 //on app close
-task.appEnd = function () {
+task.onEnd = function () {
+    eval(mem.var.config +" = task.mem.var.configClone")
     task.emit("desktop-grid-settings-closed")
     File.at(mem.var.configFile).data = JSON.stringify(eval(mem.var.config), null, "\t")
 }
@@ -34,10 +35,10 @@ for (let tab of task.node.getElementsByClassName("config-tab")) {
 //footer buttons 
 task.node.getElementsByClassName("footer-accept")[0].onclick = (e)=> {
     File.at(mem.var.configFile).data = JSON.stringify(eval(mem.var.config), null, "\t")
+    mem.var.configClone = { ...eval(mem.var.config)}
     task.end()
 }
 task.node.getElementsByClassName("footer-cancel")[0].onclick = (e)=> {
-    eval(mem.var.config +" = task.mem.var.configClone")
     task.end()
 }
 task.node.getElementsByClassName("footer-apply")[0].onclick = (e)=> {

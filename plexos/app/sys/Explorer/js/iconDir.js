@@ -23,16 +23,16 @@ mem.class.IconDir = class IconDir {
     createNode(){
         //Icon HTML structure-----|
         let newIcon = document.createElement("div")
-        newIcon.setAttribute("class", "explorerIcon ID_"+this.task)
+        newIcon.setAttribute("class", "explorerIcon "+this.task)
         newIcon.setAttribute("title", this.name)
 
         let newIconImage = document.createElement("div")
-        newIconImage.setAttribute("class", "explorerIconImage ID_"+this.task)
+        newIconImage.setAttribute("class", "explorerIconImage "+this.task)
         newIconImage.setAttribute("style", "background-image: url('"+this.imag+"');")
         newIcon.appendChild(newIconImage)
 
         let newIconText = document.createElement("span")
-        newIconText.setAttribute("class", "explorerIconText ID_"+this.task)
+        newIconText.setAttribute("class", "explorerIconText "+this.task)
         let newIconTextNode = document.createTextNode(this.name)
         newIconText.appendChild(newIconTextNode)
         newIcon.appendChild(newIconText)

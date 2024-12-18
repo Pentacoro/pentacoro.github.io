@@ -26,7 +26,7 @@ export function initialize() {
         {
             name : "Desktop",
             inst : false,
-            appEnd : end,
+            onEnd : end,
             node : document.getElementById("desktopLayer"),
             from : "Plexus",
             id   : taskid

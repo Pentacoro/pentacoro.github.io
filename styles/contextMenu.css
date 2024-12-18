@@ -6,10 +6,12 @@
     width: auto;
     height: auto;
 
-    background-color: #eeeeee;
+    background-color: #a1a1a1;
+    border: solid 1px #a1a1a1;
+    gap: 1px;
 
-    display: grid;
-    grid-template-rows: auto auto auto;
+    display: flex;
+    flex-direction: column;
 
     z-index: 999;
     overflow: auto;
@@ -20,10 +22,7 @@
     filter: drop-shadow(2px 2px 1px rgba(0, 0, 0, 0.4));
 }
 .contextSection{
-    border: #a1a1a1;
-    border-width: 1px;
-    border-style: solid;
-    border-bottom: 0;
+    background-color: #eeeeee;
 }
 .contextSection>div{
     display: grid;

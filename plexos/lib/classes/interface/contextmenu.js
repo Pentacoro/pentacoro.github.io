@@ -149,11 +149,6 @@ export default class ContextMenu {
             z = z + (section.list.length - 1)
             x++
         }
-        //bottom border
-        let bottomSection = document.createElement("div")
-        bottomSection.classList.add("contextSection")
-        node.appendChild(bottomSection)
-        
         function openSubOpt(opt, optPos, sub) {
             //check if submenu isn't open already
             for (let subM of document.getElementsByClassName("clickContext")) {

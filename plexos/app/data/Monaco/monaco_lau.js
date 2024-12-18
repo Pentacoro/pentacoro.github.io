@@ -27,7 +27,7 @@ export function initialize(){
         {
             name : "Monaco",
             inst : true,
-            appEnd : end,
+            onEnd : end,
             node : null,
             from : "",
             id   : taskid

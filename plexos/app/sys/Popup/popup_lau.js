@@ -31,7 +31,7 @@ export function initialize() {
         {
             name : "Popup",
             inst : true,
-            appEnd : end,
+            onEnd : end,
             node : null,
             from : "System",
             id   : taskid

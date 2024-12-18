@@ -37,7 +37,7 @@ export default class Component {
             container:this.container,
             compid:this.id,
         })
-        this.container.classList.add("ID_"+this.id)
-        nodeGetters(this.container,  "ID_"+this.id, "ID_"+this.task.window.id)
+        this.container.classList.add(this.id)
+        nodeGetters(this.container,  this.id, this.task.window.id)
     }
 }

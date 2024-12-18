@@ -36,7 +36,7 @@ let cfg = {
         },
         taskbar: {
             anchored: true,
-            height: 60
+            height: 32
         }
     },
     apps: {

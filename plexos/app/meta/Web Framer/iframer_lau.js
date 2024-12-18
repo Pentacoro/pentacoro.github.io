@@ -27,7 +27,7 @@ export function initialize(){
         {
             name : "Iframer",
             inst : true,
-            appEnd : end,
+            onEnd : end,
             node : null,
             from : "Plexus",
             id   : taskid

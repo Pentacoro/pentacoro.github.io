@@ -57,7 +57,8 @@ export async function remoteEval(array) {
     }
 }
 export function genRanHex(size) {
-    return [...Array(size)].map(() => Math.floor(Math.random() * 16).toString(16)).join('')
+    const alphabet = "abcdefghijklmnopqrstuvwxyz";
+    return alphabet[Math.floor(Math.random() * alphabet.length)]+[...Array(size-1)].map(() => Math.floor(Math.random() * 16).toString(16)).join('')
 }
 export function getTask(id=""){
     return Task.id(id)
@@ -136,7 +137,7 @@ export async function loadFront({url, taskid, data, container, env = null, compi
                 if (Task.id(taskid).window){
                     let regex = /([^\r\n,{}]+)(,(?=[^}]*{)|\s*{)/g
                     let selectors = [...css.matchAll(regex)].map(match => match[0])
-                    let classList = ".window.ID_"+taskid+""
+                    let classList = ".window."+taskid+""
                     for (let selector of selectors) {
                         css = css.replace(selector, `${classList} ${selector}`)
                     }

@@ -115,7 +115,7 @@ dll.loadFront = async function({url, taskid, data, replacementPairs = [], contai
                 cont.appendChild(style)
             }
             //let newStyleElement = document.createElement("style")
-            //newStyleElement.classList.add("ID_"+taskid)
+            //newStyleElement.classList.add(taskid)
             //document.head.appendChild(newStyleElement)
             for(let css of styleContents) {
                 css = dll.repTid(css,taskid)

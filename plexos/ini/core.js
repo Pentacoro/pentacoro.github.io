@@ -13,7 +13,7 @@ let System = new Task(
     {
 		name : "System",
 		inst : false,
-		appEnd : null,
+		onEnd : null,
 		node : null,
 		from : "System"
 	}
