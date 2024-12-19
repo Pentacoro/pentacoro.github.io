@@ -5,11 +5,7 @@ import Window from "/plexos/lib/classes/interface/window.js"
 import {displayComponent} from "/plexos/lib/functions/dll.js"
 let System = plexos.System
 
-export function initialize() {
-    let params = /PARAMS/
-    let taskid = /TASKID/
-    let addr = /ADDR/
-    let root = /ROOT/
+export function initialize({taskid,args,addr,root}) {
     let html = root + "/metaCreator.html"
 
     //on app init
@@ -17,7 +13,7 @@ export function initialize() {
         let task = Task.id(taskid)
         let arg  = task.mem.arg
 
-        arg.file = File.at(params.addr)
+        arg.file = File.at(args.addr)
     }
     //on app end
     function end() {
@@ -41,11 +37,11 @@ export function initialize() {
     new Window
     (
         {
-            name : params.name,
+            name : args.name,
             task : taskid, 
             rezi : false, 
             uiux : [], 
-            icon : File.at(params.addr).cfg.icon.imag,
+            icon : File.at(args.addr).cfg.icon.imag,
             stat : 1, 
             widt : 400, 
             heig : 120, 

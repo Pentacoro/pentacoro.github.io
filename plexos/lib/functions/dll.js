@@ -79,9 +79,6 @@ export function nodeGetters(node, nodeSelector, id){
     node['querySelectorAll'] = function (qry) {
         return document.querySelectorAll(`.${id} .${nodeSelector} ${qry}`)
     }
-    node['getElementsByTagName'] = function (tag) {
-        return document.querySelectorAll(`.${id} .${nodeSelector} ${tag}`)
-    }
 }
 export async function displayComponent({url, taskid, container, env, compid=null}){
     let appHTML = ajaxReturn("get", url)
@@ -241,24 +238,26 @@ export async function runLauncher(url, args = {}, env = null, name = ""){
     //place arguments on Task.get("System") task
     Task.get("System").mem.lau[appID.id] = args
 
-    //get _lau file
+    //get .lau file
     let appLauncher = ajaxReturn("get", url)
 
-    appLauncher.then( async oData => {
-        let nData = oData.replace("/PARAMS/", `Task.get("System").mem.lau["${appID.id}"]`)
-        nData = nData.replace("/TASKID/", `"${appID.id}"`)
-        nData = nData.replace("/ADDR/", `"${url}"`)
-        nData = nData.replace("/ROOT/", `"${url.replace(url.match(/\/(?:.(?<!\/))+$/s),"")}"`)
-
+    appLauncher.then( async data => {
         try {
-        let proxy  = await blobModule(nData)
+        let proxy  = await blobModule(data)
         let module = await import(proxy)
-            module.initialize()
+            module.initialize(
+                {
+                    taskid: appID.id,
+                    args: Task.get("System").mem.lau[appID.id],
+                    addr: url,
+                    root: url.replace(url.match(/\/(?:.(?<!\/))+$/s),"")
+                }
+            )
             if (env) env.loader(false)
         } catch (e) {
             evalErrorPopup
             (
-                nData,
+                data,
                 "The application launcher at: <i>'" + url + "'</i> failed evaluation.",
                 e
             ) 
@@ -273,7 +272,7 @@ export async function runLauncher(url, args = {}, env = null, name = ""){
         
         evalErrorPopup
         (
-            nData,
+            data,
             "The application launcher at: <i>'" + url + "'</i> failed evaluation.",
             e
         ) 
@@ -286,7 +285,7 @@ export function evalErrorPopup(code, desc, error) {
     //add it to typeError stack
     error.script = code
     Task.get("System").mem.var.error = error
-    runLauncher("./plexos/app/sys/Popup/popup_lau.js",
+    runLauncher("./plexos/app/sys/Popup/popup.lau.js",
         {
             name:"Error",
             type:true,

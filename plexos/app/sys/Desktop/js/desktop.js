@@ -44,7 +44,7 @@ mem.desktopInit = function (dir) {
         mem.var.error = e
         mem.var.errorB = [["Okay"]]
         console.log(e)
-        runLauncher("/plexos/app/sys/Popup/popup_lau.js",
+        runLauncher("/plexos/app/sys/Popup/popup.lau.js",
             {
              name:"Error",
              type:false,

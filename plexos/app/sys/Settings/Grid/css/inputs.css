@@ -31,20 +31,22 @@
 
     padding-top: 4px;
     font-size: 1em;
+
+    align-items: center;
     
     cursor: default;
     user-select: none;
 }
-.optionName>h4{
+.config-option>label{
     margin-top: auto;
     margin-bottom: auto;
     text-align: left;
     font-weight: 100;
     font-size: 1em;
-}
-.optionName{
+    
     display: flex;
     width: 80px;
+    height: 100%;
 
     flex-shrink: 0;
     justify-content: left;
@@ -53,7 +55,11 @@
 
     background-color: #D8D8D8;
 }
-.optionValue{
+.config-option>input:nth-child(3){
+    margin-left: auto;
+    width: 50px;
+}
+[type="number"]{
     width: 80px;
     display: flex;
     align-items: center;
@@ -64,16 +70,7 @@
     border-radius: 3px;
     cursor: text;
 }
-.config-int>input:nth-child(3){
-    margin-left: auto;
-    width: 50px;
-}
-
-.config-bool>span{
-    display: flex;
-    align-items: center;
-}
-.optionCheck{
+[type="checkbox"]{
     width: 20px;
     height: 100%;
     

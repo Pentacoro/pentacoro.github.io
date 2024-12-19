@@ -5,8 +5,9 @@
 }
 .container {
     position: absolute;
-    display: grid;
-    grid-template-rows: 30px auto;
+    display: flex;
+    flex-direction: column;
+
     height: 100%;
     width: 100%;
     overflow: hidden;
@@ -14,20 +15,27 @@
 .nav {
     position: sticky;
     top: 0px;
-    height: 100%;
     width: 100%;
 
-    display: grid;
-    grid-template-columns: 40px 40px 40px auto 40px;
-    background-color: rgb(195, 203, 221);
+    background-color: rgb(174, 183, 204);
+    border-top: 2px solid rgb(217, 225, 242);
+    border-bottom: 2px solid rgb(154, 162, 180);
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
     z-index: 100;
 }
 .nav>button{
     background-color: rgb(195, 203, 221);
+    width: 34px;
     border: 0px;
     font-size: 1.4em;
     color: rgb(90, 108, 126);
     cursor: pointer;
+
+    flex-shrink: 0;
 }
 .nav>.back:active , .nav>.forth:active{
     color: rgb(123, 140, 156);
@@ -46,15 +54,16 @@
 }
 .nav>.addressBox{
     background-color: white;
-    border: 1px solid rgb(174, 183, 204);
+    border: 1px solid rgb(143, 150, 171);
     cursor: text;
 
     display: flex;
     align-items: center;
     justify-content: left;
     padding-left: .5em;
+
     width: 100%;
-    height: 100%;
+    height: 22px;
 
     text-overflow: ellipsis;
     white-space: nowrap;

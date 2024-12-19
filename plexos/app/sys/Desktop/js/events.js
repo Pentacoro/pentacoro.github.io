@@ -17,7 +17,7 @@ desktop.node.addEventListener("mousedown", e => {
 	System.mem.focus(desktop)
 	//if not clicking icon
 	if(
-		(e.target.id == "desktopLayer" || e.target.id == "selectBox") &&
+		(e.target.id == "desktopLayer" || e.target.id == "selectBox" || e.target.classList.contains("gap")) &&
 		e.ctrlKey == false &&
 		!System.mem.var.dragging
 	) {
@@ -30,7 +30,7 @@ desktop.node.addEventListener("mousedown", e => {
 desktop.node.addEventListener("mousedown", e => {
 	//if not clicking icon
 	if(
-		(e.target.id == "desktopLayer" || e.target.id == "selectBox") &&
+		(e.target.id == "desktopLayer" || e.target.id == "selectBox" || e.target.classList.contains("gap")) &&
 		!System.mem.var.dragging
 	) {
 		desktop.mem.selectBox(e)
@@ -39,7 +39,7 @@ desktop.node.addEventListener("mousedown", e => {
 
 //open desk menu on right click background
 desktop.node.oncontextmenu = e => {
-	if(e.target == desktop.node) {
+	if(e.target.id == "desktopLayer" || e.target.id == "selectBox" || e.target.classList.contains("gap")) {
 		let envfocus = System.mem.var.envfocus
 
 		let menu = [
@@ -48,7 +48,7 @@ desktop.node.oncontextmenu = e => {
 					{name:"grid", list: [
 						{name:"Auto Length",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/autogrid.svg')",func:() => desktop.mem.grid.autoLength()},
 						{name:"Auto Margin",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/automargin.svg')",func:() => desktop.mem.grid.autoMargin()},
-						{name:"Grid Settings",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/gridsettings.svg')",func:() => runLauncher("/plexos/app/sys/Settings/Grid/deskGridOptions_lau.js",[],envfocus)},
+						{name:"Grid Settings",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/gridsettings.svg')",func:() => runLauncher("/plexos/app/sys/Settings/Grid/deskGridOptions.lau.js",[],envfocus)},
 						]
 					}
 				]},

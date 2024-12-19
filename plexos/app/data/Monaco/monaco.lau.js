@@ -3,19 +3,15 @@ import Window from "/plexos/lib/classes/interface/window.js"
 import File from "/plexos/lib/classes/files/file.js"
 import {displayComponent} from "/plexos/lib/functions/dll.js"
 
-export function initialize(){
-    let params = /PARAMS/
-    let taskid = /TASKID/
-    let addr = /ADDR/
-    let root = /ROOT/
-    let html = root + "/iframer.html"
+export function initialize({taskid,args,addr,root}){
+    let html = root + "/monaco.html"
 
     //on app init
     function ini() {
-        let task = Task.id(taskid)
-        let arg  = task.mem.arg
-        
-        arg.file = File.at(params.addr)
+        let mem = Task.id(taskid).mem
+        mem.arg.file          = File.at(args.addr)
+        mem.arg.fileData      = File.at(args.addr).data
+        mem.arg.fileExtension = File.at(args.addr).cfg.exte
     }
     //on app end
     function end() {
@@ -25,28 +21,27 @@ export function initialize(){
     //task creation
     let task = new Task(
         {
-            name : "Iframer",
+            name : "Monaco",
             inst : true,
             onEnd : end,
             node : null,
-            from : "Plexus",
+            from : "",
             id   : taskid
         }
     )
     if (!task.id) return
 
     //window generation
-    new Window
-    (
+    new Window(
         {
-            name : params.name,
+            name : File.at(args.addr).name+" - Monaco",
             task : task.id, 
             resi : true, 
             uiux : [{class:"_", function: ()=>console.log("Minimize")},{class:"O", function: ()=>console.log("Maximize")}], 
-            icon : (File.at(params.addr)) ? File.at(params.addr).cfg.icon.imag : "/plexos/res/themes/Plexos Hyper/icons/files/defaultMSF.svg",
+            icon : (File.at(args.addr)) ? File.at(args.addr).cfg.icon.imag : "/plexos/res/themes/Plexos Hyper/icons/files/defaultFile.svg",
             stat : 1, 
-            widt : 850, 
-            heig : 650, 
+            widt : 700, 
+            heig : 460, 
             minW : 192,
             minH : 160
         }

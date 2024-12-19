@@ -4,22 +4,18 @@ import Window from "/plexos/lib/classes/interface/window.js"
 import {displayComponent} from "/plexos/lib/functions/dll.js"
 let System = plexos.System
 
-export function initialize() {
-    let params = /PARAMS/
-    let taskid = /TASKID/
-    let addr = /ADDR/
-    let root = /ROOT/
-    let html = (params.type) ? root + "/popup.html" : root + "/popupB.html"
+export function initialize({taskid,args,addr,root}) {
+    let html = (args.type) ? root + "/popup.html" : root + "/popupB.html"
 
     //on app init
     function ini() {
         let task = Task.id(taskid)
         let arg  = task.mem.arg
 
-        arg.title       = params.title
-        arg.description = params.description
-        arg.image       = params.image
-        arg.taskid      = params.taskid || Task.get("System").id
+        arg.title       = args.title
+        arg.description = args.description
+        arg.image       = args.image
+        arg.taskid      = args.taskid || Task.get("System").id
     }
     //on app end
     function end() {
@@ -44,11 +40,11 @@ export function initialize() {
         new Window
         (
             {
-                name : params.name,
+                name : args.name,
                 task : taskid, 
                 rezi : false, 
                 uiux : [], 
-                icon : (params.icon) ? params.icon : null,
+                icon : (args.icon) ? args.icon : null,
                 stat : 1, 
                 widt : 400, 
                 heig : 132, 

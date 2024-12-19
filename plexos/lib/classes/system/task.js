@@ -174,7 +174,7 @@ export default class Task {
     popup({e, buttons, arg}) {
         this.mem.var.error = e
         this.mem.var.errorB = buttons
-        runLauncher("/plexos/app/sys/Popup/popup_lau.js",
+        runLauncher("/plexos/app/sys/Popup/popup.lau.js",
             {
                 name:arg.name,
                 type:arg.type,

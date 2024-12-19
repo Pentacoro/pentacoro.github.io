@@ -2,11 +2,7 @@ import Task from "/plexos/lib/classes/system/task.js"
 import Window from "/plexos/lib/classes/interface/window.js"
 import {displayComponent} from "/plexos/lib/functions/dll.js"
 
-export function initialize(){
-    let params = /PARAMS/
-    let taskid = /TASKID/
-    let addr = /ADDR/
-    let root = /ROOT/
+export function initialize({taskid,args,addr,root}){
     let html = root + "/deskGridOptions.html"
 
     //on app init
@@ -20,7 +16,7 @@ export function initialize(){
             name : "Desktop Grid Settings",
             inst : false,
             node : null,
-            from : "plx", 
+            from : "System", 
             id   : taskid
         }
     )
@@ -41,6 +37,7 @@ export function initialize(){
         }
     )
 
+    console.log(root)
     displayComponent({
         url:html,
         taskid:task.id,

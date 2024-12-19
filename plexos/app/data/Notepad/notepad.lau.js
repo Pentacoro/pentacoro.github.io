@@ -3,11 +3,7 @@ import Window from "/plexos/lib/classes/interface/window.js"
 import File from "/plexos/lib/classes/files/file.js"
 import {displayComponent} from "/plexos/lib/functions/dll.js"
 
-export function initialize() {
-    let params = /PARAMS/
-    let taskid = /TASKID/
-    let addr = /ADDR/
-    let root = /ROOT/
+export function initialize({taskid,args,addr,root}) {
     let html = root + "/notepad.html"
 
     //on app init
@@ -15,8 +11,8 @@ export function initialize() {
         let task = Task.id(taskid)
         let arg  = task.mem.arg
 
-        arg.textData = File.at(params.addr).data
-        arg.fileAddr = params.addr
+        arg.textData = File.at(args.addr).data
+        arg.fileAddr = args.addr
     }
     //on app end
     function end() {
@@ -39,11 +35,11 @@ export function initialize() {
     //window generation
     new Window(
         {
-            name : File.at(params.addr).name+" - Notepad",
+            name : File.at(args.addr).name+" - Notepad",
             task : task.id, 
             resi : true, 
             uiux : [{class:"_", function: ()=>console.log("Minimize")},{class:"O", function: ()=>console.log("Maximize")}], 
-            icon : (File.at(params.addr)) ? File.at(params.addr).cfg.icon.imag : "/plexos/res/themes/Plexos Hyper/icons/files/defaultFile.svg",
+            icon : (File.at(args.addr)) ? File.at(args.addr).cfg.icon.imag : "/plexos/res/themes/Plexos Hyper/icons/files/defaultFile.svg",
             stat : 1, 
             widt : 700, 
             heig : 460, 

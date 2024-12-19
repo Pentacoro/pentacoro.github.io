@@ -70,7 +70,7 @@ dll.displayComponent = async function({url, taskid, container, replacementPairs,
     await appHTML.catch( e => {
         Task.get("system").mem.var.error = e
         Task.get("system").mem.var.errorB = [["Okay"]]
-        dll.runLauncher("/plexos/app/sys/Popup/popup_lau.js",
+        dll.runLauncher("/plexos/app/sys/Popup/popup.lau.js",
             {
                 name:e.status,
                 type:false,
@@ -220,7 +220,7 @@ dll.runLauncher = async function(url, args = {}, env = null, name = ""){
     //place arguments on Task.get("system") task
     Task.get("system").mem.lau[appID.id] = args
 
-    //get _lau file
+    //get .lau file
     let appLauncher = dll.ajaxReturn("get", url)
 
     appLauncher.then( oData => {
@@ -248,7 +248,7 @@ dll.runLauncher = async function(url, args = {}, env = null, name = ""){
         Task.get("system").mem.var.error = e
         Task.get("system").mem.var.errorB = [["Okay"]]
         
-        dll.runLauncher("./plexos/app/sys/Popup/popup_lau.js",
+        dll.runLauncher("./plexos/app/sys/Popup/popup.lau.js",
             {
                 name:e.status,
                 type:false,
@@ -281,7 +281,7 @@ dll.evalErrorPopup = function(code, desc, err) {
     //add it to typeError stack
     err.script = colour
     Task.get("system").mem.var.error = err
-    dll.runLauncher("./plexos/app/sys/Popup/popup_lau.js",
+    dll.runLauncher("./plexos/app/sys/Popup/popup.lau.js",
         {
             name:"Error",
             type:true,

@@ -49,7 +49,7 @@ task.node.getElementsByClassName("footer-apply")[0].onclick = (e)=> {
 }
 
 //integer input 
-for (let input of task.node.getElementsByClassName("optionValue")) {
+for (let input of task.node.querySelectorAll(".config-option>[type='number']")) {
     let inputbox = input
     let variable = inputbox.getAttribute("name")
     inputbox.onchange = (e) => {
@@ -68,7 +68,7 @@ for (let input of task.node.getElementsByClassName("optionValue")) {
 }
 
 //auto button
-for (let button of task.node.getElementsByClassName("optionButton")) {
+for (let button of task.node.querySelectorAll(".config-option>[type='button']")) {
     let variable = button.getAttribute("name")
     button.onclick = (e) => {
         if (eval(variable)) return
@@ -79,7 +79,7 @@ for (let button of task.node.getElementsByClassName("optionButton")) {
 }
 
 //auto checkbox
-for (let box of task.node.getElementsByClassName("optionCheck")) {
+for (let box of task.node.querySelectorAll(".config-option>[type='checkbox']")) {
     let variable = box.getAttribute("name")
     let checkbox = box
     if (eval(variable)) checkbox.checked = true

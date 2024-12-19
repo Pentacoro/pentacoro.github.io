@@ -82,7 +82,7 @@ mem.explorerInit = function (dir, id, act = null) {
     } catch (e) {
         mem.var.error = e
         mem.var.errorB = [["Okay"]]
-        runLauncher("/plexos/app/sys/Popup/popup_lau.js",
+        runLauncher("/plexos/app/sys/Popup/popup.lau.js",
             {
              name:"Error",
              type:false,

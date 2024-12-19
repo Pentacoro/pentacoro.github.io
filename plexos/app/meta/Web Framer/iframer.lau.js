@@ -3,19 +3,15 @@ import Window from "/plexos/lib/classes/interface/window.js"
 import File from "/plexos/lib/classes/files/file.js"
 import {displayComponent} from "/plexos/lib/functions/dll.js"
 
-export function initialize() {
-    let params = /PARAMS/ //name, addr, type, file
-    let taskid = /TASKID/
-    let addr = /ADDR/
-    let root = /ROOT/
-    let html = (params.type) ? root + "/explorer"+params.type+".html" :  root + "/explorer.html"
+export function initialize({taskid,args,addr,root}){
+    let html = root + "/iframer.html"
 
     //on app init
     function ini() {
         let task = Task.id(taskid)
         let arg  = task.mem.arg
-
-        arg.address = params.addr
+        
+        arg.file = File.at(args.addr)
     }
     //on app end
     function end() {
@@ -25,7 +21,7 @@ export function initialize() {
     //task creation
     let task = new Task(
         {
-            name : "Explorer",
+            name : "Iframer",
             inst : true,
             onEnd : end,
             node : null,
@@ -36,23 +32,24 @@ export function initialize() {
     if (!task.id) return
 
     //window generation
-    new Window(
+    new Window
+    (
         {
-            name : params.name,
+            name : args.name,
             task : task.id, 
             resi : true, 
             uiux : [{class:"_", function: ()=>console.log("Minimize")},{class:"O", function: ()=>console.log("Maximize")}], 
-            icon : (File.at(params.addr)) ? File.at(params.addr).cfg.icon.imag : "/plexos/res/themes/Plexos Hyper/icons/files/defaultDIR.svg",
+            icon : (File.at(args.addr)) ? File.at(args.addr).cfg.icon.imag : "/plexos/res/themes/Plexos Hyper/icons/files/defaultMSF.svg",
             stat : 1, 
-            widt : 700, 
-            heig : 460, 
+            widt : 850, 
+            heig : 650, 
             minW : 192,
             minH : 160
         }
     )
 
     ini()
-    
+
     displayComponent({
         url:html,
         taskid:task.id,
