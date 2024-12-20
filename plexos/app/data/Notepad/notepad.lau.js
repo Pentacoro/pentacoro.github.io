@@ -23,7 +23,7 @@ export function initialize({taskid,args,addr,root}) {
     let task = new Task(
         {
             name : "Notepad",
-            inst : true,
+            instantiable : true,
             onEnd : end,
             node : null,
             from : "Plexus",

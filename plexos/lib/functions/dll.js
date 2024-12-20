@@ -97,9 +97,10 @@ export async function displayComponent({url, taskid, container, env, compid=null
     })
 }
 export async function loadFront({url, taskid, data, container, env = null, compid = null}){
+    if (!Task.id(taskid)) return
     data = repDir(data,url)
-    data = repTid(data,taskid)
-    if (compid) data = repCid(data,compid)
+    data = repTid(data,taskid,false)
+    if (compid) data = repCid(data,compid,false)
     async function stylizeData(data) {
         return new Promise (async (resolve, reject) => {
             let promiseStyleArray = []
@@ -163,8 +164,8 @@ export async function loadFront({url, taskid, data, container, env = null, compi
                     }
                     if (!imported) {
                         js = repDir(js,url)
-                        js = repTid(js,taskid)
-                        if (compid) js = repCid(js,compid)
+                        js = repTid(js,taskid,true)
+                        if (compid) js = repCid(js,compid,true)
                     }
                     resolve({js,src,module,imported})
                 })
@@ -187,7 +188,7 @@ export async function loadFront({url, taskid, data, container, env = null, compi
                     } else {
                         await window.eval(`(async () => { ${js} \n})()`)
                     }
-                    if (Task.id(taskid)) Task.get("System").mem.focus(Task.id(taskid))
+                    if (Task.id(taskid)) Task.id(taskid).focus()
                 } catch (e) {
                     e.taskId = taskid
                     e.source = src
@@ -224,7 +225,7 @@ export async function blobModule(data) {
 }
 export async function runLauncher(url, args = {}, env = null, name = ""){
     if (!Task.canInstance(name)) {
-        Task.get("System").mem.focus(Task.get(name))
+        Task.get(name).focus()
         return
     }
 
@@ -310,12 +311,12 @@ function repDir(data, parDir){ //replace root directory for local apps
     let newData = data.replace(/\.\//g, parDir.substr(0, parDir.lastIndexOf("/")) + "/")
     return newData
 }
-function repTid(data, taskId){ //pass the task id to app
-    let newData = data.replaceAll("/TASKID/", JSON.stringify(taskId))
+function repTid(data, taskId, stringify = false){ //pass the task id to app
+    let newData = data.replaceAll("/TASKID/", stringify ? JSON.stringify(taskId):taskId)
     return newData
 }
-function repCid(data, compId){
-    let newData = data.replaceAll("/COMPID/", JSON.stringify(compId))
+function repCid(data, compId, stringify = false){
+    let newData = data.replaceAll("/COMPID/", stringify ? JSON.stringify(compId):compId)
     return newData
 }
 
@@ -374,7 +375,7 @@ export function iframeAntiHover(bool) {
 
     for (let i = 0; i < tagIframe.length; i++) {
         if (bool == true) {
-            tagIframe[i].className += "antiHover"
+            tagIframe[i].className += " antiHover"
         }
         if (bool == false) {
             tagIframe[i].classList.remove("antiHover")

@@ -12,7 +12,7 @@ import initialize from "./init.js"
 let System = new Task(
     {
 		name : "System",
-		inst : false,
+		instantiable : false,
 		onEnd : null,
 		node : null,
 		from : "System"
@@ -22,14 +22,7 @@ let System = new Task(
 System.mem.lau = {}
 System.mem.var.dragging = false
 System.mem.var.shSelect = true
-System.mem.var.envfocus = null
-System.mem.focus = function (env) {
-    if (System.mem.var.envfocus && env != System.mem.var.envfocus){
-        System.mem.var.envfocus.blur()
-    }
-    System.mem.var.envfocus = env
-    System.mem.var.envfocus.focus()
-}
+System.mem.focused = null
 System.bus = new EventBus()
 System.ini = {}
 System.ini.setVertex = function (address) {

@@ -136,16 +136,6 @@ mem.refresh = function() {
 
 	task.emit("desktop-refresh")
 }
-task.focus = e => {
-	for (let icon of mem.iconArr) {
-		icon.focus()
-	}
-}
-task.blur = e => {
-	for (let icon of mem.iconArr) {
-		icon.blur()
-	}
-}
 
 mem.new = function(e, _this, Type, name){
 	//Make sure icon appears at center of initial right click-------|

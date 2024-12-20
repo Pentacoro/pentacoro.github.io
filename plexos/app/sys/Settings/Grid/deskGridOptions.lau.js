@@ -14,7 +14,7 @@ export function initialize({taskid,args,addr,root}){
     let task = new Task(
         {
             name : "Desktop Grid Settings",
-            inst : false,
+            instantiable : false,
             node : null,
             from : "System", 
             id   : taskid
@@ -37,7 +37,6 @@ export function initialize({taskid,args,addr,root}){
         }
     )
 
-    console.log(root)
     displayComponent({
         url:html,
         taskid:task.id,

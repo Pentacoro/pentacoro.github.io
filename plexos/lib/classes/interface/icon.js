@@ -20,11 +20,11 @@ export default class Icon {
     }
     clic(){
         this.node.oncontextmenu = e => ContextMenu.open(e,this)
-        this.node.onmousedown = e => this.drag(e);
+        this.node.onmousedown = e => this.drag(e)
         this.node.ondblclick = e => File.at(this.file).open()
     }
-    gray(coin){
-        if ( coin ) {
+    gray(bool){
+        if ( bool ) {
             this.node.classList.add("blur")
         } else {
             this.node.classList.remove("blur")      

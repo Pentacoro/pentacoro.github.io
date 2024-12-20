@@ -56,7 +56,7 @@ task.node.getElementsByClassName("list")[0].onmousedown = e => {
 }
 task.node.getElementsByClassName("list")[0].oncontextmenu = e => {
     if (e.target.classList.contains("list")) {
-        let envfocus = System.mem.var.envfocus
+        let envfocus = System.mem.focused
 
         let menu = [
             {name: "icon", list: [

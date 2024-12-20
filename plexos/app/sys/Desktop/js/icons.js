@@ -58,7 +58,7 @@ mem.class.IconDesk = class IconDesk {
         //------------------------|
 
         this.node = document.getElementById("Icon: "+this.name)
-        if (System.mem.var.envfocus!=desktop) this.node.classList.add("blur")
+        if (System.mem.focused!=desktop) this.node.classList.add("blur")
 
         this.clic()
     }

@@ -120,7 +120,7 @@ export default class Window {
 	
 		document.getElementById("windowLayer").appendChild(newWindow)
 
-		System.mem.focus(Task.id(this.task))
+		Task.id(this.task)?.focus()
 		
 		//Getting minimum size to apply to the content,
 		//instead of the window node, by comparing the 
@@ -158,7 +158,7 @@ export default class Window {
 		this.cont = newContent
 
 		this.node.onmousedown = e => {
-			System.mem.focus(Task.id(this.task))
+			Task.id(this.task).focus()
 			this.statNode()
 		}
 	
@@ -176,9 +176,9 @@ export default class Window {
 		//if the window was focused, shift focus behind it
 		if (thisIndex === 0) {
 			if (plexos.Windows.length > 0) {
-				System.mem.focus(Task.id(plexos.Windows[0].task))
+				Task.id(plexos.Windows[0].task).focus()
 			} else {
-				System.mem.focus(Task.get("Desktop"))
+				Task.get("Desktop")?.focus()
 			}
 		}
 
@@ -396,19 +396,17 @@ export default class Window {
 			iframeAntiHover(false)
 		}
     }
-	focus(bool){
-
-		if (bool) {
-			this.node.classList.remove("blur")
-			this.cont.classList.remove("blur")
-			this.node.focus()
-			if (this.node.onfocus) this.node.onfocus()
-		} else {
-			this.node.classList.add("blur")
-			this.cont.classList.add("blur")
-			this.node.blur()
-			if (this.node.onblur) this.node.onblur()
-		}
+	focus(){
+		this.node.classList.remove("blur")
+		this.cont.classList.remove("blur")
+		this.node.focus()
+		if (this.node.onfocus) this.node.onfocus()
+	}
+	blur(){
+		this.node.classList.add("blur")
+		this.cont.classList.add("blur")
+		this.node.blur()
+		if (this.node.onblur) this.node.onblur()
 	}
 }
 

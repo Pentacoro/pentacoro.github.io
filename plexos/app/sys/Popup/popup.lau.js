@@ -21,12 +21,11 @@ export function initialize({taskid,args,addr,root}) {
     function end() {
 
     }
-
     //task creation
     let task = new Task(
         {
             name : "Popup",
-            inst : true,
+            instantiable : true,
             onEnd : end,
             node : null,
             from : "System",

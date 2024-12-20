@@ -16,7 +16,7 @@ export default class Task {
     }
     static canInstance(appName){
         for (let i = 0; i < plexos.Tasks.length; i++){
-            if (plexos.Tasks[i].inst === false && plexos.Tasks[i].name === appName) return false
+            if (plexos.Tasks[i].instantiable === false && plexos.Tasks[i].name === appName) return false
         }
         return true
     }
@@ -43,7 +43,7 @@ export default class Task {
     constructor(p) {
         //check if instance allowed
         if (!Task.canInstance(p.name)) {
-            Task.get("System").mem.focus(Task.get(p.name))
+            Task.get(p.name).focus()
             delete this
             return
         }
@@ -52,7 +52,7 @@ export default class Task {
         this.apps = p.apps
         this.from = p.from || this.from
 
-        this.inst = (p.inst===null) ? true : p.inst
+        this.instantiable = (p.instantiable===null) ? true : p.instantiable
         this.node = p.node || this.node
 
         this.window = null
@@ -122,9 +122,12 @@ export default class Task {
         }
     }
     focus() {
+        if (Task.get("System").mem.focused === this) return
+        if (Task.get("System").mem.focused) Task.get("System").mem.focused.blur()
+        Task.get("System").mem.focused = this
         window.getSelection().removeAllRanges()
         if (this.window) {
-            this.window.focus(true)
+            this.window.focus()
             this.window.statNode()
             //restore select ranges
 			let taskRange = this.mem.selectionRange
@@ -135,6 +138,8 @@ export default class Task {
 				taskRange = null
 			}
         }
+        document.activeElement.blur()
+        if (this.onfocus) this.onfocus()
         if (this.node) this.node.focus()
         if (this.node?.onfocus) this.node.onfocus()
     }
@@ -148,10 +153,12 @@ export default class Task {
 				this.mem.selectionRange.commonAncestorContainer.blur()
 				//selectRange(taskRange)
 			}
-            this.window.focus(false)
+            this.window.blur()
+            this.window.statNode()
 			this.node.blur()
             if (this.node?.onblur) this.node.onblur()
         }
+        if (this.onblur) this.onblur()
     }
     newWindow(arg) {
         let newWindow = new Window(arg)

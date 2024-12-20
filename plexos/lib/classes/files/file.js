@@ -195,6 +195,6 @@ export default class File {
     }
 
     open() {
-        runLauncher(cfg.apps[this.cfg.exte], {name:this.name, addr:this.cfg.addr}, plexos.System.mem.var.envfocus)
+        runLauncher(cfg.apps[this.cfg.exte], {name:this.name, addr:this.cfg.addr}, plexos.System.mem.focused)
     }
 }

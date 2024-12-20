@@ -14,7 +14,7 @@ window.addEventListener("resize", e => {
 
 //when desktop click
 desktop.node.addEventListener("mousedown", e => {
-	System.mem.focus(desktop)
+	task.focus()
 	//if not clicking icon
 	if(
 		(e.target.id == "desktopLayer" || e.target.id == "selectBox" || e.target.classList.contains("gap")) &&
@@ -37,10 +37,21 @@ desktop.node.addEventListener("mousedown", e => {
 	}
 })
 
+task.onfocus = e => {
+	for (let icon of mem.iconArr) {
+		icon.focus()
+	}
+}
+task.onblur = e => {
+	for (let icon of mem.iconArr) {
+		icon.blur()
+	}
+}
+
 //open desk menu on right click background
 desktop.node.oncontextmenu = e => {
 	if(e.target.id == "desktopLayer" || e.target.id == "selectBox" || e.target.classList.contains("gap")) {
-		let envfocus = System.mem.var.envfocus
+		let envfocus = System.mem.focused
 
 		let menu = [
 			{name: "view", list: [
