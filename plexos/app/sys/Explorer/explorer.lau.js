@@ -36,12 +36,12 @@ export function initialize({taskid,args,addr,root}) {
         {
             name : args.name,
             task : task.id, 
-            resi : true, 
-            uiux : [{class:"_", function: ()=>console.log("Minimize")},{class:"O", function: ()=>console.log("Maximize")}], 
-            icon : (File.at(args.addr)) ? File.at(args.addr).cfg.icon.imag : "/plexos/res/themes/Plexos Hyper/icons/files/defaultDIR.svg",
-            stat : 1, 
-            widt : 700, 
-            heig : 460, 
+            resizeable : true, 
+            buttons : [{class:"_", function: ()=>console.log("Minimize")},{class:"O", function: ()=>console.log("Maximize")}], 
+            icon : (File.at(args.addr)) ? File.at(args.addr).cfg.icon.image : "/plexos/res/themes/Plexos Hyper/icons/files/defaultDIR.svg",
+            state : 1, 
+            width  : 700, 
+            height : 460, 
             minW : 192,
             minH : 160
         }

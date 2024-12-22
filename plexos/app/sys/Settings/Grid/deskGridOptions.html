@@ -4,12 +4,10 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="./css/properties.css">
-    <link rel="stylesheet" href="./css/inputs.css">
     <title>Desk Grid Options</title>
 </head>
 <body>
-    <div class="appcontent">
+    <div class="config-properties">
         <div class="config-tabs">
             <label class="config-tab" for="/TASKID/_tab1">
                 <input class="tabRadio_input" type="radio" name="config-grid-tab" id="/TASKID/_tab1" value="/TASKID/_tabContent1">
@@ -23,7 +21,7 @@
 
         <div class="tabContent" id="/TASKID/_tabContent1">
             <div class="grid_graph_container graph_container"></div>
-            <form>
+            <form class="config-form">
                 <div class="h5line"> <div></div> <h5>LENGTH</h5> <div></div> </div>
                 <span class="config-option">
                     <label for="/TASKID/_hLength">X-Axis:</label>
@@ -43,7 +41,7 @@
                 <span class="config-option">
                     <label for="/TASKID/_stickToBorder">Sticky:</label>
                     <input id ="/TASKID/_stickToBorder"type="checkbox" name="cfg.desktop.grid.stickToBorder">
-                    <span>Stick icons to end borders on resize</span>
+                    <span>Stick icons to end borders for resizes</span>
                 </span>
                 <span class="config-option">
                     <label for="/TASKID/_hideOnShrink">Hide:</label>
@@ -55,7 +53,7 @@
 
         <div class="tabContent hidden" id="/TASKID/_tabContent2">
             <div class="tile_graph_container graph_container"></div>
-            <form>
+            <form class="config-form">
                 <div class="h5line"> <div></div> <h5>SIZE</h5> <div></div> </div>
                 <span class="config-option">
                     <label for="/TASKID/_width">Width:</label> 

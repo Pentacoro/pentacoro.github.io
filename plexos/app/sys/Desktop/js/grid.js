@@ -95,7 +95,7 @@ desktop.mem.grid.evaluateIconGrid = function (
                     posX:(x+1) * ewm + x * w,
                     posY:(y+1) * ehm + y * h,
                     arrX: x, arrY: y,
-                    widt: w, heig: h, id: "id" + x + "-" + y,
+                    width : w, height: h, id: "id" + x + "-" + y,
                     used: false, icon: null
                 }
                 createGridNode(desktop.mem.grid.gridArr[x][y])
@@ -201,10 +201,10 @@ desktop.mem.grid.evaluateIconGrid = function (
                                     checkNextSlot(nextSlot)
                                 } else if (obj.arrX != 0) {
                                     for(let icon of iconsForShift) {
-                                        icon.coor.tx = icon.coor.tx - w - ewm
-                                        if (icon.coor.ax < gridHFinal+(gridHdiff*-1 + i - 1)) {
-                                            desktop.mem.grid.gridArr[icon.coor.ax][icon.coor.ay].icon = null
-                                            desktop.mem.grid.gridArr[icon.coor.ax][icon.coor.ay].used = false
+                                        icon.coords.tx = icon.coords.tx - w - ewm
+                                        if (icon.coords.ax < gridHFinal+(gridHdiff*-1 + i - 1)) {
+                                            desktop.mem.grid.gridArr[icon.coords.ax][icon.coords.ay].icon = null
+                                            desktop.mem.grid.gridArr[icon.coords.ax][icon.coords.ay].used = false
                                         }
                                     }
                                     validatedIcons = mem.repositionIcons(iconsForShift,true,false)
@@ -238,7 +238,7 @@ desktop.mem.grid.evaluateIconGrid = function (
                         posX:(x+1) * ewm + x * w,
                         posY:(y+1) * ehm + y * h,
                         arrX: x, arrY: y,
-                        widt: w, heig: h, id: "id" + x + "-" + y,
+                        width : w, height: h, id: "id" + x + "-" + y,
                         used: false, icon: null
                     }
                     createGridNode(desktop.mem.grid.gridArr[x][y])
@@ -256,10 +256,10 @@ desktop.mem.grid.evaluateIconGrid = function (
                             checkNextSlot(nextSlot)
                         } else if (obj.arrX != 0) {
                             for(let icon of iconsForShift) {
-                                icon.coor.tx = icon.coor.tx + w*gridHdiff + ewm*gridHdiff
-                                if (icon.coor.ax < gridHFinal) {
-                                    desktop.mem.grid.gridArr[icon.coor.ax][icon.coor.ay].icon = null
-                                    desktop.mem.grid.gridArr[icon.coor.ax][icon.coor.ay].used = false
+                                icon.coords.tx = icon.coords.tx + w*gridHdiff + ewm*gridHdiff
+                                if (icon.coords.ax < gridHFinal) {
+                                    desktop.mem.grid.gridArr[icon.coords.ax][icon.coords.ay].icon = null
+                                    desktop.mem.grid.gridArr[icon.coords.ax][icon.coords.ay].used = false
                                 }
                             }
                             mem.repositionIcons(iconsForShift,true,true)
@@ -294,10 +294,10 @@ desktop.mem.grid.evaluateIconGrid = function (
                                     checkNextSlot(nextSlot)
                                 } else if (obj.arrY != 0) {
                                     for(let icon of iconsForShift) {
-                                        icon.coor.ty = icon.coor.ty - h - ehm
-                                        if (icon.coor.ay < gridVFinal+(gridVdiff*-1 + i - 1)) {
-                                            desktop.mem.grid.gridArr[icon.coor.ax][icon.coor.ay].icon = null
-                                            desktop.mem.grid.gridArr[icon.coor.ax][icon.coor.ay].used = false
+                                        icon.coords.ty = icon.coords.ty - h - ehm
+                                        if (icon.coords.ay < gridVFinal+(gridVdiff*-1 + i - 1)) {
+                                            desktop.mem.grid.gridArr[icon.coords.ax][icon.coords.ay].icon = null
+                                            desktop.mem.grid.gridArr[icon.coords.ax][icon.coords.ay].used = false
                                         }
                                     }
                                     validatedIcons = mem.repositionIcons(iconsForShift,true,false)
@@ -330,7 +330,7 @@ desktop.mem.grid.evaluateIconGrid = function (
                         posX:(x+1) * ewm + x * w,
                         posY:(y+1) * ehm + y * h,
                         arrX: x, arrY: y,
-                        widt: w, heig: h, id: "id" + x + "-" + y,
+                        width : w, height: h, id: "id" + x + "-" + y,
                         used: false, icon: null
                     })
                     createGridNode(desktop.mem.grid.gridArr[x][y]);
@@ -348,10 +348,10 @@ desktop.mem.grid.evaluateIconGrid = function (
                             checkNextSlot(nextSlot)
                         } else if (obj.arrY != 0) {
                             for(let icon of iconsForShift) {
-                                icon.coor.ty = icon.coor.ty + h*gridVdiff + ehm*gridVdiff
-                                if (icon.coor.ay < gridVFinal) {
-                                    desktop.mem.grid.gridArr[icon.coor.ax][icon.coor.ay].icon = null
-                                    desktop.mem.grid.gridArr[icon.coor.ax][icon.coor.ay].used = false
+                                icon.coords.ty = icon.coords.ty + h*gridVdiff + ehm*gridVdiff
+                                if (icon.coords.ay < gridVFinal) {
+                                    desktop.mem.grid.gridArr[icon.coords.ax][icon.coords.ay].icon = null
+                                    desktop.mem.grid.gridArr[icon.coords.ax][icon.coords.ay].used = false
                                 }
                             }
                             mem.repositionIcons(iconsForShift,true,true)
@@ -421,8 +421,8 @@ desktop.mem.grid.evaluateIconGrid = function (
         newGrid.setAttribute("class", "gridElement")
         newGrid.style.left = object.posX + "px"
         newGrid.style.top = object.posY + "px"
-        newGrid.style.width = object.widt + "px"
-        newGrid.style.height = object.heig + "px"
+        newGrid.style.width = object.width  + "px"
+        newGrid.style.height = object.height + "px"
 
         newGrid.style.position = "absolute"
         newGrid.style.zIndex = "-980"
@@ -438,8 +438,8 @@ desktop.mem.grid.evaluateIconGrid = function (
         let updGrid = document.getElementById(object.id);
         updGrid.style.left = object.posX + "px"
         updGrid.style.top = object.posY + "px"
-        updGrid.style.width = object.widt + "px"
-        updGrid.style.height = object.heig + "px"
+        updGrid.style.h = object.width  + "px"
+        updGrid.style.height = object.height + "px"
         if (cfg.desktop.grid.visibleNodes === true) updGrid.style.backgroundColor = "rgba(127,127,127,0.5)"
         if (cfg.desktop.grid.visibleNodes === false)updGrid.style.backgroundColor = "rgba(127,127,127,0)"
     }
@@ -448,15 +448,15 @@ desktop.mem.grid.evaluateIconGrid = function (
             for(let y = 0; y < desktop.mem.grid.gridArr[x].length; y++){
                 desktop.mem.grid.gridArr[x][y].posX = (x+1) * ewm + x * w
                 desktop.mem.grid.gridArr[x][y].posY = (y+1) * ehm + y * h
-                desktop.mem.grid.gridArr[x][y].widt = w
-                desktop.mem.grid.gridArr[x][y].heig = h
+                desktop.mem.grid.gridArr[x][y].width  = w
+                desktop.mem.grid.gridArr[x][y].height = h
                 updateGridNode(desktop.mem.grid.gridArr[x][y])
 
                 if(desktop.mem.grid.gridArr[x][y].icon){
-                    desktop.mem.grid.gridArr[x][y].icon.coor.px = desktop.mem.grid.gridArr[x][y].posX
-                    desktop.mem.grid.gridArr[x][y].icon.coor.py = desktop.mem.grid.gridArr[x][y].posY
-                    desktop.mem.grid.gridArr[x][y].icon.coor.tx = desktop.mem.grid.gridArr[x][y].posX
-                    desktop.mem.grid.gridArr[x][y].icon.coor.ty = desktop.mem.grid.gridArr[x][y].posY
+                    desktop.mem.grid.gridArr[x][y].icon.coords.px = desktop.mem.grid.gridArr[x][y].posX
+                    desktop.mem.grid.gridArr[x][y].icon.coords.py = desktop.mem.grid.gridArr[x][y].posY
+                    desktop.mem.grid.gridArr[x][y].icon.coords.tx = desktop.mem.grid.gridArr[x][y].posX
+                    desktop.mem.grid.gridArr[x][y].icon.coords.ty = desktop.mem.grid.gridArr[x][y].posY
                     desktop.mem.grid.gridArr[x][y].icon.poseNode()
                 }
             }

@@ -34,7 +34,7 @@ if (arg.description)task.node.getElementsByClassName("message")[0].children[1].i
 if (arg.image) {
     task.node.getElementsByClassName("container")[0].children[0].setAttribute("src", arg.image)
 } else {
-    task.node.getElementsByClassName("container")[0].style.gridTemplateColumns = "0px auto"
+    task.node.getElementsByClassName("container")[0].children[0].style.display = "none"
     task.node.getElementsByClassName("message")[0].style.margin = "0px" 
 }
 if (arg.taskid) {
@@ -75,19 +75,19 @@ if (arg.taskid) {
 task.node.getElementsByClassName("expand")[0].onclick = e => {
     if (mem.var.details.style.display === "none") {
         mem.var.details.style.display = "block"
-        task.node.getElementsByClassName("appcontent")[0].style.height = "432px"
+        task.node.getElementsByClassName("popup")[0].style.height = "fit-content"
         task.node.getElementsByClassName("expand")[0].classList.remove("closed")
         task.node.getElementsByClassName("expand")[0].classList.add("open")
 
-        task.window.heig += 300
+        task.window.height += 300
         task.window.poseNode()
     } else {
         mem.var.details.style.display = "none"
-        task.node.getElementsByClassName("appcontent")[0].style.height = "132px"
+        task.node.getElementsByClassName("popup")[0].style.height = "fit-content"
         task.node.getElementsByClassName("expand")[0].classList.remove("open")
         task.node.getElementsByClassName("expand")[0].classList.add("closed")
 
-        task.window.heig += -300
+        task.window.height += -300
         task.window.poseNode()
     }
 }

@@ -11,9 +11,9 @@ mem.class = {}
 
 mem.class.IconDir = class IconDir {
     constructor(p){
-        this.stat = 0
+        this.state = 0
         this.file = p.file
-        this.imag = p.imag
+        this.image = p.image
         this.name = p.name
         this.exte = p.exte
         this.task = p.task
@@ -28,7 +28,7 @@ mem.class.IconDir = class IconDir {
 
         let newIconImage = document.createElement("div")
         newIconImage.setAttribute("class", "explorerIconImage "+this.task)
-        newIconImage.setAttribute("style", "background-image: url('"+this.imag+"');")
+        newIconImage.setAttribute("style", "background-image: url('"+this.image+"');")
         newIcon.appendChild(newIconImage)
 
         let newIconText = document.createElement("span")
@@ -58,9 +58,9 @@ mem.class.IconDir = class IconDir {
     }
     statNode(num){
         //0 => unselected | 1 => selected | 2 => moving
-        this.stat = (num != undefined) ? num : this.stat
+        this.state = (num != undefined) ? num : this.state
 
-        switch(this.stat){
+        switch(this.state){
             case 0:
                 this.node.classList.remove("active")
                 this.node.classList.remove("moving")
@@ -84,7 +84,7 @@ mem.class.IconDir = class IconDir {
             e.preventDefault()
             
             //when mousedown on selected icon
-            if (_this.stat === 1) {
+            if (_this.state === 1) {
                 //managing selected icons
                 for (let icon of Task.id(_this.task).pocket) {
                     //light up all hover border onmousedown:-|
@@ -134,7 +134,7 @@ mem.class.IconDir = class IconDir {
                     let iconShipImg = document.createElement("div")
                     iconShipImg.setAttribute("class", "iconShipImg")
                     if (pockImg === 1) {
-                        iconShipImg.setAttribute("style", "background-image: url('"+_this.imag+"'); background-size: 68%;")
+                        iconShipImg.setAttribute("style", "background-image: url('"+_this.image+"'); background-size: 68%;")
                     } else {
                         iconShipImg.setAttribute("style", "background-image: url('/plexos/res/themes/Plexos Hyper/icons/interface/fileDrag/pocket_ship_"+pockImg+".svg')")
                     }
@@ -214,7 +214,7 @@ mem.class.IconDir = class IconDir {
         let exte = iconText.innerText.match(/\.(?:.(?<!\.))+$/s)
         exte = (exte!=null && exte.length > 0) ? exte[0] : ""
         this.statNode(1)
-        this.stat = 0
+        this.state = 0
         selectText(iconText,0, iconText.innerText.replace(exte,"").length)
     
         iconText.style.textShadow = "none"
@@ -309,7 +309,7 @@ mem.class.IconDir = class IconDir {
                         }
                     }
                     thisIcon.statNode(1)
-                    thisIcon.stat = 0
+                    thisIcon.state = 0
     
                     selectText(iconText)
                 }

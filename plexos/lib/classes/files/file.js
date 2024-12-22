@@ -106,9 +106,9 @@ export default class File {
     static returnAvailableName(name,icon,from){
         if (!File.nameAvailable(name,icon,from)) {
             //get extension and remove it from name
-            let exte = name.match(/\.(?:.(?<!\.))+$/s)
-            exte = (exte!=null && exte.length > 0) ? exte[0] : ""
-            name = name.replace(exte,"")
+            let extension = name.match(/\.(?:.(?<!\.))+$/s)
+            extension = (extension!=null && extension.length > 0) ? extension[0] : ""
+            name = name.replace(extension,"")
 
             //get name instance amount if there is one
             let amnt = name.match(/(?<!\w)\d+$/)
@@ -119,7 +119,7 @@ export default class File {
 
             //set name with instance amount, starting from two
             name = (amnt!="") ? name.slice(0,(name.length)-dgts) + (amnt+1) : name + " 2"
-            name = name + exte
+            name = name + extension
 
             return File.returnAvailableName(name,icon,from)
         }
@@ -167,7 +167,7 @@ export default class File {
         renamedFile.name = rename
         renamedFile.cfg.exte = extension
         renamedFile.cfg.icon.name = rename
-        renamedFile.cfg.icon.exte = extension
+        renamedFile.cfg.icon.extension = extension
 
         if (parent===plexos.vtx) {
             let desktop = Task.get("Desktop")

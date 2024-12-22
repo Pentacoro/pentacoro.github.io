@@ -69,7 +69,7 @@ desktop.node.oncontextmenu = e => {
 				{name:"New",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/new2.svg')",func:[
 					{name:"new", list: [
 						{name:"Directory",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/directory.svg')",func:() => desktop.mem.new(e,desktop,"Directory","New Folder")},
-						{name:"Metafile",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/metafile.svg')",func:() => desktop.mem.new(e,desktop,"Metafile", "New Metafile.msf")},
+						{name:"Metafile",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/metafile.svg')",func:() => desktop.mem.new(e,desktop,"Metafile", "New Metafile.meta")},
 						{name:"Text Document",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/textfile.svg')",func:() => desktop.mem.new(e,desktop,"JsString", "New Text Document.txt")},
 						]
 					}
@@ -162,7 +162,7 @@ desktop.mem.selectBox = function(e={ctrlKey:false}) {
 		//iconReaction--------------------------------------------------|
 		for (let icon of desktop.mem.iconArr){
 			if (icon.node != null) {
-				if (areRectanglesOverlap(icon.node, selectBox) && icon.stat === 0) {
+				if (areRectanglesOverlap(icon.node, selectBox) && icon.state === 0) {
 					desktop.pocket.push(icon)
 					icon.statNode(1)
 				} else if (wasCtrl == false) {

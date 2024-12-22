@@ -98,6 +98,7 @@ export async function displayComponent({url, taskid, container, env, compid=null
 }
 export async function loadFront({url, taskid, data, container, env = null, compid = null}){
     if (!Task.id(taskid)) return
+    let task = Task.id(taskid)
     data = repDir(data,url)
     data = repTid(data,taskid,false)
     if (compid) data = repCid(data,compid,false)
@@ -132,7 +133,7 @@ export async function loadFront({url, taskid, data, container, env = null, compi
             for(let css of styleContents) {
                 css = repDir(css,url)
 
-                if (Task.id(taskid).window){
+                if (task.window){
                     let regex = /([^\r\n,{}]+)(,(?=[^}]*{)|\s*{)/g
                     let selectors = [...css.matchAll(regex)].map(match => match[0])
                     let classList = ".window."+taskid+""
@@ -188,16 +189,16 @@ export async function loadFront({url, taskid, data, container, env = null, compi
                     } else {
                         await window.eval(`(async () => { ${js} \n})()`)
                     }
-                    if (Task.id(taskid)) Task.id(taskid).focus()
+                    if (task) task.focus()
                 } catch (e) {
                     e.taskId = taskid
                     e.source = src
                     evalErrorPopup(
                         js,
-                        "The script <i>["+count+"] "+src.match(/[^\/]+$/)+"</i> from the <i>"+Task.id(taskid).name+"</i> application failed evaluation.",
+                        "The script <i>["+count+"] "+src.match(/[^\/]+$/)+"</i> from the <i>"+task.name+"</i> application failed evaluation.",
                         e
                     )
-                    if (Task.id(taskid)) Task.id(taskid).end()
+                    if (task) task.end()
                     return
                 } finally {
                     count++
@@ -206,13 +207,30 @@ export async function loadFront({url, taskid, data, container, env = null, compi
             resolve("Success")
     })}
 
+    //loading cursor
     if (env) env.loader(true)
+
+    //hide contents until they're finished
     container.style.opacity = 0
     let cont = await stylizeData(data)
     container.innerHTML = cont.innerHTML
-    if (compid) Task.id(taskid).getComponent(compid).node = cont.children[0]
+
+    //render window
+    if (task.window) {
+        task.window.node.classList.remove("building")
+        task.window.width  = task.window.node.offsetWidth
+        task.window.height = task.window.node.offsetHeight
+    }
+
+    if (compid) task.getComponent(compid).node = cont.children[0]
     await runScripts(container)
 
+    if (task.window) {
+        task.window.width  = task.window.node.offsetWidth
+        task.window.height = task.window.node.offsetHeight
+    }
+
+    //show contents once they're finished
     container.style.opacity = 1
     if (env) env.loader(false)
 }

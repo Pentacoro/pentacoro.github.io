@@ -2,23 +2,29 @@
     margin: 0;
     box-sizing: border-box;
 }
-.appcontent{
+.popup{
     position: relative;
-    display: grid;
-    grid-template-rows: 88px 30px auto;
+    display: flex;
+    flex-direction: column;
 
     width: 400px;
-    height: 100%;
+    height: fit-content;
 
-    background-color: #e8e8e8;
+    background-color: #d8d8d8;
+    overflow: hidden;
 }
 .container {
-    display: grid;
-    grid-template-columns: 60px auto;
+    display: flex;
+    flex-direction: row;
+    gap: 14px;
     padding: 14px;
+    background-color: #e8e8e8;
+    border: 1px solid #c7c7c7;
+}
+img {
+    width: 60px;
 }
 .message {
-    margin-left: 20px;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
@@ -28,16 +34,6 @@
 }
 .message>p{
     width: 100%;
-}
-.buttons{
-    display: flex;
-    align-items: start;
-    justify-content: center;
-    gap: 14px;
-    
-    padding: 0px 14px 0px 14px;
-    width: 100%;
-    height: 100%;
 }
 .option{
     width: 100%;
@@ -56,8 +52,8 @@
     background-color: #b6b6b6;
 }
 .details{
+    display: flex;
     position: relative;
-    margin: 0px 14px 0px 14px;
     height: 300px;
     background-color: white;
 
@@ -67,6 +63,9 @@
     text-overflow: clip;
     overflow-y: scroll;
     overflow-x: hidden;
+
+    scrollbar-width: thin;
+    scrollbar-color: #c1c1c1 #ffffff;
 }
 .details>.errorStack{
     white-space: pre;
@@ -90,11 +89,12 @@
 }
 .expand{
     position: relative;
+
     width: 100%;
     height: 30px;
-    border: 0;
-    border-radius: 0;
-    background-color: #cfcfcf;
+
+    background-color: #e8e8e8;
+    border: 1px solid #c7c7c7;
 
     cursor: pointer;
 }
@@ -105,7 +105,7 @@
     font-size: 11px;
     justify-content: center;
     content: "▶";
-    color: rgb(152, 152, 152);
+    color: rgb(68, 68, 68);
 }
 .expand.open>p::before{
     position: absolute;
@@ -115,13 +115,11 @@
     margin-top: 2px;
     justify-content: center;
     content: "▼";
-    color: rgb(68, 68, 68);
+    color: rgb(152, 152, 152);
 }
 .expand:active{
     width: 100%;
-    border: 0;
-    border-radius: 0;
-    background-color: #b6b6b6;
+    background-color: #d8d8d8;
 }
 .codeParser{
     width: 100%;
@@ -130,13 +128,16 @@
 
 .config-footer{
     width: 100%;
-    margin-top: 8px;
+    height: fit-content;
+    padding: 8px;
 
-    display: flex;
+    display: block;
     flex-direction: row;
     align-items: center;
     justify-content: flex-end;
     gap: 4px;
+
+    overflow: hidden;
 }
 .config-footer-button{
     width: 100%;

@@ -13,7 +13,7 @@ if (arg.taskid      != "") {
         let newButton = document.createElement("button")
         newButton.setAttribute("class", "config-footer-button")
         newButton.innerHTML = button[0]
-        task.node.getElementsByClassName("buttons")[0].appendChild(newButton)
+        task.node.getElementsByClassName("config-footer")[0].appendChild(newButton)
         newButton.onclick = e => {
             if (button[1]) button[1]()
             task.end()

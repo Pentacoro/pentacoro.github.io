@@ -159,11 +159,11 @@ mem.new = function(e, _this, Type, name){
 		name = File.returnAvailableName(name, null, editFrom)
 			let newFileIcon = new Icon (
 				{
-					imag : typeDefaults.iconImag,
+					image : typeDefaults.iconImag,
 					name : name,
 					type : typeDefaults.confType,
-					stat : 0,
-					coor : {
+					state : 0,
+					coords : {
 						px : iconPosX,
 						py : iconPosY,
 						tx : iconPosX,

@@ -5,32 +5,34 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="./css/metaCreator.css">
-    <link rel="stylesheet" href="./css/inputs.css">
     <title>Meta Creator</title>
 </head>
 <body>
     <div class="appcontent">
-        <div class="container">
-            <span class="config-option config-url"><div class="optionName"><h4>URL: </h4></div> 
-                <input type="url" class="optionValue" name="URL" placeholder="Insert URL">
+        <form class="config-form">
+            <span class="config-option">
+                <label for="/TASKID/_url">URL:</label> 
+                <input id ="/TASKID/_url" type="url" name="URL" placeholder="Insert URL">
+                <div class="input-info" style="display: none;"></div>
             </span>
-            <span class="config-option config-drop"><div class="optionName"><h4>Type: </h4></div> 
-                <select class="optionValue" name="Type">
+            <span class="config-option">
+                <label for="/TASKID/_type">Type:</label> 
+                <select id="/TASKID/_type" name="Type">
                     <option value="web">Webpage <i>(.web)</i></option>
                     <option value="img">Image <i>(.img)</i></option>
                     <option value="vid">Video <i>(.vid)</i></option>
                     <option value="aud">Audio <i>(.aud)</i></option>
                     <option value="dl">Download <i>(.dl)</i></option>
+                    <option value="meta">Metafile <i>(.meta)</i></option>
                 </select>
             </span>
-        </div>
+        </form>
 
-        <div class="buttons">
-            <button id="Accept" class="config-footer-button"><p>Accept</p></button>
-            <button id="Cancel" class="config-footer-button"><p>Cancel</p></button>
+        <div class="config-footer">
+            <button id="/TASKID/_Accept" class="config-footer-button"><p>Accept</p></button>
+            <button id="/TASKID/_Cancel" class="config-footer-button"><p>Cancel</p></button>
         </div>
     </div>
-
     <script type="module" src="./js/metaCreator.js"></script>
 </body>
 </html>

@@ -5,8 +5,8 @@ import Task from "../system/task.js"
 let System = plexos.System
 
 export default class Window {
-	stat = 1
-	uiux = []
+	state = 1
+	buttons = []
 	posX = 200
 	posY = 200
     constructor(p){
@@ -15,22 +15,22 @@ export default class Window {
 			return
 		}
 
-        this.stat = p.stat || this.stat // 0 => minimized | 1/2 => open/selected | 3/4 => maximized/selected
-        this.uiux = p.uiux || this.uiux
+        this.state = p.state || this.state // 0 => minimized | 1/2 => open/selected | 3/4 => maximized/selected
+        this.buttons = p.buttons || this.buttons
         this.posX = p.posX || this.posX
         this.posY = p.posY || this.posY
         
-        this.widt = p.widt
-        this.heig = p.heig
-        this.minW = p.minW
-        this.minH = p.minH
+        this.width  = p.width  || 0
+        this.height = p.height || 0
+        this.minW = p.minW     || 0
+        this.minH = p.minH     || 0
         
         this.task = p.task
 		this.icon = p.icon || null
         
         this.name = p.name
 		this.move = p.move || []
-        this.resi = p.resi
+        this.resizeable = p.resizeable
 
 		plexos.Windows.push(this)
 		this.createNode()
@@ -41,13 +41,14 @@ export default class Window {
     createNode(){
 		let newWindow = document.createElement("div")
 		newWindow.setAttribute("class", "window "+this.task)
+		newWindow.classList.add("building")
 		newWindow.setAttribute("id", "window_" + plexos.Windows.indexOf(this))
 	
 		let newWindowInner = document.createElement("div")
 		newWindowInner.setAttribute("class", "windowInner")
 		newWindow.appendChild(newWindowInner)
 	
-		if (this.uiux) {
+		if (this.buttons) {
 			let newHeader = document.createElement("div")
 			newHeader.setAttribute("class", "header")
 			newWindowInner.appendChild(newHeader)
@@ -70,7 +71,7 @@ export default class Window {
 			newHeaderButtons.setAttribute("class", "headerButtons")
 			newHeader.appendChild(newHeaderButtons)
 	
-				for (let button of this.uiux) {
+				for (let button of this.buttons) {
 					let newWindowButton = document.createElement("button")
 					newWindowButton.setAttribute("class", "windowButton"+" "+button.class)
 					newHeaderButtons.appendChild(newWindowButton)
@@ -91,7 +92,7 @@ export default class Window {
 		newWindowBorder.setAttribute("class", "windowBorder")
 		newWindow.appendChild(newWindowBorder)
 	
-			if (this.resi == true) {
+			if (this.resizeable == true) {
 				let newWindowEtop = document.createElement("div")
 				newWindowEtop.setAttribute("class", "windowEdge windowEtop")
 				let newWindowEbot = document.createElement("div")
@@ -122,25 +123,31 @@ export default class Window {
 
 		Task.id(this.task)?.focus()
 		
-		//Getting minimum size to apply to the content,
-		//instead of the window node, by comparing the 
-		//size of the window to that of the content.
-		//This should work for different css themes.
-		let diffW = (newWindow.offsetWidth - newWindow.firstChild.children[1].offsetWidth)
-		let diffH = (newWindow.offsetHeight - newWindow.firstChild.children[1].offsetHeight)
-		this.widt += diffW
-		this.heig += diffH
-		this.minW += diffW
-		this.minH += diffH
+		//This should work for different css themes
+		let diffW = 0
+		let diffH = 0
+		if (this.width >0) {
+			newWindow.style.width = "400px"
+			diffW = (newWindow.offsetWidth  - newWindow.firstChild.children[1].offsetWidth)
+			this.width  += diffW
+			this.minW   += diffW
+		}
+		if (this.height>0) {
+			newWindow.style.height = "400px"
+			diffH = (newWindow.offsetHeight - newWindow.firstChild.children[1].offsetHeight)
+			this.height += diffH
+			this.minH   += diffH
+		}
 
 		newWindow.setAttribute  ("style", 
 									"left:"+this.posX+"px;"+
 									"top:"+this.posY+"px;"+
-									"width:"+this.widt+"px;"+
-									"height:"+this.heig+"px;"+
-									"min-width:"+this.minW+"px;"+
-									"min-height:"+this.minH+"px;"+
-									"z-index: 0;");
+									"width :"+((this.width >0) ? this.width +"px;":"fit-content;")+
+									"height:"+((this.height>0) ? this.height+"px;":"fit-content;")+
+									"min-width :"+((this.minW>0) ? +this.minW  +"px;":"fit-content;")+
+									"min-height:"+((this.minH>0) ? +this.minH  +"px;":"fit-content;")+
+									"z-index: 0;"
+								);
 	
 		for (let button of newWindow.getElementsByClassName("windowButton")){
 			button.onmousedown = e => {
@@ -166,7 +173,7 @@ export default class Window {
 		this.poseNode()
 		this.drag()
 		this.size()
-		this.focus(true)
+		this.focus()
     }
     deleteNode(){
 		//delete window
@@ -252,8 +259,8 @@ export default class Window {
 		this.node.style.top = this.posY + "px"
 		this.node.style.left = this.posX + "px"
 	
-		this.node.style.height = this.heig + "px"
-		this.node.style.width = this.widt + "px"
+		if (this.height > 0) this.node.style.height = this.height + "px"
+		if (this.width  > 0)this.node.style.width = this.width  + "px"
     }
     drag(){
 		let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0
@@ -328,8 +335,8 @@ export default class Window {
 			startX = e.clientX
 			startY = e.clientY
 	
-			startWidth = _this.widt
-			startHeight = _this.heig
+			startWidth = _this.width 
+			startHeight = _this.height
 	
 			startLeft = _this.posX
 			startTop = _this.posY
@@ -351,39 +358,39 @@ export default class Window {
 			//when sizing towards →
 			if (border == "windowErig" || border == "windowCbr" || border == "windowCtr") {
 				if ((startWidth + e.clientX - startX) > minWidth){
-					_this.widt = startWidth + e.clientX - startX
+					_this.width  = startWidth + e.clientX - startX
 				} else {
-					_this.widt = minWidth
+					_this.width  = minWidth
 				}
 			}
 			//when sizing towards ↓
 			if (border == "windowEbot" || border == "windowCbr" || border == "windowCbl") {
 				if ((startHeight + e.clientY - startY) > minHeight){
-					_this.heig = startHeight + e.clientY - startY
+					_this.height = startHeight + e.clientY - startY
 				} else {
-					_this.heig = minHeight
+					_this.height = minHeight
 				}
 			}
 			//when sizing towards ← ---------- [accounting for window min-width]
 			if (border == "windowElef" || border == "windowCtl" || border == "windowCbl") {
 				if (startLeft + e.clientX - startX < startLeft + (startWidth - minWidth)){
 					_this.posX = startLeft + e.clientX - startX
-					_this.widt = startWidth + (e.clientX - startX) * -1
+					_this.width  = startWidth + (e.clientX - startX) * -1
 				} else {
 					//stuck in minimum size
 					_this.posX = startLeft + (startWidth - minWidth)
-					_this.widt = minWidth
+					_this.width  = minWidth
 				}
 			//when sizing towards ↑ ---------- [accounting for window min-height]
 			}
 			if (border == "windowEtop" || border == "windowCtl" || border == "windowCtr") {
 				if (startTop + e.clientY - startY < startTop + (startHeight - minHeight)){
 					_this.posY = startTop + e.clientY - startY
-					_this.heig = startHeight + (e.clientY - startY) * -1
+					_this.height = startHeight + (e.clientY - startY) * -1
 				} else {
 					//stuck in minimum size
 					_this.posY = startTop + (startHeight - minHeight)
-					_this.heig = minHeight
+					_this.height = minHeight
 				}
 			}
 	

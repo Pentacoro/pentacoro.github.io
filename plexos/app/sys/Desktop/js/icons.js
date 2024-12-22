@@ -10,13 +10,13 @@ let mem     = task.mem
 
 mem.class   = {}
 mem.class.IconDesk = class IconDesk {
-    stat = 0
+    state = 0
     constructor(p){
-        this.stat = p.stat || this.stat
-        this.coor = p.coor || null
+        this.state = p.state || this.state
+        this.coords = p.coords || null
 
         this.file = p.file || ""
-        this.imag = p.imag
+        this.image = p.image
         this.name = p.name
         this.type = p.type
         this.exte = p.exte || (this.type==="Directory") ? "dir" : (this.name.match(/\.(?:.(?<!\.))+$/s)!=null) ? this.name.match(/(?:.(?<!\.))+$/s)[0] : ""
@@ -33,15 +33,15 @@ mem.class.IconDesk = class IconDesk {
         newIcon.setAttribute("class", "icon")
         newIcon.setAttribute("title", this.name)
         newIcon.setAttribute("id", "Icon: "+this.name)
-        if (this.coor) newIcon.setAttribute("style",    "left:"+this.coor.px+"px;"+
-                                                        "top:"+this.coor.py+"px;"+
+        if (this.coords) newIcon.setAttribute("style",    "left:"+this.coords.px+"px;"+
+                                                        "top:"+this.coords.py+"px;"+
                                                         "width:"+cfg.desktop.grid.width+"px;"+
                                                         "height:"+cfg.desktop.grid.height+"px;")
 
         let newIconImage = document.createElement("div")
         let newIconFrame = document.createElement("div")
         newIconImage.setAttribute("class", "iconImage")
-        newIconImage.setAttribute("style", "background-image: url('"+this.imag+"');")
+        newIconImage.setAttribute("style", "background-image: url('"+this.image+"');")
         newIconFrame.setAttribute("class", "iconFrame")
         
         newIconFrame.appendChild(newIconImage)
@@ -67,8 +67,8 @@ mem.class.IconDesk = class IconDesk {
         delete this.node
 
         if (!fromGrid) {
-            desktop.mem.grid.gridArr[this.coor.ax][this.coor.ay].used = false
-            desktop.mem.grid.gridArr[this.coor.ax][this.coor.ay].icon = null
+            desktop.mem.grid.gridArr[this.coords.ax][this.coords.ay].used = false
+            desktop.mem.grid.gridArr[this.coords.ax][this.coords.ay].icon = null
         }
 
         desktop.mem.iconArr = desktop.mem.iconArr.remove(this)
@@ -76,9 +76,9 @@ mem.class.IconDesk = class IconDesk {
     }
     statNode(num){
         //0 => unselected | 1 => selected | 2 => moving
-        this.stat = (num != undefined) ? num : this.stat
+        this.state = (num != undefined) ? num : this.state
 
-        switch(this.stat){
+        switch(this.state){
             case 0:
                 this.node.classList.remove("active")
                 this.node.classList.remove("moving")
@@ -100,8 +100,8 @@ mem.class.IconDesk = class IconDesk {
         if (!this.node) return
         let node = this.node
 
-        node.style.left = this.coor.tx + "px"
-        node.style.top = this.coor.ty + "px"
+        node.style.left = this.coords.tx + "px"
+        node.style.top = this.coords.ty + "px"
         node.style.width = cfg.desktop.grid.width + "px"
         node.style.height = cfg.desktop.grid.height + "px"
     
@@ -204,15 +204,15 @@ mem.class.IconDesk = class IconDesk {
                 return
             }
         }
-        File.at(this.file).cfg.icon.coor = this.coor
+        File.at(this.file).cfg.icon.coords = this.coords
         this.node.childNodes[1].innerText = this.name
     }
     render(){
         this.statNode()
         this.poseNode()
 
-        this.imag = File.at(this.file).cfg.icon.imag
-        this.node.children[0].children[0].setAttribute("style", "background-image: url('"+this.imag+"');")
+        this.image = File.at(this.file).cfg.icon.image
+        this.node.children[0].children[0].setAttribute("style", "background-image: url('"+this.image+"');")
     }
     clic(){
         this.node.onmousedown = e => this.drag(e)
@@ -234,7 +234,7 @@ mem.class.IconDesk = class IconDesk {
             pos4 = e.clientY + desktop.node.scrollTop
             
             //when mousedown on selected icon
-            if (_this.stat == 1) {
+            if (_this.state == 1) {
                 //managing selected icons
                 for (let icon of desktop.pocket) {
                     //light up all hover border onmousedown:-|
@@ -254,11 +254,11 @@ mem.class.IconDesk = class IconDesk {
                             icon.statNode(0)
                         }
                         desktop.pocket.push(_this)
-                        _this.stat = 1
+                        _this.state = 1
                         _this.highlight(true)
                     } else if(e.ctrlKey) {
                         desktop.pocket.push(_this)
-                        _this.stat = 1
+                        _this.state = 1
                         _this.highlight(true)
                     }
                 }
@@ -292,10 +292,10 @@ mem.class.IconDesk = class IconDesk {
                 //dragLayer layer
                 document.getElementById("dragLayer").appendChild(icon.node)
                 //set position for selected icons:------------|
-                icon.coor.tx = (icon.coor.tx - pos1)
-                icon.coor.ty = (icon.coor.ty - pos2)
-                desktop.mem.grid.gridArr[icon.coor.ax][icon.coor.ay].used = false
-                desktop.mem.grid.gridArr[icon.coor.ax][icon.coor.ay].icon = null
+                icon.coords.tx = (icon.coords.tx - pos1)
+                icon.coords.ty = (icon.coords.ty - pos2)
+                desktop.mem.grid.gridArr[icon.coords.ax][icon.coords.ay].used = false
+                desktop.mem.grid.gridArr[icon.coords.ax][icon.coords.ay].icon = null
                 //--------------------------------------------|
                 
                 icon.statNode(2)
@@ -313,7 +313,7 @@ mem.class.IconDesk = class IconDesk {
     
             //send all icons to position evaluation
             for (let icon of desktop.pocket){
-                if (cfg.desktop.grid.enabled && icon.stat == 2) {
+                if (cfg.desktop.grid.enabled && icon.state == 2) {
                     iconsToValidate.push(icon)
                 }
             }
@@ -371,7 +371,7 @@ mem.class.IconDesk = class IconDesk {
         let exte = iconText.innerText.match(/\.(?:.(?<!\.))+$/s)
         exte = (exte!=null && exte.length > 0) ? exte[0] : ""
         this.statNode(1)
-        this.stat = 0
+        this.state = 0
         selectText(iconText,0, iconText.innerText.replace(exte,"").length)
     
         iconText.style.textShadow = "none"
@@ -479,7 +479,7 @@ mem.class.IconDesk = class IconDesk {
                         }
                     }
                     thisIcon.statNode(1)
-                    thisIcon.stat = 0
+                    thisIcon.state = 0
     
                     selectText(iconText)
                 }
@@ -503,7 +503,7 @@ mem.repositionIcons = function(icons, mustSet = false){
     for(let icon of icons) validateIconPosition(icon)
 
     function validateIconPosition(icon){
-        if (!icon.coor) icon.coor = {
+        if (!icon.coords) icon.coords = {
             px:-1,
             py:-1,
             tx:-1,
@@ -512,8 +512,8 @@ mem.repositionIcons = function(icons, mustSet = false){
             ay:null
         }
         //find closest grid for its tPos
-        let x = Math.round((icon.coor.tx + desktop.node.scrollLeft - wm)/(w + wm))*(w + wm) + wm
-        let y = Math.round((icon.coor.ty + desktop.node.scrollTop  - hm)/(h + hm))*(h + hm) + hm
+        let x = Math.round((icon.coords.tx + desktop.node.scrollLeft - wm)/(w + wm))*(w + wm) + wm
+        let y = Math.round((icon.coords.ty + desktop.node.scrollTop  - hm)/(h + hm))*(h + hm) + hm
         
         //get its spot in grid array
         let tx = Math.round((x - wm)/(w + wm))
@@ -523,18 +523,18 @@ mem.repositionIcons = function(icons, mustSet = false){
             //if object exists and is not used (valid position)
             let newGrid = desktop.mem.grid.gridArr[tx][ty]
     
-            if(mustSet && icon.coor) {
+            if(mustSet && icon.coords) {
                 newGrid.used = true
                 newGrid.icon = icon
     
-                icon.coor.px = newGrid.posX
-                icon.coor.py = newGrid.posY
-                icon.coor.tx = newGrid.posX
-                icon.coor.ty = newGrid.posY
-                icon.coor.ax = tx
-                icon.coor.ay = ty
+                icon.coords.px = newGrid.posX
+                icon.coords.py = newGrid.posY
+                icon.coords.tx = newGrid.posX
+                icon.coords.ty = newGrid.posY
+                icon.coords.ax = tx
+                icon.coords.ay = ty
 
-                File.at(icon.file).cfg.coor = icon.coor
+                File.at(icon.file).cfg.coords = icon.coords
                 validatedIcons.push(icon)
             }
         } else {
@@ -546,7 +546,7 @@ mem.repositionIcons = function(icons, mustSet = false){
     for(let icon of invalidIcons) reintegrateInvalidIcon(icon)
 
     function reintegrateInvalidIcon(icon){
-        if (!icon.coor) icon.coor = {
+        if (!icon.coords) icon.coords = {
             px:-1,
             py:-1,
             tx:-1,
@@ -556,8 +556,8 @@ mem.repositionIcons = function(icons, mustSet = false){
         }
     
         //get previous position in grid array
-        let px = Math.round((icon.coor.px - wm)/(w + wm))
-        let py = Math.round((icon.coor.py - hm)/(h + hm))
+        let px = Math.round((icon.coords.px - wm)/(w + wm))
+        let py = Math.round((icon.coords.py - hm)/(h + hm))
 
         let oldGrid = {used: true}
 
@@ -567,36 +567,36 @@ mem.repositionIcons = function(icons, mustSet = false){
             }
         }
 
-        if(mustSet && icon.coor && !oldGrid.used){
+        if(mustSet && icon.coords && !oldGrid.used){
             oldGrid.used = true
             oldGrid.icon = icon
-            icon.coor.tx = icon.coor.px
-            icon.coor.ty = icon.coor.py
-            icon.coor.ax = px
-            icon.coor.ay = py
+            icon.coords.tx = icon.coords.px
+            icon.coords.ty = icon.coords.py
+            icon.coords.ax = px
+            icon.coords.ay = py
 
-            File.at(icon.file).cfg.coor = icon.coor
+            File.at(icon.file).cfg.coords = icon.coords
             validatedIcons.push(icon)
         }else if(mustSet){
             let newGrid = mem.orderIconPosition()
             if (newGrid === undefined) {
                 icon.deleteNode(true)
-                icon.coor = null
-                File.at(icon.file).cfg.icon.coor = null
+                icon.coords = null
+                File.at(icon.file).cfg.icon.coords = null
                 mem.var.hiddenIcons = mem.var.hiddenIcons + 1
                 task.emit("desktop-icon-hidden")
                 return
             }
             newGrid[0].used = true
             newGrid[0].icon = icon
-            icon.coor.px = newGrid[0].posX
-            icon.coor.py = newGrid[0].posY
-            icon.coor.tx = newGrid[0].posX
-            icon.coor.ty = newGrid[0].posY
-            icon.coor.ax = newGrid[1]
-            icon.coor.ay = newGrid[2]
+            icon.coords.px = newGrid[0].posX
+            icon.coords.py = newGrid[0].posY
+            icon.coords.tx = newGrid[0].posX
+            icon.coords.ty = newGrid[0].posY
+            icon.coords.ax = newGrid[1]
+            icon.coords.ay = newGrid[2]
 
-            File.at(icon.file).cfg.coor = icon.coor
+            File.at(icon.file).cfg.coords = icon.coords
             validatedIcons.push(icon)
         }
     }

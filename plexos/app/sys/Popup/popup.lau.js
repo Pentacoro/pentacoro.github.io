@@ -41,14 +41,10 @@ export function initialize({taskid,args,addr,root}) {
             {
                 name : args.name,
                 task : taskid, 
-                rezi : false, 
-                uiux : [], 
+                resizeable : false, 
+                buttons : [], 
                 icon : (args.icon) ? args.icon : null,
-                stat : 1, 
-                widt : 400, 
-                heig : 132, 
-                minW : 400,
-                minH : 132
+                state : 1
             }
         )
             

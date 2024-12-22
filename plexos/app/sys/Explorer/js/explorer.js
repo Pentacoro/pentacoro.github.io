@@ -15,7 +15,7 @@ mem.createExplorerIcons = async function(array) {
         let itemIcon = item.cfg.icon
         let dirIcon  = new mem.class.IconDir(
             {           
-                imag : itemIcon.imag,
+                image : itemIcon.image,
                 name : itemIcon.name,
                 task : task.id,
                 exte : itemIcon.exte,
@@ -75,7 +75,7 @@ mem.explorerInit = function (dir, id, act = null) {
 
         task.node.getElementsByClassName("address")[0].innerHTML = dir
         task.window.node.children[0].children[0].children[1].innerHTML = activeObj.name
-        task.window.node.children[0].children[0].children[0].setAttribute("style", `background-image: url('${activeObj.cfg.icon.imag}')`)
+        task.window.node.children[0].children[0].children[0].setAttribute("style", `background-image: url('${activeObj.cfg.icon.image}')`)
 
         mem.createExplorerIcons(dirPlex).then( e => mem.createExplorerIcons(dirFolder).then(e => mem.createExplorerIcons(dirFile)))
         
@@ -86,7 +86,7 @@ mem.explorerInit = function (dir, id, act = null) {
             {
              name:"Error",
              type:false,
-             title:"Couldn't load directory",
+             title:"Directory not found",
              description:"This directory seems to no longer exist. It might have been deleted, moved, or a parent directory been renamed",
              taskid:task.id,
              icon:""
@@ -114,10 +114,10 @@ mem.new = function(e, _this, Type, name){
 		if(File.nameAvailable(name, null, editFrom)) {
             let newFileIcon = new Icon (
                 {
-                    imag : typeDefaults.iconImag,
+                    image : typeDefaults.iconImag,
 					name : name,
 					type : typeDefaults.confType,
-					stat : 0
+					state : 0
 				}
             )
 			editFrom.new(Type,name,newFileIcon)

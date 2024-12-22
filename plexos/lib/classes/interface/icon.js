@@ -1,13 +1,13 @@
 import File from "../files/file.js"
 
 export default class Icon {
-    stat = 0
+    state = 0
     constructor(p){
-        this.stat = p.stat || this.stat
-        this.coor = p.coor || null
+        this.state = p.state || this.state
+        this.coords = p.coords || p.coor || null
 
         this.file = p.file || ""
-        this.imag = p.imag
+        this.image = p.image || p.imag
         this.name = p.name
         this.type = p.type
         this.exte = p.exte || (this.type==="Directory") ? "dir" : (this.name.match(/\.(?:.(?<!\.))+$/s)!=null) ? this.name.match(/(?:.(?<!\.))+$/s)[0] : ""
@@ -15,7 +15,7 @@ export default class Icon {
         this.drop = []
     }
     setImage(url){
-        this.imag = url
+        this.image = url
         File.at(this.file).render()
     }
     clic(){

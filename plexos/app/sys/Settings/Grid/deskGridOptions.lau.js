@@ -28,12 +28,10 @@ export function initialize({taskid,args,addr,root}){
         {
             name : "Desktop Grid Settings",
             task : task.id, 
-            resi : false, 
-            uiux : [], 
+            resizeable : false, 
+            buttons : [], 
             icon : "/plexos/res/themes/Plexos Hyper/icons/files/settingsPlaceholder.svg",
-            stat : 1, 
-            widt : 361, 
-            heig : 490, 
+            state : 1, 
         }
     )
 
