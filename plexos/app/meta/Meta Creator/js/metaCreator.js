@@ -88,8 +88,9 @@ task.node.getElementById(task.id+"_Accept").onclick = async ()=>{
         if (arg.file.meta.url.match(slashForwardRegex)) arg.file.cfg.icon.setImage(arg.file.meta.url.replace(slashForwardRegex, "/favicon.ico"))
         else arg.file.cfg.icon.setImage(arg.file.meta.url + "/favicon.ico")
 
-        let iconImage = fetch(arg.file.cfg.icon.imag)
-        iconImage.catch(()=>{
+        fetch(arg.file.cfg.icon.image).then(res=>{
+            if (res.status != 200) arg.file.cfg.icon.setImage(`https://s2.googleusercontent.com/s2/favicons?domain_url=${arg.file.meta.url}`)
+        }).catch(res=>{
             arg.file.cfg.icon.setImage(`https://s2.googleusercontent.com/s2/favicons?domain_url=${arg.file.meta.url}`)
         })
     }

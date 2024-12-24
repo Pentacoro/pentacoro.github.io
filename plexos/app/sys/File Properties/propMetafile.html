@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Desk Grid Options</title>
+</head>
+<body>
+    <div class="config-properties">
+        <div class="config-tabs">
+            <label class="config-tab" for="/TASKID/_tab1">
+                <input class="tabRadio_input" type="radio" name="config-grid-tab" id="/TASKID/_tab1" value="/TASKID/_tabContent1">
+                <div class="tabRadio_box"><span>General</span></div>
+            </label>
+            <label class="config-tab" for="/TASKID/_tab2">
+                <input class="tabRadio_input" type="radio" name="config-grid-tab" id="/TASKID/_tab2" value="/TASKID/_tabContent2">
+                <div class="tabRadio_box"><span>Details</span></div>
+            </label>
+            <label class="config-tab" for="/TASKID/_tab3">
+                <input class="tabRadio_input" type="radio" name="config-grid-tab" id="/TASKID/_tab3" value="/TASKID/_tabContent3">
+                <div class="tabRadio_box"><span>Icon</span></div>
+            </label>
+        </div>
+
+        <div class="tabContent" id="/TASKID/_tabContent1">
+            <form class="config-form">
+                <span class="config-option wide">
+                    <label for="/TASKID/_fileName"><img class="genericFileIcon" src="/plexos/res/themes/Plexos Hyper/icons/files/defaultMSF.svg" alt=""></label>
+                    <input id ="/TASKID/_fileName"type="text" name="">
+                </span>
+
+                <hr>
+
+                <span class="config-option">
+                    <label for="/TASKID/_fileType">Type:</label>
+                    <span id ="/TASKID/_fileType"></span>
+                </span>
+
+                <span class="config-option">
+                    <label for="/TASKID/_fileExte">Extension:</label>
+                    <span id ="/TASKID/_fileExte"></span>
+                </span>
+
+                <hr>
+
+                <span class="config-option">
+                    <label for="/TASKID/_fileAddr">Address:</label>
+                    <span id ="/TASKID/_fileAddr"></span>
+                </span>
+
+                <span class="config-option">
+                    <label for="/TASKID/_fileSize">Size:</label>
+                    <span id ="/TASKID/_fileSize"></span>
+                </span>
+
+                <hr>
+
+                <span class="config-option">
+                    <label for="/TASKID/_fileDateCreated">Created:</label>
+                    <span id ="/TASKID/_fileDateCreated"></span>
+                </span>
+
+                <span class="config-option">
+                    <label for="/TASKID/_fileDateModified">Modified:</label>
+                    <span id ="/TASKID/_fileDateModified"></span>
+                </span>
+
+                <span class="config-option">
+                    <label for="/TASKID/_fileDateAccessed">Accessed:</label>
+                    <span id ="/TASKID/_fileDateAccessed"></span>
+                </span>
+
+                <hr>
+
+                <span class="config-option">
+                    <label for="/TASKID/_fileWriteOnly">Write Only:</label>
+                    <input id ="/TASKID/_fileWriteOnly"type="checkbox" name="">
+                </span>
+
+                <span class="config-option">
+                    <label for="/TASKID/_fileHidden">Hidden:</label>
+                    <input id ="/TASKID/_fileHidden"type="checkbox" name="">
+                </span>
+
+            </form>
+        </div>
+
+        <div class="tabContent hidden" id="/TASKID/_tabContent2">
+            <form class="config-form">
+            </form>
+        </div>
+
+        <div class="tabContent hidden" id="/TASKID/_tabContent3">
+            <form class="config-form">
+            </form>
+        </div>
+
+        <div class="config-footer">
+            <button class="config-footer-button footer-accept">Accept</button>
+            <button class="config-footer-button footer-cancel">Cancel</button>
+            <button class="config-footer-button footer-apply disabled" disabled>Apply</button>
+        </div>
+
+        <script type="module" src="./js/elements.js"></script>
+        <script type="module" src="./js/functions.js"></script>
+        <script type="module" src="./js/init.js"></script>
+    </div>
+</body>
+</html>

@@ -31,6 +31,9 @@
     width: 100%;
     height: 1px;
 }
+.config-form>hr{
+    margin: 5px 0px;
+}
 .config-option{
     position: relative;
     container-name: option;
@@ -69,7 +72,29 @@
     margin-left: auto;
     width: 50px;
 }
+.config-option.wide{
+    height: 38px;
+}
+.config-option>span{
+    width: 100%;
+    user-select: text;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+.config-option.wide>label>.genericFileIcon{
+    width: 38px;
+    height: 38px;
+}
+.config-option.wide>label{
+    background-color: #e8e8e8;
+    padding: 0px;
+}
 .config-option>[type="url"] {
+    width: 100%;
+}
+.config-option>[type="text"] {
     width: 100%;
 }
 .config-option>.input-info {
