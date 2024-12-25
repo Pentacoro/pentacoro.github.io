@@ -43,7 +43,7 @@
         {name: "prop", list: [
             {name:"Delete",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/delete.svg')",func: () => Task.deleteSelectedNodes(plexos.System.mem.focused.pocket)},
             {name:"Rename",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/rename.svg')",func: () => ContextMenu.target.rename(e),bool:File.at(ContextMenu.target.file)!=undefined},
-            {name:"Properties",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/properties.svg')",func: () => {return} }
+            {name:"Properties",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/properties.svg')",func: () => {runLauncher("/plexos/app/sys/File Properties/prop.lau.js",File.at(ContextMenu.target.file))} }
         ]},
     ]},
 ]
