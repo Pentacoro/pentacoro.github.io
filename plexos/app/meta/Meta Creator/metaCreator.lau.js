@@ -6,7 +6,9 @@ import {displayComponent} from "/plexos/lib/functions/dll.js"
 let System = plexos.System
 
 export function initialize({taskid,args,addr,root}) {
-    let html = root + "/metaCreator.html"
+    if (args.window === undefined) args.window = true
+    
+    let html = root + ((args.window) ? "/metaCreator.html" : "/metaCreatorScript.html")
 
     //on app init
     function ini() {
@@ -14,6 +16,8 @@ export function initialize({taskid,args,addr,root}) {
         let arg  = task.mem.arg
 
         arg.file = File.at(args.addr)
+        if (args.url  != undefined) arg.url = args.url
+        if (args.type != undefined) arg.type = args.type
     }
     //on app end
     function end() {
@@ -34,23 +38,25 @@ export function initialize({taskid,args,addr,root}) {
     if (!task.id) return
 
     //window generation
-    new Window
-    (
-        {
-            name : args.name,
-            task : taskid, 
-            resizeable : false, 
-            buttons : [], 
-            icon : File.at(args.addr).cfg.icon.image,
-            state : 1, 
-        }
-    )
+    if (args.window) {
+        new Window
+        (
+            {
+                name : args.name,
+                task : taskid, 
+                resizeable : false, 
+                buttons : [], 
+                icon : File.at(args.addr).cfg.icon.image,
+                state : 1, 
+            }
+        )
+    }
         
     ini()
 
     displayComponent({
         url:html,
         taskid:taskid,
-        container:task.node
+        container:(task.node) ? task.node : document.getElementById("systemLayer")
     })
 }

@@ -137,10 +137,11 @@ mem.refresh = function() {
 	task.emit("desktop-refresh")
 }
 
-mem.new = function(e, _this, Type, name){
+mem.new = function(Type, name){
 	//Make sure icon appears at center of initial right click-------|
-	let initialX = parseInt(window.getComputedStyle(document.getElementsByClassName("clickContext sub_0")[0],null).getPropertyValue("left"))
-	let initialY = parseInt(window.getComputedStyle(document.getElementsByClassName("clickContext sub_0")[0],null).getPropertyValue("top"))
+	let contextMenu = document.getElementsByClassName("clickContext sub_0")[0]
+	let initialX = (contextMenu) ? parseInt(window.getComputedStyle(document.getElementsByClassName("clickContext sub_0")[0],null).getPropertyValue("left")) : 0
+	let initialY = (contextMenu) ? parseInt(window.getComputedStyle(document.getElementsByClassName("clickContext sub_0")[0],null).getPropertyValue("top"))  : 0
 
 	let editFile = null
 	let editFrom = plexos.vtx
@@ -184,5 +185,7 @@ mem.new = function(e, _this, Type, name){
 			return newDesktopIcon
 	}
 
-	createDesktopFile(name).rename()
+	let newIcon = createDesktopFile(name)
+	newIcon.rename()
+	return File.at(newIcon.file)
 }

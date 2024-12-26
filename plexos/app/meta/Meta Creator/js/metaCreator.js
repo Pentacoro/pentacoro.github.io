@@ -1,27 +1,36 @@
-import {getTask, displayComponent} from "/plexos/lib/functions/dll.js"
+import {getTask, displayComponent, ajaxReturn} from "/plexos/lib/functions/dll.js"
 import Directory from "/plexos/lib/classes/files/directory.js"
 
 let task = getTask(/TASKID/)
 let mem  = task.mem
 let arg  = mem.arg
 
-let nodeUrl  = task.node.getElementsByName("URL")[0]
-let nodeType = task.node.getElementsByName("Type")[0]
-
-task.node.getElementById(task.id+"_Accept").onclick = async ()=>{
-    let url  = nodeUrl.value
-    let type = nodeType.value
-    let typeValue = nodeType.options[nodeType.selectedIndex].text
+mem.createMeta = async function () {
+    let url, type, typeValue, nodeUrl, nodeType
+    if (task.node) {
+        nodeUrl  = task.node.getElementsByName("URL")[0]
+        nodeType = task.node.getElementsByName("Type")[0]
+        url  = nodeUrl.value
+        type = nodeType.value
+        typeValue = nodeType.options[nodeType.selectedIndex].text
+    } else {
+        url  = arg.url
+        type = arg.type
+    }
 
     const slashForwardRegex = /(?<=.*\/.*\/.*)\/(.+)?/
     const domainRegex = /(?:^https?:\/\/([^\/]+)(?:[\/,]|$)|^(.*)$)/
     const urlRegex = /[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,4}\b(\/[-a-zA-Z0-9@:%_\+.~#?&//=]*)?/gi
 
     if(!url.match(urlRegex)) {
-        nodeUrl.parentElement.children[2].style.backgroundImage = 'url("/plexos/res/themes/Plexos Hyper/icons/interface/forms/error.png")'
-        nodeUrl.parentElement.children[2].style.display = 'block'
-        nodeUrl.parentElement.children[2].setAttribute("title", "Invalid URL")
-        return
+        if (task.node) {
+            nodeUrl.parentElement.children[2].style.backgroundImage = 'url("/plexos/res/themes/Plexos Hyper/icons/interface/forms/error.png")'
+            nodeUrl.parentElement.children[2].style.display = 'block'
+            nodeUrl.parentElement.children[2].setAttribute("title", "Invalid URL")
+            return
+        } else {
+            task.end()
+        }
     }
     
     arg.file.meta.url = url
@@ -37,8 +46,8 @@ task.node.getElementById(task.id+"_Accept").onclick = async ()=>{
         body: JSON.stringify({q:url}),
     }).then(res => {
         if (res.status != 200) {
-            console.log(res)
-            throw new Error('Unable to retrieve metadata');
+            //console.log(res)
+            //throw new Error('Unable to retrieve metadata');
         }
         return res.json()
     }).then(response => {
@@ -55,9 +64,11 @@ task.node.getElementById(task.id+"_Accept").onclick = async ()=>{
 
     let optionsType = "(Metafile"
     let optionsExte = "(meta"
-    for(let option of nodeType.options) {
-        optionsType += "|"+option.text.match(optionTypeRegex)
-        optionsExte += "|"+option.text.match(optionExteRegex)
+    if (task.node) {
+        for(let option of nodeType.options) {
+            optionsType += "|"+option.text.match(optionTypeRegex)
+            optionsExte += "|"+option.text.match(optionExteRegex)
+        }
     }
     optionsType += ")"
     optionsExte += ")"
@@ -88,11 +99,10 @@ task.node.getElementById(task.id+"_Accept").onclick = async ()=>{
         if (arg.file.meta.url.match(slashForwardRegex)) arg.file.cfg.icon.setImage(arg.file.meta.url.replace(slashForwardRegex, "/favicon.ico"))
         else arg.file.cfg.icon.setImage(arg.file.meta.url + "/favicon.ico")
 
-        fetch(arg.file.cfg.icon.image).then(res=>{
-            if (res.status != 200) arg.file.cfg.icon.setImage(`https://s2.googleusercontent.com/s2/favicons?domain_url=${arg.file.meta.url}`)
-        }).catch(res=>{
-            arg.file.cfg.icon.setImage(`https://s2.googleusercontent.com/s2/favicons?domain_url=${arg.file.meta.url}`)
-        })
+        const img = new Image()
+        img.onload =  () => {}
+        img.onerror = () => arg.file.cfg.icon.setImage(`https://s2.googleusercontent.com/s2/favicons?domain_url=${arg.file.meta.url}`)
+        img.src = arg.file.cfg.icon.image
     }
     if (type === "img") {
         arg.file.cfg.icon.setImage(arg.file.meta.url)
@@ -101,6 +111,10 @@ task.node.getElementById(task.id+"_Accept").onclick = async ()=>{
     if(Directory.isOpen(arg.file.cfg.parent)) Directory.isOpen(arg.file.cfg.parent).mem.refresh()
     task.end()
 }
-task.node.getElementById(task.id+"_Cancel").onclick = ()=>{
-    task.end()
+
+if (task.node) {
+    task.node.getElementById(task.id+"_Accept").onclick = ()=> mem.createMeta()
+    task.node.getElementById(task.id+"_Cancel").onclick = ()=> task.end()
+} else {
+    mem.createMeta()
 }

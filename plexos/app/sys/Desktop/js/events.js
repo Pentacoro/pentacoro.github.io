@@ -12,6 +12,23 @@ window.addEventListener("resize", e => {
 	task.emit("desktop-resize")
 })
 
+window.addEventListener("paste", async e => {
+	if (plexos.System.mem.focused != task) return
+	try {
+		const urlRegex = /[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,4}\b(\/[-a-zA-Z0-9@:%_\+.~#?&//=]*)?/gi
+        const paste = await navigator.clipboard.readText()
+
+		if (paste.match(urlRegex)){
+			let newMetaFile = mem.dirObject.new("Metafile", "New Metafile.meta")
+			runLauncher("/plexos/app/meta/Meta Creator/metaCreator.lau.js",{addr:newMetaFile.cfg.addr,window:false,url:paste,type:"web"})
+			mem.refresh()
+		}
+        
+    } catch (err) {
+        console.error('Failed to read clipboard contents: ', err)
+    }
+})
+
 //when desktop click
 desktop.node.addEventListener("mousedown", e => {
 	task.focus()
@@ -68,9 +85,9 @@ desktop.node.oncontextmenu = e => {
 			{name: "file", list: [
 				{name:"New",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/new2.svg')",func:[
 					{name:"new", list: [
-						{name:"Directory",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/directory.svg')",func:() => desktop.mem.new(e,desktop,"Directory","New Folder")},
-						{name:"Metafile",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/metafile.svg')",func:() => desktop.mem.new(e,desktop,"Metafile", "New Metafile.meta")},
-						{name:"Text Document",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/textfile.svg')",func:() => desktop.mem.new(e,desktop,"JsString", "New Text Document.txt")},
+						{name:"Directory",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/directory.svg')",func:() => desktop.mem.new("Directory","New Folder")},
+						{name:"Metafile",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/metafile.svg')",func:() => desktop.mem.new("Metafile", "New Metafile.meta")},
+						{name:"Text Document",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/textfile.svg')",func:() => desktop.mem.new("JsString", "New Text Document.txt")},
 						]
 					}
 				]},
