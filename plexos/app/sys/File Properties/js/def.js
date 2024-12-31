@@ -4,8 +4,8 @@ let task = getTask(/TASKID/)
 let mem  = task.mem
 mem.element = {}
 
-mem.var.config = mem.arg //set object
-mem.var.configFile = "" //set config file path
+mem.var.config = {...eval(mem.arg)} //set object
+mem.var.configFile = mem.arg.cfg.addr //set config file path
 mem.var.configInitial = { ...eval(mem.var.config)}
 
 mem.element.fileName = task.node.getElementById(task.id+"_fileName")

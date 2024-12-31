@@ -9,42 +9,48 @@ let mem  = task.mem
 for (let input of task.node.querySelectorAll(".config-option>[type='number']")) {
     let inputbox = input
     let variable = inputbox.getAttribute("name")
-    inputbox.onchange = (e) => {
-        eval(variable + " = " + Number(inputbox.value))
-        if (inputbox.parentElement.children[3]) {
-            eval(inputbox.parentElement.children[3].name + " = " + false)
-            inputbox.parentElement.children[3].checked = false
+    if (variable) {
+        inputbox.onchange = (e) => {
+            eval(variable + " = " + Number(inputbox.value))
+            if (inputbox.parentElement.children[3]) {
+                eval(inputbox.parentElement.children[3].name + " = " + false)
+                inputbox.parentElement.children[3].checked = false
+                mem.onChange()
+                return
+            }
             mem.onChange()
-            return
         }
-        mem.onChange()
-    }
-    inputbox.addEventListener("focusout", (e) => {
-        eval(variable + " = " + Number(inputbox.value))
-    })
+        inputbox.addEventListener("focusout", (e) => {
+            eval(variable + " = " + Number(inputbox.value))
+        })
+    }   
 }
 
 //text input
 for (let input of task.node.querySelectorAll(".config-option>[type='text']")) {
     let inputbox = input
     let variable = inputbox.getAttribute("name")
-    inputbox.onchange = (e) => {
-        eval(variable + " = " +JSON.stringify(inputbox.value))
-        mem.onChange()
+    if (variable) {
+        inputbox.onchange = (e) => {
+            eval(variable + " = " +JSON.stringify(inputbox.value))
+            mem.onChange()
+        }
+        inputbox.addEventListener("focusout", (e) => {
+            eval(variable + " = " + JSON.stringify(inputbox.value))
+        })
     }
-    inputbox.addEventListener("focusout", (e) => {
-        eval(variable + " = " + JSON.stringify(inputbox.value))
-    })
 }
 
 //auto button
 for (let button of task.node.querySelectorAll(".config-option>[type='button'].auto")) {
     let variable = button.getAttribute("name")
-    button.onclick = (e) => {
-        if (eval(variable)) return
-        eval(variable + " = " + true)
-        mem.onChange()
-        eval(variable + " = " + false)
+    if (variable) {
+        button.onclick = (e) => {
+            if (eval(variable)) return
+            eval(variable + " = " + true)
+            mem.onChange()
+            eval(variable + " = " + false)
+        }
     }
 }
 
@@ -52,14 +58,16 @@ for (let button of task.node.querySelectorAll(".config-option>[type='button'].au
 for (let box of task.node.querySelectorAll(".config-option>[type='checkbox'].auto")) {
     let variable = box.getAttribute("name")
     let checkbox = box
-    if (eval(variable)) checkbox.checked = true
-    checkbox.onclick = (e) => {
-        if (!checkbox.checked) {
-            eval(variable + " = " + false)
+    if (variable) {
+        if (eval(variable)) checkbox.checked = true
+        checkbox.onclick = (e) => {
+            if (!checkbox.checked) {
+                eval(variable + " = " + false)
+                mem.onChange()
+                return
+            }
+            eval(variable + " = " + true)
             mem.onChange()
-            return
         }
-        eval(variable + " = " + true)
-        mem.onChange()
     }
 }

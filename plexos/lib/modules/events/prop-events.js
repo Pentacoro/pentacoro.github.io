@@ -15,7 +15,7 @@ mem.var.configInitial = { ...eval(mem.var.config)}
 
 //on app close
 task.onEnd = function () {
-    eval(mem.var.config +" = task.mem.var.configInitial")
+    eval("mem.var.config = mem.var.configInitial")
     task.emit(task.name+"-closed")
     File.at(mem.var.configFile).data = JSON.stringify(eval(mem.var.config), null, "\t")
 }
