@@ -3,13 +3,13 @@ import {renameKey, runLauncher} from  "../../functions/dll.js"
 import Task from "../system/task.js"
 
 export default class File {
-    static at(addr = "") {
+    static at(addr = "", get = "file") {
         //string: where we'll devour addr one dir at a time as we build expression
         let string = addr
         //steps: where we'll store each of the dirs extracted from string (useless for now)
-        let steps = []
+        let steps = ["plexos[\"core\"]"]
         //expression: where we'll build the object reference from the core to later be eval()
-        let expression = "plexos.core"
+        let expression = "plexos[\"core\"]"
         
         //find first "/"
         let to = string.indexOf("/")
@@ -54,8 +54,16 @@ export default class File {
     
             }
         }
-        //return file if expression indeed finds a file, otherwise return null
-        return (eval(expression)!=undefined) ? eval(expression) : null
+        //return requested output, otherwise return null
+        switch (get) {
+            case "file":
+                return ((eval(expression)!=undefined) ? eval(expression) : null)
+                break
+            case "parent":
+                let parent = (expression==="plexos[\"core\"]") ? expression : expression.slice(0,-(`.dir[\"${steps[steps.length - 1]}\"]`.length))
+                return ((eval(parent)!=undefined) ? eval(parent) : null)
+                break
+        }
     }
 
     static typeDefaults(Type) {
@@ -76,9 +84,9 @@ export default class File {
                 defaults.confType = "Metafile"
                 defaults.skeyName = "meta"
                 break
-            case "JsString":
+            case "String":
                 defaults.iconImag = "plexos/res/themes/Plexos Hyper/icons/files/defaultTXT.svg"
-                defaults.confType = "JsString"
+                defaults.confType = "String"
                 defaults.skeyName = "data"
         }
     
@@ -127,7 +135,7 @@ export default class File {
     }
 
     delete() {
-        let parent = File.at(this.cfg.parent)
+        let parent = this.parent()
         let child = this
 
         delete parent.dir[child.name]
@@ -137,9 +145,9 @@ export default class File {
         
     }
     rename(rename) {
-        let parent  = File.at(this.cfg.parent)
+        let parent  = this.parent()
 
-        rename = File.returnAvailableName(rename,null,File.at(this.cfg.parent))
+        rename = File.returnAvailableName(rename,null,this.parent())
 
         let newAddress = "" + parent.cfg.icon.file + "/" + rename
         let oldAddress = this.cfg.icon.file
@@ -154,7 +162,6 @@ export default class File {
             for (let pair of Object.entries(parent.dir)) {
                 let file = pair[1]
                 file.cfg.addr = file.cfg.addr.replace(oldAddress, newAddress)
-                file.cfg.parent = file.cfg.parent.replace(oldAddress, newAddress)
                 file.cfg.icon.file = file.cfg.icon.file.replace(oldAddress, newAddress)
                 if (file.exte === "dir") rerouteChildren(file)
             }
@@ -182,7 +189,7 @@ export default class File {
     }
 
     render(taskid=null) {
-        if (File.at(this.cfg.parent) === plexos.vtx) { //if is on current vertex / render on desktop
+        if (this.parent() === plexos.vtx) { //if is on current vertex / render on desktop
             let desktop = Task.get("Desktop")
             if (desktop) {
                 if  (desktop.mem.getIcon(this.name)?.node) desktop.mem.getIcon(this.name).render()
@@ -198,7 +205,31 @@ export default class File {
         runLauncher(cfg.apps[this.cfg.exte], {name:this.name, addr:this.cfg.addr}, plexos.System.mem.focused)
     }
 
+    parent() {
+        return File.at(this.cfg.addr, "parent")
+    }
+
     displayName() {
         return this.name.replace(/\.(?:.(?<!\.))+$/s, "")
+    }
+
+    size(unit=null) {
+        let formatter = new Intl.NumberFormat('en-UK', {maximumFractionDigits:2})
+
+        let byteSize = JSON.stringify(this).length * 2 + `"${this.name}":`.length * 2
+
+        if (byteSize < 1024 || unit==="bytes") {
+            return formatter.format(byteSize) + " bytes"
+        } else if  (byteSize < Math.pow(1024, 2) || unit==="KB") {
+            return formatter.format(byteSize / Math.pow(1024, 1)) + " KB"
+        } else if (byteSize >= Math.pow(1024, 3) || unit==="MB") {
+            return formatter.format(byteSize / Math.pow(1024, 2)) + " MB"
+        } else if (byteSize >= Math.pow(1024, 4) || unit==="GB") {
+            return formatter.format(byteSize / Math.pow(1024, 3)) + " GB"
+        } else if (byteSize >= Math.pow(1024, 5) || unit==="TB") {
+            return formatter.format(byteSize / Math.pow(1024, 4)) + " TB"
+        } else if (byteSize >= Math.pow(1024, 6) || unit==="PB") {
+            return formatter.format(byteSize / 1024) + " PB"
+        }
     }
 }

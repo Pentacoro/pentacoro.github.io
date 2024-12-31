@@ -10,15 +10,15 @@
     <div class="config-properties">
         <div class="config-tabs">
             <label class="config-tab" for="/TASKID/_tab1">
-                <input class="tabRadio_input" type="radio" name="config-grid-tab" id="/TASKID/_tab1" value="/TASKID/_tabContent1">
+                <input class="tabRadio_input" type="radio" name="/TASKID/_config-grid-tab" id="/TASKID/_tab1" value="/TASKID/_tabContent1">
                 <div class="tabRadio_box"><span>General</span></div>
             </label>
             <label class="config-tab" for="/TASKID/_tab2">
-                <input class="tabRadio_input" type="radio" name="config-grid-tab" id="/TASKID/_tab2" value="/TASKID/_tabContent2">
+                <input class="tabRadio_input" type="radio" name="/TASKID/_config-grid-tab" id="/TASKID/_tab2" value="/TASKID/_tabContent2">
                 <div class="tabRadio_box"><span>Details</span></div>
             </label>
             <label class="config-tab" for="/TASKID/_tab3">
-                <input class="tabRadio_input" type="radio" name="config-grid-tab" id="/TASKID/_tab3" value="/TASKID/_tabContent3">
+                <input class="tabRadio_input" type="radio" name="/TASKID/_config-grid-tab" id="/TASKID/_tab3" value="/TASKID/_tabContent3">
                 <div class="tabRadio_box"><span>Icon</span></div>
             </label>
         </div>
@@ -26,7 +26,7 @@
         <div class="tabContent" id="/TASKID/_tabContent1">
             <form class="config-form">
                 <span class="config-option wide">
-                    <label for="/TASKID/_fileName"><img class="genericFileIcon" src="/plexos/res/themes/Plexos Hyper/icons/files/defaultMSF.svg" alt=""></label>
+                    <label for="/TASKID/_fileName"><img class="genericFileIcon" src="" alt=""></label>
                     <input id ="/TASKID/_fileName"type="text" name="">
                 </span>
 
@@ -74,8 +74,8 @@
                 <hr>
 
                 <span class="config-option">
-                    <label for="/TASKID/_fileWriteOnly">Write Only:</label>
-                    <input id ="/TASKID/_fileWriteOnly"type="checkbox" name="">
+                    <label for="/TASKID/_fileReadOnly">Read Only:</label>
+                    <input id ="/TASKID/_fileReadOnly"type="checkbox" name="">
                 </span>
 
                 <span class="config-option">
@@ -102,9 +102,11 @@
             <button class="config-footer-button footer-apply disabled" disabled>Apply</button>
         </div>
 
-        <script type="module" src="./js/elements.js"></script>
+        <script type="module" src="./js/def.js"></script>
+        <script type="module" src="/plexos/lib/modules/events/prop-events.js"></script>
+        <script type="module" src="/plexos/lib/modules/events/form-events.js"></script>
         <script type="module" src="./js/functions.js"></script>
-        <script type="module" src="./js/init.js"></script>
+        <script type="module" src="./js/run.js"></script>
     </div>
 </body>
 </html>

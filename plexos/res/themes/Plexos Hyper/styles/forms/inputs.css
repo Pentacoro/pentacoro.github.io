@@ -33,6 +33,9 @@
 }
 .config-form>hr{
     margin: 5px 0px;
+    border: 0px;
+    height: 1px;
+    background-color: #888888;
 }
 .config-option{
     position: relative;
@@ -44,7 +47,7 @@
     flex-direction: row;
     gap: 4px;
 
-    font-size: 1em;
+    font-size: 12px;
     align-items: center;
     
     cursor: default;
@@ -55,7 +58,6 @@
     margin-bottom: auto;
     text-align: left;
     font-weight: 100;
-    font-size: 1em;
     
     display: flex;
     width: 80px;

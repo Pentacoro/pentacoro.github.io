@@ -14,7 +14,7 @@ task.node.getElementsByClassName("back")[0].onclick = e => {
 task.node.getElementsByClassName("parent")[0].onclick = e => {
     if (mem.address !== "") {
         try {
-            mem.explorerInit(mem.dirObject.cfg.parent, task.id)
+            mem.explorerInit(mem.dirObject.parent().cfg.addr, task.id)
         } catch (e1) {
             try {
                 let newDir = mem.address.replace(/\/(?:.(?!\/))+$/gim, "")
@@ -68,7 +68,7 @@ task.node.getElementsByClassName("list")[0].oncontextmenu = e => {
                     {name: "new", list: [
                         {name:"Directory",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/directory.svg')",func:() => envfocus.mem.new(e,task,"Directory","New Folder")},
                         {name:"Metafile",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/metafile.svg')",func:() => envfocus.mem.new(e,task,"Metafile","New Metafile.meta")},
-                        {name:"Text Document",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/textfile.svg')",func:() => envfocus.mem.new(e,task,"JsString","New Text Document.txt")},
+                        {name:"Text Document",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/textfile.svg')",func:() => envfocus.mem.new(e,task,"String","New Text Document.txt")},
                     ]}
                 ]},
                 {name:"Paste",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/paste.svg')",func: () => {return} },

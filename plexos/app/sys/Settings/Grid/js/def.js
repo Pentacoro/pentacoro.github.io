@@ -4,13 +4,12 @@ let cfg  = plexos.cfg
 
 let task = getTask(/TASKID/)
 let mem  = task.mem
-mem.apps = "exp"
 mem.var = {}
 
 //configuration
 mem.var.config = "cfg.desktop.grid"
 mem.var.configFile = "plexos/cfg/desktop/grid.json"
-mem.var.configClone = { ...eval(mem.var.config)}
+mem.var.configInitial = { ...eval(mem.var.config)}
 
 //html references
 mem.var.widthHTML = task.node.getElementsByName("cfg.desktop.grid.width")[0]

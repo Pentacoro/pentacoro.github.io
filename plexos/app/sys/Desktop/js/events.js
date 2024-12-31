@@ -8,12 +8,7 @@ let task    = Task.id(/TASKID/)
 let desktop = task
 let mem     = task.mem
 
-window.addEventListener("resize", e => {
-	task.emit("desktop-resize")
-})
-
-window.addEventListener("paste", async e => {
-	if (plexos.System.mem.focused != task) return
+desktop.onpaste = async function (e) {
 	try {
 		const urlRegex = /[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,4}\b(\/[-a-zA-Z0-9@:%_\+.~#?&//=]*)?/gi
         const paste = await navigator.clipboard.readText()
@@ -27,7 +22,7 @@ window.addEventListener("paste", async e => {
     } catch (err) {
         console.error('Failed to read clipboard contents: ', err)
     }
-})
+}
 
 //when desktop click
 desktop.node.addEventListener("mousedown", e => {
@@ -68,15 +63,13 @@ task.onblur = e => {
 //open desk menu on right click background
 desktop.node.oncontextmenu = e => {
 	if(e.target.id == "desktopLayer" || e.target.id == "selectBox" || e.target.classList.contains("gap")) {
-		let envfocus = System.mem.focused
-
 		let menu = [
 			{name: "view", list: [
 				{name:"Grid",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/grid2.svg')",func:[
 					{name:"grid", list: [
 						{name:"Auto Length",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/autogrid.svg')",func:() => desktop.mem.grid.autoLength()},
 						{name:"Auto Margin",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/automargin.svg')",func:() => desktop.mem.grid.autoMargin()},
-						{name:"Grid Settings",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/gridsettings.svg')",func:() => runLauncher("/plexos/app/sys/Settings/Grid/deskGridOptions.lau.js",[],envfocus)},
+						{name:"Grid Settings",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/gridsettings.svg')",func:() => runLauncher("/plexos/app/sys/Settings/Grid/deskGridOptions.lau.js",[],desktop)},
 						]
 					}
 				]},
@@ -87,11 +80,11 @@ desktop.node.oncontextmenu = e => {
 					{name:"new", list: [
 						{name:"Directory",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/directory.svg')",func:() => desktop.mem.new("Directory","New Folder")},
 						{name:"Metafile",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/metafile.svg')",func:() => desktop.mem.new("Metafile", "New Metafile.meta")},
-						{name:"Text Document",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/textfile.svg')",func:() => desktop.mem.new("JsString", "New Text Document.txt")},
+						{name:"Text Document",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/textfile.svg')",func:() => desktop.mem.new("String", "New Text Document.txt")},
 						]
 					}
 				]},
-			{name:"Paste",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/paste.svg')",func: () => {return} },
+			{name:"Paste",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/paste.svg')",func: (e) => desktop.onpaste(e) },
 			]},
 			{name: "info", list: [
 				{name:"Settings",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/settings2.svg')",func: () => {return} },

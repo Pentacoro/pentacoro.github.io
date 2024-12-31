@@ -26,9 +26,9 @@ mem.class.IconDir = class IconDir {
         newIcon.setAttribute("class", "explorerIcon "+this.task)
         newIcon.setAttribute("title", this.name)
 
-        let newIconImage = document.createElement("div")
+        let newIconImage = document.createElement("img")
         newIconImage.setAttribute("class", "explorerIconImage "+this.task)
-        newIconImage.setAttribute("style", "background-image: url('"+this.image+"');")
+        newIconImage.setAttribute("src", this.image)
         newIcon.appendChild(newIconImage)
 
         let newIconText = document.createElement("span")
@@ -51,7 +51,7 @@ mem.class.IconDir = class IconDir {
         Task.id(this.task).pocket = Task.id(this.task).pocket.remove(this)
         Task.id(this.task).mem.iconArray = Task.id(this.task).mem.iconArray.remove(this)
         
-        if (File.at(File.at(this.file)?.cfg.parent) === plexos.vtx && Task.get("Desktop")) { //delete desktop icon if file is from vertex
+        if (File.at(this.file)?.parent() === plexos.vtx && Task.get("Desktop")) { //delete desktop icon if file is from vertex
             let icon = Task.get("Desktop").mem.getIcon(File.at(this.file).cfg.icon.name)
             icon.deleteNode()
         }
@@ -204,7 +204,7 @@ mem.class.IconDir = class IconDir {
     rename(e){
         let iconText = this.node.childNodes[1]
         let editFile = File.at(this.file)
-        let editFrom = File.at(editFile.cfg.parent)
+        let editFrom = editFile.parent()
         let thisIcon = this
         //make h3 editable --------------------|
         iconText.setAttribute("contenteditable", "true")

@@ -438,7 +438,7 @@ desktop.mem.grid.evaluateIconGrid = function (
         let updGrid = document.getElementById(object.id);
         updGrid.style.left = object.posX + "px"
         updGrid.style.top = object.posY + "px"
-        updGrid.style.h = object.width  + "px"
+        updGrid.style.width = object.width  + "px"
         updGrid.style.height = object.height + "px"
         if (cfg.desktop.grid.visibleNodes === true) updGrid.style.backgroundColor = "rgba(127,127,127,0.5)"
         if (cfg.desktop.grid.visibleNodes === false)updGrid.style.backgroundColor = "rgba(127,127,127,0)"

@@ -108,7 +108,7 @@ mem.createMeta = async function () {
         arg.file.cfg.icon.setImage(arg.file.meta.url)
     }
 
-    if(Directory.isOpen(arg.file.cfg.parent)) Directory.isOpen(arg.file.cfg.parent).mem.refresh()
+    if(Directory.isOpen(arg.file.parent().cfg.addr)) Directory.isOpen(arg.file.parent().cfg.addr).mem.refresh()
     task.end()
 }
 

@@ -19,6 +19,15 @@ window.addEventListener("mousedown", (e) => {
 	}
 })
 
+window.addEventListener("resize", e => {
+	plexos.System.emit("desktop-resize")
+})
+
+window.addEventListener("paste", async e => {
+    let task = plexos.System.mem.focused
+	if (task && task.onpaste) task.onpaste(e)
+})
+
 if (storageAvailable('localStorage')) {
         
     // Yippee! We can use localStorage awesomeness

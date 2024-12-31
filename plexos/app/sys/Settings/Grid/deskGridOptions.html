@@ -10,11 +10,11 @@
     <div class="config-properties">
         <div class="config-tabs">
             <label class="config-tab" for="/TASKID/_tab1">
-                <input class="tabRadio_input" type="radio" name="config-grid-tab" id="/TASKID/_tab1" value="/TASKID/_tabContent1">
+                <input class="tabRadio_input" type="radio" name="/TASKID/_config-grid-tab" id="/TASKID/_tab1" value="/TASKID/_tabContent1">
                 <div class="tabRadio_box"><span>Grid</span></div>
             </label>
             <label class="config-tab" for="/TASKID/_tab2">
-                <input class="tabRadio_input" type="radio" name="config-grid-tab" id="/TASKID/_tab2" value="/TASKID/_tabContent2">
+                <input class="tabRadio_input" type="radio" name="/TASKID/_config-grid-tab" id="/TASKID/_tab2" value="/TASKID/_tabContent2">
                 <div class="tabRadio_box"><span>Tile</span></div>
             </label>
         </div>
@@ -26,15 +26,15 @@
                 <span class="config-option">
                     <label for="/TASKID/_hLength">X-Axis:</label>
                     <input id ="/TASKID/_hLength"type="number" name="cfg.desktop.grid.hLength" pattern="\d*" min="0">
-                    <input type="button" name="cfg.desktop.grid.autoHlength" value="Auto">
-                    <input type="checkbox" name="cfg.desktop.grid.autoHlength">
+                    <input type="button" class="auto" name="cfg.desktop.grid.autoHlength" value="Auto">
+                    <input type="checkbox" class="auto" name="cfg.desktop.grid.autoHlength">
                 </span>
 
                 <span class="config-option">
                     <label for="/TASKID/_vLength">Y-Axis:</label>
                     <input id ="/TASKID/_vLength" type="number" name="cfg.desktop.grid.vLength" pattern="\d*" min="0">
-                    <input type="button" name="cfg.desktop.grid.autoVlength" value="Auto">
-                    <input type="checkbox" name="cfg.desktop.grid.autoVlength">
+                    <input type="button" class="auto" name="cfg.desktop.grid.autoVlength" value="Auto">
+                    <input type="checkbox" class="auto" name="cfg.desktop.grid.autoVlength">
                 </span>
 
                 <div class="h5line"> <div></div> <h5>ICONS</h5> <div></div> </div>
@@ -69,15 +69,15 @@
                 <span class="config-option">
                     <label for="/TASKID/_hMargin">Horizontal:</label> 
                     <input id ="/TASKID/_hMargin" type="number" name="cfg.desktop.grid.hMargin" pattern="\d*" min="0"> 
-                    <input type="button" name="cfg.desktop.grid.autoHmargin" value="Auto">
-                    <input type="checkbox" name="cfg.desktop.grid.autoHmargin">
+                    <input type="button" class="auto" name="cfg.desktop.grid.autoHmargin" value="Auto">
+                    <input type="checkbox" class="auto" name="cfg.desktop.grid.autoHmargin">
                 </span>
 
                 <span class="config-option">
                     <label for="/TASKID/_vMargin">Vertical:</label>
                     <input for="/TASKID/_vMargin" type="number" name="cfg.desktop.grid.vMargin" pattern="\d*" min="0"> 
-                    <input type="button" name="cfg.desktop.grid.autoVmargin" value="Auto">
-                    <input type="checkbox" name="cfg.desktop.grid.autoVmargin">
+                    <input type="button" class="auto" name="cfg.desktop.grid.autoVmargin" value="Auto">
+                    <input type="checkbox" class="auto" name="cfg.desktop.grid.autoVmargin">
                 </span>
             </form>
         </div>
@@ -89,10 +89,12 @@
         </div>
     </div>
 
-    <script type="module" src="./js/var.js"></script>
+    <script type="module" src="./js/def.js"></script>
     <script type="module" src="./js/functions.js"></script>
+    <script type="module" src="/plexos/lib/modules/events/prop-events.js"></script>
+    <script type="module" src="/plexos/lib/modules/events/form-events.js"></script>
     <script type="module" src="./js/events.js"></script>
     <script type="module" src="./js/listeners.js"></script>
-    <script type="module" src="./js/init.js"></script>
+    <script type="module" src="./js/run.js"></script>
 </body>
 </html>

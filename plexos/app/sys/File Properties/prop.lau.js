@@ -4,8 +4,7 @@ import File from "/plexos/lib/classes/files/file.js"
 import {displayComponent} from "/plexos/lib/functions/dll.js"
 
 export function initialize({taskid,args,addr,root}) {
-    console.log(args)
-    let html = root + "/prop"+args.cfg.type+".html"
+    let html = root + "/prop.html"
 
     //on app init
     function ini() {
@@ -20,7 +19,7 @@ export function initialize({taskid,args,addr,root}) {
     //task creation
     let task = new Task(
         {
-            name : "Properties",
+            name : "File Properties",
             instantiable : true,
             onEnd : end,
             node : null,

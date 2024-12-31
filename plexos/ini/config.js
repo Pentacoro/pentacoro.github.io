@@ -42,7 +42,7 @@ let cfg = {
     apps: {
         dir:  "/plexos/app/sys/Explorer/explorer.lau.js",
         web:  "/plexos/app/meta/Web Framer/iframer.lau.js",
-        meta:  "/plexos/app/meta/Meta Creator/metaCreator.lau.js",
+        meta: "/plexos/app/meta/Meta Creator/metaCreator.lau.js",
         img:  "/plexos/app/meta/Image Viewer/viewer.lau.js",
         vid:  "/plexos/app/meta/Media Player/player.lau.js",
         txt:  "/plexos/app/data/Notepad/notepad.lau.js",

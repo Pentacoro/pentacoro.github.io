@@ -48,7 +48,7 @@ mem.desktopInit = function (dir) {
             {
              name:"Error",
              type:false,
-             title:"Couldn't load directory",
+             title:"Directory not found",
              description:"This directory seems to no longer exist. It might have been deleted, moved, or a parent directory been renamed",
              taskid:task.id,
              icon:""
@@ -119,6 +119,14 @@ mem.renderIcons = function() {
 mem.getIcon = function(name){
     let find = mem.iconArr.filter(icon => icon.name === name)
     return find[0]
+}
+
+mem.deleteSelectedNodes = function(){
+	for(let icon of task.pocket){
+		icon.deleteNode()
+		//delete from filesystem
+		if(File.at(icon.file)!=undefined) File.at(icon.file).delete()
+	}
 }
 
 mem.refresh = function() {

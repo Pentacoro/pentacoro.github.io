@@ -1,5 +1,5 @@
 import {cfg, plexos} from "/plexos/ini/system.js"
-import {getTask, iframeAntiHover, selectText, clearSelection, nullifyOnEvents} from "/plexos/lib/functions/dll.js"
+import {getTask, runLauncher, iframeAntiHover, selectText, clearSelection, nullifyOnEvents} from "/plexos/lib/functions/dll.js"
 import File from "/plexos/lib/classes/files/file.js"
 import ContextMenu from "/plexos/lib/classes/interface/contextmenu.js"
 
@@ -33,15 +33,15 @@ mem.class.IconDesk = class IconDesk {
         newIcon.setAttribute("class", "icon")
         newIcon.setAttribute("title", this.name)
         newIcon.setAttribute("id", "Icon: "+this.name)
-        if (this.coords) newIcon.setAttribute("style",    "left:"+this.coords.px+"px;"+
+        if (this.coords) newIcon.setAttribute("style",  "left:"+this.coords.px+"px;"+
                                                         "top:"+this.coords.py+"px;"+
                                                         "width:"+cfg.desktop.grid.width+"px;"+
                                                         "height:"+cfg.desktop.grid.height+"px;")
 
-        let newIconImage = document.createElement("div")
+        let newIconImage = document.createElement("img")
         let newIconFrame = document.createElement("div")
         newIconImage.setAttribute("class", "iconImage")
-        newIconImage.setAttribute("style", "background-image: url('"+this.image+"');")
+        newIconImage.setAttribute("src", this.image)
         newIconFrame.setAttribute("class", "iconFrame")
         
         newIconFrame.appendChild(newIconImage)
@@ -212,12 +212,30 @@ mem.class.IconDesk = class IconDesk {
         this.poseNode()
 
         this.image = File.at(this.file).cfg.icon.image
-        this.node.children[0].children[0].setAttribute("style", "background-image: url('"+this.image+"');")
+        this.node.children[0].children[0].setAttribute("src", this.image)
     }
     clic(){
         this.node.onmousedown = e => this.drag(e)
-        this.node.oncontextmenu = e => ContextMenu.open(e,this)
         this.node.ondblclick = e => File.at(this.file).open()
+        this.node.oncontextmenu = e => {
+            let menu = [
+                {name: "open", list: [
+                    {name:"Open",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/open.svg')",func: () => File.at(this.file).open()},
+                ]},
+                {name: "null", list: null},
+                {name: "clip", list: [
+                    {name:"Cut",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/cut.svg')",func: () => {return} },
+                    {name:"Copy",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/copy.svg')",func: () => {return} },
+                    {name:"Paste",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/paste.svg')",func: () => {return} },
+                ]},
+                {name: "prop", list: [
+                    {name:"Delete",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/delete.svg')",func: () => mem.deleteSelectedNodes()},
+                    {name:"Rename",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/rename.svg')",func: () => this.rename(e),bool:File.at(this.file)!=undefined},
+                    {name:"Properties",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/properties.svg')",func: () => {runLauncher("/plexos/app/sys/File Properties/prop.lau.js",File.at(this.file))} }
+                ]},
+            ]
+            ContextMenu.open(e,this,menu)
+        }
     }
     drag(e){
         let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0
@@ -361,7 +379,7 @@ mem.class.IconDesk = class IconDesk {
         if (!this.node) return
         let iconText = this.node.childNodes[1]
         let editFile = File.at(this.file)
-        let editFrom = File.at(editFile.cfg.parent)
+        let editFrom = editFile.parent()
         let thisIcon = this
         //make h3 editable --------------------|
         iconText.setAttribute("contenteditable", "true")

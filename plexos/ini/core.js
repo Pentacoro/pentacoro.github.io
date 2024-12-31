@@ -53,12 +53,12 @@ System.ini.recreateFiles = function (dir, newDir) {
                 Type = "Metafile"
                 Skey = "meta"
                 break
-            case "JsString":
-                Type = "JsString"
+            case "String":
+                Type = "String"
                 Skey = "data"
                 break 
             default:
-                Type = "JsString"
+                Type = "String"
                 Skey = "data"
                 break 
         }
