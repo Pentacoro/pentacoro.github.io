@@ -2,7 +2,7 @@ import Task from "/plexos/lib/classes/system/task.js"
 import Window from "/plexos/lib/classes/interface/window.js"
 import {displayComponent} from "/plexos/lib/functions/dll.js"
 
-export function initialize({taskid,args,addr,root}){
+export function initialize({taskid,args,path,root}){
     let html = root + "/deskGridOptions.html"
 
     //on app init

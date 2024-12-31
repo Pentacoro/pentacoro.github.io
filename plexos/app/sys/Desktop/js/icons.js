@@ -444,7 +444,7 @@ mem.class.IconDesk = class IconDesk {
                 //insert into fyleSystem
                 if (iconText.textContent != editFile.name) { //if the name changed
                     if (editFrom === plexos.vtx){
-                        task.mem.getIcon(editFile.name).file = editFrom.cfg.addr +"/"+ iconText.textContent
+                        task.mem.getIcon(editFile.name).file = editFrom.cfg.path +"/"+ iconText.textContent
                         task.mem.getIcon(editFile.name).name = iconText.textContent
                     }
                     editFile.rename(iconText.textContent)

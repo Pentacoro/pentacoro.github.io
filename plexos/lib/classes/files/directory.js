@@ -76,8 +76,8 @@ export default class Directory extends File {
                 }
             )
         }
-        this.dir[childName].cfg.addr = this.cfg.addr+ "/" + childName
-        this.dir[childName].cfg["icon"].file = this.cfg.addr+ "/" + childName
+        this.dir[childName].cfg.path = this.cfg.path+ "/" + childName
+        this.dir[childName].cfg["icon"].file = this.cfg.path+ "/" + childName
 
         if (childCont) {
             this.dir[childName][skeyName] = childCont
@@ -100,9 +100,9 @@ export default class Directory extends File {
         }
     }
 
-    static isOpen = function (addr) {
+    static isOpen = function (path) {
         for (let task of plexos.Tasks) {
-            if (task.name === "Explorer" && task.mem.address === addr) return task
+            if (task.name === "Explorer" && task.mem.address === path) return task
         }
         return false
     }

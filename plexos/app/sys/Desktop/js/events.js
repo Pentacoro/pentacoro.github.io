@@ -15,7 +15,7 @@ desktop.onpaste = async function (e) {
 
 		if (paste.match(urlRegex)){
 			let newMetaFile = mem.dirObject.new("Metafile", "New Metafile.meta")
-			runLauncher("/plexos/app/meta/Meta Creator/metaCreator.lau.js",{addr:newMetaFile.cfg.addr,window:false,url:paste,type:"web"})
+			runLauncher("/plexos/app/meta/Meta Creator/metaCreator.lau.js",{path:newMetaFile.cfg.path,window:false,url:paste,type:"web"})
 			mem.refresh()
 		}
         

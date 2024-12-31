@@ -269,11 +269,11 @@ mem.class.IconDir = class IconDir {
                 //insert into fylesystem
                 if (iconText.textContent != editFile.name) { //if the name changed
                     if (editFrom === plexos.vtx){
-                        Task.get("Desktop").mem.getIcon(editFile.name).file = editFrom.cfg.addr +"/"+ iconText.textContent
+                        Task.get("Desktop").mem.getIcon(editFile.name).file = editFrom.cfg.path +"/"+ iconText.textContent
                         Task.get("Desktop").mem.getIcon(editFile.name).name = iconText.textContent
                     }
                     editFile.rename(iconText.textContent)
-                    thisIcon.file = editFile.cfg.addr
+                    thisIcon.file = editFile.cfg.path
                     thisIcon.name = iconText.textContent
                     task.pocket.push(thisIcon)
                 }

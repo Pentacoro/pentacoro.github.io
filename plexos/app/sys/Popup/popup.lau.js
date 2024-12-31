@@ -4,7 +4,7 @@ import Window from "/plexos/lib/classes/interface/window.js"
 import {displayComponent} from "/plexos/lib/functions/dll.js"
 let System = plexos.System
 
-export function initialize({taskid,args,addr,root}) {
+export function initialize({taskid,args,path,root}) {
     let html = (args.type) ? root + "/popup.html" : root + "/popupB.html"
 
     //on app init

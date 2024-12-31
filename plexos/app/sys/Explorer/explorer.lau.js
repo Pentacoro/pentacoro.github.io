@@ -3,7 +3,7 @@ import Window from "/plexos/lib/classes/interface/window.js"
 import File from "/plexos/lib/classes/files/file.js"
 import {displayComponent} from "/plexos/lib/functions/dll.js"
 
-export function initialize({taskid,args,addr,root}) {
+export function initialize({taskid,args,path,root}) {
     let html = (args.type) ? root + "/explorer"+args.type+".html" :  root + "/explorer.html"
 
     //on app init
@@ -11,7 +11,7 @@ export function initialize({taskid,args,addr,root}) {
         let task = Task.id(taskid)
         let arg  = task.mem.arg
 
-        arg.address = args.addr
+        arg.address = args.path
     }
     //on app end
     function end() {
@@ -38,7 +38,7 @@ export function initialize({taskid,args,addr,root}) {
             task : task.id, 
             resizeable : true, 
             buttons : [{class:"_", function: ()=>console.log("Minimize")},{class:"O", function: ()=>console.log("Maximize")}], 
-            icon : (File.at(args.addr)) ? File.at(args.addr).cfg.icon.image : "/plexos/res/themes/Plexos Hyper/icons/files/defaultDIR.svg",
+            icon : (File.at(args.path)) ? File.at(args.path).cfg.icon.image : "/plexos/res/themes/Plexos Hyper/icons/files/defaultDIR.svg",
             state : 1, 
             width  : 700, 
             height : 460, 

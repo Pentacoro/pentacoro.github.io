@@ -3,7 +3,7 @@ import Window from "/plexos/lib/classes/interface/window.js"
 import File from "/plexos/lib/classes/files/file.js"
 import {displayComponent} from "/plexos/lib/functions/dll.js"
 
-export function initialize({taskid,args,addr,root}) {
+export function initialize({taskid,args,path,root}) {
     let html = root + "/prop.html"
 
     //on app init
@@ -35,7 +35,7 @@ export function initialize({taskid,args,addr,root}) {
             name : "Properties: "+args.name,
             task : task.id, 
             resizeable : false, 
-            icon : (File.at(args.cfg.addr)) ? File.at(args.cfg.addr).cfg.icon.image : "/plexos/res/themes/Plexos Hyper/icons/files/defaultMSF.svg",
+            icon : (File.at(args.cfg.path)) ? File.at(args.cfg.path).cfg.icon.image : "/plexos/res/themes/Plexos Hyper/icons/files/defaultMSF.svg",
             state : 1, 
         }
     )

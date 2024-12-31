@@ -8,9 +8,21 @@ let mem  = task.mem
 
 //on app close
 task.onEnd = function () {
-    eval(mem.var.config +" = task.mem.var.configInitial")
+    eval(mem.var.configEditable +" = mem.var.configInitialState")
     task.emit("desktop-grid-settings-closed")
-    File.at(mem.var.configFile).data = JSON.stringify(eval(mem.var.config), null, "\t")
+    File.at(mem.var.configFilePath).data = JSON.stringify(eval(mem.var.configEditable), null, "\t")
+}
+
+//on editable change
+mem.onChange = function() {
+    task.emit("desktop-grid-settings-change")
+    if (task.node.getElementsByClassName("footer-apply")[0].disabled) {
+        task.node.getElementsByClassName("footer-apply")[0].disabled = false
+        task.node.getElementsByClassName("footer-apply")[0].classList.remove("disabled")
+    }
+    mem.updateGridGraph()
+    mem.updateTileGraph()
+    mem.updateTileGraphAuto()
 }
 
 //auto margin reset on uncheck and on input change

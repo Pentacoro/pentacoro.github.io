@@ -5,7 +5,7 @@ import Window from "/plexos/lib/classes/interface/window.js"
 import {displayComponent} from "/plexos/lib/functions/dll.js"
 let System = plexos.System
 
-export function initialize({taskid,args,addr,root}) {
+export function initialize({taskid,args,path,root}) {
     if (args.window === undefined) args.window = true
     
     let html = root + ((args.window) ? "/metaCreator.html" : "/metaCreatorScript.html")
@@ -15,7 +15,7 @@ export function initialize({taskid,args,addr,root}) {
         let task = Task.id(taskid)
         let arg  = task.mem.arg
 
-        arg.file = File.at(args.addr)
+        arg.file = File.at(args.path)
         if (args.url  != undefined) arg.url = args.url
         if (args.type != undefined) arg.type = args.type
     }
@@ -46,7 +46,7 @@ export function initialize({taskid,args,addr,root}) {
                 task : taskid, 
                 resizeable : false, 
                 buttons : [], 
-                icon : File.at(args.addr).cfg.icon.image,
+                icon : File.at(args.path).cfg.icon.image,
                 state : 1, 
             }
         )

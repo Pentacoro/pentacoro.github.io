@@ -3,9 +3,9 @@ import {renameKey, runLauncher} from  "../../functions/dll.js"
 import Task from "../system/task.js"
 
 export default class File {
-    static at(addr = "", get = "file") {
-        //string: where we'll devour addr one dir at a time as we build expression
-        let string = addr
+    static at(path = "", get = "file") {
+        //string: where we'll devour path one dir at a time as we build expression
+        let string = path
         //steps: where we'll store each of the dirs extracted from string (useless for now)
         let steps = ["plexos[\"core\"]"]
         //expression: where we'll build the object reference from the core to later be eval()
@@ -153,7 +153,7 @@ export default class File {
         let oldAddress = this.cfg.icon.file
         let oldName = this.name
 
-        this.cfg.addr = newAddress
+        this.cfg.path = newAddress
         this.cfg.icon.file = newAddress
 
         if (this.dir) rerouteChildren(this)
@@ -161,7 +161,7 @@ export default class File {
         function rerouteChildren(parent) {
             for (let pair of Object.entries(parent.dir)) {
                 let file = pair[1]
-                file.cfg.addr = file.cfg.addr.replace(oldAddress, newAddress)
+                file.cfg.path = file.cfg.path.replace(oldAddress, newAddress)
                 file.cfg.icon.file = file.cfg.icon.file.replace(oldAddress, newAddress)
                 if (file.exte === "dir") rerouteChildren(file)
             }
@@ -202,11 +202,11 @@ export default class File {
     }
 
     open() {
-        runLauncher(cfg.apps[this.cfg.exte], {name:this.name, addr:this.cfg.addr}, plexos.System.mem.focused)
+        runLauncher(cfg.apps[this.cfg.exte], {name:this.name, path:this.cfg.path}, plexos.System.mem.focused)
     }
 
     parent() {
-        return File.at(this.cfg.addr, "parent")
+        return File.at(this.cfg.path, "parent")
     }
 
     displayName() {
@@ -218,18 +218,18 @@ export default class File {
 
         let byteSize = JSON.stringify(this).length * 2 + `"${this.name}":`.length * 2
 
-        if (byteSize < 1024 || unit==="bytes") {
+        if        (byteSize < Math.pow(1024, 1) || unit==="bytes") {
             return formatter.format(byteSize) + " bytes"
-        } else if  (byteSize < Math.pow(1024, 2) || unit==="KB") {
+        } else if (byteSize < Math.pow(1024, 2) || unit==="KB") {
             return formatter.format(byteSize / Math.pow(1024, 1)) + " KB"
-        } else if (byteSize >= Math.pow(1024, 3) || unit==="MB") {
+        } else if (byteSize < Math.pow(1024, 3) || unit==="MB") {
             return formatter.format(byteSize / Math.pow(1024, 2)) + " MB"
-        } else if (byteSize >= Math.pow(1024, 4) || unit==="GB") {
+        } else if (byteSize < Math.pow(1024, 4) || unit==="GB") {
             return formatter.format(byteSize / Math.pow(1024, 3)) + " GB"
-        } else if (byteSize >= Math.pow(1024, 5) || unit==="TB") {
+        } else if (byteSize < Math.pow(1024, 5) || unit==="TB") {
             return formatter.format(byteSize / Math.pow(1024, 4)) + " TB"
-        } else if (byteSize >= Math.pow(1024, 6) || unit==="PB") {
-            return formatter.format(byteSize / 1024) + " PB"
+        } else {
+            return formatter.format(byteSize / Math.pow(1024, 5)) + " PB"
         }
     }
 }

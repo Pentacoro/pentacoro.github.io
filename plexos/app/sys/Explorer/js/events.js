@@ -14,7 +14,7 @@ task.node.getElementsByClassName("back")[0].onclick = e => {
 task.node.getElementsByClassName("parent")[0].onclick = e => {
     if (mem.address !== "") {
         try {
-            mem.explorerInit(mem.dirObject.parent().cfg.addr, task.id)
+            mem.explorerInit(mem.dirObject.parent().cfg.path, task.id)
         } catch (e1) {
             try {
                 let newDir = mem.address.replace(/\/(?:.(?!\/))+$/gim, "")

@@ -1,7 +1,7 @@
 export default class Configuration {
     constructor(p){
         this.type = p.type
-        this.addr = p.addr     || ""
+        this.path = p.path     || ""
         this.exte = p.exte     || ((p.type==="Directory") ? "dir" : "")
         this.icon = p.icon     || null
         this.move = p.move     || true

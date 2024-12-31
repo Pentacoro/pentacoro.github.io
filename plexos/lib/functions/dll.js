@@ -268,7 +268,7 @@ export async function runLauncher(url, args = {}, env = null, name = ""){
                 {
                     taskid: appID.id,
                     args: Task.get("System").mem.lau[appID.id],
-                    addr: url,
+                    path: url,
                     root: url.replace(url.match(/\/(?:.(?<!\/))+$/s),"")
                 }
             )

@@ -29,7 +29,7 @@ System.ini.setVertex = function (address) {
     plexos.vtx = File.at(address)
     let promiseInit = new Promise(async () => {
         await runLauncher("./plexos/app/sys/Theme Manager/themeManager.lau.js")
-        await runLauncher("./plexos/app/sys/Desktop/desktop.lau.js",{addr:address})
+        await runLauncher("./plexos/app/sys/Desktop/desktop.lau.js",{path:address})
     })
     promiseInit.then( () => {
         Task.get("Desktop").mem.grid.evaluateIconGrid()

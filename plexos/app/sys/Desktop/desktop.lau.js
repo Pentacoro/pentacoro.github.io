@@ -1,7 +1,7 @@
 import Task from "/plexos/lib/classes/system/task.js"
 import {displayComponent} from "/plexos/lib/functions/dll.js"
 
-export function initialize({taskid,args,addr,root}) {
+export function initialize({taskid,args,path,root}) {
     let html = root + "/desktop.html"
 
     //on app init
@@ -12,7 +12,7 @@ export function initialize({taskid,args,addr,root}) {
         mem.sfx.push(new Audio("plexos/res/sounds/Norrum - Interfaz Item OK c_ v1.mp3"))
         mem.sfx.push(new Audio("plexos/res/sounds/Norrum - Interfaz Item alMost.mp3"))
 
-        mem.arg.address = args.addr
+        mem.arg.address = args.path
     }
     //on app end
     function end() {}

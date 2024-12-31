@@ -28,7 +28,7 @@ mem.createExplorerIcons = async function(array) {
     }
 }
 mem.refresh = function () {
-    mem.explorerInit(mem.dirObject.cfg.addr, task.id, "refresh")
+    mem.explorerInit(mem.dirObject.cfg.path, task.id, "refresh")
 }
 mem.getIcon = function(name){
     let find = mem.iconArray.filter(icon => icon.name === name)

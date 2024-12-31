@@ -7,9 +7,9 @@ let mem  = task.mem
 mem.var = {}
 
 //configuration
-mem.var.config = "cfg.desktop.grid"
-mem.var.configFile = "plexos/cfg/desktop/grid.json"
-mem.var.configInitial = { ...eval(mem.var.config)}
+mem.var.configEditable = "cfg.desktop.grid"
+mem.var.configFilePath = "plexos/cfg/desktop/grid.json"
+mem.var.configInitialState = { ...eval(mem.var.configEditable)}
 
 //html references
 mem.var.widthHTML = task.node.getElementsByName("cfg.desktop.grid.width")[0]

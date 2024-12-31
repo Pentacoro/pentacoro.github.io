@@ -8,16 +8,25 @@ let mem  = task.mem
 
 //configuration
 /* 
-mem.var.config = "" //set object
-mem.var.configFile = "" //set config file path
-mem.var.configInitial = { ...eval(mem.var.config)}
- */
+mem.var.configEditable = "" //set editable object's reference
+mem.var.configFilePath = "" //set config file path if existent
+mem.var.configInitialState = { ...eval(mem.var.config)} //clone editable for initial state
+*/
 
 //on app close
 task.onEnd = function () {
-    eval("mem.var.config = mem.var.configInitial")
+    eval(mem.var.configEditable +" = task.mem.var.configInitialState")
     task.emit(task.name+"-closed")
-    File.at(mem.var.configFile).data = JSON.stringify(eval(mem.var.config), null, "\t")
+    if (mem.var.configFilePath) File.at(mem.var.configFilePath).data = JSON.stringify(eval(mem.var.configEditable), null, "\t")
+}
+
+//on editable change
+mem.onChange = function() {
+    task.emit(task.name+"-change")
+    if (task.node.getElementsByClassName("footer-apply")[0].disabled) {
+        task.node.getElementsByClassName("footer-apply")[0].disabled = false
+        task.node.getElementsByClassName("footer-apply")[0].classList.remove("disabled")
+    }
 }
 
 //deselection
@@ -41,16 +50,16 @@ for (let tab of task.node.getElementsByClassName("config-tab")) {
 
 //footer buttons 
 task.node.getElementsByClassName("footer-accept")[0].onclick = (e)=> {
-    File.at(mem.var.configFile).data = JSON.stringify(eval(mem.var.config), null, "\t")
-    mem.var.configInitial = { ...eval(mem.var.config)}
+    if (mem.var.configFilePath) File.at(mem.var.configFilePath).data = JSON.stringify(eval(mem.var.configEditable), null, "\t")
+    mem.var.configInitialState = { ...eval(mem.var.configEditable)}
     task.end()
 }
 task.node.getElementsByClassName("footer-cancel")[0].onclick = (e)=> {
     task.end()
 }
 task.node.getElementsByClassName("footer-apply")[0].onclick = (e)=> {
-    File.at(mem.var.configFile).data = JSON.stringify(eval(mem.var.config), null, "\t")
-    mem.var.configInitial = { ...eval(mem.var.config)}
+    if (mem.var.configFilePath) File.at(mem.var.configFilePath).data = JSON.stringify(eval(mem.var.configEditable), null, "\t")
+    mem.var.configInitialState = { ...eval(mem.var.configEditable)}
     task.node.getElementsByClassName("footer-apply")[0].disabled = true
     task.node.getElementsByClassName("footer-apply")[0].classList.add("disabled")
 }
