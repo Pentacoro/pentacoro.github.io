@@ -338,6 +338,32 @@ function repCid(data, compId, stringify = false){
     return newData
 }
 
+export function calculateStringSize(string) {
+    // Regex to match surrogate pairs (representing characters > U+FFFF)
+    const surrogatePairRegex = /[\uD800-\uDBFF][\uDC00-\uDFFF]/g
+  
+    // Count surrogate pairs
+    const surrogatePairs = (string.match(surrogatePairRegex) || []).length
+  
+    // Total size: 2 bytes per character, plus 2 extra bytes for each surrogate pair
+    const totalSize = string.length * 2 + surrogatePairs * 2
+  
+    return totalSize // size in bytes
+  }
+
+export function isKeyWrite(event) {
+    if (
+        !event.ctrlKey && 
+        !event.altKey && 
+        !event.metaKey && 
+        !['Tab', 'Shift', 'CapsLock', 'Alt', 'Control', 'Meta', 'Escape', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(event.key)
+      ) {
+        return true
+      } else {
+        return false
+      }
+}
+
 export function preloadImage(url){
     let img=new Image()
     img.src=url

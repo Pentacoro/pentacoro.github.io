@@ -1,7 +1,7 @@
 import {plexos} from "/plexos/ini/system.js"
 import {getTask, selectText, clearSelection, nullifyOnEvents} from "/plexos/lib/functions/dll.js"
 import Task from "/plexos/lib/classes/system/task.js"
-import File from "/plexos/lib/classes/files/file.js"
+import File from "/plexos/lib/classes/filesystem/file.js"
 import ContextMenu from "/plexos/lib/classes/interface/contextmenu.js"
 
 let System = plexos.System
@@ -184,8 +184,11 @@ mem.class.IconDir = class IconDir {
     }
     clic(){
         this.node.onmousedown = e => this.drag(e)
-        this.node.oncontextmenu = e => ContextMenu.open(e,this)
         this.node.ondblclick = e => this.open()
+        this.node.oncontextmenu = e => {
+            let menu = mem.iconContextMenu(e,this)
+            ContextMenu.open(e,this,menu)
+        }
     }
     open(){
         if (this.exte == "dir") {

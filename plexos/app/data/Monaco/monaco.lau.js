@@ -1,6 +1,6 @@
 import Task from "/plexos/lib/classes/system/task.js"
 import Window from "/plexos/lib/classes/interface/window.js"
-import File from "/plexos/lib/classes/files/file.js"
+import File from "/plexos/lib/classes/filesystem/file.js"
 import {displayComponent} from "/plexos/lib/functions/dll.js"
 
 export function initialize({taskid,args,path,root}){

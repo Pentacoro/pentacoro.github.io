@@ -2,21 +2,42 @@ import {getTask} from "/plexos/lib/functions/dll.js"
 
 let task = getTask(/TASKID/)
 let mem  = task.mem
-mem.element = {}
+mem.tab = {}
 
-mem.var.configObject = {...eval(mem.arg)}
+mem.var.configObject = JSON.parse(JSON.stringify(mem.arg))
 mem.var.configEditable = "mem.var.configObject"
 mem.var.configInitialState = mem.arg
 
-mem.element.fileName = task.node.getElementById(task.id+"_fileName")
-mem.element.fileType = task.node.getElementById(task.id+"_fileType")
-mem.element.fileExte = task.node.getElementById(task.id+"_fileExte")
-mem.element.fileAddr = task.node.getElementById(task.id+"_fileAddr")
-mem.element.fileSize = task.node.getElementById(task.id+"_fileSize")
+//GENERAL
+mem.tab.general = {}
 
-mem.element.fileDateCreated  = task.node.getElementById(task.id+"_fileDateCreated")
-mem.element.fileDateModified = task.node.getElementById(task.id+"_fileDateModified")
-mem.element.fileDateAccessed = task.node.getElementById(task.id+"_fileDateAccessed")
+mem.tab.general.fileName = task.node.getElementById(task.id+"_fileName")
+mem.tab.general.fileType = task.node.getElementById(task.id+"_fileType")
+mem.tab.general.fileExte = task.node.getElementById(task.id+"_fileExte")
+mem.tab.general.fileAddr = task.node.getElementById(task.id+"_fileAddr")
+mem.tab.general.fileSize = task.node.getElementById(task.id+"_fileSize")
 
-mem.element.fileReadOnly = task.node.getElementById(task.id+"_fileReadOnly")
-mem.element.fileHidden = task.node.getElementById(task.id+"_fileHidden")
+mem.tab.general.fileDateCreated  = task.node.getElementById(task.id+"_fileDateCreated")
+mem.tab.general.fileDateModified = task.node.getElementById(task.id+"_fileDateModified")
+mem.tab.general.fileDateAccessed = task.node.getElementById(task.id+"_fileDateAccessed")
+
+mem.tab.general.fileReadOnly = task.node.getElementById(task.id+"_fileReadOnly")
+mem.tab.general.fileHidden = task.node.getElementById(task.id+"_fileHidden")
+
+//METADATA
+if (mem.arg.cfg.type==="Metafile") {
+    mem.tab.metadata = {}
+    
+    mem.tab.metadata.metaName = task.node.getElementById(task.id+"_metaName")
+    mem.tab.metadata.metaUrl  = task.node.getElementById(task.id+"_metaUrl")
+    
+    mem.tab.metadata.metaTitle       = task.node.getElementById(task.id+"_metaTitle")
+    mem.tab.metadata.metaDescription = task.node.getElementById(task.id+"_metaDescription")
+    
+    mem.tab.metadata.metaEmbed    = task.node.getElementById(task.id+"_metaEmbed")
+    mem.tab.metadata.metaDownload = task.node.getElementById(task.id+"_metaDownload")
+    
+    mem.tab.metadata.metaNewtab = task.node.getElementById(task.id+"_metaNewtab")
+} else {
+    task.node.getElementById(task.id+"_metadata").remove()
+}

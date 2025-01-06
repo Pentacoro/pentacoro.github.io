@@ -10,7 +10,7 @@ export default class Configuration {
 
         this.date = {}
         this.date.Created  = p.date?.Created  || Date.now()
-        this.date.Modified = p.date?.Modified || Date.now()
-        this.date.Accessed = p.date?.Accessed || Date.now()
+        this.date.Modified = ((p.type==="Directory"||p.type==="Metafile") ? undefined : p.date?.Modified || Date.now())
+        this.date.Accessed = ((p.type==="Directory") ? undefined : p.date?.Accessed || Date.now())
     }
 }

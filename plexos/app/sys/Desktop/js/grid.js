@@ -1,6 +1,6 @@
 import {plexos} from "/plexos/ini/system.js"
 import Task from "/plexos/lib/classes/system/task.js"
-import File from "/plexos/lib/classes/files/file.js"
+import File from "/plexos/lib/classes/filesystem/file.js"
 let cfg     = plexos.cfg
 
 let task    = Task.id(/TASKID/)

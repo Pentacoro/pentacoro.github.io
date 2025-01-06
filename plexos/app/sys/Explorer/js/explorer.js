@@ -1,6 +1,6 @@
 import {getTask, runLauncher} from "/plexos/lib/functions/dll.js"
 import Task from "/plexos/lib/classes/system/task.js"
-import File from "/plexos/lib/classes/files/file.js"
+import File from "/plexos/lib/classes/filesystem/file.js"
 import Icon from "/plexos/lib/classes/interface/icon.js"
 
 let task = getTask(/TASKID/)
@@ -96,10 +96,14 @@ mem.explorerInit = function (dir, id, act = null) {
         if (act === "refresh") mem.explorerInit("", task.id)
     }
 }
-
+mem.deleteSelectedNodes = function(){
+	for(let icon of task.pocket){
+		icon.deleteNode()
+		//delete from filesystem
+		if(File.at(icon.file)!=undefined) File.at(icon.file).delete()
+	}
+}
 mem.new = function(e, _this, Type, name){
-    if((e.target.classList.contains("cmcheck"))) return
-    
     let editFile = null
     let editFrom = mem.dirObject
     let editAddr = mem.address

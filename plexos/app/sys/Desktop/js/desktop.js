@@ -1,6 +1,6 @@
 import {plexos, cfg} from "/plexos/ini/system.js"
 import {getTask, runLauncher} from "/plexos/lib/functions/dll.js"
-import File from "/plexos/lib/classes/files/file.js"
+import File from "/plexos/lib/classes/filesystem/file.js"
 import Icon from "/plexos/lib/classes/interface/icon.js"
 
 let task = getTask(/TASKID/)
@@ -41,19 +41,14 @@ mem.desktopInit = function (dir) {
 		if (!mem.checkIfGridCanFit(itemList)) mem.initialGridDrawingSquared(itemList)
         else mem.initialGridDrawingProcedual(itemList)
     } catch (e) {
-        mem.var.error = e
-        mem.var.errorB = [["Okay"]]
-        console.log(e)
-        runLauncher("/plexos/app/sys/Popup/popup.lau.js",
-            {
-             name:"Error",
-             type:false,
-             title:"Directory not found",
-             description:"This directory seems to no longer exist. It might have been deleted, moved, or a parent directory been renamed",
-             taskid:task.id,
-             icon:""
-            }
-        )
+		task.popup(e,[["OK"]],{
+			name:"Error",
+			type:false,
+			title:"Directory not found",
+			description:"This directory seems to no longer exist. It might have been deleted, moved, or a parent directory been renamed",
+			taskid:task.id,
+			icon:""
+		})
     }
 }
 

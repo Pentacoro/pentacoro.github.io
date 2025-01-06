@@ -10,24 +10,33 @@
     <div class="config-properties">
         <div class="config-tabs">
             <label class="config-tab" for="/TASKID/_tab1">
-                <input class="tabRadio_input" type="radio" name="/TASKID/_config-grid-tab" id="/TASKID/_tab1" value="/TASKID/_tabContent1">
+                <input class="tabRadio_input" type="radio" name="/TASKID/_config-grid-tab" id="/TASKID/_tab1" value="/TASKID/_general">
                 <div class="tabRadio_box"><span>General</span></div>
             </label>
-            <label class="config-tab" for="/TASKID/_tab2">
-                <input class="tabRadio_input" type="radio" name="/TASKID/_config-grid-tab" id="/TASKID/_tab2" value="/TASKID/_tabContent2">
+
+            <label class="config-tab hidden" for="/TASKID/_tab2">
+                <input class="tabRadio_input" type="radio" name="/TASKID/_config-grid-tab" id="/TASKID/_tab2" value="/TASKID/_metadata">
+                <div class="tabRadio_box"><span>Metadata</span></div>
+            </label>
+
+            <label class="config-tab hidden" for="/TASKID/_tab3">
+                <input class="tabRadio_input" type="radio" name="/TASKID/_config-grid-tab" id="/TASKID/_tab3" value="/TASKID/_details">
                 <div class="tabRadio_box"><span>Details</span></div>
             </label>
-            <label class="config-tab" for="/TASKID/_tab3">
-                <input class="tabRadio_input" type="radio" name="/TASKID/_config-grid-tab" id="/TASKID/_tab3" value="/TASKID/_tabContent3">
+
+            <label class="config-tab" for="/TASKID/_tab6">
+                <input class="tabRadio_input" type="radio" name="/TASKID/_config-grid-tab" id="/TASKID/_tab6" value="/TASKID/_icon">
                 <div class="tabRadio_box"><span>Icon</span></div>
             </label>
         </div>
 
-        <div class="tabContent" id="/TASKID/_tabContent1">
+        <div class="tabContent" id="/TASKID/_general">
             <form class="config-form">
-                <span class="config-option wide">
-                    <label for="/TASKID/_fileName"><img class="genericFileIcon" src="" alt=""></label>
-                    <input id ="/TASKID/_fileName"type="text" name="">
+                <span class="config-option header">
+                    <label for="/TASKID/_fileHeader"><img class="fileIcon" src="" alt=""></label>
+                    <span id="/TASKID/_fileHeader">
+                        <input id ="/TASKID/_fileName"type="text" name="">
+                    </span>
                 </span>
 
                 <hr>
@@ -45,7 +54,7 @@
                 <hr>
 
                 <span class="config-option">
-                    <label for="/TASKID/_fileAddr">Address:</label>
+                    <label for="/TASKID/_fileAddr">Path:</label>
                     <span id ="/TASKID/_fileAddr"></span>
                 </span>
 
@@ -75,23 +84,80 @@
 
                 <span class="config-option">
                     <label for="/TASKID/_fileReadOnly">Read Only:</label>
-                    <input id ="/TASKID/_fileReadOnly"type="checkbox" name="">
+                    <input id ="/TASKID/_fileReadOnly"type="checkbox" inverted name="mem.var.configObject.cfg.edit">
                 </span>
 
                 <span class="config-option">
                     <label for="/TASKID/_fileHidden">Hidden:</label>
-                    <input id ="/TASKID/_fileHidden"type="checkbox" name="">
+                    <input id ="/TASKID/_fileHidden"type="checkbox" name="mem.var.configObject.cfg.hidden">
                 </span>
 
             </form>
         </div>
 
-        <div class="tabContent hidden" id="/TASKID/_tabContent2">
+        <div class="tabContent hidden" id="/TASKID/_metadata">
+            <form class="config-form">
+                <span class="config-option header">
+                    <label for="/TASKID/_metaHeader"><img class="metaImage" src="" alt=""></label>
+                    <span  id="/TASKID/_metaHeader">
+                        <span  id="/TASKID/_metaName"></span>
+                        <input id="/TASKID/_metaUrl" type="url" name="mem.var.configObject.meta.url">
+                    </span>
+                </span>
+
+                <hr>
+
+                <span class="config-option">
+                    <label for="/TASKID/_metaTitle">Title:</label>
+                    <input id ="/TASKID/_metaTitle" type="text" name="mem.var.configObject.meta.title">
+                </span>
+
+                <span class="config-option wide x2">
+                    <label for="/TASKID/_metaDescription">Description:</label>
+                    <textarea id ="/TASKID/_metaDescription" style="resize:none" name="mem.var.configObject.meta.description"></textarea>
+                </span>
+
+                <hr>
+                
+                <span class="config-option">
+                    <label for="/TASKID/_metaIcon">Icon:</label>
+                    <input id ="/TASKID/_metaIcon" type="url" name="mem.var.configObject.meta.icon">
+                </span>
+
+                <span class="config-option">
+                    <label for="/TASKID/_metaImage">Image:</label>
+                    <input id ="/TASKID/_metaImage" type="url" name="mem.var.configObject.meta.image">
+                </span>
+
+                <hr>
+
+                <span class="config-option">
+                    <label for="/TASKID/_metaEmbed">Embed:</label>
+                    <input id ="/TASKID/_metaEmbed" type="text" name="mem.var.configObject.meta.embed">
+                </span>
+
+                <span class="config-option">
+                    <label for="/TASKID/_metaDownload">Download:</label>
+                    <input id ="/TASKID/_metaDownload" type="url" name="mem.var.configObject.meta.download">
+                </span>
+
+                <hr>
+
+                <span class="config-option">
+                    <label for="/TASKID/_metaNewTab">New Tab:</label>
+                    <input id ="/TASKID/_metaNewTab"type="checkbox" name="mem.var.configObject.meta.newtab">
+                    <span> Open link in new browser tab</span>
+                </span>
+
+            </form>
+        </div>
+
+        <div class="tabContent hidden" id="/TASKID/_details">
             <form class="config-form">
             </form>
         </div>
 
-        <div class="tabContent hidden" id="/TASKID/_tabContent3">
+        <div class="tabContent hidden" id="/TASKID/_icon">
             <form class="config-form">
             </form>
         </div>

@@ -1,6 +1,6 @@
 import {cfg, plexos} from "/plexos/ini/system.js"
 import {getTask, runLauncher, iframeAntiHover, selectText, clearSelection, nullifyOnEvents} from "/plexos/lib/functions/dll.js"
-import File from "/plexos/lib/classes/files/file.js"
+import File from "/plexos/lib/classes/filesystem/file.js"
 import ContextMenu from "/plexos/lib/classes/interface/contextmenu.js"
 
 let System = plexos.System
@@ -19,7 +19,7 @@ mem.class.IconDesk = class IconDesk {
         this.image = p.image
         this.name = p.name
         this.type = p.type
-        this.exte = p.exte || (this.type==="Directory") ? "dir" : (this.name.match(/\.(?:.(?<!\.))+$/s)!=null) ? this.name.match(/(?:.(?<!\.))+$/s)[0] : ""
+        this.exte = p.extension || (this.type==="Directory") ? "dir" : (this.name.match(/\.(?:.(?<!\.))+$/s)!=null) ? this.name.match(/(?:.(?<!\.))+$/s)[0] : ""
 
         this.drop = []
     }
@@ -218,22 +218,7 @@ mem.class.IconDesk = class IconDesk {
         this.node.onmousedown = e => this.drag(e)
         this.node.ondblclick = e => File.at(this.file).open()
         this.node.oncontextmenu = e => {
-            let menu = [
-                {name: "open", list: [
-                    {name:"Open",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/open.svg')",func: () => File.at(this.file).open()},
-                ]},
-                {name: "null", list: null},
-                {name: "clip", list: [
-                    {name:"Cut",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/cut.svg')",func: () => {return} },
-                    {name:"Copy",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/copy.svg')",func: () => {return} },
-                    {name:"Paste",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/paste.svg')",func: () => {return} },
-                ]},
-                {name: "prop", list: [
-                    {name:"Delete",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/delete.svg')",func: () => mem.deleteSelectedNodes()},
-                    {name:"Rename",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/rename.svg')",func: () => this.rename(e),bool:File.at(this.file)!=undefined},
-                    {name:"Properties",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/properties.svg')",func: () => {runLauncher("/plexos/app/sys/File Properties/prop.lau.js",File.at(this.file))} }
-                ]},
-            ]
+            let menu = mem.iconContextMenu(e,this)
             ContextMenu.open(e,this,menu)
         }
     }

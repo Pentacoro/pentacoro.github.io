@@ -1,6 +1,6 @@
 import {plexos} from "../../../ini/system.js"
-import {genRanHex} from "/plexos/lib/functions/dll.js"
-import File from "../files/file.js"
+import {genRanHex, runLauncher} from "/plexos/lib/functions/dll.js"
+import File from "../filesystem/file.js"
 import Component from "../interface/component.js"
 let System = plexos.System
 
@@ -94,16 +94,36 @@ export default class Task {
         this.cleanupBlobUrls()
         plexos.Tasks = plexos.Tasks.remove(Task.id(this.id))
     }
-    on(eventName, callback, priority = 0) {
-        const wrappedCallback = (...args) => callback(...args, this)
-        Task.get("System").bus.on(eventName, wrappedCallback, priority)
-        this.listeners.push({ eventName, callback: wrappedCallback})
+    on(eventName, callback, priority = 0, id="") {
+        Task.get("System").bus.on(eventName, callback, priority, id)
+        this.listeners.push({ eventName, callback, id})
     }
+    off(eventName, callback, id="") {
+        Task.get("System").bus.off(eventName, callback, id)
+        if (id!=="") {
+            this.listeners = this.listeners.filter(listener => listener.id != id)
+        } else {
+            this.listeners = this.listeners.filter(listener => listener != {eventName, callback})
+        }
+    }
+    once(eventName, callback, priority=0, id="") {
+        if (id==="") id = genRanHex(8)
+        const wrapper = (...args) => {
+            callback(...args)
+            this.off(eventName, wrapper, id) // Remove listener after first execution
+        }
+        let listener = this.listeners.filter(listener => listener.id == id)
+        if (listener === undefined || listener.length===0) {
+            this.on(eventName, wrapper, priority, id)
+        }
+    }
+
     emit(eventName, ...args) {
         Task.get("System").bus.emit(eventName, ...args)
     }
+
     cleanupListeners() {
-        this.listeners.forEach(({ eventName, callback }) => {
+        this.listeners.forEach(({eventName, callback}) => {
             Task.get("System").bus.off(eventName, callback)
         })
         this.listeners = []
@@ -178,16 +198,16 @@ export default class Task {
         let find = this.components.filter(component => component.id === id)
         return find[0]
     }
-    popup({e, buttons, arg}) {
+    popup(e, buttons, args) {
         this.mem.var.error = e
         this.mem.var.errorB = buttons
         runLauncher("/plexos/app/sys/Popup/popup.lau.js",
             {
-                name:arg.name,
-                type:arg.type,
-                title:arg.title,
-                description:arg.description,
-                icon:arg.icon,
+                name:args.name,
+                type:args.type,
+                title:args.title,
+                description:args.description,
+                icon:args.icon,
                 taskid:this.id,
             }
         )

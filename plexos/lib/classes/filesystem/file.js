@@ -1,5 +1,5 @@
 import {plexos, cfg} from "../../../ini/system.js"
-import {renameKey, runLauncher} from  "../../functions/dll.js"
+import {renameKey, runLauncher, calculateStringSize} from  "../../functions/dll.js"
 import Task from "../system/task.js"
 
 export default class File {
@@ -95,7 +95,6 @@ export default class File {
 
     static validName = function (string) {
         if (
-            string.slice(-1) != "." &&
             string != "" &&
             string.match(/[\/"]/g) === null
         ) {return true}
@@ -149,8 +148,8 @@ export default class File {
 
         rename = File.returnAvailableName(rename,null,this.parent())
 
-        let newAddress = "" + parent.cfg.icon.file + "/" + rename
-        let oldAddress = this.cfg.icon.file
+        let newAddress = "" + parent.cfg.path + "/" + rename
+        let oldAddress = this.cfg.path
         let oldName = this.name
 
         this.cfg.path = newAddress
@@ -172,6 +171,7 @@ export default class File {
         let renamedFile = parent.dir[rename]
         let extension = (this.cfg.type==="Directory") ? "dir" : (rename.match(/\.(?:.(?<!\.))+$/s)!=null) ? rename.match(/(?:.(?<!\.))+$/s)[0] : ""
         renamedFile.name = rename
+        
         renamedFile.cfg.exte = extension
         renamedFile.cfg.icon.name = rename
         renamedFile.cfg.icon.extension = extension
@@ -216,7 +216,7 @@ export default class File {
     size(unit=null) {
         let formatter = new Intl.NumberFormat('en-UK', {maximumFractionDigits:2})
 
-        let byteSize = JSON.stringify(this).length * 2 + `"${this.name}":`.length * 2
+        let byteSize = calculateStringSize(`"${this.name}":${JSON.stringify(this)}`)
 
         if        (byteSize < Math.pow(1024, 1) || unit==="bytes") {
             return formatter.format(byteSize) + " bytes"

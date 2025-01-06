@@ -1,5 +1,6 @@
 import {getTask, displayComponent, ajaxReturn} from "/plexos/lib/functions/dll.js"
-import Directory from "/plexos/lib/classes/files/directory.js"
+import Directory from "/plexos/lib/classes/filesystem/directory.js"
+import File from "/plexos/lib/classes/filesystem/file.js"
 
 let task = getTask(/TASKID/)
 let mem  = task.mem
@@ -80,7 +81,7 @@ mem.createMeta = async function () {
 
     //if file has generic name and fetch came in successful
     if (arg.file.name.match(genericNameRegex)) {
-        if (metaData && metaData.title!="") {
+        if (metaData && File.validName(metaData.title)) {
             newName = newName.replace(nameRegex, metaData.title) 
         } else {
             newName = newName.replace(nameRegex, url.match(domainRegex)[1])

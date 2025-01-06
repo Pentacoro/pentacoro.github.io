@@ -10,6 +10,12 @@ for (let input of task.node.querySelectorAll(".config-option>[type='number']")) 
     let inputbox = input
     let variable = inputbox.getAttribute("name")
     if (variable) {
+        try {
+            if (eval(variable)) inputbox.value = eval(variable)
+            else inputbox.value = ""
+        } catch {
+            inputbox.value = ""
+        }
         inputbox.onchange = (e) => {
             eval(variable + " = " + Number(inputbox.value))
             if (inputbox.parentElement.children[3]) {
@@ -27,10 +33,16 @@ for (let input of task.node.querySelectorAll(".config-option>[type='number']")) 
 }
 
 //text input
-for (let input of task.node.querySelectorAll(".config-option>[type='text']")) {
+for (let input of task.node.querySelectorAll(".config-option [type='text']")) {
     let inputbox = input
     let variable = inputbox.getAttribute("name")
     if (variable) {
+        try {
+            if (eval(variable)) inputbox.value = eval(variable)
+            else inputbox.value = ""
+        } catch {
+            inputbox.value = ""
+        }
         inputbox.onchange = (e) => {
             eval(variable + " = " +JSON.stringify(inputbox.value))
             mem.onChange()
@@ -38,6 +50,81 @@ for (let input of task.node.querySelectorAll(".config-option>[type='text']")) {
         inputbox.addEventListener("focusout", (e) => {
             eval(variable + " = " + JSON.stringify(inputbox.value))
         })
+    }
+}
+
+//textarea input
+for (let input of task.node.querySelectorAll(".config-option textarea")) {
+    let inputbox = input
+    let variable = inputbox.getAttribute("name")
+    if (variable) {
+        try {
+            if (eval(variable)) inputbox.value = eval(variable)
+            else inputbox.value = ""
+        } catch {
+            inputbox.value = ""
+        }
+        inputbox.onchange = (e) => {
+            eval(variable + " = " +JSON.stringify(inputbox.value))
+            mem.onChange()
+        }
+        inputbox.addEventListener("focusout", (e) => {
+            eval(variable + " = " + JSON.stringify(inputbox.value))
+        })
+    }
+}
+
+//url input
+for (let input of task.node.querySelectorAll(".config-option [type='url']")) {
+    let inputbox = input
+    let variable = inputbox.getAttribute("name")
+    if (variable) {
+        try {
+            if (eval(variable)) inputbox.value = eval(variable)
+            else inputbox.value = ""
+        } catch {
+            inputbox.value = ""
+        }
+        inputbox.onchange = (e) => {
+            eval(variable + " = " +JSON.stringify(inputbox.value))
+            mem.onChange()
+        }
+        inputbox.addEventListener("focusout", (e) => {
+            eval(variable + " = " + JSON.stringify(inputbox.value))
+        })
+    }
+}
+
+//checkbox
+for (let box of task.node.querySelectorAll(".config-option>[type='checkbox']")) {
+    let variable = box.getAttribute("name")
+    let inverted = box.hasAttribute("inverted")
+    let checkbox = box
+    if (variable) {
+        if (!inverted) {
+            checkbox.checked = eval(variable)
+            checkbox.onclick = (e) => {
+                if (!checkbox.checked) {
+                    eval(variable + " = " + false)
+                    mem.onChange()
+                    return
+                }
+                eval(variable + " = " + true)
+                mem.onChange()
+            }
+        }
+        else {
+            checkbox.checked = !(eval(variable))
+            checkbox.onclick = (e) => {
+                if (!checkbox.checked) {
+                    eval(variable + " = " + true)
+                    mem.onChange()
+                    return
+                }
+                eval(variable + " = " + false)
+                mem.onChange()
+            }
+        }
     }
 }
 
@@ -59,6 +146,7 @@ for (let box of task.node.querySelectorAll(".config-option>[type='checkbox'].aut
     let variable = box.getAttribute("name")
     let checkbox = box
     if (variable) {
+        checkbox.checked = eval(variable)
         if (eval(variable)) checkbox.checked = true
         checkbox.onclick = (e) => {
             if (!checkbox.checked) {

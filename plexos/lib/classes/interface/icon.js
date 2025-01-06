@@ -1,4 +1,4 @@
-import File from "../files/file.js"
+import File from "../filesystem/file.js"
 
 export default class Icon {
     state = 0

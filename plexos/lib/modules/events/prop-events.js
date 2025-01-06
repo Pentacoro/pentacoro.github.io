@@ -1,6 +1,6 @@
 import {plexos} from "/plexos/ini/system.js"
 import {getTask} from "/plexos/lib/functions/dll.js"
-import File from "/plexos/lib/classes/files/file.js"
+import File from "/plexos/lib/classes/filesystem/file.js"
 let cfg = plexos.cfg
 
 let task = getTask(/TASKID/)
@@ -16,13 +16,13 @@ mem.var.configInitialState = { ...eval(mem.var.config)} //clone editable for ini
 //on app close
 task.onEnd = function () {
     eval(mem.var.configEditable +" = task.mem.var.configInitialState")
-    task.emit(task.name+"-closed")
+    task.emit(task.id+"-closed")
     if (mem.var.configFilePath) File.at(mem.var.configFilePath).data = JSON.stringify(eval(mem.var.configEditable), null, "\t")
 }
 
 //on editable change
 mem.onChange = function() {
-    task.emit(task.name+"-change")
+    task.emit(task.id+"-change")
     if (task.node.getElementsByClassName("footer-apply")[0].disabled) {
         task.node.getElementsByClassName("footer-apply")[0].disabled = false
         task.node.getElementsByClassName("footer-apply")[0].classList.remove("disabled")
@@ -48,18 +48,33 @@ for (let tab of task.node.getElementsByClassName("config-tab")) {
     })
 }
 
+mem.imposeValues = function (target, source) {
+    // Iterate over the keys in the source object
+    for (const key in source) {
+        if (Object.prototype.hasOwnProperty.call(source, key)) {
+            // Only copy values if the target has the same key
+            if (key in target) {
+                target[key] = source[key]
+            }
+        }
+    }
+    return target
+}
+
 //footer buttons 
 task.node.getElementsByClassName("footer-accept")[0].onclick = (e)=> {
+    task.emit(task.id+"-apply")
     if (mem.var.configFilePath) File.at(mem.var.configFilePath).data = JSON.stringify(eval(mem.var.configEditable), null, "\t")
-    mem.var.configInitialState = { ...eval(mem.var.configEditable)}
+    mem.imposeValues(mem.var.configInitialState, eval(mem.var.configEditable))
     task.end()
 }
 task.node.getElementsByClassName("footer-cancel")[0].onclick = (e)=> {
     task.end()
 }
 task.node.getElementsByClassName("footer-apply")[0].onclick = (e)=> {
+    task.emit(task.id+"-apply")
     if (mem.var.configFilePath) File.at(mem.var.configFilePath).data = JSON.stringify(eval(mem.var.configEditable), null, "\t")
-    mem.var.configInitialState = { ...eval(mem.var.configEditable)}
+    mem.imposeValues(mem.var.configInitialState, eval(mem.var.configEditable))
     task.node.getElementsByClassName("footer-apply")[0].disabled = true
     task.node.getElementsByClassName("footer-apply")[0].classList.add("disabled")
 }

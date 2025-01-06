@@ -63,35 +63,7 @@ task.onblur = e => {
 //open desk menu on right click background
 desktop.node.oncontextmenu = e => {
 	if(e.target.id == "desktopLayer" || e.target.id == "selectBox" || e.target.classList.contains("gap")) {
-		let menu = [
-			{name: "view", list: [
-				{name:"Grid",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/grid2.svg')",func:[
-					{name:"grid", list: [
-						{name:"Auto Length",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/autogrid.svg')",func:() => desktop.mem.grid.autoLength()},
-						{name:"Auto Margin",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/automargin.svg')",func:() => desktop.mem.grid.autoMargin()},
-						{name:"Grid Settings",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/gridsettings.svg')",func:() => runLauncher("/plexos/app/sys/Settings/Grid/deskGridOptions.lau.js",[],desktop)},
-						]
-					}
-				]},
-				{name:"Refresh",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/refresh.svg')",func: () => desktop.mem.refresh()},
-			]},
-			{name: "file", list: [
-				{name:"New",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/new2.svg')",func:[
-					{name:"new", list: [
-						{name:"Directory",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/directory.svg')",func:() => desktop.mem.new("Directory","New Folder")},
-						{name:"Metafile",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/metafile.svg')",func:() => desktop.mem.new("Metafile", "New Metafile.meta")},
-						{name:"Text Document",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/textfile.svg')",func:() => desktop.mem.new("String", "New Text Document.txt")},
-						]
-					}
-				]},
-			{name:"Paste",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/paste.svg')",func: (e) => desktop.onpaste(e) },
-			]},
-			{name: "info", list: [
-				{name:"Settings",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/settings2.svg')",func: () => {return} },
-				{name:"About",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/about.svg')",func: () => {return} }
-			]}
-		]
-		ContextMenu.open(e, desktop, menu)
+		ContextMenu.open(e, desktop, mem.deskContextMenu)
 	}
 }
 
