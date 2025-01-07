@@ -1,20 +1,19 @@
 import {getTask, preloadImage} from "/plexos/lib/functions/dll.js"
-import {plexos} from "/plexos/ini/system.js"
 import Task from "/plexos/lib/classes/system/task.js"
-let cfg  = plexos.cfg
 
 let task = getTask(/TASKID/)
 let mem  = task.mem
+mem.cfg  = Task.get("Desktop").mem.cfg
 
 mem.updateGridGraph = function(){
-    document.getElementsByClassName("grid_graph")[0].children[0].children[0].innerText = cfg.desktop.grid.hLength
-    document.getElementsByClassName("grid_graph")[0].children[1].innerText = cfg.desktop.grid.vLength
+    document.getElementsByClassName("grid_graph")[0].children[0].children[0].innerText = mem.cfg.grid.hLength
+    document.getElementsByClassName("grid_graph")[0].children[1].innerText = mem.cfg.grid.vLength
 
     let dir = document.getElementsByClassName("grid_graph")[0].children[4]
     let hid = document.getElementsByClassName("grid_graph")[0].children[5]
 
-    mem.var.hLengthHTML.innerText = cfg.desktop.grid.hLength
-    mem.var.vLengthHTML.innerText = cfg.desktop.grid.vLength
+    mem.var.hLengthHTML.innerText = mem.cfg.grid.hLength
+    mem.var.vLengthHTML.innerText = mem.cfg.grid.vLength
 
     if (Task.get("Desktop").mem.var.hiddenIcons > 0) {
         hid.classList.remove("hidden")
@@ -37,24 +36,24 @@ mem.updateGridGraphDrag = function () {
         return
     }
     if (dot.offsetLeft <= 174 && dot.offsetLeft > 141) {
-        img.style.backgroundImage = (cfg.desktop.grid.stickToBorder) ? "url('./grid_graph_02-1.svg')" : "url('./grid_graph_02-2.svg')"
+        img.style.backgroundImage = (mem.cfg.grid.stickToBorder) ? "url('./grid_graph_02-1.svg')" : "url('./grid_graph_02-2.svg')"
         sll.style.backgroundImage = "url('./grid_graph_scroll_01.svg')"
         return
     }
     if (dot.offsetLeft <= 141 && dot.offsetLeft > 108) {
-        if (!cfg.desktop.grid.hideOnShrink ) {
-            img.style.backgroundImage = (cfg.desktop.grid.stickToBorder) ? "url('./grid_graph_02-1.svg')" : "url('./grid_graph_02-2.svg')"
+        if (!mem.cfg.grid.hideOnShrink ) {
+            img.style.backgroundImage = (mem.cfg.grid.stickToBorder) ? "url('./grid_graph_02-1.svg')" : "url('./grid_graph_02-2.svg')"
             sll.style.backgroundImage = "url('./grid_graph_scroll_02-1.svg')"
             return
         }else{
-            img.style.backgroundImage = (cfg.desktop.grid.stickToBorder) ? "url('./grid_graph_03-1.svg')" : "url('./grid_graph_03-2.svg')"
+            img.style.backgroundImage = (mem.cfg.grid.stickToBorder) ? "url('./grid_graph_03-1.svg')" : "url('./grid_graph_03-2.svg')"
             sll.style.backgroundImage = "url('./grid_graph_scroll_02-2.svg')"
             return
         }
     }
     if (dot.offsetLeft === 108) {
-        if (!cfg.desktop.grid.hideOnShrink ) {
-            img.style.backgroundImage = (cfg.desktop.grid.stickToBorder) ? "url('./grid_graph_02-1.svg')" : "url('./grid_graph_02-2.svg')"
+        if (!mem.cfg.grid.hideOnShrink ) {
+            img.style.backgroundImage = (cfg.grid.stickToBorder) ? "url('./grid_graph_02-1.svg')" : "url('./grid_graph_02-2.svg')"
             sll.style.backgroundImage = "url('./grid_graph_scroll_03-1.svg')"
             return
         } else {

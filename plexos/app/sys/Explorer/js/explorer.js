@@ -54,12 +54,12 @@ mem.explorerInit = function (dir, id, act = null) {
         Task.id(id).pocket = []
 
         for (let item of dirList) {
-            if(item[1].cfg.type === "Directory" && !item[1].cfg.system) {
+            if(item[1].cfg.class === "Directory" && !item[1].cfg.system) {
                 dirFolder.push(item[1])
             }
         }
         for (let item of dirList) {
-            if(item[1].cfg.type !=  "Directory") {
+            if(item[1].cfg.class !=  "Directory") {
                 dirFile.push(item[1])
             }
         }
@@ -120,7 +120,7 @@ mem.new = function(e, _this, Type, name){
                 {
                     image : typeDefaults.iconImag,
 					name : name,
-					type : typeDefaults.confType,
+					class : typeDefaults.confType,
 					state : 0
 				}
             )

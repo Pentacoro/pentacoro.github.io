@@ -1,10 +1,10 @@
 import {getTask} from "/plexos/lib/functions/dll.js"
-import {plexos} from "/plexos/ini/system.js"
 import File from "/plexos/lib/classes/filesystem/file.js"
-let cfg  = plexos.cfg
+import Task from "/plexos/lib/classes/system/task.js"
 
 let task = getTask(/TASKID/)
 let mem  = task.mem
+mem.cfg = Task.get("Desktop").mem.cfg
 
 //on app close
 task.onEnd = function () {
@@ -26,35 +26,35 @@ mem.onChange = function() {
 }
 
 //auto margin reset on uncheck and on input change
-task.node.getElementsByName("cfg.desktop.grid.autoHmargin")[1].addEventListener("click", e=>{
+task.node.getElementsByName("mem.cfg.grid.autoHmargin")[1].addEventListener("click", e=>{
     if (e.target.checked) return
-    cfg.desktop.grid.modHmargin = 0
-    cfg.desktop.grid.hMargin = Number(mem.var.hMarginHTML.value)
+    mem.cfg.grid.modHmargin = 0
+    mem.cfg.grid.hMargin = Number(mem.var.hMarginHTML.value)
     mem.updateTileGraphAuto()
     task.emit("desktop-grid-settings-change")
 })
-task.node.getElementsByName("cfg.desktop.grid.autoVmargin")[1].addEventListener("click", e=>{
+task.node.getElementsByName("mem.cfg.grid.autoVmargin")[1].addEventListener("click", e=>{
     if (e.target.checked) return
-    cfg.desktop.grid.modVmargin = 0
-    cfg.desktop.grid.vMargin = Number(mem.var.vMarginHTML.value)
+    mem.cfg.grid.modVmargin = 0
+    mem.cfg.grid.vMargin = Number(mem.var.vMarginHTML.value)
     mem.updateTileGraphAuto()
     task.emit("desktop-grid-settings-change")
 })
-task.node.getElementsByName("cfg.desktop.grid.hMargin")[0].addEventListener("click", e=>{
-    cfg.desktop.grid.modHmargin = 0
-    cfg.desktop.grid.hMargin = Number(mem.var.hMarginHTML.value)
+task.node.getElementsByName("mem.cfg.grid.hMargin")[0].addEventListener("click", e=>{
+    mem.cfg.grid.modHmargin = 0
+    mem.cfg.grid.hMargin = Number(mem.var.hMarginHTML.value)
     mem.updateTileGraphAuto()
     task.emit("desktop-grid-settings-change")
 })
-task.node.getElementsByName("cfg.desktop.grid.vMargin")[0].addEventListener("click", e=>{
-    cfg.desktop.grid.modVmargin = 0
-    cfg.desktop.grid.vMargin = Number(mem.var.vMarginHTML.value)
+task.node.getElementsByName("mem.cfg.grid.vMargin")[0].addEventListener("click", e=>{
+    mem.cfg.grid.modVmargin = 0
+    mem.cfg.grid.vMargin = Number(mem.var.vMarginHTML.value)
     mem.updateTileGraphAuto()
     task.emit("desktop-grid-settings-change")
 })
-task.node.getElementsByName("cfg.desktop.grid.stickToBorder")[0].addEventListener("click", e=>{
+task.node.getElementsByName("mem.cfg.grid.stickToBorder")[0].addEventListener("click", e=>{
     mem.updateGridGraphDrag()
 })
-task.node.getElementsByName("cfg.desktop.grid.hideOnShrink")[0].addEventListener("click", e=>{
+task.node.getElementsByName("mem.cfg.grid.hideOnShrink")[0].addEventListener("click", e=>{
     mem.updateGridGraphDrag()
 })

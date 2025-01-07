@@ -60,14 +60,14 @@ export default class Directory extends File {
                     name : childName,
                     cfg : new Configuration (
                     {
-                        type : confType,
+                        class : confType,
                         move : true,
                         exte : (confType=="Directory") ? "dir" : childName.match(/(?:.(?<!\.))+$/s)[0],
                         icon : childIcon || new Icon (
                                                 {
                                                     image : iconImag, 
+                                                    class : confType, 
                                                     name : childName, 
-                                                    type : confType, 
                                                     exte : childName.match(/(?:.(?<!\.))+$/s)[0],
                                                     state : 0  
                                                 }

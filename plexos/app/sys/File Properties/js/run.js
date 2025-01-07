@@ -8,7 +8,7 @@ let mem  = task.mem
 task.node.getElementsByClassName("config-tab")[0].children[0].checked = true
 
 mem.prepGeneral()
-switch (mem.arg.cfg.type){
+switch (mem.arg.cfg.class){
     case ("Metafile") :
         task.node.getElementsByClassName("config-tab")[1].classList.remove("hidden")
         task.node.getElementsByClassName("config-tab")[1].children[0].checked = true

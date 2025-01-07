@@ -14,6 +14,7 @@ mem.class.IconDir = class IconDir {
         this.state = 0
         this.file = p.file
         this.image = p.image
+        this.class = p.class
         this.name = p.name
         this.exte = p.exte
         this.task = p.task

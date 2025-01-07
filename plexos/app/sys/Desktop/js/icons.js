@@ -1,31 +1,32 @@
-import {cfg, plexos} from "/plexos/ini/system.js"
-import {getTask, runLauncher, iframeAntiHover, selectText, clearSelection, nullifyOnEvents} from "/plexos/lib/functions/dll.js"
+import {plexos} from "/plexos/ini/system.js"
+import {getTask, iframeAntiHover, selectText, clearSelection, nullifyOnEvents} from "/plexos/lib/functions/dll.js"
 import File from "/plexos/lib/classes/filesystem/file.js"
 import ContextMenu from "/plexos/lib/classes/interface/contextmenu.js"
 
 let System = plexos.System
-let task    = getTask(/TASKID/)
-let desktop = task
-let mem     = task.mem
+let task = getTask(/TASKID/)
+let mem  = task.mem
+let cfg  = mem.cfg
 
 mem.class   = {}
 mem.class.IconDesk = class IconDesk {
     state = 0
     constructor(p){
         this.state = p.state || this.state
-        this.coords = p.coords || null
-
-        this.file = p.file || ""
+        
         this.image = p.image
+        this.class = p.class
+        this.file = p.file || ""
         this.name = p.name
-        this.type = p.type
-        this.exte = p.extension || (this.type==="Directory") ? "dir" : (this.name.match(/\.(?:.(?<!\.))+$/s)!=null) ? this.name.match(/(?:.(?<!\.))+$/s)[0] : ""
+        this.exte = p.extension || (this.class==="Directory") ? "dir" : (this.name.match(/\.(?:.(?<!\.))+$/s)!=null) ? this.name.match(/(?:.(?<!\.))+$/s)[0] : ""
+        
+        this.coords = p.coords || cfg.icon.icons.filter(icon=>icon.name===this.name)[0]?.coords || null
 
         this.drop = []
     }
     createNode(){
         //Icon HTML structure-----|
-        if (desktop.mem.iconArr.includes(this)) return
+        if (mem.iconArr.includes(this)) return
 
         let newIcon = document.createElement("div")
         this.node = newIcon
@@ -35,8 +36,8 @@ mem.class.IconDesk = class IconDesk {
         newIcon.setAttribute("id", "Icon: "+this.name)
         if (this.coords) newIcon.setAttribute("style",  "left:"+this.coords.px+"px;"+
                                                         "top:"+this.coords.py+"px;"+
-                                                        "width:"+cfg.desktop.grid.width+"px;"+
-                                                        "height:"+cfg.desktop.grid.height+"px;")
+                                                        "width:"+cfg.grid.width+"px;"+
+                                                        "height:"+cfg.grid.height+"px;")
 
         let newIconImage = document.createElement("img")
         let newIconFrame = document.createElement("div")
@@ -54,11 +55,11 @@ mem.class.IconDesk = class IconDesk {
 
         document.getElementById("iconLayer").appendChild(newIcon)
 
-        desktop.mem.iconArr.push(this)
+        mem.iconArr.push(this)
         //------------------------|
 
         this.node = document.getElementById("Icon: "+this.name)
-        if (System.mem.focused!=desktop) this.node.classList.add("blur")
+        if (System.mem.focused!=task) this.node.classList.add("blur")
 
         this.clic()
     }
@@ -67,12 +68,12 @@ mem.class.IconDesk = class IconDesk {
         delete this.node
 
         if (!fromGrid) {
-            desktop.mem.grid.gridArr[this.coords.ax][this.coords.ay].used = false
-            desktop.mem.grid.gridArr[this.coords.ax][this.coords.ay].icon = null
+            mem.grid.gridArr[this.coords.ax][this.coords.ay].used = false
+            mem.grid.gridArr[this.coords.ax][this.coords.ay].icon = null
         }
 
-        desktop.mem.iconArr = desktop.mem.iconArr.remove(this)
-        desktop.pocket = desktop.pocket.remove(this)
+        mem.iconArr = mem.iconArr.remove(this)
+        task.pocket = task.pocket.remove(this)
     }
     statNode(num){
         //0 => unselected | 1 => selected | 2 => moving
@@ -86,7 +87,7 @@ mem.class.IconDesk = class IconDesk {
                 break
             case 1:
                 if(!this.node.classList.contains("active")) this.node.className += " active"
-                if(!desktop.pocket.includes(this)) desktop.pocket.push(this)
+                if(!task.pocket.includes(this)) task.pocket.push(this)
                 this.node.classList.remove("moving")
                 this.node.style.backgroundColor = ''
                 break
@@ -102,8 +103,8 @@ mem.class.IconDesk = class IconDesk {
 
         node.style.left = this.coords.tx + "px"
         node.style.top = this.coords.ty + "px"
-        node.style.width = cfg.desktop.grid.width + "px"
-        node.style.height = cfg.desktop.grid.height + "px"
+        node.style.width = cfg.grid.width + "px"
+        node.style.height = cfg.grid.height + "px"
     
         function rawr(px, dem = 2.35, dpx = 44) {
             let per = px/dpx * 100
@@ -233,13 +234,13 @@ mem.class.IconDesk = class IconDesk {
             e.preventDefault()
             
             //get initial cursor position:
-            pos3 = e.clientX + desktop.node.scrollLeft
-            pos4 = e.clientY + desktop.node.scrollTop
+            pos3 = e.clientX + task.node.scrollLeft
+            pos4 = e.clientY + task.node.scrollTop
             
             //when mousedown on selected icon
             if (_this.state == 1) {
                 //managing selected icons
-                for (let icon of desktop.pocket) {
+                for (let icon of task.pocket) {
                     //light up all hover border onmousedown:-|
                     icon.highlight(true)
                     //---------------------------------------|
@@ -252,22 +253,22 @@ mem.class.IconDesk = class IconDesk {
                     
                     //when mousedown on unselected icon
                     if(!e.ctrlKey) {
-                        for (let icon of desktop.pocket){
-                            desktop.pocket = desktop.pocket.remove(icon)
+                        for (let icon of task.pocket){
+                            task.pocket = task.pocket.remove(icon)
                             icon.statNode(0)
                         }
-                        desktop.pocket.push(_this)
+                        task.pocket.push(_this)
                         _this.state = 1
                         _this.highlight(true)
                     } else if(e.ctrlKey) {
-                        desktop.pocket.push(_this)
+                        task.pocket.push(_this)
                         _this.state = 1
                         _this.highlight(true)
                     }
                 }
             }
     
-            if(cfg.audio.icons && !System.mem.var.dragging) {
+            if(System.mem.cfg.audio.icons && !System.mem.var.dragging) {
                 plexos.Sound[0].volume = 0.5
                 plexos.Sound[0].play()
             }
@@ -291,14 +292,14 @@ mem.class.IconDesk = class IconDesk {
             
             
             //managing selected icons
-            for (let icon of desktop.pocket){
+            for (let icon of task.pocket){
                 //dragLayer layer
                 document.getElementById("dragLayer").appendChild(icon.node)
                 //set position for selected icons:------------|
                 icon.coords.tx = (icon.coords.tx - pos1)
                 icon.coords.ty = (icon.coords.ty - pos2)
-                desktop.mem.grid.gridArr[icon.coords.ax][icon.coords.ay].used = false
-                desktop.mem.grid.gridArr[icon.coords.ax][icon.coords.ay].icon = null
+                mem.grid.gridArr[icon.coords.ax][icon.coords.ay].used = false
+                mem.grid.gridArr[icon.coords.ax][icon.coords.ay].icon = null
                 //--------------------------------------------|
                 
                 icon.statNode(2)
@@ -315,29 +316,29 @@ mem.class.IconDesk = class IconDesk {
             let iconsToValidate = []
     
             //send all icons to position evaluation
-            for (let icon of desktop.pocket){
-                if (cfg.desktop.grid.enabled && icon.state == 2) {
+            for (let icon of task.pocket){
+                if (cfg.grid.enabled && icon.state == 2) {
                     iconsToValidate.push(icon)
                 }
             }
             mem.repositionIcons(iconsToValidate, true, true)
     
             //update HTML of icons after evaluation
-            for (let icon of desktop.pocket){
+            for (let icon of task.pocket){
                 icon.poseNode()
                 icon.statNode(1)
             }
             
             //unselect other folders on mouseup W/O drag UNLESS ctrl
             if(e.ctrlKey == false && System.mem.var.dragging == false && e.button == 0) {
-                for (let icon of desktop.pocket){
-                    if (icon != _this) desktop.pocket = desktop.pocket.remove(icon)
+                for (let icon of task.pocket){
+                    if (icon != _this) task.pocket = task.pocket.remove(icon)
                     icon.statNode(0)
                     icon.highlight(false)
                 }
                 _this.statNode(1)
             } else {
-                for (let icon of desktop.pocket){
+                for (let icon of task.pocket){
                     icon.highlight(false)
                     document.getElementById("iconLayer").appendChild(icon.node)
                 }
@@ -345,6 +346,8 @@ mem.class.IconDesk = class IconDesk {
             }
             
             System.mem.var.dragging = false
+            
+            mem.writeIconConfig()
         }
     }
     focus(){
@@ -494,10 +497,10 @@ mem.class.IconDesk = class IconDesk {
 
 //icon behavior------------------------------------------------------------------------|
 mem.repositionIcons = function(icons, mustSet = false){
-    let w = cfg.desktop.grid.width
-    let h = cfg.desktop.grid.height
-    let wm = (cfg.desktop.grid.modHmargin == 0) ? cfg.desktop.grid.hMargin : cfg.desktop.grid.modHmargin
-    let hm = (cfg.desktop.grid.modVmargin == 0) ? cfg.desktop.grid.vMargin : cfg.desktop.grid.modVmargin
+    let w = cfg.grid.width
+    let h = cfg.grid.height
+    let wm = (cfg.grid.modHmargin == 0) ? cfg.grid.hMargin : cfg.grid.modHmargin
+    let hm = (cfg.grid.modVmargin == 0) ? cfg.grid.vMargin : cfg.grid.modVmargin
     
     let invalidIcons = []
     let validatedIcons = []
@@ -515,16 +518,16 @@ mem.repositionIcons = function(icons, mustSet = false){
             ay:null
         }
         //find closest grid for its tPos
-        let x = Math.round((icon.coords.tx + desktop.node.scrollLeft - wm)/(w + wm))*(w + wm) + wm
-        let y = Math.round((icon.coords.ty + desktop.node.scrollTop  - hm)/(h + hm))*(h + hm) + hm
+        let x = Math.round((icon.coords.tx + task.node.scrollLeft - wm)/(w + wm))*(w + wm) + wm
+        let y = Math.round((icon.coords.ty + task.node.scrollTop  - hm)/(h + hm))*(h + hm) + hm
         
         //get its spot in grid array
         let tx = Math.round((x - wm)/(w + wm))
         let ty = Math.round((y - hm)/(h + hm))
 
-        if(desktop.mem.grid.gridAvailable(tx, ty)) {
+        if(mem.grid.gridAvailable(tx, ty)) {
             //if object exists and is not used (valid position)
-            let newGrid = desktop.mem.grid.gridArr[tx][ty]
+            let newGrid = mem.grid.gridArr[tx][ty]
     
             if(mustSet && icon.coords) {
                 newGrid.used = true
@@ -564,9 +567,9 @@ mem.repositionIcons = function(icons, mustSet = false){
 
         let oldGrid = {used: true}
 
-        if (desktop.mem.grid.gridArr[px]) {
-             if(desktop.mem.grid.gridArr[px][py]) {
-                oldGrid = desktop.mem.grid.gridArr[px][py]
+        if (mem.grid.gridArr[px]) {
+             if(mem.grid.gridArr[px][py]) {
+                oldGrid = mem.grid.gridArr[px][py]
             }
         }
 
@@ -604,7 +607,7 @@ mem.repositionIcons = function(icons, mustSet = false){
         }
     }
     
-    if(cfg.audio.icons && System.mem.var.dragging) {
+    if(System.mem.cfg.audio.icons && System.mem.var.dragging) {
         if(invalidIcons.length == iconAmount) {
             plexos.Sound[1].play()
         } else if (invalidIcons.length == 0) {
@@ -614,15 +617,22 @@ mem.repositionIcons = function(icons, mustSet = false){
         }
     }
 
+    mem.writeIconConfig()
+
     return validatedIcons
 }
 
 mem.orderIconPosition = function(){
-    for (let x = 0; x < desktop.mem.grid.gridArr.length; x++){
-        for(let y = 0; y < desktop.mem.grid.gridArr[x].length; y++){
-            if (desktop.mem.grid.gridArr[x][y].used == false){
-                return [desktop.mem.grid.gridArr[x][y],x,y]
+    for (let x = 0; x < mem.grid.gridArr.length; x++){
+        for(let y = 0; y < mem.grid.gridArr[x].length; y++){
+            if (mem.grid.gridArr[x][y].used == false){
+                return [mem.grid.gridArr[x][y],x,y]
             }
         }
     }
+}
+
+mem.writeIconConfig = function(){
+    cfg.icon.icons = mem.filterIconListJson()
+    File.at(cfg.path+"/icon.json").write(JSON.stringify(cfg.icon, null, "\t"))
 }

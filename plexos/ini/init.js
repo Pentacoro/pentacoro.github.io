@@ -4,7 +4,6 @@ import Task from "../lib/classes/system/task.js"
 import File from "../lib/classes/filesystem/file.js"
 
 export default function initialize() {
-    plexos.cfg.desktop.grid = JSON.parse(File.at("/plexos/cfg/desktop/grid.json").data)
     Task.get("System").ini.setVertex("/user/desks/desktop")
     console.log(plexos.core)
     

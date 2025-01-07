@@ -12,7 +12,7 @@ mem.var.configInitialState = mem.arg
 mem.tab.general = {}
 
 mem.tab.general.fileName = task.node.getElementById(task.id+"_fileName")
-mem.tab.general.fileType = task.node.getElementById(task.id+"_fileType")
+mem.tab.general.fileClass = task.node.getElementById(task.id+"_fileClass")
 mem.tab.general.fileExte = task.node.getElementById(task.id+"_fileExte")
 mem.tab.general.fileAddr = task.node.getElementById(task.id+"_fileAddr")
 mem.tab.general.fileSize = task.node.getElementById(task.id+"_fileSize")
@@ -25,7 +25,7 @@ mem.tab.general.fileReadOnly = task.node.getElementById(task.id+"_fileReadOnly")
 mem.tab.general.fileHidden = task.node.getElementById(task.id+"_fileHidden")
 
 //METADATA
-if (mem.arg.cfg.type==="Metafile") {
+if (mem.arg.cfg.class==="Metafile") {
     mem.tab.metadata = {}
     
     mem.tab.metadata.metaName = task.node.getElementById(task.id+"_metaName")

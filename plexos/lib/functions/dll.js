@@ -349,7 +349,20 @@ export function calculateStringSize(string) {
     const totalSize = string.length * 2 + surrogatePairs * 2
   
     return totalSize // size in bytes
-  }
+}
+
+export function imposeValues(target, source) {
+    // Iterate over the keys in the source object
+    for (const key in source) {
+        if (Object.prototype.hasOwnProperty.call(source, key)) {
+            // Only copy values if the target has the same key
+            if (key in target) {
+                target[key] = source[key]
+            }
+        }
+    }
+    return target
+}
 
 export function isKeyWrite(event) {
     if (

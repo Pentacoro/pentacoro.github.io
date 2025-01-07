@@ -23,6 +23,7 @@ System.mem.lau = {}
 System.mem.var.dragging = false
 System.mem.var.shSelect = true
 System.mem.focused = null
+System.mem.cfg = plexos.cfg
 System.bus = new EventBus()
 System.ini = {}
 System.ini.setVertex = function (address) {
@@ -44,7 +45,7 @@ System.ini.recreateFiles = function (dir, newDir) {
         let Type = null 
         let Skey = null
 
-        switch (file.cfg.type) {
+        switch (file.cfg.class) {
             case "Directory":
                 Type = "Directory"
                 Skey = "dir"

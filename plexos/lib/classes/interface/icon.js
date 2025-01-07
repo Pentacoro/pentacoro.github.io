@@ -4,13 +4,12 @@ export default class Icon {
     state = 0
     constructor(p){
         this.state = p.state || this.state
-        this.coords = p.coords || p.coor || null
 
         this.file = p.file || ""
         this.image = p.image || p.imag
+        this.class = p.class || p.class
         this.name = p.name
-        this.type = p.type
-        this.exte = p.exte || (this.type==="Directory") ? "dir" : (this.name.match(/\.(?:.(?<!\.))+$/s)!=null) ? this.name.match(/(?:.(?<!\.))+$/s)[0] : ""
+        this.exte = p.exte || (this.class==="Directory") ? "dir" : (this.name.match(/\.(?:.(?<!\.))+$/s)!=null) ? this.name.match(/(?:.(?<!\.))+$/s)[0] : ""
 
         this.drop = []
     }

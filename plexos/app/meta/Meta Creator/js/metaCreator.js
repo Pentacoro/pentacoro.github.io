@@ -16,7 +16,7 @@ mem.createMeta = async function () {
         typeValue = nodeType.options[nodeType.selectedIndex].text
     } else {
         url  = arg.url
-        type = arg.type
+        type = arg.class
     }
 
     const slashForwardRegex = /(?<=.*\/.*\/.*)\/(.+)?/

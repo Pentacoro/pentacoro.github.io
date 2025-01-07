@@ -17,7 +17,7 @@ mem.onNameChange = function (e) {
     mem.onChange()
     let inputbox = e.target
     task.once(task.id+"-apply", () => {
-        let newname = inputbox.value + ((mem.arg.cfg.type === "Directory") ? "" : mem.tab.general.fileExte.innerText)
+        let newname = inputbox.value + ((mem.arg.cfg.class === "Directory") ? "" : mem.tab.general.fileExte.innerText)
         mem.arg.rename(newname)
         mem.var.configObject.name          = mem.arg.name
         mem.var.configObject.cfg.path      = mem.arg.cfg.path

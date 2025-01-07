@@ -16,8 +16,8 @@ export function initialize({taskid,args,path,root}) {
         let arg  = task.mem.arg
 
         arg.file = File.at(args.path)
-        if (args.url  != undefined) arg.url = args.url
-        if (args.type != undefined) arg.type = args.type
+        if (args.url   != undefined) arg.url = args.url
+        if (args.class != undefined) arg.class = args.class
     }
     //on app end
     function end() {

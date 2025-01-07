@@ -7,4 +7,12 @@ export default class String extends File {
         this.cfg = p.cfg
         this.data = p.data || ""
     }
+    write(data) {
+        this.data = data
+        this.cfg.date.Modified = Date.now()
+    }
+    read() {
+        this.cfg.date.Accessed = Date.now()
+        return this.data
+    }
 }

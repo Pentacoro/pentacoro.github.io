@@ -169,7 +169,7 @@ export default class File {
         renameKey(parent.dir, this.name, rename)
         
         let renamedFile = parent.dir[rename]
-        let extension = (this.cfg.type==="Directory") ? "dir" : (rename.match(/\.(?:.(?<!\.))+$/s)!=null) ? rename.match(/(?:.(?<!\.))+$/s)[0] : ""
+        let extension = (this.cfg.class==="Directory") ? "dir" : (rename.match(/\.(?:.(?<!\.))+$/s)!=null) ? rename.match(/(?:.(?<!\.))+$/s)[0] : ""
         renamedFile.name = rename
         
         renamedFile.cfg.exte = extension

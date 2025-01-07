@@ -1,11 +1,12 @@
-import {plexos, cfg} from "/plexos/ini/system.js"
-import {getTask, runLauncher} from "/plexos/lib/functions/dll.js"
+import {plexos} from "/plexos/ini/system.js"
+import {getTask, imposeValues, runLauncher} from "/plexos/lib/functions/dll.js"
 import File from "/plexos/lib/classes/filesystem/file.js"
 import Icon from "/plexos/lib/classes/interface/icon.js"
 
 let task = getTask(/TASKID/)
 let mem  = task.mem
 let arg  = mem.arg
+let cfg  = mem.cfg
 
 mem.iconArr = []
 mem.dirObject = {}
@@ -26,10 +27,10 @@ mem.createDesktopIcons = async function(array) {
 }
 mem.desktopInit = function (dir) {    
     try {       
-        mem.iconArr = []
-        arg.address = dir
-        mem.dirObject   = File.at(dir)
-        mem.var.dirname = File.at(dir).name
+		mem.iconArr = []
+		mem.address = arg.address
+		mem.dirObject   = File.at(arg.address)
+		mem.var.dirname = File.at(arg.address).name
 		mem.var.hiddenIcons = 0
         task.pocket = []
 
@@ -53,50 +54,50 @@ mem.desktopInit = function (dir) {
 }
 
 mem.initialGridDrawingProcedual = function(itemList) {
-	let initialAutoHl = cfg.desktop.grid.autoHlength
-	let initialAutoVl = cfg.desktop.grid.autoVlength
-	let initialAutoHm = cfg.desktop.grid.autoHlength
-	let initialAutoVm = cfg.desktop.grid.autoVlength
-	cfg.desktop.grid.autoHlength = false
-	cfg.desktop.grid.autoVlength = false
-	cfg.desktop.grid.autoHmargin = false
-	cfg.desktop.grid.autoVmargin = false
+	let initialAutoHl = cfg.grid.autoHlength
+	let initialAutoVl = cfg.grid.autoVlength
+	let initialAutoHm = cfg.grid.autoHlength
+	let initialAutoVm = cfg.grid.autoVlength
+	cfg.grid.autoHlength = false
+	cfg.grid.autoVlength = false
+	cfg.grid.autoHmargin = false
+	cfg.grid.autoVmargin = false
 
 	mem.grid.evaluateIconGrid(0)
 	mem.createDesktopIcons(itemList)
 
- 	cfg.desktop.grid.autoHlength = initialAutoHl
-	cfg.desktop.grid.autoVlength = initialAutoVl
-	cfg.desktop.grid.autoHmargin = initialAutoHm
-	cfg.desktop.grid.autoVmargin = initialAutoVm
+ 	cfg.grid.autoHlength = initialAutoHl
+	cfg.grid.autoVlength = initialAutoVl
+	cfg.grid.autoHmargin = initialAutoHm
+	cfg.grid.autoVmargin = initialAutoVm
 
 	mem.grid.evaluateIconGrid(3)
 }
 mem.initialGridDrawingSquared = function(itemList) {
 	//if the grid is too small to fit initial amount of icons, find optimal size
-	let initialAutoH = cfg.desktop.grid.autoHlength
-	let initialAutoV = cfg.desktop.grid.autoVlength
-	cfg.desktop.grid.hLength = Math.ceil (Math.sqrt(itemList.length))
-	cfg.desktop.grid.vLength = Math.round(Math.sqrt(itemList.length))
-	cfg.desktop.grid.autoHlength = false
-	cfg.desktop.grid.autoVlength = false
+	let initialAutoH = cfg.grid.autoHlength
+	let initialAutoV = cfg.grid.autoVlength
+	cfg.grid.hLength = Math.ceil (Math.sqrt(itemList.length))
+	cfg.grid.vLength = Math.round(Math.sqrt(itemList.length))
+	cfg.grid.autoHlength = false
+	cfg.grid.autoVlength = false
 	mem.grid.evaluateIconGrid(3)
 	mem.createDesktopIcons(itemList)
-	cfg.desktop.grid.autoHlength = initialAutoH
-	cfg.desktop.grid.autoVlength = initialAutoV
+	cfg.grid.autoHlength = initialAutoH
+	cfg.grid.autoVlength = initialAutoV
 	mem.grid.evaluateIconGrid(3)
 }
 mem.checkIfGridCanFit = function(itemList) {
-	let w      = cfg.desktop.grid.width 
-    let h      = cfg.desktop.grid.height
-    let wm     = cfg.desktop.grid.hMargin
-    let hm     = cfg.desktop.grid.vMargin
+	let w      = cfg.grid.width 
+    let h      = cfg.grid.height
+    let wm     = cfg.grid.hMargin
+    let hm     = cfg.grid.vMargin
     let windowW = task.node.offsetWidth
     let windowH = task.node.offsetHeight
 
     //set margin to modified margins if set without auto
-    if (cfg.desktop.grid.modHmargin && !cfg.desktop.grid.autoHmargin) wm = cfg.desktop.grid.modHmargin
-    if (cfg.desktop.grid.modVmargin && !cfg.desktop.grid.autoVmargin) hm = cfg.desktop.grid.modVmargin
+    if (cfg.grid.modHmargin && !cfg.grid.autoHmargin) wm = cfg.grid.modHmargin
+    if (cfg.grid.modVmargin && !cfg.grid.autoVmargin) hm = cfg.grid.modVmargin
     
     //evaluate optimal grid length if enabled
     let gridHorizontal = Math.round((windowW-(w+wm*3)/2)/(w+wm))
@@ -114,6 +115,27 @@ mem.renderIcons = function() {
 mem.getIcon = function(name){
     let find = mem.iconArr.filter(icon => icon.name === name)
     return find[0]
+}
+
+mem.filterIconListJson = function () {
+	let iconFilter = {
+		state : undefined,
+        image : undefined,
+        class : undefined,
+		node  : undefined,
+        exte  : undefined,
+		drop  : undefined,
+	}
+
+	let coorFilter = {
+		tx:undefined,
+		ty:undefined
+	}
+
+	let filteredIconList = mem.iconArr.map(icon=>imposeValues({...icon},iconFilter))
+		filteredIconList.forEach(icon=> icon.coords = imposeValues({...icon.coords},coorFilter))
+
+	return filteredIconList
 }
 
 mem.deleteSelectedNodes = function(){
@@ -149,10 +171,10 @@ mem.new = function(Type, name){
 	let editFile = null
 	let editFrom = plexos.vtx
 
-	let iconWidth = cfg.desktop.grid.width/2
-	let iconHeight = cfg.desktop.grid.height/2
+	let iconWidth = cfg.grid.width/2
+	let iconHeight = cfg.grid.height/2
 
-	let w = cfg.desktop.grid.width; let h = cfg.desktop.grid.height; let wm = cfg.desktop.grid.hMargin; let hm = cfg.desktop.grid.vMargin
+	let w = cfg.grid.width; let h = cfg.grid.height; let wm = cfg.grid.hMargin; let hm = cfg.grid.vMargin
 
 	let iconPosX = (Math.round((initialX-iconWidth)/(w + wm))*(w + wm) + wm)
 	let iconPosY = (Math.round((initialY-iconHeight)/(h + hm))*(h + hm) + hm)
@@ -165,20 +187,20 @@ mem.new = function(Type, name){
 				{
 					image : typeDefaults.iconImag,
 					name : name,
-					type : typeDefaults.confType,
-					state : 0,
-					coords : {
-						px : iconPosX,
-						py : iconPosY,
-						tx : iconPosX,
-						ty : iconPosY,
-						ax : null,
-						ay : null,
-					} 
+					class : typeDefaults.confType,
+					state : 0
 				}
 			)
 			let newFile = editFrom.new(Type,name,newFileIcon)
             let newDesktopIcon = new mem.class.IconDesk(newFile.cfg.icon)
+			newDesktopIcon.coords = {
+				px : iconPosX,
+				py : iconPosY,
+				tx : iconPosX,
+				ty : iconPosY,
+				ax : null,
+				ay : null,
+			} 
 			newDesktopIcon.createNode()
 			mem.repositionIcons([newDesktopIcon],true)
 			if (newDesktopIcon.node) {

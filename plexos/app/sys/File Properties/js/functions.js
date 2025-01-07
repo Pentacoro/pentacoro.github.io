@@ -19,7 +19,7 @@ let dateFormatter = new Intl.DateTimeFormat('en-UK',
 mem.prepGeneral = function () {
     task.node.querySelector(`#${task.id}_general .config-option.header>label>img`).setAttribute("src", mem.arg.cfg.icon.image)
     tab.general.fileName.value = mem.arg.displayName()
-    tab.general.fileType.innerText = mem.arg.cfg.type 
+    tab.general.fileClass.innerText = mem.arg.cfg.class 
     tab.general.fileExte.innerText = "."+mem.arg.cfg.exte 
     tab.general.fileAddr.innerText = mem.arg.cfg.path 
     tab.general.fileAddr.title = mem.arg.cfg.path 
