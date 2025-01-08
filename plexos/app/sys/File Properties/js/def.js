@@ -1,10 +1,12 @@
 import {getTask} from "/plexos/lib/functions/dll.js"
+import Icon from "/plexos/lib/classes/interface/icon.js"
 
 let task = getTask(/TASKID/)
 let mem  = task.mem
 mem.tab = {}
 
 mem.var.configObject = JSON.parse(JSON.stringify(mem.arg))
+mem.var.configObject.cfg.icon = new Icon (mem.arg.cfg.icon)
 mem.var.configEditable = "mem.var.configObject"
 mem.var.configInitialState = mem.arg
 

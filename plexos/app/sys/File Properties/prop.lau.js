@@ -32,10 +32,10 @@ export function initialize({taskid,args,path,root}) {
     //window generation
     new Window(
         {
-            name : "Properties: "+args.name,
+            name : args.name + " - Properties",
             task : task.id, 
             resizeable : false, 
-            icon : (File.at(args.cfg.path)) ? File.at(args.cfg.path).cfg.icon.image : "/plexos/res/themes/Plexos Hyper/icons/files/defaultMSF.svg",
+            icon : (File.at(args.cfg.path)) ? File.at(args.cfg.path).cfg.icon.getImage() : "/plexos/res/themes/Plexos Hyper/icons/files/defaultMSF.svg",
             state : 1, 
         }
     )

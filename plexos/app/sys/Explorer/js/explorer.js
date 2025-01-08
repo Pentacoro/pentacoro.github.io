@@ -12,27 +12,22 @@ mem.dirObject = {}
 //local functions
 mem.createExplorerIcons = async function(array) {
     for(let item of array) {
-        let itemIcon = item.cfg.icon
-        let dirIcon  = new mem.class.IconDir(
-            {           
-                image : itemIcon.image,
-                name : itemIcon.name,
-                task : task.id,
-                exte : itemIcon.exte,
-                file : itemIcon.file
-            }
-        )
-        mem.iconArray.push(dirIcon)
-        
-        dirIcon.createNode()
+        if (mem.getIcon(item.cfg.path)) {
+			mem.getIcon(item.cfg.path).render()
+		} else{
+            let itemIcon = item.cfg.icon
+            let dirIcon  = new mem.class.IconDir(itemIcon)
+            mem.iconArray.push(dirIcon)
+            dirIcon.createNode()
+		}
     }
 }
 mem.refresh = function () {
     mem.explorerInit(mem.dirObject.cfg.path, task.id, "refresh")
 }
-mem.getIcon = function(name){
-    let find = mem.iconArray.filter(icon => icon.name === name)
-    return find[0]
+mem.getIcon = function(path){
+    let find = mem.iconArray.filter(icon => icon.file === path)
+    return ((find.length>0) ? find[0] : null)
 }
 mem.explorerInit = function (dir, id, act = null) {    
     try {       
@@ -75,7 +70,7 @@ mem.explorerInit = function (dir, id, act = null) {
 
         task.node.getElementsByClassName("address")[0].innerHTML = dir
         task.window.node.children[0].children[0].children[1].innerHTML = activeObj.name
-        task.window.node.children[0].children[0].children[0].setAttribute("style", `background-image: url('${activeObj.cfg.icon.image}')`)
+        task.window.node.children[0].children[0].children[0].setAttribute("src", `${activeObj.cfg.icon.getImage()}`)
 
         mem.createExplorerIcons(dirPlex).then( e => mem.createExplorerIcons(dirFolder).then(e => mem.createExplorerIcons(dirFile)))
         
@@ -104,23 +99,15 @@ mem.deleteSelectedNodes = function(){
 	}
 }
 mem.new = function(e, _this, Type, name){
-    let editFile = null
     let editFrom = mem.dirObject
-    let editAddr = mem.address
-
-    //--------------------------------------------------------------|
-
-    let iconArray = mem.iconArray
-
-    let typeDefaults = File.typeDefaults(Type)
+    let classDefaults = File.classDefaults(Type)
 
     function createExplorerFile(name) {
 		if(File.nameAvailable(name, null, editFrom)) {
             let newFileIcon = new Icon (
                 {
-                    image : typeDefaults.iconImag,
 					name : name,
-					class : typeDefaults.confType,
+					class : classDefaults.confType,
 					state : 0
 				}
             )
@@ -143,5 +130,5 @@ mem.new = function(e, _this, Type, name){
     let newFileIcon = createExplorerFile(name)
 
     let createdIcon = mem.iconArray[mem.iconArray.length - 1]
-    createdIcon.rename()
+    createdIcon.editName()
 }

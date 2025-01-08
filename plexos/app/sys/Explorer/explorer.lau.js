@@ -38,7 +38,7 @@ export function initialize({taskid,args,path,root}) {
             task : task.id, 
             resizeable : true, 
             buttons : [{class:"_", function: ()=>console.log("Minimize")},{class:"O", function: ()=>console.log("Maximize")}], 
-            icon : (File.at(args.path)) ? File.at(args.path).cfg.icon.image : "/plexos/res/themes/Plexos Hyper/icons/files/defaultDIR.svg",
+            icon : (File.at(args.path)) ? File.at(args.path).cfg.icon.getImage() : "/plexos/res/themes/Plexos Hyper/icons/files/defaultDIR.svg",
             state : 1, 
             width  : 700, 
             height : 460, 

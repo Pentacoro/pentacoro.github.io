@@ -50,7 +50,7 @@ mem.iconContextMenu = function(e,icon){
                 ]},
                 {name: "prop", list: [
                     {name:"Delete",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/delete.svg')",func: () => mem.deleteSelectedNodes()},
-                    {name:"Rename",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/rename.svg')",func: () => icon.rename(e),bool:File.at(icon.file)!=undefined},
+                    {name:"Rename",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/rename.svg')",func: () => icon.editName(e),bool:File.at(icon.file)!=undefined},
                     {name:"Properties",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/properties.svg')",func: () => {runLauncher("/plexos/app/sys/File Properties/prop.lau.js",File.at(icon.file))} }
                 ]},
             ]
@@ -68,7 +68,7 @@ mem.iconContextMenu = function(e,icon){
                 ]},
                 {name: "prop", list: [
                     {name:"Delete",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/delete.svg')",func: () => mem.deleteSelectedNodes()},
-                    {name:"Rename",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/rename.svg')",func: () => icon.rename(e),bool:File.at(icon.file)!=undefined},
+                    {name:"Rename",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/rename.svg')",func: () => icon.editName(e),bool:File.at(icon.file)!=undefined},
                     {name:"Properties",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/properties.svg')",func: () => {runLauncher("/plexos/app/sys/File Properties/prop.lau.js",File.at(icon.file))} }
                 ]},
             ]

@@ -10,13 +10,15 @@ let mem     = task.mem
 
 desktop.onpaste = async function (e) {
 	try {
-		const urlRegex = /[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,4}\b(\/[-a-zA-Z0-9@:%_\+.~#?&//=]*)?/gi
+		const urlRegex = /[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,10}\b(\/[-a-zA-Z0-9@:%_\+.~#?&//=]*)?/gi
         const paste = await navigator.clipboard.readText()
 
 		if (paste.match(urlRegex)){
 			let newMetaFile = mem.dirObject.new("Metafile", "New Metafile.meta")
-			runLauncher("/plexos/app/meta/Meta Creator/metaCreator.lau.js",{path:newMetaFile.cfg.path,window:false,url:paste,type:"web"})
-			mem.refresh()
+			mem.createDesktopIcons([newMetaFile])
+			let icon = mem.getIcon(newMetaFile.cfg.path)
+			await runLauncher("/plexos/app/meta/Meta Creator/metaCreator.lau.js",{path:newMetaFile.cfg.path,window:false,url:paste,type:"web"})
+			icon.statNode(1)
 		}
         
     } catch (err) {

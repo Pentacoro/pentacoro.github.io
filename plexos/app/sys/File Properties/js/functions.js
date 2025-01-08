@@ -17,7 +17,7 @@ let dateFormatter = new Intl.DateTimeFormat('en-UK',
 )
 
 mem.prepGeneral = function () {
-    task.node.querySelector(`#${task.id}_general .config-option.header>label>img`).setAttribute("src", mem.arg.cfg.icon.image)
+    task.node.querySelector(`#${task.id}_general .config-option.header>label>img`).setAttribute("src", mem.arg.cfg.icon.getImage())
     tab.general.fileName.value = mem.arg.displayName()
     tab.general.fileClass.innerText = mem.arg.cfg.class 
     tab.general.fileExte.innerText = "."+mem.arg.cfg.exte 
@@ -33,5 +33,6 @@ mem.prepGeneral = function () {
     }
 }
 mem.prepMetadata = function () {
+    if (!task.node.getElementById(task.id+"_metadata")) return
     task.node.querySelector(`#${task.id}_metadata .config-option.header>label>img`).setAttribute("src", mem.arg.meta.image)
 }

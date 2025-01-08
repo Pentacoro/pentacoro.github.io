@@ -50,18 +50,20 @@ for (let tab of task.node.getElementsByClassName("config-tab")) {
 
 //footer buttons 
 task.node.getElementsByClassName("footer-accept")[0].onclick = (e)=> {
-    task.emit(task.id+"-apply")
+    task.emit(task.id+"-applyBefore")
     if (mem.var.configFilePath) File.at(mem.var.configFilePath).data = JSON.stringify(eval(mem.var.configEditable), null, "\t")
     imposeValues(mem.var.configInitialState, eval(mem.var.configEditable))
+    task.emit(task.id+"-apply")
     task.end()
 }
 task.node.getElementsByClassName("footer-cancel")[0].onclick = (e)=> {
     task.end()
 }
 task.node.getElementsByClassName("footer-apply")[0].onclick = (e)=> {
-    task.emit(task.id+"-apply")
+    task.emit(task.id+"-applyBefore")
     if (mem.var.configFilePath) File.at(mem.var.configFilePath).data = JSON.stringify(eval(mem.var.configEditable), null, "\t")
     imposeValues(mem.var.configInitialState, eval(mem.var.configEditable))
+    task.emit(task.id+"-apply")
     task.node.getElementsByClassName("footer-apply")[0].disabled = true
     task.node.getElementsByClassName("footer-apply")[0].classList.add("disabled")
 }

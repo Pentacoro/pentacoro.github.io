@@ -16,12 +16,12 @@ mem.createMeta = async function () {
         typeValue = nodeType.options[nodeType.selectedIndex].text
     } else {
         url  = arg.url
-        type = arg.class
+        type = arg.type
     }
 
     const slashForwardRegex = /(?<=.*\/.*\/.*)\/(.+)?/
     const domainRegex = /(?:^https?:\/\/([^\/]+)(?:[\/,]|$)|^(.*)$)/
-    const urlRegex = /[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,4}\b(\/[-a-zA-Z0-9@:%_\+.~#?&//=]*)?/gi
+    const urlRegex = /[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,10}\b(\/[-a-zA-Z0-9@:%_\+.~#?&//=]*)?/gi
 
     if(!url.match(urlRegex)) {
         if (task.node) {
@@ -97,19 +97,22 @@ mem.createMeta = async function () {
     }
 
     if (type === "web") {
-        if (arg.file.meta.url.match(slashForwardRegex)) arg.file.cfg.icon.setImage(arg.file.meta.url.replace(slashForwardRegex, "/favicon.ico"))
-        else arg.file.cfg.icon.setImage(arg.file.meta.url + "/favicon.ico")
+        if (arg.file.meta.url.match(slashForwardRegex)) arg.file.meta.icon = arg.file.meta.url.replace(slashForwardRegex, "/favicon.ico")
+        else arg.file.meta.icon = (arg.file.meta.url + "/favicon.ico")
 
         const img = new Image()
-        img.onload =  () => {}
-        img.onerror = () => arg.file.cfg.icon.setImage(`https://s2.googleusercontent.com/s2/favicons?domain_url=${arg.file.meta.url}`)
-        img.src = arg.file.cfg.icon.image
-    }
+        img.onload =  () => arg.file.render()
+        img.onerror = () => {
+            arg.file.meta.icon = `https://s2.googleusercontent.com/s2/favicons?domain_url=${arg.file.meta.url}`
+            arg.file.render()
+        }
+        img.src = arg.file.meta.icon
+}
     if (type === "img") {
-        arg.file.cfg.icon.setImage(arg.file.meta.url)
+
     }
 
-    if(Directory.isOpen(arg.file.parent().cfg.path)) Directory.isOpen(arg.file.parent().cfg.path).mem.refresh()
+    arg.file.render()
     task.end()
 }
 

@@ -16,8 +16,8 @@ export function initialize({taskid,args,path,root}) {
         let arg  = task.mem.arg
 
         arg.file = File.at(args.path)
-        if (args.url   != undefined) arg.url = args.url
-        if (args.class != undefined) arg.class = args.class
+        if (args.url  != undefined) arg.url = args.url
+        if (args.type != undefined) arg.type = args.type
     }
     //on app end
     function end() {
@@ -46,7 +46,7 @@ export function initialize({taskid,args,path,root}) {
                 task : taskid, 
                 resizeable : false, 
                 buttons : [], 
-                icon : File.at(args.path).cfg.icon.image,
+                icon : File.at(args.path).cfg.icon.getImage(),
                 state : 1, 
             }
         )

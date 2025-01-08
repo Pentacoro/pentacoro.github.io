@@ -1,5 +1,5 @@
 import {plexos} from "/plexos/ini/system.js"
-import {getTask} from "/plexos/lib/functions/dll.js"
+import {getTask, isKeyWrite} from "/plexos/lib/functions/dll.js"
 
 let task = getTask(/TASKID/)
 let mem  = task.mem
@@ -28,6 +28,11 @@ for (let input of task.node.querySelectorAll(".config-option>[type='number']")) 
         inputbox.addEventListener("focusout", (e) => {
             eval(variable + " = " + Number(inputbox.value))
         })
+        inputbox.addEventListener("keydown", e => {if (isKeyWrite(e)) inputbox.onchange()})
+        inputbox.addEventListener("paste", async e => {
+            const paste = await navigator.clipboard.readText()
+            if (paste) inputbox.onchange()
+        })
     }   
 }
 
@@ -49,6 +54,11 @@ for (let input of task.node.querySelectorAll(".config-option [type='text']")) {
         inputbox.addEventListener("focusout", (e) => {
             eval(variable + " = " + JSON.stringify(inputbox.value))
         })
+        inputbox.addEventListener("keydown", e => {if (isKeyWrite(e)) inputbox.onchange()})
+        inputbox.addEventListener("paste", async e => {
+            const paste = await navigator.clipboard.readText()
+            if (paste) inputbox.onchange()
+        })
     }
 }
 
@@ -69,6 +79,12 @@ for (let input of task.node.querySelectorAll(".config-option textarea")) {
         }
         inputbox.addEventListener("focusout", (e) => {
             eval(variable + " = " + JSON.stringify(inputbox.value))
+            mem.onChange()
+        })
+        inputbox.addEventListener("keydown", e => {if (isKeyWrite(e)) inputbox.onchange()})
+        inputbox.addEventListener("paste", async e => {
+            const paste = await navigator.clipboard.readText()
+            if (paste) inputbox.onchange()
         })
     }
 }
@@ -90,6 +106,11 @@ for (let input of task.node.querySelectorAll(".config-option [type='url']")) {
         }
         inputbox.addEventListener("focusout", (e) => {
             eval(variable + " = " + JSON.stringify(inputbox.value))
+        })
+        inputbox.addEventListener("keydown", e => {if (isKeyWrite(e)) inputbox.onchange()})
+        inputbox.addEventListener("paste", async e => {
+            const paste = await navigator.clipboard.readText()
+            if (paste) inputbox.onchange()
         })
     }
 }

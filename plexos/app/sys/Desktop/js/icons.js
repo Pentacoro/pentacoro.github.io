@@ -18,11 +18,12 @@ mem.class.IconDesk = class IconDesk {
         this.class = p.class
         this.file = p.file || ""
         this.name = p.name
-        this.exte = p.extension || (this.class==="Directory") ? "dir" : (this.name.match(/\.(?:.(?<!\.))+$/s)!=null) ? this.name.match(/(?:.(?<!\.))+$/s)[0] : ""
+        this.exte = p.exte || (this.class==="Directory") ? "dir" : (this.name.match(/\.(?:.(?<!\.))+$/s)!=null) ? this.name.match(/(?:.(?<!\.))+$/s)[0] : ""
         
         this.coords = p.coords || cfg.icon.icons.filter(icon=>icon.name===this.name)[0]?.coords || null
 
         this.drop = []
+        this.main = function(){return File.at(this.file).cfg.icon}
     }
     createNode(){
         //Icon HTML structure-----|
@@ -42,7 +43,7 @@ mem.class.IconDesk = class IconDesk {
         let newIconImage = document.createElement("img")
         let newIconFrame = document.createElement("div")
         newIconImage.setAttribute("class", "iconImage")
-        newIconImage.setAttribute("src", this.image)
+        newIconImage.setAttribute("src", this.main().getImage())
         newIconFrame.setAttribute("class", "iconFrame")
         
         newIconFrame.appendChild(newIconImage)
@@ -205,15 +206,22 @@ mem.class.IconDesk = class IconDesk {
                 return
             }
         }
-        File.at(this.file).cfg.icon.coords = this.coords
         this.node.childNodes[1].innerText = this.name
     }
     render(){
         this.statNode()
         this.poseNode()
 
-        this.image = File.at(this.file).cfg.icon.image
-        this.node.children[0].children[0].setAttribute("src", this.image)
+        this.image = this.main().image
+        this.class = this.main().class
+        this.file = this.main().file
+        this.name = this.main().name
+        this.exte = this.main().exte
+
+        this.node.children[0].children[0].setAttribute("src", this.main().getImage())
+        this.node.children[1].textContent = this.name
+
+        mem.writeIconConfig()
     }
     clic(){
         this.node.onmousedown = e => this.drag(e)
@@ -363,7 +371,17 @@ mem.class.IconDesk = class IconDesk {
         } 
         this.node.classList.remove("highlight")
     }
-    rename(e){
+    rename(path){
+        this.file = path
+        this.name = this.main().name
+        this.exte = this.main().exte
+
+        this.node.id    = "Icon: "+this.name
+        this.node.title = this.name
+
+        this.render()
+    }
+    editName(e){
         if (!this.node) return
         let iconText = this.node.childNodes[1]
         let editFile = File.at(this.file)
@@ -399,8 +417,8 @@ mem.class.IconDesk = class IconDesk {
             iconText.style.backgroundColor = ""
             iconText.style.textShadow = ""
     
-            iconText.blur();
-            clearSelection();
+            iconText.blur()
+            clearSelection()
     
             nullifyOnEvents(iconText)
         }
@@ -419,42 +437,18 @@ mem.class.IconDesk = class IconDesk {
                 File.validName(iconText.textContent)
             ) {
                 //if the name is allowed --------------------|
-                System.mem.var.shSelect = true;
+                System.mem.var.shSelect = true
     
-                if (editFrom === plexos.vtx) thisIcon.node.id = "Icon: "+iconText.textContent
-                
                 iconText.setAttribute("contenteditable", "false")
-                editFile.cfg.icon.name = iconText.textContent
-                thisIcon.node.setAttribute("title", iconText.textContent)
                 iconText.style.backgroundColor = ""
                 iconText.style.textShadow = ""
     
                 //insert into fyleSystem
                 if (iconText.textContent != editFile.name) { //if the name changed
-                    if (editFrom === plexos.vtx){
-                        task.mem.getIcon(editFile.name).file = editFrom.cfg.path +"/"+ iconText.textContent
-                        task.mem.getIcon(editFile.name).name = iconText.textContent
-                    }
                     editFile.rename(iconText.textContent)
-                    if (thisIcon.task) {
-                        let taskid = thisIcon.task
-                        let task = getTask(taskid)
-                        task.mem.iconArray = task.mem.iconArray.remove(thisIcon)
-                        document.getElementsByClassName("list "+taskid)[0].removeChild(thisIcon.node)
-    
-                        editFile.render(taskid)
-                        thisIcon = task.mem.iconArray[task.mem.iconArray.length-1]
-    
-                        for (let icon of task.mem.iconArray) {
-                            if (icon.name == iconText.textContent) {
-                                icon.statNode(1)
-                                task.pocket.push(icon)
-                            }
-                        }
-                    }
                 }
     
-                thisIcon.statNode(0)
+                thisIcon.statNode(1)
                 iconText.blur()
                 clearSelection()
     
@@ -509,14 +503,8 @@ mem.repositionIcons = function(icons, mustSet = false){
     for(let icon of icons) validateIconPosition(icon)
 
     function validateIconPosition(icon){
-        if (!icon.coords) icon.coords = {
-            px:-1,
-            py:-1,
-            tx:-1,
-            ty:-1,
-            ax:null,
-            ay:null
-        }
+        if (!icon.coords) return invalidIcons.push(icon)
+
         //find closest grid for its tPos
         let x = Math.round((icon.coords.tx + task.node.scrollLeft - wm)/(w + wm))*(w + wm) + wm
         let y = Math.round((icon.coords.ty + task.node.scrollTop  - hm)/(h + hm))*(h + hm) + hm

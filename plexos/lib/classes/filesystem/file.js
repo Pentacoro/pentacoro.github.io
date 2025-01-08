@@ -66,7 +66,7 @@ export default class File {
         }
     }
 
-    static typeDefaults(Type) {
+    static classDefaults(Type) {
         let defaults = {
             iconImag : null,
             confType : null,
@@ -133,12 +133,21 @@ export default class File {
         return name
     }
 
+    static viewsOpened = function (path) {
+        let fileViews = []
+        for (let task of plexos.Tasks) {
+            if ((task.name === "Explorer" || task.name === "Desktop") && task.mem.dirObject.cfg.path === path) {
+                fileViews.push(task)
+            }
+        }
+        return fileViews
+    }
+
     delete() {
         let parent = this.parent()
         let child = this
 
         delete parent.dir[child.name]
-        parent.checkCont()
     }
     move(dest) {
         
@@ -169,35 +178,21 @@ export default class File {
         renameKey(parent.dir, this.name, rename)
         
         let renamedFile = parent.dir[rename]
-        let extension = (this.cfg.class==="Directory") ? "dir" : (rename.match(/\.(?:.(?<!\.))+$/s)!=null) ? rename.match(/(?:.(?<!\.))+$/s)[0] : ""
+        let extension = ((this.cfg.class==="Directory") ? "dir" : (rename.match(/\.(?:.(?<!\.))+$/s)!=null) ? rename.match(/(?:.(?<!\.))+$/s)[0] : "")
+
         renamedFile.name = rename
-        
         renamedFile.cfg.exte = extension
         renamedFile.cfg.icon.name = rename
-        renamedFile.cfg.icon.extension = extension
+        renamedFile.cfg.icon.exte = extension
 
-        if (parent===plexos.vtx) {
-            let desktop = Task.get("Desktop")
-            if  (desktop && desktop.mem.getIcon(oldName)?.node) {
-                desktop.mem.getIcon(oldName).file = newAddress
-                desktop.mem.getIcon(oldName).exte = extension
-                desktop.mem.getIcon(oldName).name = rename
-                desktop.mem.getIcon(rename).node.setAttribute("id", `Icon: ${rename}`)
-                desktop.mem.getIcon(rename).poseNode()
-            }
+        for (let fileView of File.viewsOpened(this.parent().cfg.path)) {
+            fileView.mem.getIcon(oldAddress)?.rename(newAddress)
         }
     }
 
-    render(taskid=null) {
-        if (this.parent() === plexos.vtx) { //if is on current vertex / render on desktop
-            let desktop = Task.get("Desktop")
-            if (desktop) {
-                if  (desktop.mem.getIcon(this.name)?.node) desktop.mem.getIcon(this.name).render()
-                else desktop.mem.createDesktopIcons([this])
-            }
-        }
-        if (taskid) { //if is on any other directory / render on explorer
-            Task.id(taskid).mem.createExplorerIcons([this])
+    render() {
+        for (let fileView of File.viewsOpened(this.parent().cfg.path)) {
+            fileView.mem["create"+fileView.name+"Icons"]([this])
         }
     }
 

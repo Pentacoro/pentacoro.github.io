@@ -37,7 +37,7 @@ export default class Directory extends File {
     ) {
         let parent = this
 
-        let defaults = File.typeDefaults(Type)
+        let defaults = File.classDefaults(Type)
         let iconImag = defaults.iconImag
         let confType = defaults.confType
         let skeyName = defaults.skeyName
@@ -65,7 +65,6 @@ export default class Directory extends File {
                         exte : (confType=="Directory") ? "dir" : childName.match(/(?:.(?<!\.))+$/s)[0],
                         icon : childIcon || new Icon (
                                                 {
-                                                    image : iconImag, 
                                                     class : confType, 
                                                     name : childName, 
                                                     exte : childName.match(/(?:.(?<!\.))+$/s)[0],
@@ -83,27 +82,6 @@ export default class Directory extends File {
             this.dir[childName][skeyName] = childCont
         }
 
-        try {
-            parent.checkCont()
-        } catch (e) {
-            console.log(e)
-        }
-
         return this.dir[childName]
-    }
-
-    checkCont(){ //this function swaps default dir icons whether it contains files or not
-        if (Object.keys(this.dir).length > 0 && this.cfg.icon.image == File.typeDefaults("Directory").iconImag) {
-            this.cfg.icon.image = File.typeDefaults("Directory").iconImag.replace("DIR", "DIRc")
-        } else if (Object.keys(this.dir).length == 0 && this.cfg.icon.image == File.typeDefaults("Directory").iconImag.replace("DIR", "DIRc")) {
-            this.cfg.icon.image = File.typeDefaults("Directory").iconImag
-        }
-    }
-
-    static isOpen = function (path) {
-        for (let task of plexos.Tasks) {
-            if (task.name === "Explorer" && task.mem.address === path) return task
-        }
-        return false
     }
 }

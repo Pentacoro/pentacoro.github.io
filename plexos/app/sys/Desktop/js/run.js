@@ -8,3 +8,4 @@ let cfg  = mem.cfg
 task.node.style.width = document.body.offsetWidth + "px"
 task.node.style.height = document.body.offsetHeight - cfg.task.height + "px"
 mem.desktopInit(arg.address, task.id)
+task.focus()

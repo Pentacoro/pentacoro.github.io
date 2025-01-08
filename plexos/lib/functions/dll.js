@@ -189,7 +189,7 @@ export async function loadFront({url, taskid, data, container, env = null, compi
                     } else {
                         await window.eval(`(async () => { ${js} \n})()`)
                     }
-                    if (task) task.focus()
+                    if (task?.window) task.focus()
                 } catch (e) {
                     e.taskId = taskid
                     e.source = src
@@ -317,12 +317,12 @@ export function evalErrorPopup(code, desc, error) {
 }
 export function renameKey(obj, oldName, newName) {
     if(!obj.hasOwnProperty(oldName)) {
-        return false;
+        return false
     }
 
-    obj[newName] = obj[oldName];
-    delete obj[oldName];
-    return true;
+    obj[newName] = obj[oldName]
+    delete obj[oldName]
+    return true
 }
 
 function repDir(data, parDir){ //replace root directory for local apps

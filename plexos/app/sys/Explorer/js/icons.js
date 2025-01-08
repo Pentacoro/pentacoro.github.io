@@ -17,9 +17,10 @@ mem.class.IconDir = class IconDir {
         this.class = p.class
         this.name = p.name
         this.exte = p.exte
-        this.task = p.task
+        this.task = task.id
 
         this.drop = []
+        this.main = function(){return File.at(this.file).cfg.icon}
     }
     createNode(){
         //Icon HTML structure-----|
@@ -29,7 +30,7 @@ mem.class.IconDir = class IconDir {
 
         let newIconImage = document.createElement("img")
         newIconImage.setAttribute("class", "explorerIconImage "+this.task)
-        newIconImage.setAttribute("src", this.image)
+        newIconImage.setAttribute("src", this.main().getImage())
         newIcon.appendChild(newIconImage)
 
         let newIconText = document.createElement("span")
@@ -53,7 +54,7 @@ mem.class.IconDir = class IconDir {
         Task.id(this.task).mem.iconArray = Task.id(this.task).mem.iconArray.remove(this)
         
         if (File.at(this.file)?.parent() === plexos.vtx && Task.get("Desktop")) { //delete desktop icon if file is from vertex
-            let icon = Task.get("Desktop").mem.getIcon(File.at(this.file).cfg.icon.name)
+            let icon = Task.get("Desktop").mem.getIcon(File.at(this.file).cfg.icon.file)
             icon.deleteNode()
         }
     }
@@ -135,7 +136,7 @@ mem.class.IconDir = class IconDir {
                     let iconShipImg = document.createElement("div")
                     iconShipImg.setAttribute("class", "iconShipImg")
                     if (pockImg === 1) {
-                        iconShipImg.setAttribute("style", "background-image: url('"+_this.image+"'); background-size: 68%;")
+                        iconShipImg.setAttribute("style", "background-image: url('"+_this.main().getImage()+"'); background-size: 68%;")
                     } else {
                         iconShipImg.setAttribute("style", "background-image: url('/plexos/res/themes/Plexos Hyper/icons/interface/fileDrag/pocket_ship_"+pockImg+".svg')")
                     }
@@ -198,6 +199,18 @@ mem.class.IconDir = class IconDir {
             File.at(this.file).open()
         }
     }
+    render(){
+        this.statNode()
+
+        this.image = this.main().image
+        this.class = this.main().class
+        this.file = this.main().file
+        this.name = this.main().name
+        this.exte = this.main().exte
+
+        this.node.children[0].setAttribute("src", this.main().getImage())
+        this.node.children[1].textContent = this.name
+    }
     highlight(coin) {
         if (coin) {
             this.node.classList.add("highlight")
@@ -205,7 +218,16 @@ mem.class.IconDir = class IconDir {
         } 
         this.node.classList.remove("highlight")
     }
-    rename(e){
+    rename(path) {
+        this.file = path
+        this.name = this.main().name
+        this.exte = this.main().exte
+
+        this.node.title = this.name
+
+        this.render()
+    }
+    editName(e){
         let iconText = this.node.childNodes[1]
         let editFile = File.at(this.file)
         let editFrom = editFile.parent()
@@ -261,25 +283,14 @@ mem.class.IconDir = class IconDir {
             ) {
                 //if the name is allowed --------------------|
                 System.mem.var.shSelect = true
-    
-                if (editFrom === plexos.vtx) thisIcon.node.id = "Icon: "+iconText.textContent
                 
                 iconText.setAttribute("contenteditable", "false")
-                editFile.cfg.icon.name = iconText.textContent
-                thisIcon.node.setAttribute("title", iconText.textContent)
                 iconText.style.backgroundColor = ""
                 iconText.style.textShadow = ""
     
                 //insert into fylesystem
                 if (iconText.textContent != editFile.name) { //if the name changed
-                    if (editFrom === plexos.vtx){
-                        Task.get("Desktop").mem.getIcon(editFile.name).file = editFrom.cfg.path +"/"+ iconText.textContent
-                        Task.get("Desktop").mem.getIcon(editFile.name).name = iconText.textContent
-                    }
                     editFile.rename(iconText.textContent)
-                    thisIcon.file = editFile.cfg.path
-                    thisIcon.name = iconText.textContent
-                    task.pocket.push(thisIcon)
                 }
     
                 thisIcon.statNode(1)

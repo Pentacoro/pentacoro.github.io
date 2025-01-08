@@ -16,11 +16,19 @@ task.node.getElementById(`${task.id}_fileName`).addEventListener("paste", async 
 mem.onNameChange = function (e) {
     mem.onChange()
     let inputbox = e.target
-    task.once(task.id+"-apply", () => {
+    task.once(task.id+"-applyBefore", () => {
         let newname = inputbox.value + ((mem.arg.cfg.class === "Directory") ? "" : mem.tab.general.fileExte.innerText)
         mem.arg.rename(newname)
         mem.var.configObject.name          = mem.arg.name
         mem.var.configObject.cfg.path      = mem.arg.cfg.path
+        mem.var.configObject.cfg.icon.name = mem.arg.cfg.icon.name
         mem.var.configObject.cfg.icon.file = mem.arg.cfg.icon.file
+        mem.var.configObject.cfg.icon.exte = mem.arg.cfg.icon.exte
     }, 0, "nameChange")
 }
+
+task.on(task.id+"-apply", () => {
+    mem.arg.render()
+    mem.prepGeneral()
+    mem.prepMetadata()
+})

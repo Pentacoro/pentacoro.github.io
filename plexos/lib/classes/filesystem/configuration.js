@@ -3,6 +3,7 @@ export default class Configuration {
         this.path = p.path     || ""
         this.exte = p.exte     || ((p.class==="Directory") ? "dir" : "")
         this.icon = p.icon     || null
+        this.icon.image = null
         this.move = p.move     || true
         this.edit = p.edit     || true
         this.class  = p.class

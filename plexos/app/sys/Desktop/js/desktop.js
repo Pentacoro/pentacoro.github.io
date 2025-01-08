@@ -15,9 +15,13 @@ mem.dirObject = {}
 mem.createDesktopIcons = async function(array) {
 	let iconsToCreate = []
     for(let item of array) {
-		let deskIcon = new mem.class.IconDesk(item.cfg.icon)
-		deskIcon.createNode()
-		iconsToCreate.push(deskIcon)
+		if (mem.getIcon(item.cfg.path)) {
+			mem.getIcon(item.cfg.path).render()
+		} else {
+			let deskIcon = new mem.class.IconDesk(item.cfg.icon)
+			deskIcon.createNode()
+			iconsToCreate.push(deskIcon)
+		}
     }
 	let validatedIcons = mem.repositionIcons(iconsToCreate,true)
 	for (let icon of validatedIcons) {
@@ -112,9 +116,9 @@ mem.renderIcons = function() {
 	}
 }
 
-mem.getIcon = function(name){
-    let find = mem.iconArr.filter(icon => icon.name === name)
-    return find[0]
+mem.getIcon = function(path){
+    let find = mem.iconArr.filter(icon => icon.file === path)
+    return ((find.length>0) ? find[0] : null)
 }
 
 mem.filterIconListJson = function () {
@@ -168,7 +172,6 @@ mem.new = function(Type, name){
 	let initialX = (contextMenu) ? parseInt(window.getComputedStyle(document.getElementsByClassName("clickContext sub_0")[0],null).getPropertyValue("left")) : 0
 	let initialY = (contextMenu) ? parseInt(window.getComputedStyle(document.getElementsByClassName("clickContext sub_0")[0],null).getPropertyValue("top"))  : 0
 
-	let editFile = null
 	let editFrom = plexos.vtx
 
 	let iconWidth = cfg.grid.width/2
@@ -179,15 +182,14 @@ mem.new = function(Type, name){
 	let iconPosX = (Math.round((initialX-iconWidth)/(w + wm))*(w + wm) + wm)
 	let iconPosY = (Math.round((initialY-iconHeight)/(h + hm))*(h + hm) + hm)
 	//--------------------------------------------------------------|
-	let typeDefaults = File.typeDefaults(Type)
+	let classDefaults = File.classDefaults(Type)
 
 	function createDesktopFile(name) {
 		name = File.returnAvailableName(name, null, editFrom)
 			let newFileIcon = new Icon (
 				{
-					image : typeDefaults.iconImag,
 					name : name,
-					class : typeDefaults.confType,
+					class : classDefaults.confType,
 					state : 0
 				}
 			)
@@ -211,6 +213,6 @@ mem.new = function(Type, name){
 	}
 
 	let newIcon = createDesktopFile(name)
-	newIcon.rename()
+	newIcon.editName()
 	return File.at(newIcon.file)
 }
