@@ -1,5 +1,4 @@
 import {getTask, runLauncher} from "/plexos/lib/functions/dll.js"
-import Task from "/plexos/lib/classes/system/task.js"
 import File from "/plexos/lib/classes/filesystem/file.js"
 import Icon from "/plexos/lib/classes/interface/icon.js"
 
@@ -38,15 +37,15 @@ mem.explorerInit = function (dir, id, act = null) {
         let dirFile   = []
         let dirPlex   = []
 
-        for (let icon of Task.id(id).mem.iconArray){
+        for (let icon of task.mem.iconArray){
             task.node.getElementsByClassName("list")[0].removeChild(icon.node)
         }
 
-        Task.id(id).mem.iconArray = []
-        Task.id(id).mem.address = dir
-        Task.id(id).mem.dirObject = File.at(dir)
-        Task.id(id).mem.var.dirname = activeObj.name
-        Task.id(id).pocket = []
+        task.mem.iconArray = []
+        task.mem.address = dir
+        task.mem.dirObject = File.at(dir)
+        task.mem.var.dirname = activeObj.name
+        task.pocket = []
 
         for (let item of dirList) {
             if(item[1].cfg.class === "Directory" && !item[1].cfg.system) {
@@ -69,25 +68,21 @@ mem.explorerInit = function (dir, id, act = null) {
         dirPlex.sort  ((a, b) => a.name.localeCompare(b.name))
 
         task.node.getElementsByClassName("address")[0].innerHTML = dir
-        task.window.node.children[0].children[0].children[1].innerHTML = activeObj.name
-        task.window.node.children[0].children[0].children[0].setAttribute("src", `${activeObj.cfg.icon.getImage()}`)
+
+        task.window.setTitle(activeObj.name)
+        task.window.setImage(activeObj.cfg.icon.getImage())
 
         mem.createExplorerIcons(dirPlex).then( e => mem.createExplorerIcons(dirFolder).then(e => mem.createExplorerIcons(dirFile)))
         
     } catch (e) {
-        mem.var.error = e
-        mem.var.errorB = [["Okay"]]
-        runLauncher("/plexos/app/sys/Popup/popup.lau.js",
-            {
-             name:"Error",
-             type:false,
-             title:"Directory not found",
-             description:"This directory seems to no longer exist. It might have been deleted, moved, or a parent directory been renamed",
-             taskid:task.id,
-             icon:""
-            }
-        )
-
+        task.popup(e,[["OK"]],{
+            name:"Error",
+            type:false,
+            title:"Directory not found",
+            description:"This directory seems to no longer exist. It might have been deleted, moved, or a parent directory been renamed",
+            taskid:task.id,
+            icon:""
+        })
         if (act === "refresh") mem.explorerInit("", task.id)
     }
 }

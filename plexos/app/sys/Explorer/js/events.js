@@ -13,8 +13,9 @@ task.onpaste = async function (e) {
 		if (paste.match(urlRegex)){
 			let newMetaFile = mem.dirObject.new("Metafile", "New Metafile.meta")
             mem.createExplorerIcons([newMetaFile])
+            let icon = mem.getIcon(newMetaFile.cfg.path)
 			runLauncher("/plexos/app/meta/Meta Creator/metaCreator.lau.js",{path:newMetaFile.cfg.path,window:false,url:paste,type:"web"})
-            newMetaFile.statNode(1)
+            icon.statNode(1)
 		}
         
     } catch (err) {

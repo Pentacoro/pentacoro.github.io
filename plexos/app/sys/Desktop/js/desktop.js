@@ -111,7 +111,7 @@ mem.checkIfGridCanFit = function(itemList) {
 }
 
 mem.renderIcons = function() {
-	for (let file of Object.entries(plexos.vtx.dir)) {
+	for (let file of Object.entries(mem.dirObject.dir)) {
 		file[1].render()
 	}
 }
@@ -172,7 +172,7 @@ mem.new = function(Type, name){
 	let initialX = (contextMenu) ? parseInt(window.getComputedStyle(document.getElementsByClassName("clickContext sub_0")[0],null).getPropertyValue("left")) : 0
 	let initialY = (contextMenu) ? parseInt(window.getComputedStyle(document.getElementsByClassName("clickContext sub_0")[0],null).getPropertyValue("top"))  : 0
 
-	let editFrom = plexos.vtx
+	let editFrom = mem.dirObject
 
 	let iconWidth = cfg.grid.width/2
 	let iconHeight = cfg.grid.height/2

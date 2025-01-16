@@ -16,18 +16,6 @@ export default class Icon {
         this.image = url
         File.at(this.file).render()
     }
-    clic(){
-        this.node.oncontextmenu = e => ContextMenu.open(e,this)
-        this.node.onmousedown = e => this.drag(e)
-        this.node.ondblclick = e => File.at(this.file).open()
-    }
-    gray(bool){
-        if ( bool ) {
-            this.node.classList.add("blur")
-        } else {
-            this.node.classList.remove("blur")      
-        }
-    }
     getImage(){
         if (this.image) return this.image
 
@@ -37,6 +25,8 @@ export default class Icon {
                 else return File.classDefaults("Directory").iconImag
             case "txt" || "js" || "css" || "html":
                 return File.classDefaults("String").iconImag
+            case "proxy":
+                return File.classDefaults("Proxy").iconImag
             case "meta":
                 return File.classDefaults("Metafile").iconImag
             case "web":

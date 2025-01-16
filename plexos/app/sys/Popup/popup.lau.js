@@ -41,10 +41,14 @@ export function initialize({taskid,args,path,root}) {
             {
                 name : args.name,
                 task : taskid, 
-                resizeable : false, 
-                buttons : [], 
                 icon : (args.icon) ? args.icon : null,
-                state : 1
+                appParams: {
+                    minimizeable: false,
+                    maximizeable: false,
+                    resizeable: false,
+                    sizeDrawMethod: "fit-content",
+                    saveDrawParameters: "disabled"
+                }
             }
         )
             

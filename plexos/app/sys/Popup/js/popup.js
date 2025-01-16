@@ -1,4 +1,4 @@
-import {getTask, displayComponent} from "/plexos/lib/functions/dll.js"
+import {getTask, displayComponent, ajaxReturn} from "/plexos/lib/functions/dll.js"
 
 let task = getTask(/TASKID/)
 let mem  = task.mem
@@ -9,11 +9,12 @@ mem.error   = getTask(arg.taskid).mem.var.error
 
 mem.drawCode = async function () {
     let codeParser = task.node.getElementsByClassName("codeParser")[0]
+    let sourcedScript = await ajaxReturn("GET",mem.error.fileName)
     await task.newComponent({
         url:"/plexos/res/components/codeParser/code.html",
         task:this,
         container:codeParser,
-        args:{code:mem.error.script},
+        args:{code:((sourcedScript===mem.error.script) ? mem.error.script : sourcedScript)},
     })
     let scrollBar = document.createElement("div")
     scrollBar.setAttribute("id", "scrollBar-codeParser")
@@ -25,7 +26,7 @@ mem.drawCode = async function () {
         container:scrollBar,
         args:{subject:task.node.getElementsByClassName("codeParser")[0].children[0],position:"bottom",sticky:mem.var.details}
     })
-    task.node.getElementsByClassName("codeBox")[0].children[mem.error.lineNumber-1].classList.add("error")
+    if (mem.error.lineNumber) task.node.getElementsByClassName("codeBox")[0].children[mem.error.lineNumber-1].classList.add("error")
     task.node.getElementsByClassName("expand")[0].addEventListener("click", task.components[1].mem.updateScrollBar)
     task.node.getElementsByClassName("expand")[0].addEventListener("click", task.components[1].mem.updateStickyBar)
 }
@@ -79,16 +80,12 @@ task.node.getElementsByClassName("expand")[0].onclick = e => {
         task.node.getElementsByClassName("expand")[0].classList.remove("closed")
         task.node.getElementsByClassName("expand")[0].classList.add("open")
 
-        task.window.height += 300
-        task.window.poseNode()
     } else {
         mem.var.details.style.display = "none"
         task.node.getElementsByClassName("popup")[0].style.height = "fit-content"
         task.node.getElementsByClassName("expand")[0].classList.remove("open")
         task.node.getElementsByClassName("expand")[0].classList.add("closed")
 
-        task.window.height += -300
-        task.window.poseNode()
     }
 }
 if (mem.error.stack) task.node.getElementsByClassName("error")[0].onclick = e => {

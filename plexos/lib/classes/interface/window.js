@@ -1,64 +1,250 @@
 import {plexos} from "/plexos/ini/system.js"
 import {nodeGetters, iframeAntiHover} from "/plexos/lib/functions/dll.js"
 import Task from "../system/task.js"
+import File from "../filesystem/file.js"
 
 let System = plexos.System
+let Manager= Task.get("Window Manager")
 
 export default class Window {
-	state = 1
-	buttons = []
-	posX = 200
-	posY = 200
+	static AppParameters = class {
+		constructor(p) {
+			this.sizeDrawMethod = p?.sizeDrawMethod || "default"
+			// "default"     => same as "content"
+			// "content"     => apply size parameters bound to content
+			// "window"      => apply size parameters bound to window
+			// "fit-content" => window size determined by content html (nullifies initialSize)
+
+			this.initialDrawSize = p?.initialDrawSize || "default"
+			// [ W , H ]     => specify initial width and height (nullifies initialAspectRatio)
+			// "default"     => same as "mid"
+			// "very-tiny"   => 1:6 of desktop size
+			// "tiny"        => 1:4 of desktop size
+			// "mid"         => 1:3 of desktop size
+			// "big"         => 1:2 of desktop size
+			// "very-big"    => 75% of desktop size
+			// "maximized"   => launch maximized, with "very-big", "container" and "center" size, ratio and position parameters
+
+			this.initialAspectRatio = p?.initialAspectRatio || "default"
+			// W/H           => specify initial width and height aspect ratios
+			// "default"     => 4:3 aspect ratio ( 4/3 )
+			// "container"   => same aspect ratio as desktop
+
+			this.initialDrawPosition = p?.initialDrawPosition || "default"
+			// [ X , Y ]     => specify initial left and top positions
+			// "default"     => same as "event"
+			// "event"       => draw window below and to the right of event trigger
+			// "center"      => perfectly centered
+
+			this.saveDrawParameters = p?.saveDrawParameters || "disabled"
+			// "default"     => same as "app"
+			// "app"         => retrieve draw parameters from last closed app instance
+			// "file"        => retrieve draw parameters specific to each file opened in app instance (requires filePath)
+			// "disabled"    => parameters are never saved to registry/always defined by initial parameters
+
+			if (p?.filePath!==undefined) this.filePath = p.filePath
+
+			this.minimizeable = ((p?.minimizeable!==undefined) ? p?.minimizeable : true)
+			this.maximizeable = ((p?.maximizeable!==undefined) ? p?.maximizeable : true)
+			this.resizeable = ((p?.resizeable!==undefined) ? p?.resizeable : true)
+			this.buttons = p?.buttons || []
+			this.minW = p?.minW || 180
+			this.minH = p?.minH || 100
+		}
+	}
+	static maximize(window) {
+		if (window.drawParams.maximized) {
+			window.drawParams.maximized = false
+			window.poseNode()
+			Task.id(window.task).off("viewport-resize", () => {
+				window.poseNode()
+			})
+		} else {
+			window.drawParams.maximized = true
+			window.poseNode()
+			Task.id(window.task).on("viewport-resize", () => {
+				window.poseNode()
+			})
+		}
+	}
+
+	static close(window) {
+		if (window.appParams.saveDrawParameters !== "disabled") Manager.setInitialDrawParams(window)
+		Task.id(window.task).end()
+	}
+	defineSize() {
+		let calculateWindowSize = function(containerWidth, containerHeight, sizeRatio, aspectRatio) {
+			// Calculate the target area for the window based on the size ratio
+			const targetArea = containerWidth * containerHeight * sizeRatio
+		
+			// Calculate the width and height based on the aspect ratio
+			const targetWidth = Math.sqrt(targetArea * aspectRatio)
+			const targetHeight = targetWidth / aspectRatio
+		
+			// Check if the calculated width and height fit within the container
+			if (targetWidth > containerWidth || targetHeight > containerHeight) {
+				// Adjust to fit within the container if necessary
+				const widthScale  = containerWidth  / targetWidth
+				const heightScale = containerHeight / targetHeight
+				const scale = Math.min(widthScale, heightScale)
+		
+				return {
+					width:  targetWidth * scale,
+					height: targetHeight * scale,
+				}
+			}
+		
+			// Return the calculated dimensions
+			return {
+				width:  targetWidth,
+				height: targetHeight,
+			}
+		}
+		//SIZE
+		let drawSize = {
+			width  : null,
+			height : null,
+		}
+		//if size drawing method is "fit-content", skip calculating initial draw size
+		if (this.appParams.sizeDrawMethod === "fit-content") {
+			drawSize.width  = 0
+			drawSize.height = 0
+		
+		//otherwise, calculate depending on method and initial draw size
+		} else {
+			if (Array.isArray(this.appParams.initialDrawSize)) {
+				drawSize.width  = this.appParams.initialDrawSize[0]
+				drawSize.height = this.appParams.initialDrawSize[1]
+			} else {
+				//define aspect ratio
+				let aspectRatio = 1
+				if (Array.isArray(this.appParams.initialAspectRatio)) aspectRatio = this.appParams.initialAspectRatio[0]/this.appParams.initialAspectRatio[1]
+				else if (this.appParams.initialAspectRatio === "default") aspectRatio = 4/3
+				else if (this.appParams.initialAspectRatio === "container") aspectRatio = this.container.offsetWidth/this.container.offsetHeight
+
+				//define size ratio
+				let sizeRatio = 1/3
+				switch (this.appParams.initialDrawSize) {
+					case "default":
+					case "mid":
+						sizeRatio = 1/3; break 
+					case "very-tiny":
+						sizeRatio = 1/6; break 
+					case "tiny":
+						sizeRatio = 1/4; break 
+					case "big":
+						sizeRatio = 1/2; break
+					case "very-big":
+					case "maximized":
+						sizeRatio = 1/(1+1/3); break //75%
+					default:
+						sizeRatio = 1/3
+				}
+				drawSize = calculateWindowSize(
+					this.container.offsetWidth,
+					this.container.offsetHeight,
+					sizeRatio,
+					aspectRatio
+				)
+			}
+		}
+		return drawSize
+	}
+	definePosition() {
+		//POSITION
+		let drawPos  = {
+			posX   : null,
+			posY   : null
+		}
+		if  (
+				Array.isArray(this.appParams.initialDrawPosition) && 
+				this.appParams.initialDrawSize!=="maximized"
+			) {
+			drawPos.posX = this.appParams.initialDrawPosition[0]
+			drawPos.posY = this.appParams.initialDrawPosition[1]
+		} else {
+			switch (this.appParams.initialDrawPosition) {
+				default:
+					drawPos.posX = this.container.offsetWidth/2 - this.node.offsetWidth/2
+					drawPos.posY = this.container.offsetHeight/2 - this.node.offsetHeight/2
+			}
+		}
+		return drawPos
+	}
     constructor(p){
 		if (!p.task) {
 			delete this
 			return
 		}
 
-        this.state = p.state || this.state // 0 => minimized | 1/2 => open/selected | 3/4 => maximized/selected
-        this.buttons = p.buttons || this.buttons
-        this.posX = p.posX || this.posX
-        this.posY = p.posY || this.posY
-        
-        this.width  = p.width  || 0
-        this.height = p.height || 0
-        this.minW = p.minW     || 0
-        this.minH = p.minH     || 0
-        
-        this.task = p.task
-		this.icon = p.icon || null
-        
+		this.task = p.task
         this.name = p.name
-		this.move = p.move || []
-        this.resizeable = p.resizeable
+		this.icon = p.icon || null
 
-		plexos.Windows.push(this)
+		this.container = p.container || Task.get("Desktop").node
+		
+        this.state   = p.state   || 1 
+		// 0 => minimized
+		// 1 => open
+		// 2 => maximized
+
+		this.appParams = (p.appParams!==undefined) ? new Window.AppParameters(p.appParams) : new Window.AppParameters()
+
+		this.drawParams = p.drawParams || null
+		/* 
+		{
+			posX :   0,
+			posY :   0,
+			width  : 0,
+			height : 0,
+			maximized : false,
+		}
+		 */
+        
+		this.keyNodes = p.keyNodes || {
+			dragElements : [],
+			windowHeader : null,
+			buttonPocket : null,
+			innerDrawing : null,
+			buttons : {},
+			content : null,
+			title : null,
+			image : null,
+		}
+
+		Manager.mem.windows.push(this)
 		this.createNode()
 
 		Task.id(this.task).window = this 
-		Task.id(this.task).node   = this.cont
+		Task.id(this.task).node   = this.keyNodes.content
     }
     createNode(){
 		let newWindow = document.createElement("div")
 		newWindow.setAttribute("class", "window "+this.task)
 		newWindow.classList.add("building")
-		newWindow.setAttribute("id", "window_" + plexos.Windows.indexOf(this))
+		newWindow.setAttribute("id", "window_" + Manager.mem.windows.indexOf(this))
 	
 		let newWindowInner = document.createElement("div")
 		newWindowInner.setAttribute("class", "windowInner")
 		newWindow.appendChild(newWindowInner)
+		this.keyNodes.innerDrawing = newWindowInner
 	
-		if (this.buttons) {
 			let newHeader = document.createElement("div")
 			newHeader.setAttribute("class", "header")
 			newWindowInner.appendChild(newHeader)
-			this.move.push(newHeader)
+			this.keyNodes.windowHeader = newHeader
+			this.keyNodes.dragElements.push(newHeader)
+
+			let newHeaderBackground = document.createElement("div")
+			newHeaderBackground.setAttribute("class", "headerBackground")
+			newHeader.appendChild(newHeaderBackground)
 
 			if (this.icon) {
-				let newHeaderIcon = document.createElement("div")
+				let newHeaderIcon = document.createElement("img")
 				newHeaderIcon.setAttribute("class", "headerIcon")
-				newHeaderIcon.setAttribute("style", `background-image: url('${this.icon}')`)
+				newHeaderIcon.setAttribute("src", this.icon)
 				newHeader.appendChild(newHeaderIcon)
+				this.keyNodes.image = newHeaderIcon
 			}
 
 			let newHeaderText = document.createElement("span")
@@ -66,33 +252,57 @@ export default class Window {
 			newHeader.appendChild(newHeaderText)
 			let newWindowTextNode = document.createTextNode(this.name)
 			newHeaderText.appendChild(newWindowTextNode)
+			this.keyNodes.title = newHeaderText
 
 			let newHeaderButtons = document.createElement("div")
 			newHeaderButtons.setAttribute("class", "headerButtons")
 			newHeader.appendChild(newHeaderButtons)
-	
-				for (let button of this.buttons) {
+			this.keyNodes.buttonPocket = newHeaderButtons
+
+			if (this.appParams.buttons.length>0) {
+				for (let button of this.appParams.buttons) {
 					let newWindowButton = document.createElement("button")
-					newWindowButton.setAttribute("class", "windowButton"+" "+button.class)
-					newHeaderButtons.appendChild(newWindowButton)
+					if (button.class) newWindowButton.setAttribute("class", `windowButton ${button.class}`)
+					if (button.image) newWindowButton.style.backgroundImage = button.image
+					this.keyNodes.buttonPocket.appendChild(newWindowButton)
 					newWindowButton.onclick = button.function
 				}
+			}
 
-				let newWindowX = document.createElement("button")
-				newWindowX.setAttribute("class", "windowButton X")
-				newHeaderButtons.appendChild(newWindowX)
-				newWindowX.onclick = ()=>Task.id(this.task).end()
-		}
-			let newContent = document.createElement("div")
-			newContent.setAttribute("class", "content")
-			newWindowInner.appendChild(newContent)
+			if (this.appParams.minimizeable) {
+				let buttonMinimize = document.createElement("button")
+				buttonMinimize.setAttribute("class", "windowButton _")
+				this.keyNodes.buttonPocket.appendChild(buttonMinimize)
+				this.keyNodes.buttons.minimize = buttonMinimize
+				buttonMinimize.onclick = e => {
+					return
+				}
+			}
+
+			if (this.appParams.maximizeable) {
+				let buttonMaximize = document.createElement("button")
+				buttonMaximize.setAttribute("class", "windowButton O")
+				this.keyNodes.buttonPocket.appendChild(buttonMaximize)
+				this.keyNodes.buttons.maximize = buttonMaximize
+				buttonMaximize.onclick = () => Window.maximize(this)
+			}
+
+			let buttonClose = document.createElement("button")
+			buttonClose.setAttribute("class", "windowButton X")
+			this.keyNodes.buttonPocket.appendChild(buttonClose)
+			this.keyNodes.buttons.close = buttonClose
+			buttonClose.onclick = ()=> Window.close(this)
+
+		let newContent = document.createElement("div")
+		newContent.setAttribute("class", "content")
+		newWindowInner.appendChild(newContent)
+		this.keyNodes.content = newContent
 		
-	
 		let newWindowBorder = document.createElement("div")
 		newWindowBorder.setAttribute("class", "windowBorder")
 		newWindow.appendChild(newWindowBorder)
 	
-			if (this.resizeable == true) {
+			if (this.appParams.resizeable) {
 				let newWindowEtop = document.createElement("div")
 				newWindowEtop.setAttribute("class", "windowEdge windowEtop")
 				let newWindowEbot = document.createElement("div")
@@ -120,34 +330,57 @@ export default class Window {
 			}
 	
 		document.getElementById("windowLayer").appendChild(newWindow)
-
-		Task.id(this.task)?.focus()
 		
-		//This should work for different css themes
-		let diffW = 0
-		let diffH = 0
-		if (this.width >0) {
-			newWindow.style.width = "400px"
-			diffW = (newWindow.offsetWidth  - newWindow.firstChild.children[1].offsetWidth)
-			this.width  += diffW
-			this.minW   += diffW
-		}
-		if (this.height>0) {
-			newWindow.style.height = "400px"
-			diffH = (newWindow.offsetHeight - newWindow.firstChild.children[1].offsetHeight)
-			this.height += diffH
-			this.minH   += diffH
+		if(this.drawParams===null) {
+			this.drawParams = {
+				posX :   0,
+				posY :   0,
+				width  : 0,
+				height : 0,
+				maximized : false,
+			}
+
+			//try to get initial drawParams from registry first
+			let drawParams = null
+
+			if (this.appParams.saveDrawParameters !== "disabled") drawParams = Manager.getInitialDrawParams(this)
+
+			//if there are none, do it from scratch from instructions
+			if (drawParams===null) {
+				drawParams = this.defineSize()
+				this.drawParams.width  = drawParams.width
+				this.drawParams.height = drawParams.height
+			} else {
+				this.drawParams = drawParams
+			}
 		}
 
-		newWindow.setAttribute  ("style", 
-									"left:"+this.posX+"px;"+
-									"top:"+this.posY+"px;"+
-									"width :"+((this.width >0) ? this.width +"px;":"fit-content;")+
-									"height:"+((this.height>0) ? this.height+"px;":"fit-content;")+
-									"min-width :"+((this.minW>0) ? +this.minW  +"px;":"fit-content;")+
-									"min-height:"+((this.minH>0) ? +this.minH  +"px;":"fit-content;")+
-									"z-index: 0;"
-								);
+		if (this.appParams.initialDrawSize === "maximized") this.drawParams.maximized = true
+
+		newWindow.setAttribute
+		(
+			"style", 
+			"left:"+0+"px;"+
+			"top: "+0+"px;"+
+			"width :"+((this.drawParams.width >0) ? this.drawParams.width +"px;":"fit-content;")+
+			"height:"+((this.drawParams.height>0) ? this.drawParams.height+"px;":"fit-content;")+
+			"min-width :"+((this.appParams.minW>0) ? +this.appParams.minW  +"px;":"fit-content;")+
+			"min-height:"+((this.appParams.minH>0) ? +this.appParams.minH  +"px;":"fit-content;")+
+			"z-index: 0;"
+		)
+
+		this.node = newWindow
+		this.cont = newContent
+
+		//adjust size for content if set to that method
+		if (this.appParams.sizeDrawMethod === "content" || this.appParams.sizeDrawMethod === "default") {
+			let diffW = (this.node.offsetWidth  - this.keyNodes.content.offsetWidth)
+			let diffH = (this.node.offsetHeight - this.keyNodes.content.offsetHeight)
+			this.drawParams.width  += diffW
+			this.drawParams.height += diffH
+			this.node.style.width  = this.drawParams.width  +"px"
+			this.node.style.height = this.drawParams.height +"px"
+		}
 	
 		for (let button of newWindow.getElementsByClassName("windowButton")){
 			button.onmousedown = e => {
@@ -158,12 +391,9 @@ export default class Window {
 				}
 			}
 		}
-		
+
 		nodeGetters(newContent, newContent.classList[0], newWindow.classList[1])
 		
-		this.node = newWindow
-		this.cont = newContent
-
 		this.node.onmousedown = e => {
 			Task.id(this.task).focus()
 			this.statNode()
@@ -177,13 +407,13 @@ export default class Window {
     }
     deleteNode(){
 		//delete window
-		let thisIndex = plexos.Windows.indexOf(this)
-		plexos.Windows.splice(thisIndex, 1)
+		let thisIndex = Manager.mem.windows.indexOf(this)
+		Manager.mem.windows.splice(thisIndex, 1)
 
 		//if the window was focused, shift focus behind it
 		if (thisIndex === 0) {
-			if (plexos.Windows.length > 0) {
-				Task.id(plexos.Windows[0].task).focus()
+			if (Manager.mem.windows.length > 0) {
+				Task.id(Manager.mem.windows[0].task).focus()
 			} else {
 				Task.get("Desktop")?.focus()
 			}
@@ -202,13 +432,24 @@ export default class Window {
 			}
 		}
     }
+	setTitle(string){
+		this.name = string
+		if (this.keyNodes.title) this.keyNodes.title.innerText = string
+	}
+	setImage(src){
+		if (this.keyNodes.image) {
+			if (!src) this.keyNodes.image.classList.add("hidden")
+			this.keyNodes.image.classList.remove("hidden")
+			this.keyNodes.image.setAttribute("src",src)
+		}
+	}
     statNode(){
 		//only works with moveable windows & if window isn't at front already 
-		if (this.move && this.node.id != "window_" + 0) {
+		if (this.keyNodes.dragElements && this.node.id != "window_" + 0) {
 			//send to first array index
-			let thisIndex = plexos.Windows.indexOf(this)
-			plexos.Windows.splice(thisIndex, 1)
-			plexos.Windows.unshift(this)
+			let thisIndex = Manager.mem.windows.indexOf(this)
+			Manager.mem.windows.splice(thisIndex, 1)
+			Manager.mem.windows.unshift(this)
 
 			//make DOM elements's IDs and zIndex match new object arrangement
 			for(let window of document.getElementsByClassName("window")){ 
@@ -255,19 +496,40 @@ export default class Window {
 			|---------------  principle*/
 		}
     }
+	sizeNode(){
+		if (this.drawParams.width<=0 || this.drawParams.height<=0) return
+
+		this.node.style.width  = this.drawParams.width  +"px"
+		this.node.style.height = this.drawParams.height +"px"
+	}
     poseNode(){
-		this.node.style.top = this.posY + "px"
-		this.node.style.left = this.posX + "px"
-	
-		if (this.height > 0) this.node.style.height = this.height + "px"
-		if (this.width  > 0)this.node.style.width = this.width  + "px"
+		if (this.drawParams.maximized) {
+			this.node.style.top  = this.container.offsetTop  + "px"
+			this.node.style.top  = this.node.offsetTop  - this.keyNodes.innerDrawing.offsetTop  + "px"
+			this.node.style.left = this.container.offsetLeft + "px"
+			this.node.style.left = this.node.offsetLeft - this.keyNodes.innerDrawing.offsetLeft + "px"
+
+			if (this.drawParams.width<=0 || this.drawParams.height<=0) return
+			this.node.style.width  = this.container.offsetWidth  +"px"
+			this.node.style.width  = this.container.offsetWidth  - this.keyNodes.innerDrawing.offsetWidth  + this.node.offsetWidth +"px"
+			this.node.style.height = this.container.offsetHeight +"px"
+			this.node.style.height = this.container.offsetHeight - this.keyNodes.innerDrawing.offsetHeight + this.node.offsetHeight+"px"
+			return
+		}
+
+		this.node.style.top  = this.drawParams.posY + "px"
+		this.node.style.left = this.drawParams.posX + "px"
+
+		if (this.drawParams.width<=0 || this.drawParams.height<=0) return
+		this.node.style.width  = this.drawParams.width  +"px"
+		this.node.style.height = this.drawParams.height +"px"
     }
     drag(){
 		let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0
 		let window = this.node
-		let _this = this
+		const _this = this
 		
-		for (let node of this.move) {
+		for (let node of this.keyNodes.dragElements) {
 			//if present, the header is where you move the window from:
 			node.onmousedown = dragMouseDown
 		}
@@ -300,12 +562,22 @@ export default class Window {
 			pos4 = e.clientY
 	
 			//set the window's new position:
-			_this.posX = _this.posX - pos1
-			_this.posY = _this.posY - pos2
+			_this.drawParams.posX = _this.drawParams.posX - pos1
+			_this.drawParams.posY = _this.drawParams.posY - pos2
 			_this.poseNode()
 		}
 	
 		function closeDragWindow() {
+			//correct if header's altitude goes beyond viewport
+			if (_this.node.offsetTop + _this.keyNodes.innerDrawing.offsetTop < 0) {
+				_this.node.style.top  = _this.container.offsetTop  + "px"
+				_this.node.style.top  = _this.node.offsetTop - _this.keyNodes.innerDrawing.offsetTop  + "px"
+				_this.drawParams.posY = _this.node.offsetTop
+			}
+			if (_this.node.offsetTop + _this.keyNodes.innerDrawing.offsetTop > _this.container.offsetHeight - _this.keyNodes.windowHeader.offsetHeight) {
+				_this.node.style.top  = _this.container.offsetHeight - _this.keyNodes.innerDrawing.offsetTop - _this.keyNodes.windowHeader.offsetHeight + "px"
+				_this.drawParams.posY = _this.node.offsetTop
+			}
 			//stop moving when mouse button is released:
 			document.onmouseup = null
 			document.onmousemove = null
@@ -315,7 +587,7 @@ export default class Window {
     size(){
 		let startX, startY, startWidth, startHeight, startLeft, startTop, border
 		let window = this.node
-		let _this = this
+		const _this = this
 	
 		let windowBorder = window.getElementsByClassName("windowBorder")[0]
 	
@@ -335,11 +607,11 @@ export default class Window {
 			startX = e.clientX
 			startY = e.clientY
 	
-			startWidth = _this.width 
-			startHeight = _this.height
+			startWidth  = _this.drawParams.width 
+			startHeight = _this.drawParams.height
 	
-			startLeft = _this.posX
-			startTop = _this.posY
+			startTop  = _this.drawParams.posY
+			startLeft = _this.drawParams.posX
 			
 			border = e.target.classList[1]
 			
@@ -358,39 +630,39 @@ export default class Window {
 			//when sizing towards →
 			if (border == "windowErig" || border == "windowCbr" || border == "windowCtr") {
 				if ((startWidth + e.clientX - startX) > minWidth){
-					_this.width  = startWidth + e.clientX - startX
+					_this.drawParams.width  = startWidth + e.clientX - startX
 				} else {
-					_this.width  = minWidth
+					_this.drawParams.width  = minWidth
 				}
 			}
 			//when sizing towards ↓
 			if (border == "windowEbot" || border == "windowCbr" || border == "windowCbl") {
 				if ((startHeight + e.clientY - startY) > minHeight){
-					_this.height = startHeight + e.clientY - startY
+					_this.drawParams.height = startHeight + e.clientY - startY
 				} else {
-					_this.height = minHeight
+					_this.drawParams.height = minHeight
 				}
 			}
 			//when sizing towards ← ---------- [accounting for window min-width]
 			if (border == "windowElef" || border == "windowCtl" || border == "windowCbl") {
 				if (startLeft + e.clientX - startX < startLeft + (startWidth - minWidth)){
-					_this.posX = startLeft + e.clientX - startX
-					_this.width  = startWidth + (e.clientX - startX) * -1
+					_this.drawParams.posX = startLeft + e.clientX - startX
+					_this.drawParams.width  = startWidth + (e.clientX - startX) * -1
 				} else {
 					//stuck in minimum size
-					_this.posX = startLeft + (startWidth - minWidth)
-					_this.width  = minWidth
+					_this.drawParams.posX = startLeft + (startWidth - minWidth)
+					_this.drawParams.width  = minWidth
 				}
 			//when sizing towards ↑ ---------- [accounting for window min-height]
 			}
 			if (border == "windowEtop" || border == "windowCtl" || border == "windowCtr") {
 				if (startTop + e.clientY - startY < startTop + (startHeight - minHeight)){
-					_this.posY = startTop + e.clientY - startY
-					_this.height = startHeight + (e.clientY - startY) * -1
+					_this.drawParams.posY = startTop + e.clientY - startY
+					_this.drawParams.height = startHeight + (e.clientY - startY) * -1
 				} else {
 					//stuck in minimum size
-					_this.posY = startTop + (startHeight - minHeight)
-					_this.height = minHeight
+					_this.drawParams.posY = startTop + (startHeight - minHeight)
+					_this.drawParams.height = minHeight
 				}
 			}
 	
@@ -416,29 +688,3 @@ export default class Window {
 		if (this.node.onblur) this.node.onblur()
 	}
 }
-
-/*
-<div class="window explorerExe">
-	<div class="windowInner">
-		<div class="header"><span class="windowName">Explorer ONE</span>
-			<span class="windowButton _">_</span><span class="windowButton O">O</span><span class="windowButton X"></span>
-		</div>
-		<div class="content">
-			<h1 style="text-align: center; padding: .5em">Lorem Ipsum Dolor</h1>
-			<p style="text-align: center; padding: .5em">Lorem ipsum dolor sit amet consectetur adipisicing elit. Recusandae dicta esse sapiente veritatis nostrum molestiae perferendis dolorum quasi magnam voluptatibus fugit itaque inventore rerum iste repellat, a tenetur numquam quisquam quibusdam nam, libero atque dolores provident corrupti. Itaque iusto temporibus porro eum nostrum. Id molestiae laboriosam odio voluptatum fugiat a.</p>
-			<p style="text-align: center; padding: .5em">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Odit blanditiis sed consequatur dolor iusto assumenda ipsam recusandae sapiente esse provident ab hic nulla quae suscipit quia enim quo perferendis aperiam, qui ipsum velit? Ea dolor nam, vel deserunt distinctio, similique voluptatem ipsa sequi dolorem magnam rerum et harum, odit laboriosam!</p>
-			<p style="text-align: center; padding: .5em">Lorem ipsum dolor sit amet consectetur adipisicing elit. Reiciendis praesentium sit eveniet accusantium culpa quos magni corrupti alias nulla! Mollitia maiores velit dolorem veritatis cumque reiciendis facilis illo ad, similique obcaecati? Iusto quis, amet sequi non doloremque, consequatur eos porro obcaecati quo magnam ratione ipsum tempore modi! Enim, nisi voluptates.</p>
-		</div>
-	</div>
-	<div class="windowBorder">
-		<div class="windowEdge windowEtop"></div>
-		<div class="windowEdge windowEbot"></div>
-		<div class="windowEdge windowElef"></div>
-		<div class="windowEdge windowErig"></div>
-		<div class="windowCorner windowCtl"></div>
-		<div class="windowCorner windowCtr"></div>
-		<div class="windowCorner windowCbr"></div>
-		<div class="windowCorner windowCbl"></div>
-	</div>
-</div>
-*/

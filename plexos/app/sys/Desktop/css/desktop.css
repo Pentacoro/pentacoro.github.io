@@ -7,13 +7,21 @@
 
 	overflow: auto;
 }
+#overlayLayer {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	pointer-events: none;
+}
 #taskBar{
 	container-name: taskBar;
 	container-type: size;
 
-	position: fixed;
+	position: absolute;
 	bottom: 0%;
-	height: 34px;
+	height: 32px;
 	width: 100%;
 
 	display: flex;

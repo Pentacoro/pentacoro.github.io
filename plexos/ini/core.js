@@ -9,7 +9,7 @@ import Icon from "../lib/classes/interface/icon.js"
 import {runLauncher, getValue, ajaxReturn, storageAvailable} from "../lib/functions/dll.js"
 import initialize from "./init.js"
 
-let System = new Task(
+let sys = new Task(
     {
 		name : "System",
 		instantiable : false,
@@ -18,16 +18,26 @@ let System = new Task(
 		from : "System"
 	}
 )
-
-System.mem.lau = {}
-System.mem.var.dragging = false
-System.mem.var.shSelect = true
-System.mem.focused = null
-System.mem.cfg = plexos.cfg
-System.bus = new EventBus()
-System.ini = {}
-System.ini.setVertex = function (address) {
-    plexos.vtx = File.at(address)
+plexos.System = sys
+sys.mem.lau = {}
+sys.mem.var.dragging = false
+sys.mem.var.shSelect = true
+sys.mem.focused = null
+sys.mem.cfg = plexos.cfg
+sys.mem.downloadCoreJSON = function (exportName="core") {
+    let jsonCore = sys.core
+    let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(jsonCore))
+    let downloadAnchorNode = document.createElement('a')
+    downloadAnchorNode.setAttribute("href",     dataStr)
+    downloadAnchorNode.setAttribute("download", exportName + ".json")
+    document.body.appendChild(downloadAnchorNode) // required for firefox
+    downloadAnchorNode.click()
+    downloadAnchorNode.remove()
+}
+sys.bus = new EventBus()
+sys.core= {}
+sys.ini = {}
+sys.ini.openDesktop = function (address) {
     let promiseInit = new Promise(async () => {
         await runLauncher("./plexos/app/sys/Theme Manager/themeManager.lau.js")
         await runLauncher("./plexos/app/sys/Desktop/desktop.lau.js",{path:address})
@@ -37,10 +47,7 @@ System.ini.setVertex = function (address) {
         Task.get("Desktop").mem.renderIcons()
     })
 }
-System.ini.run = function () {
-    initialize()
-}
-System.ini.recreateFiles = function (dir, newDir) {
+sys.ini.recreateFiles = function (dir, newDir) {
     for (let file of Object.values(dir.dir)) {
         let Type = null 
         let Skey = null
@@ -58,6 +65,10 @@ System.ini.recreateFiles = function (dir, newDir) {
                 Type = "String"
                 Skey = "data"
                 break 
+            case "Proxy":
+                Type = "Proxy"
+                Skey = "data"
+                break 
             default:
                 Type = "String"
                 Skey = "data"
@@ -65,7 +76,7 @@ System.ini.recreateFiles = function (dir, newDir) {
         }
 
         //recreate file object
-        newDir.new(Type,file.name,null,file.cfg,file[Skey])
+        newDir.new(Type,file.name,null,file.cfg,file[Skey],false)
         let newFile = newDir.dir[file.name]
 
         //recreate icon object
@@ -75,73 +86,234 @@ System.ini.recreateFiles = function (dir, newDir) {
 
         if (Type === "Directory") {
             newFile.dir = {}
-            System.ini.recreateFiles(dir.dir[file.name], newFile)
+            sys.ini.recreateFiles(dir.dir[file.name], newFile)
         }
     }
 }
-System.ini.defineCore = function () {
-    return new Promise ((resolve, reject) => {
-        if (storageAvailable('localStorage')) {
-        
-            if(window.localStorage.getItem("core")) {
-                let jsonCore = JSON.parse(window.localStorage.core)
-                let newCore  = Directory.coreTemplate()
-        
-                System.ini.recreateFiles(jsonCore, newCore)
-            
-                resolve(newCore)
-            } else {
-                let corePromise = ajaxReturn("GET","/core.json")
-                corePromise
-                .then(data=>{
-                    if (data.status >= 200 && data.status < 300) throw data
-                    plexos.core = Directory.coreTemplate()
-                    System.ini.recreateFiles(JSON.parse(data),plexos.core)
-                    resolve(plexos.core)
-                })
-            }
+sys.ini.getPlexosDB = async function () {
+    //get config
+    plexos.Config = await new Promise ((resolve, reject) => {
+        plexos.db.getConfig()
+        .then(config => {
+            resolve(config)
+        })
+        .catch(async e => {
+            console.log(e)
+            await plexos.db.setConfig({
+                defaultUser: "User",
+                lastUserLog: "User",
+                bootRoutine: "default",
+                theme: "default",
+            })
+            let config = await plexos.db.getConfig()
+            resolve(config)
+        })
+    }) 
+    console.log(plexos.Config)
+    //get user
+    sys.user   = await new Promise ((resolve, reject) => {
+        plexos.db.getUser(plexos.Config.lastUserLog)
+        .then(async user => {
+            resolve(user)
+        })
+        .catch(async e => {
+            console.log(e)
+            await plexos.db.saveUser({
+                name: "User",
+                localCores: [],
+                remoteCores: {},
+                config: {
+                    lastOpenedCore: null,
+                    profileImage: null,
+                    password: null,
+                }
+            })
+            let user = await plexos.db.getUser(plexos.Config.lastUserLog)
+            resolve(user)
+        })
+    })
+    console.log(sys.user)
+}
+
+sys.ini.defineCore = function () {
+    return new Promise (async (resolve, reject) => {
+        let lastCoreName = await sys.user.config.lastOpenedCore
+
+        //If there's a core url specified in view url
+        if (getValue("core")) {
+            let core =await  sys.ini.defineCoreByURL(getValue("core"))
+            console.log("Core set by URL")
+            //console.log(core)
+            resolve(core)
         }
-            else {
-            // Too bad, no localStorage for us
+        //If there's no last opened core, retrieve origin's core.json file
+        if (lastCoreName === null) {
+            let core = await sys.ini.defineCoreBySRC()
+            console.log("Core set by SRC")
+            //console.log(core)
+            resolve(core)
+        }
+        //Retrieve last opened core
+        if (lastCoreName) {
+            let core = await sys.ini.defineCoreByDB(lastCoreName)
+            sys.user.config.lastOpenedCore = core.name
+            console.log("Core set by DB")
+            //console.log(core)
+            resolve(core)
         }
     }) 
 }
-plexos.System = System
-plexos.core = {}
-if (getValue("core")) {
-    let corePromise = ajaxReturn("GET",getValue("core"))
-    corePromise
-    .then(data=>{
-        if (data.status >= 200 && data.status < 300) throw data
-        plexos.core = Directory.coreTemplate()
-        System.ini.recreateFiles(JSON.parse(data),plexos.core)
-        plexos.vtx = plexos.core.dir["vertex"]
-        System.ini.run()
-    })
-    .catch(()=>{
-        let corePromise = System.ini.defineCore()
+sys.ini.defineCoreByURL = async function(URL) {
+    return new Promise (async (resolve, reject) => {
+        let corePromise = ajaxReturn("GET",URL)
         corePromise
         .then(data=>{
-            plexos.core = data
-            System.ini.run()
+            if (data.status >= 200 && data.status < 300) throw data
+            let newCore = Directory.coreTemplate()
+            sys.ini.recreateFiles(JSON.parse(data),newCore)
+            resolve(newCore)
+        })
+        .catch(e=>{
+            throw e
         })
     })
-} else {
-    let corePromise = System.ini.defineCore()
-    corePromise
-    .then(data=>{
-        plexos.core = data
-        System.ini.run()
+}
+sys.ini.defineCoreBySRC = async function () {
+    return new Promise (async (resolve, reject) => {
+        let corePromise = ajaxReturn("GET","/core.json")
+        corePromise
+        .then(data=>{
+            if (data.status >= 200 && data.status < 300) throw data
+            let newCore = Directory.coreTemplate()
+            sys.ini.recreateFiles(JSON.parse(data),newCore)
+            resolve(newCore)
+        })
     })
 }
-
-System.mem.downloadCoreJSON = function (exportName="core") {
-    let jsonCore = JSON.parse(window.localStorage.core)
-    let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(jsonCore));
-    let downloadAnchorNode = document.createElement('a');
-    downloadAnchorNode.setAttribute("href",     dataStr);
-    downloadAnchorNode.setAttribute("download", exportName + ".json");
-    document.body.appendChild(downloadAnchorNode); // required for firefox
-    downloadAnchorNode.click();
-    downloadAnchorNode.remove();
+sys.ini.defineCoreByDB = async function(lastCoreName) {
+    let dbCore = sys.user.localCores.filter(core=>core.name === lastCoreName)[0]
+    let newCore = Directory.coreTemplate()
+    sys.ini.recreateFiles(dbCore,newCore)
+    plexos.System.user.config.lastOpenedCore = newCore.name
+    return newCore
 }
+sys.ini.run = async function () {
+    await sys.ini.getPlexosDB()
+    sys.core = await sys.ini.defineCore()
+    initialize()
+}
+
+let windowManager = new Task(
+    {
+		name : "Window Manager",
+		instantiable : false,
+		onEnd : null,
+		node : document.getElementById("windowLayer"),
+		from : "System"
+	}
+)
+windowManager.mem.windows = []
+windowManager.on("desktop-open", ()=>{
+    windowManager.node.style.width  = document.getElementById("desktopLayer").offsetWidth + "px"
+    windowManager.node.style.height = document.getElementById("desktopLayer").offsetHeight + "px"
+    windowManager.node.style.top  = document.getElementById("desktopLayer").offsetTop + "px"
+    windowManager.node.style.left = document.getElementById("desktopLayer").offsetLeft + "px"
+})
+windowManager.on("viewport-resize", ()=>{
+    windowManager.node.style.width  = document.getElementById("desktopLayer").offsetWidth + "px"
+    windowManager.node.style.height = document.getElementById("desktopLayer").offsetHeight + "px"
+    windowManager.node.style.top  = document.getElementById("desktopLayer").offsetTop + "px"
+    windowManager.node.style.left = document.getElementById("desktopLayer").offsetLeft + "px"
+})
+windowManager.on("window-stylized", window => {
+    if (window && window.appParams.sizeDrawMethod !== "fit-content") {
+        if (window.drawParams.posX===0||window.drawParams.posY===0) {
+            let drawPos = window.definePosition()
+            window.drawParams.posX = drawPos.posX
+            window.drawParams.posY = drawPos.posY
+        }
+
+        window.poseNode()
+        window.node.classList.remove("building")
+}
+windowManager.on("window-scripted", window => {
+    if (window && window.appParams.sizeDrawMethod === "fit-content") {
+        //window.drawParams.width  = window.node.offsetWidth
+        //window.drawParams.height = window.node.offsetHeight
+        window.appParams.minW   += window.node.offsetWidth
+        window.appParams.minH   += window.node.offsetHeight
+
+        if (window.drawParams.posX===0||window.drawParams.posY===0) {
+            let drawPos = window.definePosition()
+            window.drawParams.posX = drawPos.posX
+            window.drawParams.posY = drawPos.posY
+        }
+
+        window.poseNode()
+        window.node.classList.remove("building")
+    }
+})
+})
+windowManager.getInitialDrawParams = function(window) {
+    const appname   = Task.id(window.task).name
+
+    let getRegistryAppParams = function (window) {
+        let registryAppEntry = File.at(`/plexos/reg/applications.proxy`).data[appname]
+        if (registryAppEntry.windowDrawParameters === undefined) {
+            registryAppEntry.windowDrawParameters = null
+        }
+        return JSON.parse(JSON.stringify(registryAppEntry.windowDrawParameters))
+    }
+
+    let getRegistryFileParams = function (window) {
+        let registryFileEntry = File.at(`/plexos/reg/files.proxy`).data[window.appParams.filePath]
+        if (registryFileEntry === undefined) {
+            File.at(`/plexos/reg/files.proxy`).data[window.appParams.filePath] = {}
+            registryFileEntry = File.at(`/plexos/reg/files.proxy`).data[window.appParams.filePath]
+            registryFileEntry.applications = {}
+            registryFileEntry.applications[appname] = {}
+            registryFileEntry.applications[appname].windowDrawParameters = null
+        } 
+        if (registryFileEntry.applications === undefined) {
+            registryFileEntry.applications = {}
+            registryFileEntry.applications[appname] = {}
+            registryFileEntry.applications[appname].windowDrawParameters = null
+        } 
+        if (registryFileEntry.applications[appname] === undefined) {
+            registryFileEntry.applications[appname] = {}
+            registryFileEntry.applications[appname].windowDrawParameters = null
+        } 
+        if (registryFileEntry.applications[appname].windowDrawParameters === undefined) {
+            registryFileEntry.applications[appname].windowDrawParameters = null
+        } 
+        return JSON.parse(JSON.stringify(registryFileEntry.applications[appname].windowDrawParameters))
+    }
+    switch (window.appParams.saveDrawParameters) {
+        case "default":
+        case "app":
+            return getRegistryAppParams(window)
+        case "file":
+        if (window.appParams.filePath) {
+            return getRegistryFileParams(window)
+        } else {
+            return getRegistryAppParams(window) 
+        }
+    }
+}
+windowManager.setInitialDrawParams = function(window) {
+    const appname   = Task.id(window.task).name
+    switch (window.appParams.saveDrawParameters) {
+        case "default":
+        case "app":
+        let registryAppEntry = File.at(`/plexos/reg/applications.proxy`).data[appname]
+            registryAppEntry.windowDrawParameters = JSON.parse(JSON.stringify(window.drawParams))
+            return
+
+        case "file" :
+        let registryFileEntry = File.at(`/plexos/reg/files.proxy`).data[window.appParams.filePath]
+            registryFileEntry.applications[appname].windowDrawParameters = window.drawParams
+            return
+    }
+}
+
+sys.ini.run()

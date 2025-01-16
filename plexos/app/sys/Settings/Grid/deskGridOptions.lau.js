@@ -28,10 +28,14 @@ export function initialize({taskid,args,path,root}){
         {
             name : "Desktop Grid Settings",
             task : task.id, 
-            resizeable : false, 
-            buttons : [], 
             icon : "/plexos/res/themes/Plexos Hyper/icons/files/settingsPlaceholder.svg",
-            state : 1, 
+            appParams : {
+                minimizeable: true,
+                maximizeable: false,
+                resizeable: false,
+                sizeDrawMethod: "fit-content",
+                saveDrawParameters: "disabled"
+            }
         }
     )
 

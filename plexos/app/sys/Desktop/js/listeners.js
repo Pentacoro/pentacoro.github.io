@@ -14,7 +14,7 @@ task.on("desktop-grid-settings-closed", ()=> {
     cfg.grid.visibleNodes = false
     task.mem.grid.evaluateIconGrid(3)
 }, 0)
-task.on("desktop-resize", ()=> {
+task.on("viewport-resize", ()=> {
     if
     (
         cfg.grid.autoHmargin ||
@@ -25,7 +25,7 @@ task.on("desktop-resize", ()=> {
         task.mem.grid.evaluateIconGrid()
     }
 }, 0)
-task.on("desktop-resize", ()=> {
+task.on("viewport-resize", ()=> {
     task.node.style.width = document.body.offsetWidth + "px"
     task.node.style.height = document.body.offsetHeight - cfg.task.height + "px"
 }, 1)

@@ -1,9 +1,12 @@
 import {plexos} from "/plexos/ini/system.js"
 import Configuration from "./configuration.js"
+
 import Icon from "../interface/icon.js"
 import File from "./file.js"
+
 import Metafile from "./metafile.js"
-import String from "./jsonstring.js"
+import String from "./string.js"
+import Proxy from "./proxy.js"
 
 export default class Directory extends File {
     static coreTemplate(){ 
@@ -12,8 +15,8 @@ export default class Directory extends File {
             name : "core",
             cfg : new Configuration (
             {
-                icon : new Icon ({image:"plexos/res/themes/Plexos Hyper/icons/files/defaultDIRc.svg", name:"core", type:"Directory", state:0}),
-                type : "Directory",
+                class : "Directory",
+                icon : new Icon ({class: "Directory", name:"core", type:"Directory", state:0}),
                 move : false,
                 edit : false,
             })
@@ -34,6 +37,7 @@ export default class Directory extends File {
         childIcon = null, 
         childConf = null, 
         childCont = null,
+        events = true,
     ) {
         let parent = this
 
@@ -44,7 +48,8 @@ export default class Directory extends File {
         switch (Type) {
             case "Directory": Type = Directory; break
             case "Metafile":  Type = Metafile; break
-            case "String":  Type = String; break
+            case "String":    Type = String; break
+            case "Proxy":     Type = Proxy; break
         }
 
         childName = childName + (((confType!="Directory") && !childName.includes(".")) ? "." + childName.match(/(?:.(?<!\.))+$/s)[0] : "")
@@ -81,6 +86,9 @@ export default class Directory extends File {
         if (childCont) {
             this.dir[childName][skeyName] = childCont
         }
+
+        //create a new registry entry for this file
+        if (events) File.at("/plexos/reg/files.proxy").data = {}
 
         return this.dir[childName]
     }

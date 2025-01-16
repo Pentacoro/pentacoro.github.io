@@ -96,7 +96,7 @@ export async function displayComponent({url, taskid, container, env, compid=null
         console.err(e)
     })
 }
-export async function loadFront({url, taskid, data, container, env = null, compid = null}){
+export async function loadFront({url, taskid, data, container, focus = null, compid = null}){
     if (!Task.id(taskid)) return
     let task = Task.id(taskid)
     data = repDir(data,url)
@@ -208,7 +208,7 @@ export async function loadFront({url, taskid, data, container, env = null, compi
     })}
 
     //loading cursor
-    if (env) env.loader(true)
+    if (focus) focus.loader(true)
 
     //hide contents until they're finished
     container.style.opacity = 0
@@ -216,23 +216,17 @@ export async function loadFront({url, taskid, data, container, env = null, compi
     container.innerHTML = cont.innerHTML
 
     //render window
-    if (task.window) {
-        task.window.node.classList.remove("building")
-        task.window.width  = task.window.node.offsetWidth
-        task.window.height = task.window.node.offsetHeight
-    }
+    task.emit("window-stylized", task.window)
 
     if (compid) task.getComponent(compid).node = cont.children[0]
     await runScripts(container)
 
-    if (task.window) {
-        task.window.width  = task.window.node.offsetWidth
-        task.window.height = task.window.node.offsetHeight
-    }
+    //fit-content
+    task.emit("window-scripted", task.window)
 
     //show contents once they're finished
     container.style.opacity = 1
-    if (env) env.loader(false)
+    if (focus) focus.loader(false)
 }
 export async function blobModule(data) {
     data = data.replace(/import\s+([^'"]+)\s+from\s+['"]([^'"]+)['"]/g, (match, what, path) => {
@@ -241,14 +235,14 @@ export async function blobModule(data) {
     })
     return URL.createObjectURL(new Blob([`${data}`], { type: 'text/javascript' }))
 }
-export async function runLauncher(url, args = {}, env = null, name = ""){
+export async function runLauncher(url, args = {}, focus = null, name = ""){
     if (!Task.canInstance(name)) {
         Task.get(name).focus()
         return
     }
 
     //add to env workload
-    if (env) env.loader(true)
+    if (focus) focus.loader(true)
 
     //generate task id
     let appID = { id : genRanHex(16)}
@@ -272,7 +266,7 @@ export async function runLauncher(url, args = {}, env = null, name = ""){
                     root: url.replace(url.match(/\/(?:.(?<!\/))+$/s),"")
                 }
             )
-            if (env) env.loader(false)
+            if (focus) focus.loader(false)
         } catch (e) {
             evalErrorPopup
             (
@@ -280,12 +274,10 @@ export async function runLauncher(url, args = {}, env = null, name = ""){
                 "The application launcher at: <i>'" + url + "'</i> failed evaluation.",
                 e
             ) 
-            console.error(e)
             //URL.revokeObjectURL(proxy)
         }
     })
     appLauncher.catch( e => {
-        console.error(e)
         //Task.get("System").mem.var.error = e
         //Task.get("System").mem.var.errorB = [["Okay"]]
         
@@ -297,7 +289,7 @@ export async function runLauncher(url, args = {}, env = null, name = ""){
         ) 
     })
     appLauncher.finally( e => {
-        if (env) env.loader(false)
+        if (focus) focus.loader(false)
     })
 }
 export function evalErrorPopup(code, desc, error) {

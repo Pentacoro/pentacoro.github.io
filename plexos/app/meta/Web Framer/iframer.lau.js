@@ -21,7 +21,7 @@ export function initialize({taskid,args,path,root}){
     //task creation
     let task = new Task(
         {
-            name : "Iframer",
+            name : "Web Framer",
             instantiable : true,
             onEnd : end,
             node : null,
@@ -37,14 +37,17 @@ export function initialize({taskid,args,path,root}){
         {
             name : args.name,
             task : task.id, 
-            resizeable : true, 
-            buttons : [{class:"_", function: ()=>console.log("Minimize")},{class:"O", function: ()=>console.log("Maximize")}], 
             icon : (File.at(args.path)) ? File.at(args.path).cfg.icon.getImage() : "/plexos/res/themes/Plexos Hyper/icons/files/defaultMSF.svg",
-            state : 1, 
-            width  : 850, 
-            height : 650, 
-            minW : 192,
-            minH : 160
+            appParams: {
+                minimizeable: true,
+                maximizeable: true,
+                resizeable: true,
+                sizeDrawMethod: "window",
+                initialDrawSize: "very-big",
+                initialAspectRatio: "container",
+                saveDrawParameters: "file",
+                filePath: args.path,
+            }
         }
     )
 

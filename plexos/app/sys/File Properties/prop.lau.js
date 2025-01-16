@@ -34,9 +34,12 @@ export function initialize({taskid,args,path,root}) {
         {
             name : args.name + " - Properties",
             task : task.id, 
-            resizeable : false, 
             icon : (File.at(args.cfg.path)) ? File.at(args.cfg.path).cfg.icon.getImage() : "/plexos/res/themes/Plexos Hyper/icons/files/defaultMSF.svg",
-            state : 1, 
+            appParams: {
+                maximizeable: false,
+                resizeable: false,
+                sizeDrawMethod: "fit-content"
+            }
         }
     )
 

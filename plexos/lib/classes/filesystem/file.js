@@ -7,9 +7,9 @@ export default class File {
         //string: where we'll devour path one dir at a time as we build expression
         let string = path
         //steps: where we'll store each of the dirs extracted from string (useless for now)
-        let steps = ["plexos[\"core\"]"]
+        let steps = ["plexos.System[\"core\"]"]
         //expression: where we'll build the object reference from the core to later be eval()
-        let expression = "plexos[\"core\"]"
+        let expression = "plexos.System[\"core\"]"
         
         //find first "/"
         let to = string.indexOf("/")
@@ -88,6 +88,12 @@ export default class File {
                 defaults.iconImag = "plexos/res/themes/Plexos Hyper/icons/files/defaultTXT.svg"
                 defaults.confType = "String"
                 defaults.skeyName = "data"
+                break
+            case "Proxy":
+                defaults.iconImag = "plexos/res/themes/Plexos Hyper/icons/files/proxy.svg"
+                defaults.confType = "Proxy"
+                defaults.skeyName = "data"
+                break
         }
     
         return defaults

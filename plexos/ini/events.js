@@ -20,42 +20,53 @@ window.addEventListener("mousedown", (e) => {
 })
 
 window.addEventListener("resize", e => {
-	plexos.System.emit("desktop-resize")
+	plexos.System.emit("viewport-resize")
 })
 
 window.addEventListener("paste", async e => {
     let task = plexos.System.mem.focused
 	if (task && task.onpaste) task.onpaste(e)
 })
-
-if (storageAvailable('localStorage')) {
-        
-    // Yippee! We can use localStorage awesomeness
-    window.addEventListener("keydown", e => {
-        if (e.key === "," && e.ctrlKey) {  
-            e.preventDefault()
-            window.localStorage.core = JSON.stringify(plexos.core)
-            alert("Saved to localStorage")
-        } 
-    })
-    window.addEventListener("keydown", e => {
-        if (e.key === "." && e.ctrlKey) {  
-            e.preventDefault()
-            delete window.localStorage.core
-            alert("Cleared localStorage")
-        } 
-    })
-    window.addEventListener("keydown", e => {
-        if (e.key === "s" && e.ctrlKey) {  
-            e.preventDefault()
-            plexos.System.mem.downloadCoreJSON()
-            alert("Downloading Core JSON")
-        } 
-    })
-    window.addEventListener("keyrelease", e => {
-        if (e.ctrlKey) window.onkeydown = null
-    })
+window.onbeforeunload = async e => {
+    e.preventDefault()
+    await plexos.db.saveCore(plexos.System.core)
+    return false
 }
+
+//indexedDB
+window.addEventListener("keydown", async e => {
+    if (e.key === "," && e.ctrlKey) {  
+        e.preventDefault()
+
+        await plexos.db.saveCore(plexos.System.core)
+
+        alert("Saved to indexedDB")
+    } 
+})
+window.addEventListener("keydown", async e => {
+    if (e.key === "." && e.ctrlKey) {  
+        e.preventDefault()
+
+        plexos.System.user.config.lastOpenedCore = null
+        await plexos.db.saveUser(plexos.System.user)
+
+        alert("Cleared lastOpenedCore")
+    } 
+})
+window.addEventListener("keydown", async e => {
+    if (e.key === "s" && e.ctrlKey) {  
+        e.preventDefault()
+
+        await plexos.db.saveCore(plexos.System.core)
+
+        plexos.System.mem.downloadCoreJSON()
+        alert("Downloading Core JSON")
+    } 
+})
+window.addEventListener("keyrelease", e => {
+    if (e.ctrlKey) window.onkeydown = null
+})
+
 
 function touchHandler(event)
 {
