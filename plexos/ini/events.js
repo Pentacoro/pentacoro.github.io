@@ -38,6 +38,7 @@ window.addEventListener("keydown", async e => {
     if (e.key === "," && e.ctrlKey) {  
         e.preventDefault()
 
+        plexos.System.user.config.lastOpenedCore = plexos.System.core.name //for now
         await plexos.db.saveCore(plexos.System.core)
 
         alert("Saved to indexedDB")
