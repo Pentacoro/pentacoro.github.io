@@ -9,7 +9,8 @@ import Icon from "../lib/classes/interface/icon.js"
 import {runLauncher, getValue, ajaxReturn, storageAvailable} from "../lib/functions/dll.js"
 import initialize from "./init.js"
 
-let sys = new Task(
+// SYSTEM TASK
+const sys = new Task(
     {
 		name : "System",
 		instantiable : false,
@@ -25,7 +26,7 @@ sys.mem.var.shSelect = true
 sys.mem.focused = null
 sys.mem.cfg = plexos.cfg
 sys.mem.downloadCoreJSON = function (exportName="core") {
-    let jsonCore = sys.core
+    let jsonCore = plexos.Core
     let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(jsonCore))
     let downloadAnchorNode = document.createElement('a')
     downloadAnchorNode.setAttribute("href",     dataStr)
@@ -35,19 +36,42 @@ sys.mem.downloadCoreJSON = function (exportName="core") {
     downloadAnchorNode.remove()
 }
 sys.bus = new EventBus()
-sys.core= {}
 sys.ini = {}
 sys.ini.openDesktop = function (address) {
     let promiseInit = new Promise(async () => {
-        await runLauncher("./plexos/app/sys/Theme Manager/themeManager.lau.js")
-        await runLauncher("./plexos/app/sys/Desktop/desktop.lau.js",{path:address})
+        await runLauncher("./plexos/app/sys/Theme Manager/themeManager.ls")
+        await runLauncher("./plexos/app/sys/Desktop/desktop.ls",{path:address})
     })
     promiseInit.then( () => {
         Task.get("Desktop").mem.grid.evaluateIconGrid()
         Task.get("Desktop").mem.renderIcons()
     })
 }
-sys.ini.recreateFiles = function (dir, newDir) {
+sys.ini.run = async function () {
+    await plexos.Core.ini.getPlexosDB()
+    plexos.Core.file = await plexos.Core.ini.defineCore()
+    initialize()
+}
+
+// CORE TASK
+const root = new Task(
+    {
+		name : "Core",
+		instantiable : false,
+		onEnd : null,
+		node : null,
+		from : "System"
+	}
+)
+plexos.Core = root
+root.file = {}
+root.mem.classCompilers = {
+    "ProxyFile": (file) => {
+        return file.unwrapProxy()
+    }
+}
+root.ini = {}
+root.ini.recreateFiles = function (dir, newDir) {
     for (let file of Object.values(dir.dir)) {
         let Type = null 
         let Skey = null
@@ -61,16 +85,16 @@ sys.ini.recreateFiles = function (dir, newDir) {
                 Type = "Metafile"
                 Skey = "meta"
                 break
-            case "String":
-                Type = "String"
+            case "StringFile":
+                Type = "StringFile"
                 Skey = "data"
                 break 
-            case "Proxy":
-                Type = "Proxy"
+            case "ProxyFile":
+                Type = "ProxyFile"
                 Skey = "data"
                 break 
             default:
-                Type = "String"
+                Type = "StringFile"
                 Skey = "data"
                 break 
         }
@@ -86,11 +110,11 @@ sys.ini.recreateFiles = function (dir, newDir) {
 
         if (Type === "Directory") {
             newFile.dir = {}
-            sys.ini.recreateFiles(dir.dir[file.name], newFile)
+            root.ini.recreateFiles(dir.dir[file.name], newFile)
         }
     }
 }
-sys.ini.getPlexosDB = async function () {
+root.ini.getPlexosDB = async function () {
     //get config
     plexos.Config = await new Promise ((resolve, reject) => {
         plexos.db.getConfig()
@@ -135,27 +159,27 @@ sys.ini.getPlexosDB = async function () {
     console.log(sys.user)
 }
 
-sys.ini.defineCore = function () {
+root.ini.defineCore = function () {
     return new Promise (async (resolve, reject) => {
         let lastCoreName = await sys.user.config.lastOpenedCore
 
         //If there's a core url specified in view url
         if (getValue("core")) {
-            let core =await  sys.ini.defineCoreByURL(getValue("core"))
+            let core = await root.ini.defineCoreByURL(getValue("core"))
             console.log("Core set by URL")
             //console.log(core)
             resolve(core)
         }
         //If there's no last opened core, retrieve origin's core.json file
         if (lastCoreName === null) {
-            let core = await sys.ini.defineCoreBySRC()
+            let core = await root.ini.defineCoreBySRC()
             console.log("Core set by SRC")
             //console.log(core)
             resolve(core)
         }
         //Retrieve last opened core
         if (lastCoreName) {
-            let core = await sys.ini.defineCoreByDB(lastCoreName)
+            let core = await root.ini.defineCoreByDB(lastCoreName)
             sys.user.config.lastOpenedCore = core.name
             console.log("Core set by DB")
             //console.log(core)
@@ -163,14 +187,15 @@ sys.ini.defineCore = function () {
         }
     }) 
 }
-sys.ini.defineCoreByURL = async function(URL) {
+root.ini.defineCoreByURL = async function(URL) {
     return new Promise (async (resolve, reject) => {
         let corePromise = ajaxReturn("GET",URL)
         corePromise
         .then(data=>{
             if (data.status >= 200 && data.status < 300) throw data
             let newCore = Directory.coreTemplate()
-            sys.ini.recreateFiles(JSON.parse(data),newCore)
+            root.file = newCore
+            root.ini.recreateFiles(JSON.parse(data),newCore)
             resolve(newCore)
         })
         .catch(e=>{
@@ -178,32 +203,35 @@ sys.ini.defineCoreByURL = async function(URL) {
         })
     })
 }
-sys.ini.defineCoreBySRC = async function () {
+root.ini.defineCoreBySRC = async function () {
     return new Promise (async (resolve, reject) => {
         let corePromise = ajaxReturn("GET","/core.json")
         corePromise
         .then(data=>{
             if (data.status >= 200 && data.status < 300) throw data
             let newCore = Directory.coreTemplate()
-            sys.ini.recreateFiles(JSON.parse(data),newCore)
+            root.file = newCore
+            root.ini.recreateFiles(JSON.parse(data),newCore)
             resolve(newCore)
         })
     })
 }
-sys.ini.defineCoreByDB = async function(lastCoreName) {
+root.ini.defineCoreByDB = async function(lastCoreName) {
     let dbCore = sys.user.localCores.filter(core=>core.name === lastCoreName)[0]
     let newCore = Directory.coreTemplate()
-    sys.ini.recreateFiles(dbCore,newCore)
+    root.file = newCore
+    core.ini.recreateFiles(dbCore,newCore)
     plexos.System.user.config.lastOpenedCore = newCore.name
     return newCore
 }
-sys.ini.run = async function () {
-    await sys.ini.getPlexosDB()
-    sys.core = await sys.ini.defineCore()
-    initialize()
+root.mem.saveCore = async function () {
+    if (root.changeLog.length === 0) return
+
+    await plexos.db.saveCore(root.file)
 }
 
-let windowManager = new Task(
+// WINDOW MANAGER TASK
+const windowManager = new Task(
     {
 		name : "Window Manager",
 		instantiable : false,
@@ -255,45 +283,36 @@ windowManager.on("window-scripted", window => {
 })
 })
 windowManager.getInitialDrawParams = function(window) {
-    const appname   = Task.id(window.task).name
+    const appname      = Task.id(window.task).name
+    const filePath     = window.appParams.filePath
 
     let getRegistryAppParams = function (window) {
-        let registryAppEntry = File.at(`/plexos/reg/applications.proxy`).data[appname]
-        if (registryAppEntry.windowDrawParameters === undefined) {
+        const registryFile = File.at(`/plexos/reg/applications.proxy`)
+
+        let registryAppEntry = registryFile.data[appname]
+        if (!Object.prototype.hasOwnProperty.call(registryAppEntry, "windowDrawParameters")) {
             registryAppEntry.windowDrawParameters = null
         }
-        return JSON.parse(JSON.stringify(registryAppEntry.windowDrawParameters))
+        console.log(registryFile.data)
+        return JSON.parse(JSON.stringify(registryAppEntry.return().windowDrawParameters))
     }
 
     let getRegistryFileParams = function (window) {
-        let registryFileEntry = File.at(`/plexos/reg/files.proxy`).data[window.appParams.filePath]
-        if (registryFileEntry === undefined) {
-            File.at(`/plexos/reg/files.proxy`).data[window.appParams.filePath] = {}
-            registryFileEntry = File.at(`/plexos/reg/files.proxy`).data[window.appParams.filePath]
-            registryFileEntry.applications = {}
-            registryFileEntry.applications[appname] = {}
+        const registryFile = File.at(`/plexos/reg/files.proxy`)
+
+        let registryFileEntry = registryFile.data[filePath]
+        if (!Object.prototype.hasOwnProperty.call(registryFileEntry.applications[appname], "windowDrawParameters")) {
             registryFileEntry.applications[appname].windowDrawParameters = null
-        } 
-        if (registryFileEntry.applications === undefined) {
-            registryFileEntry.applications = {}
-            registryFileEntry.applications[appname] = {}
-            registryFileEntry.applications[appname].windowDrawParameters = null
-        } 
-        if (registryFileEntry.applications[appname] === undefined) {
-            registryFileEntry.applications[appname] = {}
-            registryFileEntry.applications[appname].windowDrawParameters = null
-        } 
-        if (registryFileEntry.applications[appname].windowDrawParameters === undefined) {
-            registryFileEntry.applications[appname].windowDrawParameters = null
-        } 
-        return JSON.parse(JSON.stringify(registryFileEntry.applications[appname].windowDrawParameters))
+        }
+        console.log(registryFileEntry)
+        return JSON.parse(JSON.stringify(registryFileEntry.applications[appname].return().windowDrawParameters))
     }
     switch (window.appParams.saveDrawParameters) {
         case "default":
         case "app":
             return getRegistryAppParams(window)
         case "file":
-        if (window.appParams.filePath) {
+        if (filePath) {
             return getRegistryFileParams(window)
         } else {
             return getRegistryAppParams(window) 
@@ -301,16 +320,17 @@ windowManager.getInitialDrawParams = function(window) {
     }
 }
 windowManager.setInitialDrawParams = function(window) {
-    const appname   = Task.id(window.task).name
+    const appname      = Task.id(window.task).name
+    const filePath     = window.appParams.filePath
+
     switch (window.appParams.saveDrawParameters) {
         case "default":
         case "app":
         let registryAppEntry = File.at(`/plexos/reg/applications.proxy`).data[appname]
             registryAppEntry.windowDrawParameters = JSON.parse(JSON.stringify(window.drawParams))
             return
-
         case "file" :
-        let registryFileEntry = File.at(`/plexos/reg/files.proxy`).data[window.appParams.filePath]
+        let registryFileEntry = File.at(`/plexos/reg/files.proxy`).data[filePath]
             registryFileEntry.applications[appname].windowDrawParameters = window.drawParams
             return
     }

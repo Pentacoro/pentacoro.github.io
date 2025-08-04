@@ -20,6 +20,7 @@ export function initialize({taskid,args,path,root}) {
     //task creation
     let task = new Task(
         {
+            registryPath: `SYSTEM["Desktop"]`,
             name : "Desktop",
             instantiable : false,
             onEnd : end,

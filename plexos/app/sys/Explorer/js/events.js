@@ -14,7 +14,7 @@ task.onpaste = async function (e) {
 			let newMetaFile = mem.dirObject.new("Metafile", "New Metafile.meta")
             mem.createExplorerIcons([newMetaFile])
             let icon = mem.getIcon(newMetaFile.cfg.path)
-			runLauncher("/plexos/app/meta/Meta Creator/metaCreator.lau.js",{path:newMetaFile.cfg.path,window:false,url:paste,type:"web"})
+			runLauncher("/plexos/app/meta/Meta Creator/metaCreator.ls",{path:newMetaFile.cfg.path,window:false,url:paste,type:"web"})
             icon.statNode(1)
 		}
         
@@ -39,7 +39,7 @@ task.node.getElementsByClassName("parent")[0].onclick = e => {
             } catch (e) {
                 mem.var.error  = e
                 mem.var.errorB = [["Okay"]]
-                runLauncher("/plexos/app/sys/Popup/popup.lau.js",
+                runLauncher("/plexos/app/sys/Popup/popup.ls",
                     {
                      name:"Error",
                      type:false,

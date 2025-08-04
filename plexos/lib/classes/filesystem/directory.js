@@ -5,8 +5,8 @@ import Icon from "../interface/icon.js"
 import File from "./file.js"
 
 import Metafile from "./metafile.js"
-import String from "./string.js"
-import Proxy from "./proxy.js"
+import StringFile from "./string.js"
+import ProxyFile from "./proxy.js"
 
 export default class Directory extends File {
     static coreTemplate(){ 
@@ -32,64 +32,55 @@ export default class Directory extends File {
     }
 
     new
-    (   Type, 
-        childName, 
-        childIcon = null, 
-        childConf = null, 
-        childCont = null,
-        events = true,
+    (   type, 
+        name, 
+        icon = null, 
+        conf = null, 
+        cont = null,
+        log = true,
     ) {
         let parent = this
 
-        let defaults = File.classDefaults(Type)
-        let iconImag = defaults.iconImag
+        let defaults = File.classDefaults(type)
         let confType = defaults.confType
         let skeyName = defaults.skeyName
-        switch (Type) {
-            case "Directory": Type = Directory; break
-            case "Metafile":  Type = Metafile; break
-            case "String":    Type = String; break
-            case "Proxy":     Type = Proxy; break
+        let Type = {}
+        switch (type) {
+            case "Directory":   Type = Directory; break
+            case "Metafile":    Type = Metafile; break
+            case "StringFile":  Type = StringFile; break
+            case "ProxyFile":   Type = ProxyFile; break
         }
 
-        childName = childName + (((confType!="Directory") && !childName.includes(".")) ? "." + childName.match(/(?:.(?<!\.))+$/s)[0] : "")
+        name = name + (((confType!="Directory") && !name.includes(".")) ? "." + name.match(/(?:.(?<!\.))+$/s)[0] : "")
 
-        if (childConf) { 
-            //if conf argument passed use it
-            this.dir[childName] = new Type({name : childName, cfg : (new Configuration (childConf))})
-        } else { 
-            //if no conf argument passed, create default filetype
-            this.dir[childName] = new Type
-            (
+        this.dir[name] = new Type
+        (
+            {
+                name : name,
+                cfg  : conf || new Configuration (
                 {
-                    name : childName,
-                    cfg : new Configuration (
-                    {
-                        class : confType,
-                        move : true,
-                        exte : (confType=="Directory") ? "dir" : childName.match(/(?:.(?<!\.))+$/s)[0],
-                        icon : childIcon || new Icon (
-                                                {
-                                                    class : confType, 
-                                                    name : childName, 
-                                                    exte : childName.match(/(?:.(?<!\.))+$/s)[0],
-                                                    state : 0  
-                                                }
-                                            ),
-                    })
-                }
-            )
-        }
-        this.dir[childName].cfg.path = this.cfg.path+ "/" + childName
-        this.dir[childName].cfg["icon"].file = this.cfg.path+ "/" + childName
+                    class : confType,
+                    move : true,
+                    exte : (confType=="Directory") ? "dir" : name.match(/(?:.(?<!\.))+$/s)[0],
+                    icon : icon || new Icon (
+                                            {
+                                                class : confType, 
+                                                name : name, 
+                                                exte : name.match(/(?:.(?<!\.))+$/s)[0],
+                                                state : 0  
+                                            }
+                                        ),
+                }),
+                [skeyName] : cont
+            }
+        )
 
-        if (childCont) {
-            this.dir[childName][skeyName] = childCont
-        }
+        this.dir[name].cfg.path = this.cfg.path+ "/" + name
+        this.dir[name].cfg["icon"].file = this.cfg.path+ "/" + name
 
-        //create a new registry entry for this file
-        if (events) File.at("/plexos/reg/files.proxy").data = {}
+        if (log) plexos.Core.logChange("create",this.dir[name].cfg.path)
 
-        return this.dir[childName]
+        return this.dir[name]
     }
 }

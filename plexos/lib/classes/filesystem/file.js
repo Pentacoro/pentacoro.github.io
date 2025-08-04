@@ -1,39 +1,38 @@
 import {plexos, cfg} from "../../../ini/system.js"
 import {renameKey, runLauncher, calculateStringSize} from  "../../functions/dll.js"
-import Task from "../system/task.js"
 
 export default class File {
-    static at(path = "", get = "file") {
+    static at(path = "", get = "file", from = `plexos.Core["file"]`) {
         //string: where we'll devour path one dir at a time as we build expression
         let string = path
         //steps: where we'll store each of the dirs extracted from string (useless for now)
-        let steps = ["plexos.System[\"core\"]"]
+        let steps = [from]
         //expression: where we'll build the object reference from the core to later be eval()
-        let expression = "plexos.System[\"core\"]"
+        let expression = from
         
         //find first "/"
         let to = string.indexOf("/")
-    
+
         iterate(to)
-    
+
         function iterate(to){
             if (to > 0) { //if "/" is not the first char
                 let nextDir = string.splice(0, to)[1] //get clean dir name
-    
+
                 string = string.splice(0, to - 1)[0] //repeat splice for return
                 string = string.splice(0,1)[0] //razor out "/"
-    
+
                 steps.push(nextDir)
-    
+
                 expression += ".dir[\""+nextDir+"\"]"
-    
+
                 if (string.length > 0) {
                     to = string.indexOf("/")
                     iterate(to)
                 } else { 
                     return expression 
                 }
-    
+
             } else if (to == 0) { //if "/" is the first char
                 string = string.splice(0,1)[0] //razor out "/"
                 if (string.length > 0) {
@@ -42,7 +41,7 @@ export default class File {
                 } else { 
                     return expression 
                 }
-    
+
             } else if (to < 0){ //if there's no "/" char
                 if (string.length > 0) {
                     expression += ".dir[\""+string+"\"]"
@@ -51,7 +50,7 @@ export default class File {
                 } else if (string === ""){ 
                     return expression 
                 }
-    
+
             }
         }
         //return requested output, otherwise return null
@@ -60,7 +59,7 @@ export default class File {
                 return ((eval(expression)!=undefined) ? eval(expression) : null)
                 break
             case "parent":
-                let parent = (expression==="plexos[\"core\"]") ? expression : expression.slice(0,-(`.dir[\"${steps[steps.length - 1]}\"]`.length))
+                let parent = (expression===from && eval(from)===plexos.Core) ? plexos.Core : expression.slice(0,-(`.dir[\"${steps[steps.length - 1]}\"]`.length))
                 return ((eval(parent)!=undefined) ? eval(parent) : null)
                 break
         }
@@ -84,14 +83,14 @@ export default class File {
                 defaults.confType = "Metafile"
                 defaults.skeyName = "meta"
                 break
-            case "String":
+            case "StringFile":
                 defaults.iconImag = "plexos/res/themes/Plexos Hyper/icons/files/defaultTXT.svg"
-                defaults.confType = "String"
+                defaults.confType = "StringFile"
                 defaults.skeyName = "data"
                 break
-            case "Proxy":
+            case "ProxyFile":
                 defaults.iconImag = "plexos/res/themes/Plexos Hyper/icons/files/proxy.svg"
-                defaults.confType = "Proxy"
+                defaults.confType = "ProxyFile"
                 defaults.skeyName = "data"
                 break
         }
@@ -149,16 +148,18 @@ export default class File {
         return fileViews
     }
 
-    delete() {
+    delete(log=true) {
         let parent = this.parent()
         let child = this
 
+        if (log) plexos.Core.logChange("delete",child.cfg.path)
+
         delete parent.dir[child.name]
     }
-    move(dest) {
+    move(to, log=true) {
         
     }
-    rename(rename) {
+    rename(rename, log=true) {
         let parent  = this.parent()
 
         rename = File.returnAvailableName(rename,null,this.parent())
@@ -194,6 +195,10 @@ export default class File {
         for (let fileView of File.viewsOpened(this.parent().cfg.path)) {
             fileView.mem.getIcon(oldAddress)?.rename(newAddress)
         }
+
+        if (!log) return
+
+        plexos.Core.logChange("repath",this.cfg.path,{oldPath:oldAddress})
     }
 
     render() {

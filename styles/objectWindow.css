@@ -11,7 +11,6 @@
 	height: fit-content;
 
 	background-color: rgba(255,255,255,0);
-	padding: 6px;
 	z-index: 10;
 
 	min-height: fit-content;
@@ -224,6 +223,7 @@
 	position: absolute;
 	right: 0;
 	top: 0;
+	transform: translate(0px, -6px);
 	cursor: n-resize;
 }
 .windowBorder>.windowEbot {
@@ -233,6 +233,7 @@
 	position: absolute;
 	right: 0;
 	bottom: 0;
+	transform: translate(0px, 6px);
 	cursor: n-resize;
 }
 .windowBorder>.windowElef {
@@ -242,6 +243,7 @@
 	position: absolute;
 	left: 0;
 	bottom: 0;
+	transform: translate(-6px, 0px);
 	cursor: e-resize;
 }
 .windowBorder>.windowErig {
@@ -251,6 +253,7 @@
 	position: absolute;
 	right: 0;
 	bottom: 0;
+	transform: translate(6px, 0px);
 	cursor: e-resize;
 }
 .windowBorder>.windowCtl {
@@ -260,6 +263,7 @@
 	position: absolute;
 	left: 0;
 	top: 0;
+	transform: translate(-6px, -6px);
 	cursor: nw-resize;
 }
 .windowBorder>.windowCtr {
@@ -269,6 +273,7 @@
 	position: absolute;
 	right: 0;
 	top: 0;
+	transform: translate(6px, -6px);
 	cursor: ne-resize;
 }
 .windowBorder>.windowCbr {
@@ -278,6 +283,7 @@
 	position: absolute;
 	right: 0;
 	bottom: 0;
+	transform: translate(6px, 6px);
 	cursor: nw-resize;
 	z-index: 2;
 }
@@ -288,6 +294,7 @@
 	position: absolute;
 	left: 0;
 	bottom: 0;
+	transform: translate(-6px, 6px);
 	cursor: ne-resize;
 }
 /*--------WINDOW BORDER RESIZERS*/

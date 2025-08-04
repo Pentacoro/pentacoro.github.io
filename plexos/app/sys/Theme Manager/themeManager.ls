@@ -8,6 +8,7 @@ export function initialize({taskid,args,path,root}){
     //task creation
     let task = new Task(
         {
+            registryPath: `SYSTEM["Theme Manager"]`,
             name : "Theme Manager",
             instantiable : false,
             node : document.getElementById("themeLayer"),

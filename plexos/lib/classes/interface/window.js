@@ -570,11 +570,13 @@ export default class Window {
 		function closeDragWindow() {
 			//correct if header's altitude goes beyond viewport
 			if (_this.node.offsetTop + _this.keyNodes.innerDrawing.offsetTop < 0) {
+				//if header disappears above viewport, place window precisely beneath viewport border
 				_this.node.style.top  = _this.container.offsetTop  + "px"
 				_this.node.style.top  = _this.node.offsetTop - _this.keyNodes.innerDrawing.offsetTop  + "px"
 				_this.drawParams.posY = _this.node.offsetTop
 			}
 			if (_this.node.offsetTop + _this.keyNodes.innerDrawing.offsetTop > _this.container.offsetHeight - _this.keyNodes.windowHeader.offsetHeight) {
+				//if header disappears below viewport, place window in such a way that the header is perfectly surfacing
 				_this.node.style.top  = _this.container.offsetHeight - _this.keyNodes.innerDrawing.offsetTop - _this.keyNodes.windowHeader.offsetHeight + "px"
 				_this.drawParams.posY = _this.node.offsetTop
 			}

@@ -17,7 +17,7 @@ desktop.onpaste = async function (e) {
 			let newMetaFile = mem.dirObject.new("Metafile", "New Metafile.meta")
 			mem.createDesktopIcons([newMetaFile])
 			let icon = mem.getIcon(newMetaFile.cfg.path)
-			await runLauncher("/plexos/app/meta/Meta Creator/metaCreator.lau.js",{path:newMetaFile.cfg.path,window:false,url:paste,type:"web"})
+			await runLauncher("/plexos/app/meta/Meta Creator/metaCreator.ls",{path:newMetaFile.cfg.path,window:false,url:paste,type:"web"})
 			icon.statNode(1)
 		}
         
@@ -25,6 +25,16 @@ desktop.onpaste = async function (e) {
         console.error('Failed to read clipboard contents: ', err)
     }
 }
+
+//undo | ctrl + z
+window.addEventListener("keydown", async e => {
+	if (e.key === "z" && e.ctrlKey) {  
+		e.preventDefault()
+
+		plexos.Core.undo()
+		desktop.mem.refresh()
+	} 
+})
 
 //when desktop click
 desktop.node.addEventListener("mousedown", e => {

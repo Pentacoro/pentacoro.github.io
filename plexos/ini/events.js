@@ -27,19 +27,21 @@ window.addEventListener("paste", async e => {
     let task = plexos.System.mem.focused
 	if (task && task.onpaste) task.onpaste(e)
 })
+/*
 window.onbeforeunload = async e => {
     e.preventDefault()
-    await plexos.db.saveCore(plexos.System.core)
+    await plexos.db.saveCore(plexos.Core.file)
     return false
 }
+*/
 
 //indexedDB
 window.addEventListener("keydown", async e => {
     if (e.key === "," && e.ctrlKey) {  
         e.preventDefault()
 
-        plexos.System.user.config.lastOpenedCore = plexos.System.core.name //for now
-        await plexos.db.saveCore(plexos.System.core)
+        plexos.System.user.config.lastOpenedCore = plexos.Core.file.name //for now
+        await plexos.db.saveCore(plexos.Core.file)
 
         alert("Saved to indexedDB")
     } 
@@ -58,7 +60,7 @@ window.addEventListener("keydown", async e => {
     if (e.key === "s" && e.ctrlKey) {  
         e.preventDefault()
 
-        await plexos.db.saveCore(plexos.System.core)
+        await plexos.db.saveCore(plexos.Core.file)
 
         plexos.System.mem.downloadCoreJSON()
         alert("Downloading Core JSON")

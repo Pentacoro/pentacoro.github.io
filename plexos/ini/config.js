@@ -40,14 +40,14 @@ let cfg = {
         }
     },
     apps: {
-        dir:  "/plexos/app/sys/Explorer/explorer.lau.js",
-        web:  "/plexos/app/meta/Web Framer/iframer.lau.js",
-        meta: "/plexos/app/meta/Meta Creator/metaCreator.lau.js",
-        img:  "/plexos/app/meta/Image Viewer/viewer.lau.js",
-        vid:  "/plexos/app/meta/Media Player/player.lau.js",
-        txt:  "/plexos/app/data/Notepad/notepad.lau.js",
-        json: "/plexos/app/data/Monaco/monaco.lau.js",
-        js:   "/plexos/app/data/Monaco/monaco.lau.js",
+        dir:  "/plexos/app/sys/Explorer/explorer.ls",
+        web:  "/plexos/app/meta/Web Framer/iframer.ls",
+        meta: "/plexos/app/meta/Meta Creator/metaCreator.ls",
+        img:  "/plexos/app/meta/Image Viewer/viewer.ls",
+        vid:  "/plexos/app/meta/Media Player/player.ls",
+        txt:  "/plexos/app/data/Notepad/notepad.ls",
+        json: "/plexos/app/data/Monaco/monaco.ls",
+        js:   "/plexos/app/data/Monaco/monaco.ls",
     }
 }
 export default cfg

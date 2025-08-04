@@ -24,9 +24,9 @@ export default class Icon {
                 if (Object.keys(File.at(this.file).dir).length > 0) return File.classDefaults("Directory").iconImag.replace("DIR", "DIRc")
                 else return File.classDefaults("Directory").iconImag
             case "txt" || "js" || "css" || "html":
-                return File.classDefaults("String").iconImag
+                return File.classDefaults("StringFile").iconImag
             case "proxy":
-                return File.classDefaults("Proxy").iconImag
+                return File.classDefaults("ProxyFile").iconImag
             case "meta":
                 return File.classDefaults("Metafile").iconImag
             case "web":

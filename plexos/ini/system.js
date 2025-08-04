@@ -101,10 +101,27 @@ plexos.db.saveUser = async (user) => {
     await transaction.complete
     console.log("User saved!")
 }
+
 plexos.db.saveCore = async (core) => {
+    import("../lib/classes/filesystem/file.js")
     let localCore = plexos.System.user.localCores.filter(localCore=>localCore.name === core.name)
     if (localCore.length > 0) {
-        plexos.System.user.localCores = plexos.System.user.localCores.filter(localCore=>localCore.name !== core.name)
+        for (let change of plexos.Core.changeLog) {
+            switch (change.name) {
+                case "update":
+                    if (plexos.Core.mem.classCompilers[change.file.cfg.class]) {
+                        File.at(change.file.cfg.path,"file","localCore")[File.classDefaults(change.file.cfg.class).skeyName] = plexos.Core.mem.classCompilers[change.file.cfg.class]
+                    } else {
+                        File.at(change.file.cfg.path,"file","localCore")[File.classDefaults(change.file.cfg.class).skeyName] = change.file
+                    }
+                    break
+                case "delete":
+                    delete File.at(change.file.cfg.path,"parent","localCore")[change.file.name]
+                    break
+                case "create":
+            }
+        }
+        plexos.System.user.localCores = plexos.System.user.localCores.filter(core=>localCore.name !== core.name)
         plexos.System.user.localCores.push(core)
     } else {
         plexos.System.user.localCores.push(core)

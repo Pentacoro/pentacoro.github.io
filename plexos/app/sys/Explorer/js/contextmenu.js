@@ -15,7 +15,7 @@ mem.backContextMenu = [
             {name: "new", list: [
                 {name:"Directory",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/directory.svg')",func:() => task.mem.new(null,task,"Directory","New Folder")},
                 {name:"Metafile",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/metafile.svg')",func:() => task.mem.new(null,task,"Metafile","New Metafile.meta")},
-                {name:"Text Document",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/textfile.svg')",func:() => task.mem.new(null,task,"String","New Text Document.txt")},
+                {name:"Text Document",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/textfile.svg')",func:() => task.mem.new(null,task,"StringFile","New Text Document.txt")},
             ]}
         ]},
         {name:"Paste",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/paste.svg')",func: () => {return} },
@@ -43,7 +43,7 @@ mem.iconContextMenu = function(e,icon){
                 {name: "prop", list: [
                     {name:"Delete",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/delete.svg')",func: () => mem.deleteSelectedNodes()},
                     {name:"Rename",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/rename.svg')",func: () => icon.editName(e),bool:File.at(icon.file)!=undefined},
-                    {name:"Properties",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/properties.svg')",func: () => {runLauncher("/plexos/app/sys/File Properties/prop.lau.js",File.at(icon.file))} }
+                    {name:"Properties",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/properties.svg')",func: () => {runLauncher("/plexos/app/sys/File Properties/prop.ls",File.at(icon.file))} }
                 ]},
             ]
         break
@@ -62,7 +62,7 @@ mem.iconContextMenu = function(e,icon){
                 {name: "prop", list: [
                     {name:"Delete",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/delete.svg')",func: () => mem.deleteSelectedNodes()},
                     {name:"Rename",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/rename.svg')",func: () => icon.editName(e),bool:File.at(icon.file)!=undefined},
-                    {name:"Properties",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/properties.svg')",func: () => {runLauncher("/plexos/app/sys/File Properties/prop.lau.js",File.at(icon.file))} }
+                    {name:"Properties",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/properties.svg')",func: () => {runLauncher("/plexos/app/sys/File Properties/prop.ls",File.at(icon.file))} }
                 ]},
             ]
         break
@@ -80,7 +80,7 @@ mem.iconContextMenu = function(e,icon){
                 {name: "prop", list: [
                     {name:"Delete",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/delete.svg')",func: () => mem.deleteSelectedNodes()},
                     {name:"Rename",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/rename.svg')",func: () => icon.editName(e),bool:File.at(icon.file)!=undefined},
-                    {name:"Properties",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/properties.svg')",func: () => {runLauncher("/plexos/app/sys/File Properties/prop.lau.js",File.at(icon.file))} }
+                    {name:"Properties",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/properties.svg')",func: () => {runLauncher("/plexos/app/sys/File Properties/prop.ls",File.at(icon.file))} }
                 ]},
             ]
     }

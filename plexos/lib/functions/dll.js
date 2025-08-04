@@ -251,7 +251,7 @@ export async function runLauncher(url, args = {}, focus = null, name = ""){
     //place arguments on Task.get("System") task
     Task.get("System").mem.lau[appID.id] = args
 
-    //get .lau file
+    //get .ls file
     let appLauncher = ajaxReturn("get", url)
 
     appLauncher.then( async data => {
@@ -296,7 +296,7 @@ export function evalErrorPopup(code, desc, error) {
     //add it to typeError stack
     error.script = code
     Task.get("System").mem.var.error = error
-    runLauncher("./plexos/app/sys/Popup/popup.lau.js",
+    runLauncher("./plexos/app/sys/Popup/popup.ls",
         {
             name:"Error",
             type:true,

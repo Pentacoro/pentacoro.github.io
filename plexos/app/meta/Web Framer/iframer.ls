@@ -3,15 +3,15 @@ import Window from "/plexos/lib/classes/interface/window.js"
 import File from "/plexos/lib/classes/filesystem/file.js"
 import {displayComponent} from "/plexos/lib/functions/dll.js"
 
-export function initialize({taskid,args,path,root}) {
-    let html = (args.type) ? root + "/explorer"+args.type+".html" :  root + "/explorer.html"
+export function initialize({taskid,args,path,root}){
+    let html = root + "/iframer.html"
 
     //on app init
     function ini() {
         let task = Task.id(taskid)
         let arg  = task.mem.arg
-
-        arg.address = args.path
+        
+        arg.file = File.at(args.path)
     }
     //on app end
     function end() {
@@ -21,7 +21,8 @@ export function initialize({taskid,args,path,root}) {
     //task creation
     let task = new Task(
         {
-            name : "Explorer",
+            registryPath: `SYSTEM["Web Framer"]`,
+            name : "Web Framer",
             instantiable : true,
             onEnd : end,
             node : null,
@@ -32,23 +33,20 @@ export function initialize({taskid,args,path,root}) {
     if (!task.id) return
 
     //window generation
-    new Window(
+    new Window
+    (
         {
             name : args.name,
             task : task.id, 
-            icon : (File.at(args.path)) ? File.at(args.path).cfg.icon.getImage() : "/plexos/res/themes/Plexos Hyper/icons/files/defaultDIR.svg",
+            icon : (File.at(args.path)) ? File.at(args.path).cfg.icon.getImage() : "/plexos/res/themes/Plexos Hyper/icons/files/defaultMSF.svg",
             appParams: {
-                minimizeable: true,
-                maximizeable: true,
-                resizeable: true,
-                sizeDrawMethod: "window",
-                saveDrawParameters: "app"
+                filePath: args.path,
             }
         }
     )
 
     ini()
-    
+
     displayComponent({
         url:html,
         taskid:task.id,

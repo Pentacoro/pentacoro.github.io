@@ -3,7 +3,7 @@ import {displayComponent, genRanHex} from "/plexos/lib/functions/dll.js"
 import File from "../filesystem/file.js"
 import Task from "../system/task.js"
 import { nodeGetters } from "../../functions/dll.js"
-let System = plexos.System
+//let System = plexos.System
 
 export default class Component {
     static checkUniqueID(component){

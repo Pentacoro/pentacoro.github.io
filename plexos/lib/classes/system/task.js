@@ -2,6 +2,7 @@ import {plexos} from "../../../ini/system.js"
 import {genRanHex, runLauncher} from "/plexos/lib/functions/dll.js"
 import File from "../filesystem/file.js"
 import Component from "../interface/component.js"
+import ChangeLog from "./changeLog.js"
 let System = plexos.System
 
 export default class Task {
@@ -62,7 +63,9 @@ export default class Task {
         this.pocket = []
         this.windows = []
         this.blobList = []
+        this.changeLog = new ChangeLog
         this.components = []
+        this.permissions = [] //file.write | file.read | task.listen | task.emit | task.execute
 
         this.mem = {
             var: {},
@@ -201,7 +204,7 @@ export default class Task {
     popup(e, buttons, args) {
         this.mem.var.error = e
         this.mem.var.errorB = buttons
-        runLauncher("/plexos/app/sys/Popup/popup.lau.js",
+        runLauncher("/plexos/app/sys/Popup/popup.ls",
             {
                 name:args.name,
                 type:args.type,
@@ -211,5 +214,30 @@ export default class Task {
                 taskid:this.id,
             }
         )
+    }
+    logChange(type,path,args=null) {
+        console.log(path)
+        this.changeLog.addDirtyChange({
+            type:type,            
+            path:path,
+            dir:File.at(path, "parent").cfg.path,
+            snap:this.changeLog._loadCurrentState(path),
+            app:this.name,
+            args:args,
+            isCommitted:false
+        })
+    }
+    undo() {
+        let lastChange = this.changeLog[this.changeLog.length - 1]
+
+        if (!lastChange) return
+
+        lastChange.undo()
+        this.changeLog.pop()
+    }
+    async askPermission(allowance) {
+        return new Promise (async (resolve, reject) => {
+            await System.askPermission(this.id,"allowance")
+        })
     }
 }
