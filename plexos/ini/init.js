@@ -12,10 +12,11 @@ export default function initialize() {
     proxy.data.SYSTEM = {
         "Desktop": {
             installationDirectory: "@/plexos/app/sys/Desktop",
-            launcherScriptFilePath: "/plexos/app/sys/Desktop/desktop.ls.js",
+            launcherScriptFilePath: "/plexos/app/sys/Desktop/desktop.ls",
             systemPermissions: [
+                "file.access",
                 "file.create",
-                "file.modify",
+                "file.update",
                 "file.delete",
                 "task.launch",
                 "task.listen",
@@ -33,13 +34,13 @@ export default function initialize() {
                     sizeDrawMethod: "window",
                     saveDrawParameters: "app"
                 },
-                current: {}
             },
             installationDirectory: "@/plexos/app/sys/Explorer",
-            launcherScriptFilePath: "/plexos/app/sys/Explorer/explorer.ls.js",
+            launcherScriptFilePath: "/plexos/app/sys/Explorer/explorer.ls",
             systemPermissions: [
+                "file.access",
                 "file.create",
-                "file.modify",
+                "file.update",
                 "file.delete",
                 "task.launch",
                 "task.listen",
@@ -55,9 +56,10 @@ export default function initialize() {
                 }
             },
             installationDirectory: "@/plexos/app/sys/File Properties",
-            launcherScriptFilePath: "/plexos/app/sys/File Properties/prop.ls.js",
+            launcherScriptFilePath: "/plexos/app/sys/File Properties/prop.ls",
             systemPermissions: [
-                "file.modify",
+                "file.access",
+                "file.update",
                 "task.launch",
                 "task.listen",
                 "task.broadcast"
@@ -75,10 +77,11 @@ export default function initialize() {
                 }
             },
             installationDirectory: "@/plexos/app/meta/Meta Creator",
-            launcherScriptFilePath: "/plexos/app/meta/Meta Creator/metaCreator.ls.js",
+            launcherScriptFilePath: "/plexos/app/meta/Meta Creator/metaCreator.ls",
             systemPermissions: [
+                "file.access",
                 "file.create",
-                "file.modify",
+                "file.update",
                 "file.delete",
                 "task.listen",
                 "task.broadcast",
@@ -96,7 +99,7 @@ export default function initialize() {
                 }
             },
             installationDirectory: "@/plexos/app/sys/Popup",
-            launcherScriptFilePath: "/plexos/app/sys/Popup/popup.ls.js",
+            launcherScriptFilePath: "/plexos/app/sys/Popup/popup.ls",
             systemPermissions: [
                 "task.launch",
                 "task.broadcast"
@@ -105,10 +108,11 @@ export default function initialize() {
         },
         "Theme Manager": {
             installationDirectory: "@/plexos/app/sys/Theme Manager",
-            launcherScriptFilePath: "/plexos/app/sys/Theme Manager/themeManager.ls.js",
+            launcherScriptFilePath: "/plexos/app/sys/Theme Manager/themeManager.ls",
             systemPermissions: [
+                "file.access",
                 "file.create",
-                "file.modify",
+                "file.update",
                 "file.delete",
                 "task.launch",
                 "task.listen",
@@ -119,10 +123,11 @@ export default function initialize() {
         },
         "Window Manager": {
             installationDirectory: "@/plexos/app/sys/Window Manager",
-            launcherScriptFilePath: "/plexos/app/sys/Window Manager/windowManager.ls.js",
+            launcherScriptFilePath: "/plexos/app/sys/Window Manager/windowManager.ls",
             systemPermissions: [
+                "file.access",
                 "file.create",
-                "file.modify",
+                "file.update",
                 "file.delete",
                 "task.launch",
                 "task.listen",
@@ -134,11 +139,21 @@ export default function initialize() {
     }
     proxy.data.STANDALONE = {
         "Notepad": {
+            windowDrawParameters: {
+                default: {
+                    minimizeable: true,
+                    maximizeable: true,
+                    resizeable: true,
+                    sizeDrawMethod: "window",
+                    saveDrawParameters: "app"
+                }
+            },
             installationDirectory: "@/plexos/app/data/Notepad",
-            launcherScriptFilePath: "/plexos/app/data/Notepad/notepad.ls.js",
+            launcherScriptFilePath: "/plexos/app/data/Notepad/notepad.ls",
             systemPermissions: [
+                "file.access",
                 "file.create",
-                "file.modify",
+                "file.update",
                 "task.launch",
                 "task.listen",
                 "task.broadcast"
@@ -153,18 +168,19 @@ export default function initialize() {
                     resizeable: true,
                     sizeDrawMethod: "window",
                     initialDrawSize: "very-big",
-                    initialAspectRatio: [16,9],
+                    initialAspectRatio: "container",
                     saveDrawParameters: "file",
                 }
             },
             installationDirectory: "@/plexos/app/data/Web Framer",
-            launcherScriptFilePath: "/plexos/app/data/Web Framer/iframer.ls.js",
+            launcherScriptFilePath: "/plexos/app/data/Web Framer/iframer.ls",
             systemPermissions: [
+                "file.access",
                 "task.listen",
                 "task.broadcast"
             ],
             systemProhibitions: []
         },
     }
-    console.log(ProxyFile.unwrapProxy(proxy))
+    proxy.data = ProxyFile.convertToProxyModel(proxy.data,proxy)
 }

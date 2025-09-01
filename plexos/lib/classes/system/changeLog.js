@@ -1,91 +1,63 @@
 import File from "../../classes/filesystem/file.js"
 
-export default class ChangeLog {
+export default class CoreChangeLog {
     constructor() {
-        this.stack = []
-        this.pointer = -1
-        this.pathMap = new Map() // Tracks final paths: { originalPath -> currentPath }
+        this.operations = []  // Raw operations in user-executed order
     }
 
-    addDirtyChange(change={
-            type:"",            // 'create', 'delete', or 'update'
-            path:"",            // File/folder path
-            dir:"",             // Parent folder
-            snap:"",            // Snapshot for undo
-            app:"",             // Application that made the change
-            args:{},            // Additionals (particular undo/redo logic)
-            isCommitted:false   // Saved to IndexedDB?
-    }) {
-        this.stack = this.stack.slice(0, this.pointer + 1);
+    addChange(type, path, oldPath = null) {
+        this.operations.push({ type, path, oldPath })
+    }
 
-        // Update path mapping for repaths
-        if (change.type === 'repath') {
-            const effectiveOldPath = this.pathMap.get(change.args.oldPath) || change.args.oldPath
-            this.pathMap.set(effectiveOldPath, change.path)
+    getCommitPlan() {
+        const fileHistories = new Map() // path -> Array<operation>
+
+        // 1. Group operations by final path (after renames)
+        for (const op of this.operations) {
+            const targetPath = this.traceFinalPath(op.path)
+            if (!fileHistories.has(targetPath)) {
+                fileHistories.set(targetPath, [])
+            }
+            fileHistories.get(targetPath).push(op)
         }
 
-        this.stack.push(change)
-        this.pointer++
-    }
-
-    markChangesAsCommitted() {
-        this.stack.forEach(change => {
-            change.isCommitted = true
-        })
-    }
-
-    undo() {
-        if (this.pointer < 0) return null
-        const change = this.stack[this.pointer]
-        return change.isCommitted ? 
-        this._handleCommittedUndo(change) : 
-        this._createInverseChange(change)
-    }
-
-    redo() {
-        if (this.pointer >= this.stack.length - 1) return null
-        return this.stack[++this.pointer]
-    }
-
-    _handleCommittedUndo(change) {
-        const compensatingChange = {
-            type:this._getInverseType(change.type),
-            path:change.path,
-            dir:change.dir,
-            snap:_loadCurrentState(change.path),
-            from:change.from,
-            args:change.args,
-            isCommited:false
+        // 2. Filter each file's history to only meaningful operations
+        const plan = []
+        for (const [path, ops] of fileHistories) {
+            const filtered = this.filterFileHistory(ops)
+            plan.push(...filtered)
         }
-        this.stack.splice(this.pointer + 1, 0, compensatingChange)
-        this.pointer++;
-        return compensatingChange
+
+        // 3. Sort by original execution order
+        return plan.sort((a, b) => a.originalIndex - b.originalIndex)
     }
 
-    _createInverseChange(change) {
-        return new Change({
-            type:this._getInverseType(change.type),
-            path:change.path,
-            dir:change.dir,
-            snap:change.snap,
-            from:change.from,
-            args:change.args,
-            isCommited:change.isCommitted
-        })
+    traceFinalPath(path) {
+        // Follow rename chains to find final path
+        let current = path
+        for (const op of this.operations) {
+            if (op.type === 'repath' && op.oldPath === current) {
+                current = op.path
+            }
+        }  
+        return current
     }
 
-    _getInverseType(type) {
-        return { 
-            create: 'delete',
-            delete: 'create', 
-            update: 'update',
-            repath: 'repath'
-        }[type]
-    }
+    filterFileHistory(ops) {
+        const history = []
+        let exists = false
 
-    _loadCurrentState(path) {
-       // Implement based on your system
-       console.log(path)
-       return JSON.parse(JSON.stringify(File.at(path)))
+        // Replay operations to determine final state
+        for (const op of ops) {
+            if (op.type === 'create') exists = true
+            if (op.type === 'delete') exists = false
+            if (op.type === 'repath') continue // Handled by traceFinalPath
+            
+            if (exists || op.type === 'create') {
+                history.push(op)
+            }
+        }
+
+        return history
     }
 }

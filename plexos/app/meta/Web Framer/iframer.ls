@@ -21,7 +21,7 @@ export function initialize({taskid,args,path,root}){
     //task creation
     let task = new Task(
         {
-            registryPath: `SYSTEM["Web Framer"]`,
+            registryPath: `STANDALONE["Web Framer"]`,
             name : "Web Framer",
             instantiable : true,
             onEnd : end,

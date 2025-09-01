@@ -79,7 +79,7 @@ export default class Directory extends File {
         this.dir[name].cfg.path = this.cfg.path+ "/" + name
         this.dir[name].cfg["icon"].file = this.cfg.path+ "/" + name
 
-        if (log) plexos.Core.logChange("create",this.dir[name].cfg.path)
+        //if (log) plexos.Core.logChange("create",this.dir[name].cfg.path)
 
         return this.dir[name]
     }

@@ -65,6 +65,18 @@ export default class File {
         }
     }
 
+    static stringify(file) {
+        const newJSON = {}
+        const sKey = File.classDefaults(file.cfg.class).skeyName
+
+        newJSON.name = file.name
+        newJSON.cfg = file.cfg
+
+        newJSON[sKey] = (plexos.Core.mem.classCompilers[file.cfg.class]) ? plexos.Core.mem.classCompilers[file.cfg.class]() : file[sKey]
+
+        return JSON.stringify(newJSON)
+    }
+
     static classDefaults(Type) {
         let defaults = {
             iconImag : null,
@@ -152,7 +164,7 @@ export default class File {
         let parent = this.parent()
         let child = this
 
-        if (log) plexos.Core.logChange("delete",child.cfg.path)
+        //if (log) plexos.Core.logChange("delete",child.cfg.path)
 
         delete parent.dir[child.name]
     }
@@ -196,9 +208,7 @@ export default class File {
             fileView.mem.getIcon(oldAddress)?.rename(newAddress)
         }
 
-        if (!log) return
-
-        plexos.Core.logChange("repath",this.cfg.path,{oldPath:oldAddress})
+        //if (log) plexos.Core.logChange("repath",this.cfg.path,{oldPath:oldAddress})
     }
 
     render() {

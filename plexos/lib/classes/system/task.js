@@ -66,6 +66,7 @@ export default class Task {
         this.changeLog = new ChangeLog
         this.components = []
         this.permissions = [] //file.write | file.read | task.listen | task.emit | task.execute
+        this.registryPath = p.registryPath
 
         this.mem = {
             var: {},
@@ -216,12 +217,10 @@ export default class Task {
         )
     }
     logChange(type,path,args=null) {
-        console.log(path)
         this.changeLog.addDirtyChange({
             type:type,            
             path:path,
             dir:File.at(path, "parent").cfg.path,
-            snap:this.changeLog._loadCurrentState(path),
             app:this.name,
             args:args,
             isCommitted:false

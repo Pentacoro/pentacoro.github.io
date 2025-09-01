@@ -2,6 +2,7 @@ import {plexos} from "/plexos/ini/system.js"
 import {nodeGetters, iframeAntiHover} from "/plexos/lib/functions/dll.js"
 import Task from "../system/task.js"
 import File from "../filesystem/file.js"
+import ProxyFile from "../filesystem/proxy.js"
 
 let System = plexos.System
 let Manager= Task.get("Window Manager")
@@ -188,7 +189,16 @@ export default class Window {
 		// 1 => open
 		// 2 => maximized
 
-		this.appParams = (p.appParams!==undefined) ? new Window.AppParameters(p.appParams) : new Window.AppParameters()
+		if (Task.id(p.task).registryPath) {
+			const registryFile = File.at(`/plexos/reg/applications.proxy`)
+			const registryAppEntry = eval(`registryFile.data.${Task.id(p.task).registryPath}`)
+			const registryParameters = ProxyFile.unwrapProxy(registryAppEntry.windowDrawParameters.default)
+
+			this.appParams = (p.appParams!==undefined) ? new Window.AppParameters({...registryParameters, ...p.appParams}) : new Window.AppParameters({...registryParameters})
+		} else {
+			this.appParams = (p.appParams!==undefined) ? new Window.AppParameters(p.appParams) : new Window.AppParameters()
+		}
+
 
 		this.drawParams = p.drawParams || null
 		/* 

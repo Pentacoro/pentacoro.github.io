@@ -39,13 +39,6 @@ export function initialize({taskid,args,path,root}) {
             name : File.at(args.path).name+" - Notepad",
             task : task.id, 
             icon : (File.at(args.path)) ? File.at(args.path).cfg.icon.getImage() : "/plexos/res/themes/Plexos Hyper/icons/files/defaultFile.svg",
-            appParams: {
-                minimizeable: true,
-                maximizeable: true,
-                resizeable: true,
-                sizeDrawMethod: "window",
-                saveDrawParameters: "app"
-            }
         }
     )
 

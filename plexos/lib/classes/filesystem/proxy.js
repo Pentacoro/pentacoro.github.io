@@ -11,7 +11,7 @@ export default class ProxyFile extends File {
             writable: false,
             configurable: true,
             enumerable: false
-        });
+        })
     
         return new Proxy(realTarget, {
             get(target, prop, receiver) {
@@ -22,17 +22,17 @@ export default class ProxyFile extends File {
                 return Reflect.get(target, prop, receiver)
             },
             set(target, prop, value, receiver) {
-                if (typeof value === 'object' && value !== null) {
+                if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
                     value = ProxyFile.convertToProxyModel(value, file)
                 }
-                plexos.Core.logChange("update",file.cfg.path)
+                //plexos.Core.logChange("update",file.cfg.path)
                 return Reflect.set(target, prop, value, receiver)
             }
         })
     }
     static convertToProxyModel(obj, file) {
         // If the input is not an object, return it as-is
-        if (typeof obj !== 'object' || obj === null) {
+        if (typeof obj !== 'object' || obj === null || Array.isArray(obj)) {
             return obj
         }
       
@@ -45,7 +45,7 @@ export default class ProxyFile extends File {
                 proxy[key] = ProxyFile.convertToProxyModel(obj[key], file)
             }
         }
-      
+
         return proxy
     }
     static unwrapProxy(proxy) {
@@ -68,6 +68,9 @@ export default class ProxyFile extends File {
             }
         }
         return result
+    }
+    static isEmpty(target) {
+        return Object.keys(ProxyFile.unwrapProxy(target)).length === 0
     }
     constructor(p) {
         super()

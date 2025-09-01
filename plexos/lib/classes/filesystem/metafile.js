@@ -18,7 +18,7 @@ export default class Metafile extends File {
         this.cfg = p.cfg
         this.meta.newtab      = p.meta?.newtab      || this.meta.newtab
 
-        this.meta.url         = p.meta?.file        || this.meta.url
+        this.meta.url         = p.meta?.url         || this.meta.url
         this.meta.embed       = p.meta?.embed       || this.meta.embed
         this.meta.download    = p.meta?.download    || this.meta.download
 

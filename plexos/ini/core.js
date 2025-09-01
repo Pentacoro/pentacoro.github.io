@@ -4,6 +4,7 @@ import Task from "../lib/classes/system/task.js"
 import EventBus from "../lib/classes/system/eventbus.js"
 import WorkerPool from "../lib/classes/system/workerpool.js"
 import File from "../lib/classes/filesystem/file.js"
+import ProxyFile from "../lib/classes/filesystem/proxy.js"
 import Directory from "../lib/classes/filesystem/directory.js"
 import Icon from "../lib/classes/interface/icon.js"
 import {runLauncher, getValue, ajaxReturn, storageAvailable} from "../lib/functions/dll.js"
@@ -67,7 +68,7 @@ plexos.Core = root
 root.file = {}
 root.mem.classCompilers = {
     "ProxyFile": (file) => {
-        return file.unwrapProxy()
+        return ProxyFile.unwrapProxy(file)
     }
 }
 root.ini = {}
@@ -263,24 +264,24 @@ windowManager.on("window-stylized", window => {
 
         window.poseNode()
         window.node.classList.remove("building")
-}
-windowManager.on("window-scripted", window => {
-    if (window && window.appParams.sizeDrawMethod === "fit-content") {
-        //window.drawParams.width  = window.node.offsetWidth
-        //window.drawParams.height = window.node.offsetHeight
-        window.appParams.minW   += window.node.offsetWidth
-        window.appParams.minH   += window.node.offsetHeight
-
-        if (window.drawParams.posX===0||window.drawParams.posY===0) {
-            let drawPos = window.definePosition()
-            window.drawParams.posX = drawPos.posX
-            window.drawParams.posY = drawPos.posY
-        }
-
-        window.poseNode()
-        window.node.classList.remove("building")
     }
-})
+    windowManager.on("window-scripted", window => {
+        if (window && window.appParams.sizeDrawMethod === "fit-content") {
+            //window.drawParams.width  = window.node.offsetWidth
+            //window.drawParams.height = window.node.offsetHeight
+            window.appParams.minW   += window.node.offsetWidth
+            window.appParams.minH   += window.node.offsetHeight
+
+            if (window.drawParams.posX===0||window.drawParams.posY===0) {
+                let drawPos = window.definePosition()
+                window.drawParams.posX = drawPos.posX
+                window.drawParams.posY = drawPos.posY
+            }
+
+            window.poseNode()
+            window.node.classList.remove("building")
+        }
+    })
 })
 windowManager.getInitialDrawParams = function(window) {
     const appname      = Task.id(window.task).name
@@ -289,27 +290,23 @@ windowManager.getInitialDrawParams = function(window) {
     let getRegistryAppParams = function (window) {
         const registryFile = File.at(`/plexos/reg/applications.proxy`)
 
-        let registryAppEntry = registryFile.data[appname]
-        if (!Object.prototype.hasOwnProperty.call(registryAppEntry, "windowDrawParameters")) {
-            registryAppEntry.windowDrawParameters = null
-        }
-        console.log(registryFile.data)
-        return JSON.parse(JSON.stringify(registryAppEntry.return().windowDrawParameters))
+        let registryAppEntry = eval(`registryFile.data.${Task.id(window.task).registryPath}`)
+
+        if (registryAppEntry.windowDrawParameters.return().current) return JSON.parse(JSON.stringify(registryAppEntry.windowDrawParameters.return().current))
+        return null
     }
 
     let getRegistryFileParams = function (window) {
         const registryFile = File.at(`/plexos/reg/files.proxy`)
 
         let registryFileEntry = registryFile.data[filePath]
-        if (!Object.prototype.hasOwnProperty.call(registryFileEntry.applications[appname], "windowDrawParameters")) {
-            registryFileEntry.applications[appname].windowDrawParameters = null
-        }
-        console.log(registryFileEntry)
-        return JSON.parse(JSON.stringify(registryFileEntry.applications[appname].return().windowDrawParameters))
+
+        if (!ProxyFile.isEmpty(registryFileEntry.applications[appname].windowDrawParameters)) return JSON.parse(JSON.stringify(registryFileEntry.applications[appname].windowDrawParameters.return()))
+        return null
     }
     switch (window.appParams.saveDrawParameters) {
         case "default":
-        case "app":
+        case "app" :
             return getRegistryAppParams(window)
         case "file":
         if (filePath) {
@@ -320,16 +317,17 @@ windowManager.getInitialDrawParams = function(window) {
     }
 }
 windowManager.setInitialDrawParams = function(window) {
+    const registryFile = File.at(`/plexos/reg/applications.proxy`)
     const appname      = Task.id(window.task).name
     const filePath     = window.appParams.filePath
 
     switch (window.appParams.saveDrawParameters) {
         case "default":
-        case "app":
-        let registryAppEntry = File.at(`/plexos/reg/applications.proxy`).data[appname]
-            registryAppEntry.windowDrawParameters = JSON.parse(JSON.stringify(window.drawParams))
+        case "app" :
+        let registryAppEntry = eval(`registryFile.data.${Task.id(window.task).registryPath}`)
+            registryAppEntry.windowDrawParameters.current = JSON.parse(JSON.stringify(window.drawParams))
             return
-        case "file" :
+        case "file":
         let registryFileEntry = File.at(`/plexos/reg/files.proxy`).data[filePath]
             registryFileEntry.applications[appname].windowDrawParameters = window.drawParams
             return

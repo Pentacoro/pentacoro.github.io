@@ -104,25 +104,25 @@ plexos.db.saveUser = async (user) => {
 
 plexos.db.saveCore = async (core) => {
     import("../lib/classes/filesystem/file.js")
-    let localCore = plexos.System.user.localCores.filter(localCore=>localCore.name === core.name)
-    if (localCore.length > 0) {
+    //if there are localCores saved, check if core to be saved is already local
+    if (localCore.length > 0 &&  plexos.System.user.localCores.filter(localCore=>localCore.name === core.name).length === 1) {
+        let localCore = plexos.System.user.localCores.filter(localCore=>localCore.name === core.name)[0]
         for (let change of plexos.Core.changeLog) {
             switch (change.name) {
-                case "update":
-                    if (plexos.Core.mem.classCompilers[change.file.cfg.class]) {
-                        File.at(change.file.cfg.path,"file","localCore")[File.classDefaults(change.file.cfg.class).skeyName] = plexos.Core.mem.classCompilers[change.file.cfg.class]
-                    } else {
-                        File.at(change.file.cfg.path,"file","localCore")[File.classDefaults(change.file.cfg.class).skeyName] = change.file
+                case "repath":
+                    if (change.dir === change.args.oldDir){
+                        delete File.at(change.args.oldPath,"parent","localCore")[change.args.oldName]
+                        File.at(change.file.cfg.path,"parent","localCore")[change.file.name] = File.at(change.path)
                     }
                     break
                 case "delete":
-                    delete File.at(change.file.cfg.path,"parent","localCore")[change.file.name]
+                    delete File.at(change.path,"parent","localCore")[change.file.name]
                     break
-                case "create":
+                case "update", "create":
+                    File.at(change.path,"parent","localCore")[change.file.name] = JSON.parse(File.stringify(File.at(change.path)))
+                    break
             }
         }
-        plexos.System.user.localCores = plexos.System.user.localCores.filter(core=>localCore.name !== core.name)
-        plexos.System.user.localCores.push(core)
     } else {
         plexos.System.user.localCores.push(core)
     }
