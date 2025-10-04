@@ -1,4 +1,4 @@
-import {plexos} from "/plexos/ini/system.js"
+import plexos from "/plexos/ini/system.js"
 import {runLauncher} from "../../functions/dll.js"
 import Task from "../system/task.js" //file explorer deletion
 import File from "../filesystem/file.js"

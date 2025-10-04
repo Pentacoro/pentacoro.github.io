@@ -1,4 +1,4 @@
-import {plexos} from "/plexos/ini/system.js"
+import plexos from "/plexos/ini/system.js"
 import Task from "/plexos/lib/classes/system/task.js"
 import Window from "/plexos/lib/classes/interface/window.js"
 import {displayComponent} from "/plexos/lib/functions/dll.js"
@@ -15,7 +15,7 @@ export function initialize({taskid,args,path,root}) {
         arg.title       = args.title
         arg.description = args.description
         arg.image       = args.image
-        arg.taskid      = args.taskid || Task.get("System").id
+        arg.taskid      = args.taskid || Task.System().id
     }
     //on app end
     function end() {

@@ -1,4 +1,4 @@
-import {cfg, plexos} from "/plexos/ini/system.js"
+import plexos from "/plexos/ini/system.js"
 import {runLauncher, iframeAntiHover, areRectanglesOverlap} from "/plexos/lib/functions/dll.js"
 import Task from "/plexos/lib/classes/system/task.js"
 import ContextMenu from "/plexos/lib/classes/interface/contextmenu.js"

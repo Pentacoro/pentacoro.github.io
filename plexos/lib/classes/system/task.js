@@ -1,8 +1,9 @@
-import {plexos} from "../../../ini/system.js"
+import plexos from "../../../ini/system.js"
 import {genRanHex, runLauncher} from "/plexos/lib/functions/dll.js"
 import File from "../filesystem/file.js"
 import Component from "../interface/component.js"
 import ChangeLog from "./changeLog.js"
+import EventBus from "./eventbus.js"
 let System = plexos.System
 
 export default class Task {
@@ -15,19 +16,25 @@ export default class Task {
             }
         }
     }
-    static canInstance(appName){
+    static canInstance(appID){
         for (let i = 0; i < plexos.Tasks.length; i++){
             if (plexos.Tasks[i].instantiable === false && plexos.Tasks[i].name === appName) return false
         }
         return true
     }
-    static get(appName){
+    static get(name){
         for (let i = 0; i < plexos.Tasks.length; i++){
-            if (plexos.Tasks[i].name === appName) return plexos.Tasks[i]
+            if (plexos.Tasks[i].name === name) return plexos.Tasks[i]
         }
         return null
     }
-    static endTask(id) {
+    static app(appID) {
+        for (let i = 0; i < plexos.Tasks.length; i++){
+            if (plexos.Tasks[i].appID === appID) return plexos.Tasks[i]
+        }
+        return null
+    }
+    static end(id) {
         Task.id(id).end()
     }
     static deleteSelectedNodes(pocket){
@@ -35,7 +42,10 @@ export default class Task {
             icon.deleteNode()
             //delete from filesystem
             if(File.at(icon.file)!=undefined) File.at(icon.file).delete()
-        }
+            }
+    }
+    static System() {
+        return Task.get("System")
     }
     static id(id){
         let find = plexos.Tasks.filter(task => task.id === id)
@@ -43,17 +53,15 @@ export default class Task {
     }
     constructor(p) {
         //check if instance allowed
-        if (!Task.canInstance(p.name)) {
-            Task.get(p.name).focus()
+        if (!Task.canInstance(p.appID)) {
+            Task.get(p.appID).focus()
             delete this
             return
         }
+        this.appID = p.appID
+        this.registryPath = p.registryPath
 
         this.name = p.name
-        this.apps = p.apps
-        this.from = p.from || this.from
-
-        this.instantiable = (p.instantiable===null) ? true : p.instantiable
         this.node = p.node || this.node
 
         this.window = null
@@ -63,16 +71,18 @@ export default class Task {
         this.pocket = []
         this.windows = []
         this.blobList = []
+
+        this.eventBus = new EventBus
         this.changeLog = new ChangeLog
+
         this.components = []
-        this.permissions = [] //file.write | file.read | task.listen | task.emit | task.execute
-        this.registryPath = p.registryPath
 
         this.mem = {
             var: {},
             arg: {},
             sfx: [],
         }
+
         this.listeners = []
         this.id = (p.id !== undefined) ? p.id : genRanHex(16)
         Task.checkUniqueID(this)
@@ -99,11 +109,11 @@ export default class Task {
         plexos.Tasks = plexos.Tasks.remove(Task.id(this.id))
     }
     on(eventName, callback, priority = 0, id="") {
-        Task.get("System").bus.on(eventName, callback, priority, id)
+        Task.System().bus.on(eventName, callback, priority, id)
         this.listeners.push({ eventName, callback, id})
     }
     off(eventName, callback, id="") {
-        Task.get("System").bus.off(eventName, callback, id)
+        Task.System().bus.off(eventName, callback, id)
         if (id!=="") {
             this.listeners = this.listeners.filter(listener => listener.id != id)
         } else {
@@ -123,20 +133,20 @@ export default class Task {
     }
 
     emit(eventName, ...args) {
-        Task.get("System").bus.emit(eventName, ...args)
+        Task.System().bus.emit(eventName, ...args)
     }
 
     cleanupListeners() {
         this.listeners.forEach(({eventName, callback}) => {
-            Task.get("System").bus.off(eventName, callback)
+            Task.System().bus.off(eventName, callback)
         })
         this.listeners = []
     }
     cleanupBlobUrls() {
         for (let url of this.blobList) URL.revokeObjectURL(url)
     }
-    loader(op) {
-        (op) ? this.load++ : this.load--
+    loader(bool) {
+        (bool) ? this.load++ : this.load--
         this.load = (this.load < 0) ? 0 : this.load
 
         if (this.load === 0) {
@@ -146,9 +156,9 @@ export default class Task {
         }
     }
     focus() {
-        if (Task.get("System").mem.focused === this) return
-        if (Task.get("System").mem.focused) Task.get("System").mem.focused.blur()
-        Task.get("System").mem.focused = this
+        if (Task.System().mem.focused === this) return
+        if (Task.System().mem.focused) Task.System().mem.focused.blur()
+        Task.System().mem.focused = this
         window.getSelection().removeAllRanges()
         if (this.window) {
             this.window.focus()
@@ -217,26 +227,14 @@ export default class Task {
         )
     }
     logChange(type,path,args=null) {
-        this.changeLog.addDirtyChange({
-            type:type,            
-            path:path,
-            dir:File.at(path, "parent").cfg.path,
-            app:this.name,
-            args:args,
-            isCommitted:false
-        })
+
     }
     undo() {
-        let lastChange = this.changeLog[this.changeLog.length - 1]
 
-        if (!lastChange) return
-
-        lastChange.undo()
-        this.changeLog.pop()
     }
     async askPermission(allowance) {
         return new Promise (async (resolve, reject) => {
-            await System.askPermission(this.id,"allowance")
+            await System.askPermission(this.appID,"allowance")
         })
     }
 }

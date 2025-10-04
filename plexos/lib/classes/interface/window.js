@@ -1,4 +1,4 @@
-import {plexos} from "/plexos/ini/system.js"
+import plexos from "/plexos/ini/system.js"
 import {nodeGetters, iframeAntiHover} from "/plexos/lib/functions/dll.js"
 import Task from "../system/task.js"
 import File from "../filesystem/file.js"

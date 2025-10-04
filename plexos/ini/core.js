@@ -1,4 +1,4 @@
-import {plexos} from "./system.js"
+import plexos from "./system.js"
 
 import Task from "../lib/classes/system/task.js"
 import EventBus from "../lib/classes/system/eventbus.js"
@@ -25,7 +25,7 @@ sys.mem.lau = {}
 sys.mem.var.dragging = false
 sys.mem.var.shSelect = true
 sys.mem.focused = null
-sys.mem.cfg = plexos.cfg
+sys.mem.cfg = plexos.Config
 sys.mem.downloadCoreJSON = function (exportName="core") {
     let jsonCore = plexos.Core
     let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(jsonCore))

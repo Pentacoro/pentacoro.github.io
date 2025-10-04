@@ -3,50 +3,51 @@ import Window from "/plexos/lib/classes/interface/window.js"
 import File from "/plexos/lib/classes/filesystem/file.js"
 import {displayComponent} from "/plexos/lib/functions/dll.js"
 
-export function initialize({taskid,args,path,root}) {
-    let html = root + "/notepad.html"
+export default {
+    application: `Notepad`,
+    run: function({taskid,appid,args,path,root}){
+        let html = root + "/notepad.html"
 
-    //on app init
-    function ini() {
-        let task = Task.id(taskid)
-        let arg  = task.mem.arg
+        //on app init
+        function ini() {
+            let task = Task.id(taskid)
+            let arg  = task.mem.arg
 
-        arg.textData = File.at(args.path).data
-        arg.fileAddr = args.path
-    }
-    //on app end
-    function end() {
-
-    }
-
-    //task creation
-    let task = new Task(
-        {
-            registryPath: `STANDALONE["Notepad"]`,
-            name : "Notepad",
-            instantiable : true,
-            onEnd : end,
-            node : null,
-            from : "Plexus",
-            id   : taskid
+            arg.textData = File.at(args.path).data
+            arg.fileAddr = args.path
         }
-    )
-    if (!task.id) return
+        //on app end
+        function end() {
 
-    //window generation
-    new Window(
-        {
-            name : File.at(args.path).name+" - Notepad",
-            task : task.id, 
-            icon : (File.at(args.path)) ? File.at(args.path).cfg.icon.getImage() : "/plexos/res/themes/Plexos Hyper/icons/files/defaultFile.svg",
         }
-    )
 
-    ini()
+        //task creation
+        let task = new Task(
+            {
+                appID: appid,
+                name : "Notepad",
+                onEnd : end,
+                node : null,
+                id   : taskid
+            }
+        )
+        if (!task.id) return
 
-    displayComponent({
-        url:html,
-        taskid:task.id,
-        container:task.node
-    })
+        //window generation
+        new Window(
+            {
+                name : File.at(args.path).name+" - Notepad",
+                task : task.id, 
+                icon : (File.at(args.path)) ? File.at(args.path).cfg.icon.getImage() : "/plexos/res/themes/Plexos Hyper/icons/files/defaultFile.svg",
+            }
+        )
+
+        ini()
+
+        displayComponent({
+            url:html,
+            taskid:task.id,
+            container:task.node
+        })
+    }
 }

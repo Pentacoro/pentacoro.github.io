@@ -1,7 +1,5 @@
-import {plexos} from "../../ini/system.js"
+import plexos from "../../ini/system.js"
 import Task from "../classes/system/task.js"
-
-let cfg = plexos.cfg
 
 export function ajax(method, url, callback = null, arg = null){
     let xhr = new XMLHttpRequest;
@@ -230,12 +228,12 @@ export async function loadFront({url, taskid, data, container, focus = null, com
 }
 export async function blobModule(data) {
     data = data.replace(/import\s+([^'"]+)\s+from\s+['"]([^'"]+)['"]/g, (match, what, path) => {
-        const absolutePath = new URL(path, cfg.system.basePath).href
+        const absolutePath = new URL(path, plexos.Config.system.basePath).href
         return `import ${what} from '${absolutePath}'`
     })
     return URL.createObjectURL(new Blob([`${data}`], { type: 'text/javascript' }))
 }
-export async function runLauncher(url, args = {}, focus = null, name = ""){
+export async function runLauncher(path, args = {}, focus = null, name = ""){
     if (!Task.canInstance(name)) {
         Task.get(name).focus()
         return
@@ -245,25 +243,25 @@ export async function runLauncher(url, args = {}, focus = null, name = ""){
     if (focus) focus.loader(true)
 
     //generate task id
-    let appID = { id : genRanHex(16)}
-    Task.checkUniqueID(appID)
-
-    //place arguments on Task.get("System") task
-    Task.get("System").mem.lau[appID.id] = args
+    let taskID = genRanHex(16)
+    Task.checkUniqueID({id:taskID})
 
     //get .ls file
     let appLauncher = ajaxReturn("get", url)
 
     appLauncher.then( async data => {
         try {
-        let proxy  = await blobModule(data)
-        let module = await import(proxy)
-            module.initialize(
+            let proxy  = await blobModule(data)
+            let module = await import(proxy)
+
+            Task.get()
+        
+            module.run(
                 {
-                    taskid: appID.id,
-                    args: Task.get("System").mem.lau[appID.id],
-                    path: url,
-                    root: url.replace(url.match(/\/(?:.(?<!\/))+$/s),"")
+                    taskid: taskID,
+                    args: args,
+                    path: path,
+                    root: path.replace(path.match(/\/(?:.(?<!\/))+$/s),"")
                 }
             )
             if (focus) focus.loader(false)
@@ -271,38 +269,38 @@ export async function runLauncher(url, args = {}, focus = null, name = ""){
             evalErrorPopup
             (
                 data,
-                "The application launcher at: <i>'" + url + "'</i> failed evaluation.",
+                "The application launcher at: <i>'" + path + "'</i> failed evaluation.",
                 e
             ) 
-            //URL.revokeObjectURL(proxy)
         }
     })
     appLauncher.catch( e => {
-        //Task.get("System").mem.var.error = e
-        //Task.get("System").mem.var.errorB = [["Okay"]]
+        //Task.System().mem.var.error = e
+        //Task.System().mem.var.errorB = [["Okay"]]
         
         evalErrorPopup
         (
             data,
-            "The application launcher at: <i>'" + url + "'</i> failed evaluation.",
+            "The application launcher at: <i>'" + path + "'</i> failed evaluation.",
             e
         ) 
     })
     appLauncher.finally( e => {
+        URL.revokeObjectURL(proxy)
         if (focus) focus.loader(false)
     })
 }
 export function evalErrorPopup(code, desc, error) {
     //add it to typeError stack
     error.script = code
-    Task.get("System").mem.var.error = error
+    Task.System().mem.var.error = error
     runLauncher("./plexos/app/sys/Popup/popup.ls",
         {
             name:"Error",
             type:true,
             title:"Evaluation Failed", 
             description:desc,
-            taskid:Task.get("System").id,
+            taskid:Task.System().id,
             icon:""
         }
     )

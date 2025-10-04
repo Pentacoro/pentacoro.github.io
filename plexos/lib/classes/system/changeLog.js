@@ -2,7 +2,7 @@ import File from "../../classes/filesystem/file.js"
 
 export default class CoreChangeLog {
     constructor() {
-        this.operations = []  // Raw operations in user-executed order
+        this.operations = []
     }
 
     addChange(type, path, oldPath = null) {
@@ -10,54 +10,104 @@ export default class CoreChangeLog {
     }
 
     getCommitPlan() {
-        const fileHistories = new Map() // path -> Array<operation>
-
-        // 1. Group operations by final path (after renames)
-        for (const op of this.operations) {
-            const targetPath = this.traceFinalPath(op.path)
-            if (!fileHistories.has(targetPath)) {
-                fileHistories.set(targetPath, [])
-            }
-            fileHistories.get(targetPath).push(op)
+        const conflicts = this.detectRenameConflicts()
+        
+        if (conflicts.size > 0) {
+            return this.withTempPaths(conflicts)
+        } else {
+            return this.rawOperations()
         }
-
-        // 2. Filter each file's history to only meaningful operations
-        const plan = []
-        for (const [path, ops] of fileHistories) {
-            const filtered = this.filterFileHistory(ops)
-            plan.push(...filtered)
-        }
-
-        // 3. Sort by original execution order
-        return plan.sort((a, b) => a.originalIndex - b.originalIndex)
     }
 
-    traceFinalPath(path) {
-        // Follow rename chains to find final path
-        let current = path
+    detectRenameConflicts() {
+        const conflictSet = new Set()
+        const finalPaths = new Map() // originalPath -> finalPath
+        
+        // First pass: trace all final paths
         for (const op of this.operations) {
-            if (op.type === 'repath' && op.oldPath === current) {
-                current = op.path
+            if (op.type === 'repath') {
+                finalPaths.set(op.oldPath, op.path)
             }
-        }  
+        }
+
+        // Second pass: detect conflicts
+        for (const op of this.operations) {
+            if (op.type === 'repath') {
+                const sourceFinal = this.traceFinalPath(op.oldPath, finalPaths)
+                const targetFinal = this.traceFinalPath(op.path, finalPaths)
+                
+                // Conflict if: A→B and C→B (two files targeting same path)
+                if (sourceFinal !== targetFinal) {
+                    conflictSet.add(sourceFinal)
+                    conflictSet.add(targetFinal)
+                }
+            }
+        }
+
+        return conflictSet
+    }
+
+    withTempPaths(conflicts) {
+        const tempMap = new Map() // finalPath -> tempPath
+        const plan = []
+
+        // Assign temp paths to conflicting files
+        for (const op of this.operations) {
+            const finalPath = this.traceFinalPath(op.path)
+            if (conflicts.has(finalPath) && !tempMap.has(finalPath)) {
+                tempMap.set(finalPath, this.generateTempPath(finalPath))
+            }
+        }
+
+        // Convert operations to use temp paths
+        for (const op of this.operations) {
+            const finalPath = this.traceFinalPath(op.path)
+            const tempPath = tempMap.get(finalPath)
+            
+            if (tempPath) {
+                plan.push({ ...op, tempPath, finalPath })
+            } else {
+                plan.push(op) // Non-conflicting, use as-is
+            }
+        }
+
+        // Add final rename operations
+        for (const [finalPath, tempPath] of tempMap) {
+            plan.push({ 
+                type: 'repath', 
+                path: finalPath, 
+                oldPath: tempPath,
+                isFinalRename: true 
+            })
+        }
+
+        return plan
+    }
+
+    rawOperations() {
+        return [...this.operations] // No conflicts, direct execution
+    }
+
+    // Helper methods
+    traceFinalPath(startPath, pathMap = this.buildPathMap()) {
+        let current = startPath
+        while (pathMap.has(current)) {
+            current = pathMap.get(current)
+        }
         return current
     }
 
-    filterFileHistory(ops) {
-        const history = []
-        let exists = false
-
-        // Replay operations to determine final state
-        for (const op of ops) {
-            if (op.type === 'create') exists = true
-            if (op.type === 'delete') exists = false
-            if (op.type === 'repath') continue // Handled by traceFinalPath
-            
-            if (exists || op.type === 'create') {
-                history.push(op)
+    buildPathMap() {
+        const map = new Map()
+        for (const op of this.operations) {
+            if (op.type === 'repath') {
+                map.set(op.oldPath, op.path)
             }
         }
+        return map
+    }
 
-        return history
+    generateTempPath(originalPath) {
+        return `${originalPath}.tmp.${Math.random().toString(36).slice(2, 9)}`
     }
 }

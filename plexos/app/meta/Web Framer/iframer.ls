@@ -3,53 +3,54 @@ import Window from "/plexos/lib/classes/interface/window.js"
 import File from "/plexos/lib/classes/filesystem/file.js"
 import {displayComponent} from "/plexos/lib/functions/dll.js"
 
-export function initialize({taskid,args,path,root}){
-    let html = root + "/iframer.html"
+export default {
+    application: `Web Framer`,
+    run: function({taskid,appid,args,path,root}){
+        let html = root + "/iframer.html"
 
-    //on app init
-    function ini() {
-        let task = Task.id(taskid)
-        let arg  = task.mem.arg
-        
-        arg.file = File.at(args.path)
-    }
-    //on app end
-    function end() {
-
-    }
-
-    //task creation
-    let task = new Task(
-        {
-            registryPath: `STANDALONE["Web Framer"]`,
-            name : "Web Framer",
-            instantiable : true,
-            onEnd : end,
-            node : null,
-            from : "Plexus",
-            id   : taskid
+        //on app init
+        function ini() {
+            let task = Task.id(taskid)
+            let arg  = task.mem.arg
+            
+            arg.file = File.at(args.path)
         }
-    )
-    if (!task.id) return
+        //on app end
+        function end() {
 
-    //window generation
-    new Window
-    (
-        {
-            name : args.name,
-            task : task.id, 
-            icon : (File.at(args.path)) ? File.at(args.path).cfg.icon.getImage() : "/plexos/res/themes/Plexos Hyper/icons/files/defaultMSF.svg",
-            appParams: {
-                filePath: args.path,
+        }
+
+        //task creation
+        let task = new Task(
+            {
+                appID: appid,
+                name : "Web Framer",
+                onEnd: end,
+                node : null,
+                id   : taskid
             }
-        }
-    )
+        )
+        if (!task.id) return
 
-    ini()
+        //window generation
+        new Window
+        (
+            {
+                name : args.name,
+                task : task.id, 
+                icon : (File.at(args.path)) ? File.at(args.path).cfg.icon.getImage() : "/plexos/res/themes/Plexos Hyper/icons/files/defaultMSF.svg",
+                appParams: {
+                    filePath: args.path,
+                }
+            }
+        )
 
-    displayComponent({
-        url:html,
-        taskid:task.id,
-        container:task.node
-    })
+        ini()
+
+        displayComponent({
+            url:html,
+            taskid:task.id,
+            container:task.node
+        })
+    }
 }

@@ -1,6 +1,6 @@
-import {plexos} from "/plexos/ini/system.js"
+import plexos from "/plexos/ini/system.js"
 import {getTask, isKeyWrite} from "/plexos/lib/functions/dll.js"
-let cfg = plexos.cfg
+let cfg = plexos.Config
 
 let task = getTask(/TASKID/)
 let mem  = task.mem

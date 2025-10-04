@@ -1,5 +1,5 @@
 import File from "./file.js"
-import {plexos} from "../../../ini/system.js"
+import plexos from "../../../ini/system.js"
 export default class ProxyFile extends File {
     static createDynamicProxy(target = {}, file) {
         // Store the REAL target (not an empty object)

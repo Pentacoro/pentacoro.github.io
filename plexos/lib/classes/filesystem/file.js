@@ -1,4 +1,4 @@
-import {plexos, cfg} from "../../../ini/system.js"
+import plexos from "../../../ini/system.js"
 import {renameKey, runLauncher, calculateStringSize} from  "../../functions/dll.js"
 
 export default class File {
@@ -160,30 +160,101 @@ export default class File {
         return fileViews
     }
 
-    delete(log=true) {
-        let parent = this.parent()
-        let child = this
+    static create
+    (   
+        path,
+        type, 
+        name, 
+        icon = null, 
+        conf = null, 
+        cont = null,
+        log = true,
+    ) {
+        let parent = File.at(path)
+
+        let defaults = File.classDefaults(type)
+        let confType = defaults.confType
+        let skeyName = defaults.skeyName
+        let Type = {}
+        switch (type) {
+            case "Directory":   Type = Directory; break
+            case "Metafile":    Type = Metafile; break
+            case "StringFile":  Type = StringFile; break
+            case "ProxyFile":   Type = ProxyFile; break
+        }
+
+        name = name + (((confType!="Directory") && !name.includes(".")) ? "." + name.match(/(?:.(?<!\.))+$/s)[0] : "")
+
+        parent.dir[name] = new Type
+        (
+            {
+                name : name,
+                cfg  : conf || new Configuration (
+                {
+                    class : confType,
+                    move : true,
+                    exte : (confType=="Directory") ? "dir" : name.match(/(?:.(?<!\.))+$/s)[0],
+                    icon : icon || new Icon (
+                                            {
+                                                class : confType, 
+                                                name : name, 
+                                                exte : name.match(/(?:.(?<!\.))+$/s)[0],
+                                                state : 0  
+                                            }
+                                        ),
+                }),
+                [skeyName] : cont
+            }
+        )
+
+        parent.dir[name].cfg.path = parent.cfg.path+ "/" + name
+        parent.dir[name].cfg["icon"].file = parent.cfg.path+ "/" + name
+
+        //if (log) plexos.Core.logChange("create",parent.dir[name].cfg.path)
+
+        return parent.dir[name]
+    }
+
+    static delete({path, log=true}) {
+        const file = File.at(path)
+        const parent = file.parent()
 
         //if (log) plexos.Core.logChange("delete",child.cfg.path)
 
-        delete parent.dir[child.name]
+        delete parent.dir[file.name]
     }
-    move(to, log=true) {
+    static remove ({path, log=true}) {
+
+    }
+    static restore({path, timestamp, log=true}) {
+
+    }
+    static move({path, to, log=true}) {
         
     }
-    rename(rename, log=true) {
-        let parent  = this.parent()
+    static read({path}) {
 
-        rename = File.returnAvailableName(rename,null,this.parent())
+    }
+    static write({path, data, log=true}) {
+
+    }
+    static modify({path, sys, log=true}) {
+
+    }
+    static rename({path, rename, log=true}) {
+        const file = File.at(path)
+        const parent  = file.parent()
+
+        rename = File.returnAvailableName(rename,null,file.parent())
 
         let newAddress = "" + parent.cfg.path + "/" + rename
-        let oldAddress = this.cfg.path
-        let oldName = this.name
+        let oldAddress = file.cfg.path
+        let oldName = file.name
 
-        this.cfg.path = newAddress
-        this.cfg.icon.file = newAddress
+        file.cfg.path = newAddress
+        file.cfg.icon.file = newAddress
 
-        if (this.dir) rerouteChildren(this)
+        if (file.dir) rerouteChildren(file)
 
         function rerouteChildren(parent) {
             for (let pair of Object.entries(parent.dir)) {
@@ -211,14 +282,15 @@ export default class File {
         //if (log) plexos.Core.logChange("repath",this.cfg.path,{oldPath:oldAddress})
     }
 
+    static open({path}) {
+        const file = File.at(path)
+        runLauncher(plexos.Config.apps[file.cfg.exte], {name:file.name, path:file.cfg.path}, plexos.System.mem.focused)
+    }
+
     render() {
         for (let fileView of File.viewsOpened(this.parent().cfg.path)) {
             fileView.mem["create"+fileView.name+"Icons"]([this])
         }
-    }
-
-    open() {
-        runLauncher(cfg.apps[this.cfg.exte], {name:this.name, path:this.cfg.path}, plexos.System.mem.focused)
     }
 
     parent() {
@@ -229,10 +301,13 @@ export default class File {
         return this.name.replace(/\.(?:.(?<!\.))+$/s, "")
     }
 
-    size(unit=null) {
+    size(unit=null,data=true) {
         let formatter = new Intl.NumberFormat('en-UK', {maximumFractionDigits:2})
 
-        let byteSize = calculateStringSize(`"${this.name}":${JSON.stringify(this)}`)
+        let byteSize = calculateStringSize(
+            (data) ? JSON.stringify(JSON.parse(File.stringify(this))[File.classDefaults(this.cfg.class).skeyName]).replace(/^\s*"([^"]*)"\s*$/, '$1') : 
+            `"${this.name}":${File.stringify(this)}`
+        )
 
         if        (byteSize < Math.pow(1024, 1) || unit==="bytes") {
             return formatter.format(byteSize) + " bytes"

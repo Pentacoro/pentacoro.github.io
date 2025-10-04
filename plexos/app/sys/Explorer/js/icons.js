@@ -1,4 +1,4 @@
-import {plexos} from "/plexos/ini/system.js"
+import plexos from "/plexos/ini/system.js"
 import {getTask, selectText, clearSelection, nullifyOnEvents} from "/plexos/lib/functions/dll.js"
 import Task from "/plexos/lib/classes/system/task.js"
 import File from "/plexos/lib/classes/filesystem/file.js"

@@ -1,4 +1,4 @@
-import {plexos} from "./system.js"
+import plexos from "./system.js"
 import File from "/plexos/lib/classes/filesystem/file.js"
 import ProxyFile from "/plexos/lib/classes/filesystem/proxy.js"
 
@@ -9,6 +9,17 @@ export default function initialize() {
 
     let proxy = File.at("/plexos/reg/applications.proxy")
     proxy.data = {}
+    proxy.data.INDEX = {
+        "Desktop": `SYSTEM["Desktop"]`,
+        "Explorer": `SYSTEM["Explorer"]`,
+        "File Properties": `SYSTEM["File Properties"]`,
+        "Meta Creator": `SYSTEM["Meta Creator"]`,
+        "Popup": `SYSTEM["Popup"]`,
+        "Theme Manager": `SYSTEM["Theme Manager"]`,
+        "Window Manager": `SYSTEM["Window Manager"]`,
+        "Notepad": `STANDALONE["Notepad"]`,
+        "Web Framer": `STANDALONE["Web Framer"]`
+    }
     proxy.data.SYSTEM = {
         "Desktop": {
             installationDirectory: "@/plexos/app/sys/Desktop",

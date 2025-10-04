@@ -1,4 +1,4 @@
-import {plexos} from "./system.js"
+import plexos from "./system.js"
 import {clearSelection, storageAvailable} from "../lib/functions/dll.js"
 import ContextMenu from "../lib/classes/interface/contextmenu.js"
 

@@ -1,14 +1,14 @@
 import cfg from "./config.js"
 
 let plexos = {
+    User: "",
     System: {},
-    Windows: [],
+    Config: cfg,
     Tasks: [],
     Proxy: {},
-    cfg: cfg,
     db: {}
 }
-export {plexos, cfg}
+export default plexos
 
 //plexos.sfx.push(new Audio("plexos/res/sounds/Norrum - Interfaz Startup 2 v1.mp3"))
 
