@@ -375,7 +375,7 @@ mem.grid.evaluateIconGrid = function (
             }
         }
 
-        task.emit("desktop-grid-length-change")
+        task.cmd("event.emit", { eventName: "desktop-grid-length-change" })
 
         if(autowm){
             if (
@@ -460,7 +460,7 @@ mem.grid.evaluateIconGrid = function (
                 }
             }
         }
-        task.emit("desktop-grid-margin-change")
+        task.cmd("event.emit", { eventName: "desktop-grid-margin-change" })
     }
 
     //check border gap

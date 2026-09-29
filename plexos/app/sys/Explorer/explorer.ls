@@ -4,7 +4,7 @@ import File from "/plexos/lib/classes/filesystem/file.js"
 import {displayComponent} from "/plexos/lib/functions/dll.js"
 
 export default {
-    application: `Explorer`,
+    app: `Explorer`,
     run: function({taskid,appid,args,path,root}){
         let html = (args.type) ? root + "/explorer"+args.type+".html" :  root + "/explorer.html"
 
@@ -23,6 +23,7 @@ export default {
         //task creation
         let task = new Task(
             {
+                registryPath: `SYSTEM["Explorer"]`,
                 appID: appid,
                 name : "Explorer",
                 onEnd : end,

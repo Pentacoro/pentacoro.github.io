@@ -53,7 +53,7 @@ mem.updateGridGraphDrag = function () {
     }
     if (dot.offsetLeft === 108) {
         if (!mem.cfg.grid.hideOnShrink ) {
-            img.style.backgroundImage = (cfg.grid.stickToBorder) ? "url('./grid_graph_02-1.svg')" : "url('./grid_graph_02-2.svg')"
+            img.style.backgroundImage = (mem.cfg.grid.stickToBorder) ? "url('./grid_graph_02-1.svg')" : "url('./grid_graph_02-2.svg')"
             sll.style.backgroundImage = "url('./grid_graph_scroll_03-1.svg')"
             return
         } else {

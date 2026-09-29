@@ -9,13 +9,13 @@ mem.cfg = Task.get("Desktop").mem.cfg
 //on app close
 task.onEnd = function () {
     eval(mem.var.configEditable +" = mem.var.configInitialState")
-    task.emit("desktop-grid-settings-closed")
+    task.cmd("event.emit", {eventName: "desktop-grid-settings-closed"})
     File.at(mem.var.configFilePath).data = JSON.stringify(eval(mem.var.configEditable), null, "\t")
 }
 
 //on editable change
 mem.onChange = function() {
-    task.emit("desktop-grid-settings-change")
+    task.cmd("event.emit", {eventName: "desktop-grid-settings-change"})
     if (task.node.getElementsByClassName("footer-apply")[0].disabled) {
         task.node.getElementsByClassName("footer-apply")[0].disabled = false
         task.node.getElementsByClassName("footer-apply")[0].classList.remove("disabled")
@@ -31,26 +31,26 @@ task.node.getElementsByName("mem.cfg.grid.autoHmargin")[1].addEventListener("cli
     mem.cfg.grid.modHmargin = 0
     mem.cfg.grid.hMargin = Number(mem.var.hMarginHTML.value)
     mem.updateTileGraphAuto()
-    task.emit("desktop-grid-settings-change")
+    task.cmd("event.emit", {eventName: "desktop-grid-settings-change"})
 })
 task.node.getElementsByName("mem.cfg.grid.autoVmargin")[1].addEventListener("click", e=>{
     if (e.target.checked) return
     mem.cfg.grid.modVmargin = 0
     mem.cfg.grid.vMargin = Number(mem.var.vMarginHTML.value)
     mem.updateTileGraphAuto()
-    task.emit("desktop-grid-settings-change")
+    task.cmd("event.emit", {eventName: "desktop-grid-settings-change"})
 })
 task.node.getElementsByName("mem.cfg.grid.hMargin")[0].addEventListener("click", e=>{
     mem.cfg.grid.modHmargin = 0
     mem.cfg.grid.hMargin = Number(mem.var.hMarginHTML.value)
     mem.updateTileGraphAuto()
-    task.emit("desktop-grid-settings-change")
+    task.cmd("event.emit", {eventName: "desktop-grid-settings-change"})
 })
 task.node.getElementsByName("mem.cfg.grid.vMargin")[0].addEventListener("click", e=>{
     mem.cfg.grid.modVmargin = 0
     mem.cfg.grid.vMargin = Number(mem.var.vMarginHTML.value)
     mem.updateTileGraphAuto()
-    task.emit("desktop-grid-settings-change")
+    task.cmd("event.emit", {eventName: "desktop-grid-settings-change"})
 })
 task.node.getElementsByName("mem.cfg.grid.stickToBorder")[0].addEventListener("click", e=>{
     mem.updateGridGraphDrag()

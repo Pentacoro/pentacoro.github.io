@@ -10,11 +10,10 @@ export default class Task {
     static checkUniqueID(task){
         for (let i = 0; i < plexos.Tasks.length; i++){
             if (plexos.Tasks[i].id == task.id && plexos.Tasks[i] != task){
-                console.log(task)
                 task.id = genRanHex(16)
                 Task.checkUniqueID(task)
             }
-        }
+        }   
     }
     static canInstance(appID){
         for (let i = 0; i < plexos.Tasks.length; i++){
@@ -40,9 +39,8 @@ export default class Task {
     static deleteSelectedNodes(pocket){
         for(let icon of pocket){
             icon.deleteNode()
-            //delete from filesystem
             if(File.at(icon.file)!=undefined) File.at(icon.file).delete()
-            }
+        }
     }
     static System() {
         return Task.get("System")
@@ -52,7 +50,6 @@ export default class Task {
         return find[0]
     }
     constructor(p) {
-        //check if instance allowed
         if (!Task.canInstance(p.appID)) {
             Task.get(p.appID).focus()
             delete this
@@ -60,87 +57,96 @@ export default class Task {
         }
         this.appID = p.appID
         this.registryPath = p.registryPath
-
         this.name = p.name
         this.node = p.node || this.node
-
         this.window = null
-
         this.load = 0
         this.tasks = []
         this.pocket = []
         this.windows = []
         this.blobList = []
-
         this.eventBus = new EventBus
         this.changeLog = new ChangeLog
-
         this.components = []
-
         this.mem = {
             var: {},
             arg: {},
             sfx: [],
         }
-
         this.listeners = []
+        this.globalListeners = []   // <-- track global listeners
         this.id = (p.id !== undefined) ? p.id : genRanHex(16)
         Task.checkUniqueID(this)
-        
-        //end task
         this.onEnd = p.onEnd || null
-
         plexos.Tasks.push(this)
     }
+
     end () {
         if (this.onEnd) this.onEnd()
-
-        //delete style tags
         for (let styleTag of document.head.getElementsByClassName(this.id)) {
             styleTag.parentElement.removeChild(styleTag)
         }
-        //close window
         if (this.window) {
             this.window.deleteNode()
         }
-
         this.cleanupListeners()
+        this.cleanupGlobalListeners()
         this.cleanupBlobUrls()
         plexos.Tasks = plexos.Tasks.remove(Task.id(this.id))
     }
+
+    // ---- Local event bus methods (operate on this.eventBus) ----
     on(eventName, callback, priority = 0, id="") {
-        Task.System().bus.on(eventName, callback, priority, id)
+        this.eventBus.on(eventName, callback, priority, id)
         this.listeners.push({ eventName, callback, id})
     }
     off(eventName, callback, id="") {
-        Task.System().bus.off(eventName, callback, id)
+        this.eventBus.off(eventName, callback, id)
         if (id!=="") {
             this.listeners = this.listeners.filter(listener => listener.id != id)
         } else {
-            this.listeners = this.listeners.filter(listener => listener != {eventName, callback})
+            this.listeners = this.listeners.filter(listener => !(listener.eventName === eventName && listener.callback === callback))
         }
     }
     once(eventName, callback, priority=0, id="") {
         if (id==="") id = genRanHex(8)
         const wrapper = (...args) => {
             callback(...args)
-            this.off(eventName, wrapper, id) // Remove listener after first execution
+            this.off(eventName, wrapper, id)
         }
-        let listener = this.listeners.filter(listener => listener.id == id)
-        if (listener === undefined || listener.length===0) {
-            this.on(eventName, wrapper, priority, id)
-        }
+        this.on(eventName, wrapper, priority, id)
+    }
+    emit(eventName, ...args) {
+        this.eventBus.emit(eventName, ...args)
     }
 
-    emit(eventName, ...args) {
-        Task.System().bus.emit(eventName, ...args)
+    // ---- Global event bus via Command ----
+    async cmd(command, args) {
+        const Command = (await import('./command.js')).default
+        const cmdObj = {
+            author: this.name,          // app identifier for permissions
+            taskId: this.id,            // individual task instance ID for listener tracking
+            command: command,
+            arguments: args,
+            timestamp: Date.now(),
+            status: "queried",
+            message: ""
+        }
+        console.log(cmdObj)
+        return await Command.run(cmdObj)
     }
 
     cleanupListeners() {
-        this.listeners.forEach(({eventName, callback}) => {
-            Task.System().bus.off(eventName, callback)
+        this.listeners.forEach(({eventName, callback, id}) => {
+            this.eventBus.off(eventName, callback, id)
         })
         this.listeners = []
+    }
+    cleanupGlobalListeners() {
+        this.globalListeners.forEach(({eventName, callback}) => {
+            Task.System().bus.off(eventName, callback, this.id)
+        })
+        this.globalListeners = []
     }
     cleanupBlobUrls() {
         for (let url of this.blobList) URL.revokeObjectURL(url)
@@ -148,7 +154,6 @@ export default class Task {
     loader(bool) {
         (bool) ? this.load++ : this.load--
         this.load = (this.load < 0) ? 0 : this.load
-
         if (this.load === 0) {
             if (this.node) this.node.style.cursor = ""
         } else {
@@ -163,14 +168,12 @@ export default class Task {
         if (this.window) {
             this.window.focus()
             this.window.statNode()
-            //restore select ranges
-			let taskRange = this.mem.selectionRange
-			if (taskRange && taskRange.commonAncestorContainer instanceof HTMLElement) {
-				taskRange.commonAncestorContainer.focus()
-				//selectRange(taskRange)
-			} else {
-				taskRange = null
-			}
+            let taskRange = this.mem.selectionRange
+            if (taskRange && taskRange.commonAncestorContainer instanceof HTMLElement) {
+                taskRange.commonAncestorContainer.focus()
+            } else {
+                taskRange = null
+            }
         }
         document.activeElement.blur()
         if (this.onfocus) this.onfocus()
@@ -179,17 +182,15 @@ export default class Task {
     }
     blur() {
         if (this.window) {
-            //store select ranges
-			if (window.getSelection().rangeCount) {
-				this.mem.selectionRange = window.getSelection().getRangeAt(0).cloneRange()
-			}
-			if (this.mem.selectionRange && this.mem.selectionRange.commonAncestorContainer instanceof HTMLElement) {
-				this.mem.selectionRange.commonAncestorContainer.blur()
-				//selectRange(taskRange)
-			}
+            if (window.getSelection().rangeCount) {
+                this.mem.selectionRange = window.getSelection().getRangeAt(0).cloneRange()
+            }
+            if (this.mem.selectionRange && this.mem.selectionRange.commonAncestorContainer instanceof HTMLElement) {
+                this.mem.selectionRange.commonAncestorContainer.blur()
+            }
             this.window.blur()
             this.window.statNode()
-			this.node.blur()
+            this.node.blur()
             if (this.node?.onblur) this.node.onblur()
         }
         if (this.onblur) this.onblur()
@@ -197,7 +198,6 @@ export default class Task {
     newWindow(arg) {
         let newWindow = new Window(arg)
         this.windows.push(newWindow)
-        //INCOMPLETE
     }
     async newComponent({url,container,args}) {
         let component = new Component ({
@@ -227,10 +227,10 @@ export default class Task {
         )
     }
     logChange(type,path,args=null) {
-
+        // to be implemented later
     }
     undo() {
-
+        // to be implemented later
     }
     async askPermission(allowance) {
         return new Promise (async (resolve, reject) => {

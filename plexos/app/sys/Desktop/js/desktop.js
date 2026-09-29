@@ -146,7 +146,7 @@ mem.deleteSelectedNodes = function(){
 	for(let icon of task.pocket){
 		icon.deleteNode()
 		//delete from filesystem
-		if(File.at(icon.file)!=undefined) File.at(icon.file).delete()
+		if(File.at(icon.file)!=undefined) File.delete({path: icon.file, log: true})
 	}
 }
 
@@ -163,16 +163,17 @@ mem.refresh = function() {
 	for (let item of dirList) itemList.push(item[1])
 	mem.createDesktopIcons(itemList)
 
-	task.emit("desktop-refresh")
+	task.cmd("event.emit", { eventName: "desktop-refresh" })
 }
 
-mem.new = function(Type, name){
+mem.new = async function(Type, name){
 	//Make sure icon appears at center of initial right click-------|
 	let contextMenu = document.getElementsByClassName("clickContext sub_0")[0]
 	let initialX = (contextMenu) ? parseInt(window.getComputedStyle(document.getElementsByClassName("clickContext sub_0")[0],null).getPropertyValue("left")) : 0
 	let initialY = (contextMenu) ? parseInt(window.getComputedStyle(document.getElementsByClassName("clickContext sub_0")[0],null).getPropertyValue("top"))  : 0
 
 	let editFrom = mem.dirObject
+	let path = editFrom.cfg.path
 
 	let iconWidth = cfg.grid.width/2
 	let iconHeight = cfg.grid.height/2
@@ -184,7 +185,7 @@ mem.new = function(Type, name){
 	//--------------------------------------------------------------|
 	let classDefaults = File.classDefaults(Type)
 
-	function createDesktopFile(name) {
+	async function createDesktopFile(name) {
 		name = File.returnAvailableName(name, null, editFrom)
 			let newFileIcon = new Icon (
 				{
@@ -193,7 +194,8 @@ mem.new = function(Type, name){
 					state : 0
 				}
 			)
-			let newFile = editFrom.new(Type,name,newFileIcon)
+			let newFile = await task.cmd("file.create", {path, Type, name, newFileIcon})
+			console.log(newFile)
             let newDesktopIcon = new mem.class.IconDesk(newFile.cfg.icon)
 			newDesktopIcon.coords = {
 				px : iconPosX,
@@ -212,7 +214,7 @@ mem.new = function(Type, name){
 			return newDesktopIcon
 	}
 
-	let newIcon = createDesktopFile(name)
+	let newIcon = await createDesktopFile(name)
 	newIcon.editName()
 	return File.at(newIcon.file)
 }

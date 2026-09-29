@@ -18,7 +18,7 @@ mem.class.IconDesk = class IconDesk {
         this.class = p.class
         this.file = p.file || ""
         this.name = p.name
-        this.exte = p.exte || (this.class==="Directory") ? "dir" : (this.name.match(/\.(?:.(?<!\.))+$/s)!=null) ? this.name.match(/(?:.(?<!\.))+$/s)[0] : ""
+        this.exte = p.exte || ((this.class==="DirectoryFile") ? "dir" : (this.name.match(/\.(?:.(?<!\.))+$/s)!=null) ? this.name.match(/(?:.(?<!\.))+$/s)[0] : "")
         
         this.coords = p.coords || cfg.icon.icons.filter(icon=>icon.name===this.name)[0]?.coords || null
 
@@ -225,7 +225,7 @@ mem.class.IconDesk = class IconDesk {
     }
     clic(){
         this.node.onmousedown = e => this.drag(e)
-        this.node.ondblclick = e => File.at(this.file).open()
+        this.node.ondblclick = e => File.open(this.file)
         this.node.oncontextmenu = e => {
             let menu = mem.iconContextMenu(e,this)
             ContextMenu.open(e,this,menu)
@@ -276,7 +276,7 @@ mem.class.IconDesk = class IconDesk {
                 }
             }
     
-            if(System.mem.cfg.audio.icons && !System.mem.var.dragging) {
+            if(plexos.Settings.audio.icons && !System.mem.var.dragging) {
                 plexos.Sound[0].volume = 0.5
                 plexos.Sound[0].play()
             }
@@ -445,7 +445,8 @@ mem.class.IconDesk = class IconDesk {
     
                 //insert into fyleSystem
                 if (iconText.textContent != editFile.name) { //if the name changed
-                    editFile.rename(iconText.textContent)
+                    //editFile.rename(iconText.textContent)
+                    File.rename({path: editFile.cfg.path, rename: iconText.textContent})
                 }
     
                 thisIcon.statNode(1)
@@ -578,7 +579,7 @@ mem.repositionIcons = function(icons, mustSet = false){
                 icon.coords = null
                 File.at(icon.file).cfg.icon.coords = null
                 mem.var.hiddenIcons = mem.var.hiddenIcons + 1
-                task.emit("desktop-icon-hidden")
+                task.cmd("event.emit", { eventName: "desktop-icon-hidden" })
                 return
             }
             newGrid[0].used = true
@@ -595,7 +596,7 @@ mem.repositionIcons = function(icons, mustSet = false){
         }
     }
     
-    if(System.mem.cfg.audio.icons && System.mem.var.dragging) {
+    if(plexos.Settings.audio.icons && System.mem.var.dragging) {
         if(invalidIcons.length == iconAmount) {
             plexos.Sound[1].play()
         } else if (invalidIcons.length == 0) {

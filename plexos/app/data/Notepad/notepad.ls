@@ -24,6 +24,7 @@ export default {
         //task creation
         let task = new Task(
             {
+                registryPath: `STANDALONE["Notepad"]`,
                 appID: appid,
                 name : "Notepad",
                 onEnd : end,

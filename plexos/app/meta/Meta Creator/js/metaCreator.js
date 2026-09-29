@@ -1,5 +1,5 @@
 import {getTask, displayComponent, ajaxReturn} from "/plexos/lib/functions/dll.js"
-import Directory from "/plexos/lib/classes/filesystem/directory.js"
+import DirectoryFile from "/plexos/lib/classes/filesystem/directory.js"
 import File from "/plexos/lib/classes/filesystem/file.js"
 
 let task = getTask(/TASKID/)
@@ -63,7 +63,7 @@ mem.createMeta = async function () {
     const optionTypeRegex = /.+(?= \(\..+\))/
     const optionExteRegex = /(?<=.+ \(\.).+(?=\))/
 
-    let optionsType = "(Metafile"
+    let optionsType = "(MetaFile"
     let optionsExte = "(meta"
     if (task.node) {
         for(let option of nodeType.options) {
@@ -88,7 +88,7 @@ mem.createMeta = async function () {
         } 
     }
 
-    arg.file.rename(newName)
+    File.rename({path: arg.file.cfg.path, rename: newName})
 
     if(metaData){
         arg.file.meta.title = metaData.title

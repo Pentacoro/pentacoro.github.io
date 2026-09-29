@@ -20,7 +20,7 @@ window.addEventListener("mousedown", (e) => {
 })
 
 window.addEventListener("resize", e => {
-	plexos.System.emit("viewport-resize")
+	plexos.System.bus.emit("viewport-resize")
 })
 
 window.addEventListener("paste", async e => {

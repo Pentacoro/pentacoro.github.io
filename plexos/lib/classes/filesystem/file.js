@@ -1,4 +1,6 @@
 import plexos from "../../../ini/system.js"
+import typeClass from "./filetypes.js"
+import Configuration from "./configuration.js"
 import {renameKey, runLauncher, calculateStringSize} from  "../../functions/dll.js"
 
 export default class File {
@@ -85,14 +87,14 @@ export default class File {
         }
         
         switch (Type) {
-            case "Directory":
+            case "DirectoryFile":
                 defaults.iconImag = "plexos/res/themes/Plexos Hyper/icons/files/defaultDIR.svg"
-                defaults.confType = "Directory"
+                defaults.confType = "DirectoryFile"
                 defaults.skeyName = "dir"
                 break
-            case "Metafile": 
+            case "MetaFile": 
                 defaults.iconImag = "plexos/res/themes/Plexos Hyper/icons/files/defaultMSF.svg"
-                defaults.confType = "Metafile"
+                defaults.confType = "MetaFile"
                 defaults.skeyName = "meta"
                 break
             case "StringFile":
@@ -160,7 +162,7 @@ export default class File {
         return fileViews
     }
 
-    static create
+    static async create
     (   
         path,
         type, 
@@ -175,15 +177,18 @@ export default class File {
         let defaults = File.classDefaults(type)
         let confType = defaults.confType
         let skeyName = defaults.skeyName
-        let Type = {}
-        switch (type) {
-            case "Directory":   Type = Directory; break
-            case "Metafile":    Type = Metafile; break
-            case "StringFile":  Type = StringFile; break
-            case "ProxyFile":   Type = ProxyFile; break
-        }
+        let extension = name.match(/(?:.(?<!\.))+$/s)[0]
+        let Type = await typeClass(type)
+        let Icon = (icon!=null) ? icon : await import("../interface/icon.js").then(module => new module.default(
+            {
+                class: confType, 
+                name: name, 
+                exte: (confType=="DirectoryFile") ? "dir" : extension, 
+                state: 0
+            }
+    ))
 
-        name = name + (((confType!="Directory") && !name.includes(".")) ? "." + name.match(/(?:.(?<!\.))+$/s)[0] : "")
+        name = name + (((confType!="DirectoryFile") && !name.includes(".")) ? "." + extension : "")
 
         parent.dir[name] = new Type
         (
@@ -193,15 +198,8 @@ export default class File {
                 {
                     class : confType,
                     move : true,
-                    exte : (confType=="Directory") ? "dir" : name.match(/(?:.(?<!\.))+$/s)[0],
-                    icon : icon || new Icon (
-                                            {
-                                                class : confType, 
-                                                name : name, 
-                                                exte : name.match(/(?:.(?<!\.))+$/s)[0],
-                                                state : 0  
-                                            }
-                                        ),
+                    exte : (confType=="DirectoryFile") ? "dir" : extension,
+                    icon : Icon
                 }),
                 [skeyName] : cont
             }
@@ -217,14 +215,20 @@ export default class File {
 
     static delete({path, log=true}) {
         const file = File.at(path)
-        const parent = file.parent()
+        const parent = File.at(path,"parent")
 
         //if (log) plexos.Core.logChange("delete",child.cfg.path)
 
         delete parent.dir[file.name]
     }
     static remove ({path, log=true}) {
-
+        let fileWrap = {
+            file : File.stringify(file),
+            date : Date.now(),
+            path : File.at(file, "parent").path
+        }
+        File.at("/trash").dir.push(fileWrap)
+        File.delete(file)
     }
     static restore({path, timestamp, log=true}) {
 
@@ -243,7 +247,7 @@ export default class File {
     }
     static rename({path, rename, log=true}) {
         const file = File.at(path)
-        const parent  = file.parent()
+        const parent  = File.at(path,"parent")
 
         rename = File.returnAvailableName(rename,null,file.parent())
 
@@ -265,26 +269,26 @@ export default class File {
             }
         }
 
-        renameKey(parent.dir, this.name, rename)
-        
+        renameKey(parent.dir, file.name, rename)
+
         let renamedFile = parent.dir[rename]
-        let extension = ((this.cfg.class==="Directory") ? "dir" : (rename.match(/\.(?:.(?<!\.))+$/s)!=null) ? rename.match(/(?:.(?<!\.))+$/s)[0] : "")
+        let extension = ((file.cfg.class==="DirectoryFile") ? "dir" : (rename.match(/\.(?:.(?<!\.))+$/s)!=null) ? rename.match(/(?:.(?<!\.))+$/s)[0] : "")
 
         renamedFile.name = rename
         renamedFile.cfg.exte = extension
         renamedFile.cfg.icon.name = rename
         renamedFile.cfg.icon.exte = extension
 
-        for (let fileView of File.viewsOpened(this.parent().cfg.path)) {
+        for (let fileView of File.viewsOpened(parent.cfg.path)) {
             fileView.mem.getIcon(oldAddress)?.rename(newAddress)
         }
 
-        //if (log) plexos.Core.logChange("repath",this.cfg.path,{oldPath:oldAddress})
+        //if (log) plexos.Core.logChange("repath",file.cfg.path,{oldPath:oldAddress})
     }
 
-    static open({path}) {
+    static open(path) {
         const file = File.at(path)
-        runLauncher(plexos.Config.apps[file.cfg.exte], {name:file.name, path:file.cfg.path}, plexos.System.mem.focused)
+        runLauncher(plexos.Settings.apps[file.cfg.exte], {name:file.name, path:file.cfg.path}, plexos.System.mem.focused)
     }
 
     render() {

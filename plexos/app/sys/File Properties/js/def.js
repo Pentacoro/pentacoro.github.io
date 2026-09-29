@@ -27,7 +27,7 @@ mem.tab.general.fileReadOnly = task.node.getElementById(task.id+"_fileReadOnly")
 mem.tab.general.fileHidden = task.node.getElementById(task.id+"_fileHidden")
 
 //METADATA
-if (mem.arg.cfg.class==="Metafile") {
+if (mem.arg.cfg.class==="MetaFile") {
     mem.tab.metadata = {}
     
     mem.tab.metadata.metaName = task.node.getElementById(task.id+"_metaName")

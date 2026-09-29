@@ -1,5 +1,5 @@
 import File from "./file.js"
-export default class Metafile extends File {
+export default class MetaFile extends File {
     meta = {
         url: null,
         embed: null,

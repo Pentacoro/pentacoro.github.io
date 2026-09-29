@@ -2,48 +2,51 @@ import Task from "/plexos/lib/classes/system/task.js"
 import Window from "/plexos/lib/classes/interface/window.js"
 import {displayComponent} from "/plexos/lib/functions/dll.js"
 
-export function initialize({taskid,args,path,root}){
-    let html = root + "/deskGridOptions.html"
+export default {
+    app: `Desktop Grid Settings`,
+    run: function({taskid,appid,args,path,root}){
+        let html = root + "/deskGridOptions.html"
 
-    //on app init
-    function ini() {
-        task.emit("desktop-grid-settings-open")
-    }
-
-    //task creation
-    let task = new Task(
-        {
-            name : "Desktop Grid Settings",
-            instantiable : false,
-            node : null,
-            from : "System", 
-            id   : taskid
+        //on app init
+        function ini() {
+            task.cmd("event.emit", {eventName: "desktop-grid-settings-open"})
         }
-    )
-    if (!task.id) return
 
-    //window generation
-    new Window
-    (
-        {
-            name : "Desktop Grid Settings",
-            task : task.id, 
-            icon : "/plexos/res/themes/Plexos Hyper/icons/files/settingsPlaceholder.svg",
-            appParams : {
-                minimizeable: true,
-                maximizeable: false,
-                resizeable: false,
-                sizeDrawMethod: "fit-content",
-                saveDrawParameters: "disabled"
+        //task creation
+        let task = new Task(
+            {
+                registryPath: `SYSTEM["Settings"]`,
+                name : "Desktop Grid Settings",
+                node : null,
+                from : "System", 
+                id   : taskid
             }
-        }
-    )
+        )
+        if (!task.id) return
 
-    displayComponent({
-        url:html,
-        taskid:task.id,
-        container:task.node,
-    })
+        //window generation
+        new Window
+        (
+            {
+                name : "Desktop Grid Settings",
+                task : task.id, 
+                icon : "/plexos/res/themes/Plexos Hyper/icons/files/settingsPlaceholder.svg",
+                appParams : {
+                    minimizeable: true,
+                    maximizeable: false,
+                    resizeable: false,
+                    sizeDrawMethod: "fit-content",
+                    saveDrawParameters: "disabled"
+                }
+            }
+        )
 
-    ini()
+        displayComponent({
+            url:html,
+            taskid:task.id,
+            container:task.node,
+        })
+
+        ini()
+    }
 }

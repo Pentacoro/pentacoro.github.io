@@ -3,9 +3,10 @@ import cfg from "./config.js"
 let plexos = {
     User: "",
     System: {},
-    Config: cfg,
+    Config: {},
     Tasks: [],
     Proxy: {},
+    Settings: cfg,
     db: {}
 }
 export default plexos

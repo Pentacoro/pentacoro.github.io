@@ -1,18 +1,18 @@
-import plexos from "/plexos/ini/system.js"
+import File from "./file.js"
+import plexos from "../../../ini/system.js"
 import Configuration from "./configuration.js"
 
 import Icon from "../interface/icon.js"
-import File from "./file.js"
 
-export default class Directory extends File {
+export default class DirectoryFile extends File {
     static coreTemplate(){ 
-        return new Directory(
+        return new DirectoryFile(
         {
             name : "core",
             cfg : new Configuration (
             {
-                class : "Directory",
-                icon : new Icon ({class: "Directory", name:"core", type:"Directory", state:0}),
+                class : "DirectoryFile",
+                icon : new Icon ({class: "DirectoryFile", name:"core", type:"Directory", state:0}),
                 move : false,
                 edit : false,
             })

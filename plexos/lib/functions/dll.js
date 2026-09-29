@@ -214,13 +214,13 @@ export async function loadFront({url, taskid, data, container, focus = null, com
     container.innerHTML = cont.innerHTML
 
     //render window
-    task.emit("window-stylized", task.window)
+    plexos.System.bus.emit("window-stylized", task.window)
 
     if (compid) task.getComponent(compid).node = cont.children[0]
     await runScripts(container)
 
     //fit-content
-    task.emit("window-scripted", task.window)
+    plexos.System.bus.emit("window-scripted", task.window)
 
     //show contents once they're finished
     container.style.opacity = 1
@@ -228,12 +228,12 @@ export async function loadFront({url, taskid, data, container, focus = null, com
 }
 export async function blobModule(data) {
     data = data.replace(/import\s+([^'"]+)\s+from\s+['"]([^'"]+)['"]/g, (match, what, path) => {
-        const absolutePath = new URL(path, plexos.Config.system.basePath).href
+        const absolutePath = new URL(path, plexos.Settings.system.basePath).href
         return `import ${what} from '${absolutePath}'`
     })
     return URL.createObjectURL(new Blob([`${data}`], { type: 'text/javascript' }))
 }
-export async function runLauncher(path, args = {}, focus = null, name = ""){
+export async function runLauncher(url, args = {}, focus = null, name = ""){
     if (!Task.canInstance(name)) {
         Task.get(name).focus()
         return
@@ -256,22 +256,24 @@ export async function runLauncher(path, args = {}, focus = null, name = ""){
 
             Task.get()
         
-            module.run(
+            module.default.run(
                 {
                     taskid: taskID,
                     args: args,
-                    path: path,
-                    root: path.replace(path.match(/\/(?:.(?<!\/))+$/s),"")
+                    path: url,
+                    root: url.replace(url.match(/\/(?:.(?<!\/))+$/s),"")
                 }
             )
             if (focus) focus.loader(false)
         } catch (e) {
-            evalErrorPopup
+            console.error(e)
+            /*evalErrorPopup
             (
                 data,
-                "The application launcher at: <i>'" + path + "'</i> failed evaluation.",
+                "The application launcher at: <i>'" + url + "'</i> failed evaluation.",
                 e
             ) 
+            */
         }
     })
     appLauncher.catch( e => {
@@ -281,12 +283,12 @@ export async function runLauncher(path, args = {}, focus = null, name = ""){
         evalErrorPopup
         (
             data,
-            "The application launcher at: <i>'" + path + "'</i> failed evaluation.",
+            "The application launcher at: <i>'" + url + "'</i> failed evaluation.",
             e
         ) 
     })
     appLauncher.finally( e => {
-        URL.revokeObjectURL(proxy)
+        //URL.revokeObjectURL(proxy)
         if (focus) focus.loader(false)
     })
 }

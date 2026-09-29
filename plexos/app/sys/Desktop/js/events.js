@@ -1,6 +1,7 @@
 import plexos from "/plexos/ini/system.js"
 import {runLauncher, iframeAntiHover, areRectanglesOverlap} from "/plexos/lib/functions/dll.js"
 import Task from "/plexos/lib/classes/system/task.js"
+import File from "/plexos/lib/classes/filesystem/file.js"
 import ContextMenu from "/plexos/lib/classes/interface/contextmenu.js"
 
 let System  = plexos.System
@@ -14,7 +15,7 @@ desktop.onpaste = async function (e) {
         const paste = await navigator.clipboard.readText()
 
 		if (paste.match(urlRegex)){
-			let newMetaFile = mem.dirObject.new("Metafile", "New Metafile.meta")
+			let newMetaFile = await task.cmd("file.create", {path: mem.dirObject.cfg.path, Type: "MetaFile", name: "New MetaFile.meta"})
 			mem.createDesktopIcons([newMetaFile])
 			let icon = mem.getIcon(newMetaFile.cfg.path)
 			await runLauncher("/plexos/app/meta/Meta Creator/metaCreator.ls",{path:newMetaFile.cfg.path,window:false,url:paste,type:"web"})

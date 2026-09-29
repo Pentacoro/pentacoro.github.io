@@ -13,9 +13,9 @@ mem.backContextMenu = [
     {name: "file", list: [
         {name:"New",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/new2.svg')",func: [
             {name: "new", list: [
-                {name:"Directory",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/directory.svg')",func:() => task.mem.new(null,task,"Directory","New Folder")},
-                {name:"Metafile",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/metafile.svg')",func:() => task.mem.new(null,task,"Metafile","New Metafile.meta")},
-                {name:"Text Document",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/textfile.svg')",func:() => task.mem.new(null,task,"StringFile","New Text Document.txt")},
+                {name:"Directory",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/directory.svg')",func:async () => await task.mem.new(null,task,"DirectoryFile","New Folder")},
+                {name:"MetaFile",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/MetaFile.svg')",func:async () => await task.mem.new(null,task,"MetaFile","New MetaFile.meta")},
+                {name:"Text Document",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/textfile.svg')",func:async () => await task.mem.new(null,task,"StringFile","New Text Document.txt")},
             ]}
         ]},
         {name:"Paste",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/paste.svg')",func: () => {return} },
@@ -32,7 +32,7 @@ mem.iconContextMenu = function(e,icon){
             return [
                 {name: "open", list: [
                     {name:"Open",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/open.svg')",func: () => icon.open()},
-                    {name:"New window",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/newwindow.svg')",func: () => File.at(icon.file).open(),bool:File.at(icon.file)!=undefined},
+                    {name:"New window",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/newwindow.svg')",func: () => File.open(icon.file),bool:File.at(icon.file)!=undefined},
                 ]},
                 {name: "null", list: null},
                 {name: "clip", list: [
@@ -69,7 +69,7 @@ mem.iconContextMenu = function(e,icon){
         default:
             return [
                 {name: "open", list: [
-                    {name:"Open",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/open.svg')",func: () => File.at(icon.file).open()},
+                    {name:"Open",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/open.svg')",func: () => File.open(icon.file)},
                 ]},
                 {name: "null", list: null},
                 {name: "clip", list: [

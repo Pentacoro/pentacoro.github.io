@@ -48,12 +48,12 @@ mem.explorerInit = function (dir, id, act = null) {
         task.pocket = []
 
         for (let item of dirList) {
-            if(item[1].cfg.class === "Directory" && !item[1].cfg.system) {
+            if(item[1].cfg.class === "DirectoryFile" && !item[1].cfg.system) {
                 dirFolder.push(item[1])
             }
         }
         for (let item of dirList) {
-            if(item[1].cfg.class !=  "Directory") {
+            if(item[1].cfg.class !=  "DirectoryFile") {
                 dirFile.push(item[1])
             }
         }
@@ -90,14 +90,14 @@ mem.deleteSelectedNodes = function(){
 	for(let icon of task.pocket){
 		icon.deleteNode()
 		//delete from filesystem
-		if(File.at(icon.file)!=undefined) File.at(icon.file).delete()
+		if(File.at(icon.file)!=undefined) File.delete({path: icon.file, log: true})
 	}
 }
-mem.new = function(e, _this, Type, name){
+mem.new = async function(e, _this, Type, name){
     let editFrom = mem.dirObject
     let classDefaults = File.classDefaults(Type)
 
-    function createExplorerFile(name) {
+    async function createExplorerFile(name) {
 		if(File.nameAvailable(name, null, editFrom)) {
             let newFileIcon = new Icon (
                 {
@@ -106,7 +106,7 @@ mem.new = function(e, _this, Type, name){
 					state : 0
 				}
             )
-			editFrom.new(Type,name,newFileIcon)
+			await task.cmd("file.create", {path: editFrom.cfg.path, Type: Type, name: name, newFileIcon: newFileIcon})
             editFrom.dir[name].render(task.id)
             return newFileIcon
 		} else {
@@ -122,7 +122,7 @@ mem.new = function(e, _this, Type, name){
 		}
 	}
     
-    let newFileIcon = createExplorerFile(name)
+    let newFileIcon = await createExplorerFile(name)
 
     let createdIcon = mem.iconArray[mem.iconArray.length - 1]
     createdIcon.editName()

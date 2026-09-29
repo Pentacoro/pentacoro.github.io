@@ -11,7 +11,7 @@ export default class Configuration {
 
         this.date = {}
         this.date.Created  = p.date?.Created  || Date.now()
-        this.date.Modified = ((p.class==="Directory"||p.class==="Metafile") ? undefined : p.date?.Modified || Date.now())
-        this.date.Accessed = ((p.class==="Directory") ? undefined : p.date?.Accessed || Date.now())
+        this.date.Modified = ((p.class==="DirectoryFile"||p.class==="MetaFile") ? undefined : p.date?.Modified || Date.now())
+        this.date.Accessed = ((p.class==="DirectoryFile") ? undefined : p.date?.Accessed || Date.now())
     }
 }

@@ -53,7 +53,7 @@ mem.class.IconDir = class IconDir {
         Task.id(this.task).pocket = Task.id(this.task).pocket.remove(this)
         Task.id(this.task).mem.iconArray = Task.id(this.task).mem.iconArray.remove(this)
         
-        if (Task.get("Desktop") && File.at(this.file)?.parent() === Task.get("Desktop").mem.dirObject) { //delete desktop icon
+        if (Task.get("Desktop") && File.at(this.file, "parent") === Task.get("Desktop").mem.dirObject) { //delete desktop icon
             let icon = Task.get("Desktop").mem.getIcon(File.at(this.file).cfg.icon.file)
             icon.deleteNode()
         }
@@ -196,7 +196,7 @@ mem.class.IconDir = class IconDir {
         if (this.exte == "dir") {
             Task.id(this.task).mem.explorerInit(this.file, this.task)
         } else {
-            File.at(this.file).open()
+            File.open(this.file)
         }
     }
     render(){
@@ -290,7 +290,7 @@ mem.class.IconDir = class IconDir {
     
                 //insert into fylesystem
                 if (iconText.textContent != editFile.name) { //if the name changed
-                    editFile.rename(iconText.textContent)
+                    File.rename({path: editFile.cfg.path, rename: iconText.textContent})
                 }
     
                 thisIcon.statNode(1)
@@ -301,7 +301,7 @@ mem.class.IconDir = class IconDir {
             } else {
                 //if the name not allowed --------------------|
                 System.mem.var.shSelect = false
-                iconText.style.backgroundColor = "#c90000"
+                iconText.style.backgroundColor = "#ef0000"
     
                 //insist -> keep only edited selected
                 document.body.onclick = iconRenamingInsist

@@ -303,7 +303,7 @@
 	</g>
 </g>
 <g id="icons">
-	<g id="metafile" class="st0">
+	<g id="MetaFile" class="st0">
 		<g class="st2">
 			<linearGradient id="SVGID_1_" gradientUnits="userSpaceOnUse" x1="70.3546" y1="150.5224" x2="448.0462" y2="368.4015">
 				<stop  offset="0" style="stop-color:#3C4759"/>
@@ -356,7 +356,7 @@
 		<rect x="0" y="46.2" class="st6" width="519.7" height="427.3"/>
 		<text transform="matrix(1 0 0 1 104.8936 372.9078)" class="st4 st20 st21">{}</text>
 	</g>
-	<g id="Metafile" class="st0">
+	<g id="MetaFile" class="st0">
 		<path class="st19" d="M259.8,0l-225,129.9v259.8l225,129.9l225-129.9V129.9L259.8,0z M244.4,399.7l-116.1-67.1V200.5l116.1,67
 			V399.7z M140.9,173.4l118.9-68.7l118.9,68.7l-118.9,70.4L140.9,173.4z M391.3,332.6l-116.1,67.1V267.6l116.1-67V332.6z"/>
 	</g>

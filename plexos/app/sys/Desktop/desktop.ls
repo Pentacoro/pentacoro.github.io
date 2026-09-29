@@ -2,7 +2,7 @@ import Task from "/plexos/lib/classes/system/task.js"
 import {displayComponent} from "/plexos/lib/functions/dll.js"
 
 export default {
-    application: `Desktop`,
+    app: `Desktop`,
     run: function({taskid,appid,args,path,root}){
         let html = root + "/desktop.html"
 
@@ -22,6 +22,7 @@ export default {
         //task creation
         let task = new Task(
             {
+                registryPath: `SYSTEM["Desktop"]`,
                 appID: appid,
                 name : "Desktop",
                 onEnd : end,

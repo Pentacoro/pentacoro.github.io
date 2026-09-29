@@ -1,7 +1,7 @@
 import plexos from "/plexos/ini/system.js"
 import {getTask, imposeValues} from "/plexos/lib/functions/dll.js"
 import File from "/plexos/lib/classes/filesystem/file.js"
-let cfg = plexos.Config
+let cfg = plexos.Settings
 
 let task = getTask(/TASKID/)
 let mem  = task.mem

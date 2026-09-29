@@ -4,63 +4,66 @@ import Window from "/plexos/lib/classes/interface/window.js"
 import {displayComponent} from "/plexos/lib/functions/dll.js"
 let System = plexos.System
 
-export function initialize({taskid,args,path,root}) {
-    let html = (args.type) ? root + "/popup.html" : root + "/popupB.html"
+export default {
+    app: `Popup`,
+    run: function({taskid,appid,args,path,root}){
+        let html = (args.type) ? root + "/popup.html" : root + "/popupB.html"
 
-    //on app init
-    function ini() {
-        let task = Task.id(taskid)
-        let arg  = task.mem.arg
+        //on app init
+        function ini() {
+            let task = Task.id(taskid)
+            let arg  = task.mem.arg
 
-        arg.title       = args.title
-        arg.description = args.description
-        arg.image       = args.image
-        arg.taskid      = args.taskid || Task.System().id
-    }
-    //on app end
-    function end() {
-
-    }
-    //task creation
-    let task = new Task(
-        {
-            name : "Popup",
-            instantiable : true,
-            onEnd : end,
-            node : null,
-            from : "System",
-            id   : taskid
+            arg.title       = args.title
+            arg.description = args.description
+            arg.image       = args.image
+            arg.taskid      = args.taskid || Task.System().id
         }
-    )
-    if (!task.id) return
+        //on app end
+        function end() {
 
-    try {
-        //window generation
-        new Window
-        (
+        }
+        //task creation
+        let task = new Task(
             {
-                name : args.name,
-                task : taskid, 
-                icon : (args.icon) ? args.icon : null,
-                appParams: {
-                    minimizeable: false,
-                    maximizeable: false,
-                    resizeable: false,
-                    sizeDrawMethod: "fit-content",
-                    saveDrawParameters: "disabled"
-                }
+                registryPath: `SYSTEM["Popup"]`,
+                name : "Popup",
+                onEnd : end,
+                node : null,
+                from : "System",
+                id   : taskid
             }
         )
-            
-        ini()
+        if (!task.id) return
 
-        displayComponent({
-            url:html,
-            taskid:taskid,
-            container:task.node
-        })
-    } catch (e) {
-        console.error(e)
-        console.error(System.mem.var.error)
+        try {
+            //window generation
+            new Window
+            (
+                {
+                    name : args.name,
+                    task : taskid, 
+                    icon : (args.icon) ? args.icon : null,
+                    appParams: {
+                        minimizeable: false,
+                        maximizeable: false,
+                        resizeable: false,
+                        sizeDrawMethod: "fit-content",
+                        saveDrawParameters: "disabled"
+                    }
+                }
+            )
+                
+            ini()
+
+            displayComponent({
+                url:html,
+                taskid:taskid,
+                container:task.node
+            })
+        } catch (e) {
+            console.error(e)
+            console.error(System.mem.var.error)
+        }
     }
 }

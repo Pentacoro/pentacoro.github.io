@@ -5,7 +5,6 @@ import File from "../filesystem/file.js"
 import ProxyFile from "../filesystem/proxy.js"
 
 let System = plexos.System
-let Manager= Task.get("Window Manager")
 
 export default class Window {
 	static AppParameters = class {
@@ -57,20 +56,20 @@ export default class Window {
 		if (window.drawParams.maximized) {
 			window.drawParams.maximized = false
 			window.poseNode()
-			Task.id(window.task).off("viewport-resize", () => {
+			System.bus.off("viewport-resize", () => {
 				window.poseNode()
 			})
 		} else {
 			window.drawParams.maximized = true
 			window.poseNode()
-			Task.id(window.task).on("viewport-resize", () => {
+			System.bus.on("viewport-resize", () => {
 				window.poseNode()
 			})
 		}
 	}
 
 	static close(window) {
-		if (window.appParams.saveDrawParameters !== "disabled") Manager.setInitialDrawParams(window)
+		if (window.appParams.saveDrawParameters !== "disabled") Task.get("Window Manager").setInitialDrawParams(window)
 		Task.id(window.task).end()
 	}
 	defineSize() {
@@ -222,7 +221,7 @@ export default class Window {
 			image : null,
 		}
 
-		Manager.mem.windows.push(this)
+		Task.get("Window Manager").mem.windows.push(this)
 		this.createNode()
 
 		Task.id(this.task).window = this 
@@ -232,7 +231,7 @@ export default class Window {
 		let newWindow = document.createElement("div")
 		newWindow.setAttribute("class", "window "+this.task)
 		newWindow.classList.add("building")
-		newWindow.setAttribute("id", "window_" + Manager.mem.windows.indexOf(this))
+		newWindow.setAttribute("id", "window_" + Task.get("Window Manager").mem.windows.indexOf(this))
 	
 		let newWindowInner = document.createElement("div")
 		newWindowInner.setAttribute("class", "windowInner")
@@ -353,7 +352,7 @@ export default class Window {
 			//try to get initial drawParams from registry first
 			let drawParams = null
 
-			if (this.appParams.saveDrawParameters !== "disabled") drawParams = Manager.getInitialDrawParams(this)
+			if (this.appParams.saveDrawParameters !== "disabled") drawParams = Task.get("Window Manager").getInitialDrawParams(this)
 
 			//if there are none, do it from scratch from instructions
 			if (drawParams===null) {
@@ -417,13 +416,13 @@ export default class Window {
     }
     deleteNode(){
 		//delete window
-		let thisIndex = Manager.mem.windows.indexOf(this)
-		Manager.mem.windows.splice(thisIndex, 1)
+		let thisIndex = Task.get("Window Manager").mem.windows.indexOf(this)
+		Task.get("Window Manager").mem.windows.splice(thisIndex, 1)
 
 		//if the window was focused, shift focus behind it
 		if (thisIndex === 0) {
-			if (Manager.mem.windows.length > 0) {
-				Task.id(Manager.mem.windows[0].task).focus()
+			if (Task.get("Window Manager").mem.windows.length > 0) {
+				Task.id(Task.get("Window Manager").mem.windows[0].task).focus()
 			} else {
 				Task.get("Desktop")?.focus()
 			}
@@ -457,9 +456,9 @@ export default class Window {
 		//only works with moveable windows & if window isn't at front already 
 		if (this.keyNodes.dragElements && this.node.id != "window_" + 0) {
 			//send to first array index
-			let thisIndex = Manager.mem.windows.indexOf(this)
-			Manager.mem.windows.splice(thisIndex, 1)
-			Manager.mem.windows.unshift(this)
+			let thisIndex = Task.get("Window Manager").mem.windows.indexOf(this)
+			Task.get("Window Manager").mem.windows.splice(thisIndex, 1)
+			Task.get("Window Manager").mem.windows.unshift(this)
 
 			//make DOM elements's IDs and zIndex match new object arrangement
 			for(let window of document.getElementsByClassName("window")){ 

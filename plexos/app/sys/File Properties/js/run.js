@@ -9,7 +9,7 @@ task.node.getElementsByClassName("config-tab")[0].children[0].checked = true
 
 mem.prepGeneral()
 switch (mem.arg.cfg.class){
-    case ("Metafile") :
+    case ("MetaFile") :
         task.node.getElementsByClassName("config-tab")[1].classList.remove("hidden")
         task.node.getElementsByClassName("config-tab")[1].children[0].checked = true
         task.node.getElementsByClassName("config-tab")[1].dispatchEvent(new Event("click"))

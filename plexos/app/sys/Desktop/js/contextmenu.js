@@ -20,9 +20,9 @@ mem.deskContextMenu = [
     {name: "file", list: [
         {name:"New",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/new2.svg')",func:[
             {name:"new", list: [
-                {name:"Directory",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/directory.svg')",func:() => task.mem.new("Directory","New Folder")},
-                {name:"Metafile",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/metafile.svg')",func:() => task.mem.new("Metafile", "New Metafile.meta")},
-                {name:"Text Document",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/textfile.svg')",func:() => task.mem.new("StringFile", "New Text Document.txt")},
+                {name:"Directory",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/directory.svg')",func:async () => await task.mem.new("DirectoryFile","New Folder")},
+                {name:"MetaFile",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/MetaFile.svg')",func:async () => await task.mem.new("MetaFile", "New MetaFile.meta")},
+                {name:"Text Document",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/textfile.svg')",func:async () => await task.mem.new("StringFile", "New Text Document.txt")},
                 ]
             }
         ]},
@@ -35,11 +35,12 @@ mem.deskContextMenu = [
 ]
 
 mem.iconContextMenu = function(e,icon){
+    console.log(icon)
     switch (icon.exte) {
         case "web":
             return [
                 {name: "open", list: [
-                    {name:"Open",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/open.svg')",func: () => File.at(icon.file).open()},
+                    {name:"Open",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/open.svg')",func: () => File.open(icon.file)},
                     {name:"New tab",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/newtab.svg')",func: () => window.open(File.at(icon.file).meta.url, '_blank')},
                 ]},
                 {name: "null", list: null},
@@ -58,7 +59,7 @@ mem.iconContextMenu = function(e,icon){
         default:
             return [
                 {name: "open", list: [
-                    {name:"Open",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/open.svg')",func: () => File.at(icon.file).open()},
+                    {name:"Open",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/open.svg')",func: () => File.open(icon.file)},
                 ]},
                 {name: "null", list: null},
                 {name: "clip", list: [

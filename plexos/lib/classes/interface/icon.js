@@ -8,7 +8,7 @@ export default class Icon {
         this.class = p.class
         this.name = p.name
         this.file = p.file || ""
-        this.exte = p.exte || ((this.class==="Directory") ? "dir" : (this.name.match(/\.(?:.(?<!\.))+$/s)!=null) ? this.name.match(/(?:.(?<!\.))+$/s)[0] : "")
+        this.exte = p.exte || ((this.class==="DirectoryFile") ? "dir" : (this.name.match(/\.(?:.(?<!\.))+$/s)!=null) ? this.name.match(/(?:.(?<!\.))+$/s)[0] : "")
 
         this.drop = []
     }
@@ -21,14 +21,16 @@ export default class Icon {
 
         switch (this.exte) {
             case "dir": 
-                if (Object.keys(File.at(this.file).dir).length > 0) return File.classDefaults("Directory").iconImag.replace("DIR", "DIRc")
-                else return File.classDefaults("Directory").iconImag
+                if (Object.keys(File.at(this.file).dir).length > 0) return File.classDefaults("DirectoryFile").iconImag.replace("DIR", "DIRc")
+                else return File.classDefaults("DirectoryFile").iconImag
+            case "can":
+                return File.classDefaults("TrashCan").iconImag
             case "txt" || "js" || "css" || "html":
                 return File.classDefaults("StringFile").iconImag
             case "proxy":
                 return File.classDefaults("ProxyFile").iconImag
             case "meta":
-                return File.classDefaults("Metafile").iconImag
+                return File.classDefaults("MetaFile").iconImag
             case "web":
                 return File.at(this.file).meta.icon
             case "img":

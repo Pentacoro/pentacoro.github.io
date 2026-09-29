@@ -17,6 +17,7 @@ export default function initialize() {
         "Popup": `SYSTEM["Popup"]`,
         "Theme Manager": `SYSTEM["Theme Manager"]`,
         "Window Manager": `SYSTEM["Window Manager"]`,
+        "Settings": `SYSTEM["Settings"]`,
         "Notepad": `STANDALONE["Notepad"]`,
         "Web Framer": `STANDALONE["Web Framer"]`
     }
@@ -24,14 +25,11 @@ export default function initialize() {
         "Desktop": {
             installationDirectory: "@/plexos/app/sys/Desktop",
             launcherScriptFilePath: "/plexos/app/sys/Desktop/desktop.ls",
+            instantiable: false,
             systemPermissions: [
-                "file.access",
-                "file.create",
-                "file.update",
-                "file.delete",
-                "task.launch",
-                "task.listen",
-                "task.broadcast",
+                "file",
+                "task",
+                "event",
                 "document.access"
             ],
             systemProhibitions: []
@@ -48,14 +46,11 @@ export default function initialize() {
             },
             installationDirectory: "@/plexos/app/sys/Explorer",
             launcherScriptFilePath: "/plexos/app/sys/Explorer/explorer.ls",
+            instantiable: true,
             systemPermissions: [
-                "file.access",
-                "file.create",
-                "file.update",
-                "file.delete",
-                "task.launch",
-                "task.listen",
-                "task.broadcast"
+                "file",
+                "task",
+                "event"
             ],
             systemProhibitions: []
         },
@@ -68,12 +63,11 @@ export default function initialize() {
             },
             installationDirectory: "@/plexos/app/sys/File Properties",
             launcherScriptFilePath: "/plexos/app/sys/File Properties/prop.ls",
+            instantiable: true,
             systemPermissions: [
-                "file.access",
-                "file.update",
+                "file.modify",
                 "task.launch",
-                "task.listen",
-                "task.broadcast"
+                "event"
             ],
             systemProhibitions: []
         },
@@ -89,13 +83,10 @@ export default function initialize() {
             },
             installationDirectory: "@/plexos/app/meta/Meta Creator",
             launcherScriptFilePath: "/plexos/app/meta/Meta Creator/metaCreator.ls",
+            instantiable: true,
             systemPermissions: [
-                "file.access",
-                "file.create",
-                "file.update",
-                "file.delete",
-                "task.listen",
-                "task.broadcast",
+                "file",
+                "event"
             ],
             systemProhibitions: []
         },
@@ -111,23 +102,21 @@ export default function initialize() {
             },
             installationDirectory: "@/plexos/app/sys/Popup",
             launcherScriptFilePath: "/plexos/app/sys/Popup/popup.ls",
+            instantiable: true,
             systemPermissions: [
                 "task.launch",
-                "task.broadcast"
+                "event"
             ],
             systemProhibitions: []
         },
         "Theme Manager": {
             installationDirectory: "@/plexos/app/sys/Theme Manager",
             launcherScriptFilePath: "/plexos/app/sys/Theme Manager/themeManager.ls",
+            instantiable: false,
             systemPermissions: [
-                "file.access",
-                "file.create",
-                "file.update",
-                "file.delete",
-                "task.launch",
-                "task.listen",
-                "task.broadcast",
+                "file",
+                "task",
+                "event",
                 "document.access"
             ],
             systemProhibitions: []
@@ -135,18 +124,29 @@ export default function initialize() {
         "Window Manager": {
             installationDirectory: "@/plexos/app/sys/Window Manager",
             launcherScriptFilePath: "/plexos/app/sys/Window Manager/windowManager.ls",
+            instantiable: false,
             systemPermissions: [
-                "file.access",
-                "file.create",
-                "file.update",
-                "file.delete",
-                "task.launch",
-                "task.listen",
-                "task.broadcast",
+                "file",
+                "task",
+                "event",
                 "document.access"
             ],
             systemProhibitions: []
         },
+        "Settings": {
+            installationDirectory: "@/plexos/app/sys/Settings",
+            launcherScriptFilePath: "/plexos/app/sys/Settings/settings.ls",
+            launcherDependents: [
+                "/plexos/app/sys/Settings/grid/grid.ls",
+            ],
+            instantiable: false,
+            systemPermissions: [
+                "file",
+                "task",
+                "event",
+                "document.access"
+            ],
+        }
     }
     proxy.data.STANDALONE = {
         "Notepad": {
@@ -161,13 +161,11 @@ export default function initialize() {
             },
             installationDirectory: "@/plexos/app/data/Notepad",
             launcherScriptFilePath: "/plexos/app/data/Notepad/notepad.ls",
+            instantiable: true,
             systemPermissions: [
-                "file.access",
-                "file.create",
-                "file.update",
-                "task.launch",
-                "task.listen",
-                "task.broadcast"
+                "file",
+                "task",
+                "event"
             ],
             systemProhibitions: []
         },
@@ -185,10 +183,10 @@ export default function initialize() {
             },
             installationDirectory: "@/plexos/app/data/Web Framer",
             launcherScriptFilePath: "/plexos/app/data/Web Framer/iframer.ls",
+            instantiable: true,
             systemPermissions: [
-                "file.access",
-                "task.listen",
-                "task.broadcast"
+                "file.read",
+                "event"
             ],
             systemProhibitions: []
         },
