@@ -10,7 +10,7 @@ export default {
         //task creation
         let task = new Task(
             {
-                registryPath: `SYSTEM["Theme Manager"]`,
+                appID: /APPID/,
                 name : "Theme Manager",
                 node : document.getElementById("themeLayer"),
                 from : "System", 

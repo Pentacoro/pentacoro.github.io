@@ -66,7 +66,11 @@ export default class Command {
                 msg: () => 'File written successfully',
             },
             'file.modify': {
-                fn: (args) => File.modify({ path: args.path, data: args.data ?? args.content ?? args.sys }),
+                fn: (args) => File.modify({
+                    path: args.path,
+                    data: args.data ?? args.content ?? args.sys,
+                    cfg: args.cfg,
+                }),
                 msg: () => 'File modified successfully',
             },
             'file.delete': {

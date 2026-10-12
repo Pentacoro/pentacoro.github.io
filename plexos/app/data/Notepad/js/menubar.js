@@ -1,6 +1,5 @@
 import plexos from "/plexos/ini/system.js"
 import {getTask, displayComponent} from "/plexos/lib/functions/dll.js"
-import File from "/plexos/lib/classes/filesystem/file.js"
 
 let task = getTask(/TASKID/)
 let mem  = task.mem
@@ -17,7 +16,7 @@ mem.menubar.contextOptions = function (button) {
                         {name:"New",icon:"url('')",func: () => {return}},
                         {name:"New Window",icon:"url('')",func: () => {return}},
                         {name:"Open...",icon:"url('')",func: () => {return} },
-                        {name:"Save",icon:"url('')",func: () => File.at(mem.arg.fileAddr).data = task.node.getElementsByTagName("textarea")[0].value },
+                        {name:"Save",icon:"url('')",shortcut:"Ctrl+S",func: () => mem.save?.()},
                         {name:"Save As...",icon:"url('')",func: () => {return} },
                     ]},
                     {name: "exit", list: [
@@ -30,12 +29,13 @@ mem.menubar.contextOptions = function (button) {
             return {
                 menu: [
                     {name: "undo", list: [
-                        {name:"Undo",icon:"url('')",func: () => {return}},
+                        {name:"Undo",icon:"url('')",shortcut:"Ctrl+Z",func: () => mem.undo?.()},
+                        {name:"Redo",icon:"url('')",shortcut:"Ctrl+Y",func: () => mem.redo?.()},
                     ]},
                     {name: "clip", list: [
-                        {name:"Cut",icon:"url('')",func: () => {mem.var.textarea.focus();task.node.execCommand("cut")}},
-                        {name:"Copy",icon:"url('')",func: () => {mem.var.textarea.focus();task.node.execCommand("copy")} },
-                        {name:"Paste",icon:"url('')",func: () => {mem.var.textarea.focus();document.execCommand("paste")} },
+                        {name:"Cut",icon:"url('')",shortcut:"Ctrl+X",func: () => {mem.var.textarea.focus();task.node.execCommand("cut")}},
+                        {name:"Copy",icon:"url('')",shortcut:"Ctrl+C",func: () => {mem.var.textarea.focus();task.node.execCommand("copy")} },
+                        {name:"Paste",icon:"url('')",shortcut:"Ctrl+V",func: () => {mem.var.textarea.focus();document.execCommand("paste")} },
                     ]},
                     {name: "find", list: [
                         {name:"Find...",icon:"url('')",func: () => {return} },
@@ -45,7 +45,7 @@ mem.menubar.contextOptions = function (button) {
                         {name:"Go To...",icon:"url('')",func: () => {return} },
                     ]},
                     {name: "misc", list: [
-                        {name:"Select All",icon:"url('')",func: () => {return} },
+                        {name:"Select All",icon:"url('')",shortcut:"Ctrl+A",func: () => {return} },
                         {name:"Time/Date",icon:"url('')",func: () => {return} },
                     ]},
                 ]
@@ -100,4 +100,9 @@ await displayComponent({
     url:"/plexos/res/components/menubar/menubar.html",
     taskid:task.id,
     container:task.node.getElementsByClassName("component_menubar")[0]
+})
+await displayComponent({
+    url:"/plexos/res/components/menubar/statusbar.html",
+    taskid:task.id,
+    container:task.node.getElementsByClassName("component_statusbar")[0]
 })

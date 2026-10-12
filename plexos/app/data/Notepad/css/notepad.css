@@ -12,6 +12,10 @@
     display: flex;
     flex-direction: column;
 }
+.component_menubar,
+.component_statusbar {
+    flex-shrink: 0;
+}
 textarea {
     font-size: 12px;
     position: relative;
@@ -29,6 +33,7 @@ textarea {
     position: relative;
     flex-grow: 2;
     height: auto;
+    min-height: 0;
 }
 /*>>>>>>> Anything that changes on blur goes here <<<<<<<*/
 .content.blur>.container{

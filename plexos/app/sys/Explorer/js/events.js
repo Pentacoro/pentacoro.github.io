@@ -25,7 +25,7 @@ task.onpaste = async function (e) {
         const paste = await navigator.clipboard.readText()
 
 		if (paste.match(urlRegex)){
-			let newMetaFile = mem.dirObject.new("MetaFile", "New MetaFile.meta")
+			let newMetaFile = await task.cmd("file.create", {path: mem.dirObject.cfg.path, Type: "MetaFile", name: "New MetaFile.meta"})
             mem.createExplorerIcons([newMetaFile])
             let icon = mem.getIcon(newMetaFile.cfg.path)
 			runLauncher("/plexos/app/meta/Meta Creator/metaCreator.ls",{path:newMetaFile.cfg.path,window:false,url:paste,type:"web"})

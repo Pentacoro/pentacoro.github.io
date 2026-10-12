@@ -48,22 +48,35 @@ for (let tab of task.node.getElementsByClassName("config-tab")) {
     })
 }
 
-//footer buttons 
-task.node.getElementsByClassName("footer-accept")[0].onclick = (e)=> {
+async function persistAppliedFile() {
+    const file = mem.var.configInitialState
+    const sKey = file?.cfg?.class ? File.classDefaults(file.cfg.class).skeyName : null
+    if (!file?.cfg?.path || !sKey || sKey === "dir") return
+    await task.cmd("file.modify", { path: file.cfg.path, data: file[sKey] })
+}
+
+async function applyConfig() {
     task.emit(task.id+"-applyBefore")
-    if (mem.var.configFilePath) File.at(mem.var.configFilePath).data = JSON.stringify(eval(mem.var.configEditable), null, "\t")
-    imposeValues(mem.var.configInitialState, eval(mem.var.configEditable))
+    if (typeof mem.applyFileChanges === "function") {
+        await mem.applyFileChanges()
+    } else {
+        if (mem.var.configFilePath) File.at(mem.var.configFilePath).data = JSON.stringify(eval(mem.var.configEditable), null, "\t")
+        imposeValues(mem.var.configInitialState, eval(mem.var.configEditable))
+        await persistAppliedFile()
+    }
     task.emit(task.id+"-apply")
+}
+
+//footer buttons 
+task.node.getElementsByClassName("footer-accept")[0].onclick = async (e)=> {
+    await applyConfig()
     task.end()
 }
 task.node.getElementsByClassName("footer-cancel")[0].onclick = (e)=> {
     task.end()
 }
-task.node.getElementsByClassName("footer-apply")[0].onclick = (e)=> {
-    task.emit(task.id+"-applyBefore")
-    if (mem.var.configFilePath) File.at(mem.var.configFilePath).data = JSON.stringify(eval(mem.var.configEditable), null, "\t")
-    imposeValues(mem.var.configInitialState, eval(mem.var.configEditable))
-    task.emit(task.id+"-apply")
+task.node.getElementsByClassName("footer-apply")[0].onclick = async (e)=> {
+    await applyConfig()
     task.node.getElementsByClassName("footer-apply")[0].disabled = true
     task.node.getElementsByClassName("footer-apply")[0].classList.add("disabled")
 }

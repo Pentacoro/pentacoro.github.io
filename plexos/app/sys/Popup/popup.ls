@@ -26,7 +26,7 @@ export default {
         //task creation
         let task = new Task(
             {
-                registryPath: `SYSTEM["Popup"]`,
+                appID: /APPID/,
                 name : "Popup",
                 onEnd : end,
                 node : null,

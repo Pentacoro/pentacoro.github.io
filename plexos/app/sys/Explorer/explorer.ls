@@ -23,8 +23,7 @@ export default {
         //task creation
         let task = new Task(
             {
-                registryPath: `SYSTEM["Explorer"]`,
-                appID: appid,
+                appID: /APPID/,
                 name : "Explorer",
                 onEnd : end,
                 node : null,

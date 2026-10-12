@@ -100,17 +100,24 @@ mem.createMeta = async function () {
         if (arg.file.meta.url.match(slashForwardRegex)) arg.file.meta.icon = arg.file.meta.url.replace(slashForwardRegex, "/favicon.ico")
         else arg.file.meta.icon = (arg.file.meta.url + "/favicon.ico")
 
-        const img = new Image()
-        img.onload =  () => arg.file.render()
-        img.onerror = () => {
-            arg.file.meta.icon = `https://s2.googleusercontent.com/s2/favicons?domain_url=${arg.file.meta.url}`
-            arg.file.render()
-        }
-        img.src = arg.file.meta.icon
-}
+        await new Promise(resolve => {
+            const img = new Image()
+            img.onload = resolve
+            img.onerror = () => {
+                arg.file.meta.icon = `https://s2.googleusercontent.com/s2/favicons?domain_url=${arg.file.meta.url}`
+                resolve()
+            }
+            img.src = arg.file.meta.icon
+        })
+    }
     if (type === "img") {
 
     }
+
+    await task.cmd("file.modify", {
+        path: arg.file.cfg.path,
+        data: { ...arg.file.meta },
+    })
 
     arg.file.render()
     task.end()

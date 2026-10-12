@@ -16,7 +16,7 @@ mem.menubar.contextOptions = function (button) {
                         {name:"New",icon:"url('')",func: () => {return}},
                         {name:"New Window",icon:"url('')",func: () => {return}},
                         {name:"Open...",icon:"url('')",func: () => {return} },
-                        {name:"Save",icon:"url('')",func: () => mem.arg.file.data = mem.editor.getValue() },
+                        {name:"Save",icon:"url('')",shortcut:"Ctrl+S",func: () => mem.arg.file.data = mem.editor.getValue() },
                         {name:"Save As...",icon:"url('')",func: () => {return} },
                     ]},
                     {name: "exit", list: [
@@ -29,12 +29,12 @@ mem.menubar.contextOptions = function (button) {
             return {
                 menu: [
                     {name: "undo", list: [
-                        {name:"Undo",icon:"url('')",func: () => {return}},
+                        {name:"Undo",icon:"url('')",shortcut:"Ctrl+Z",func: () => {return}},
                     ]},
                     {name: "clip", list: [
-                        {name:"Cut",icon:"url('')",func: () => {mem.var.textarea.focus();document.execCommand("cut")}},
-                        {name:"Copy",icon:"url('')",func: () => {mem.var.textarea.focus();document.execCommand("copy")} },
-                        {name:"Paste",icon:"url('')",func: () => {mem.var.textarea.focus();document.execCommand("paste")} },
+                        {name:"Cut",icon:"url('')",shortcut:"Ctrl+X",func: () => {mem.var.textarea.focus();document.execCommand("cut")}},
+                        {name:"Copy",icon:"url('')",shortcut:"Ctrl+C",func: () => {mem.var.textarea.focus();document.execCommand("copy")} },
+                        {name:"Paste",icon:"url('')",shortcut:"Ctrl+V",func: () => {mem.var.textarea.focus();document.execCommand("paste")} },
                     ]},
                     {name: "find", list: [
                         {name:"Find...",icon:"url('')",func: () => {return} },
@@ -44,7 +44,7 @@ mem.menubar.contextOptions = function (button) {
                         {name:"Go To...",icon:"url('')",func: () => {return} },
                     ]},
                     {name: "misc", list: [
-                        {name:"Select All",icon:"url('')",func: () => {return} },
+                        {name:"Select All",icon:"url('')",shortcut:"Ctrl+A",func: () => {return} },
                         {name:"Time/Date",icon:"url('')",func: () => {return} },
                     ]},
                 ]

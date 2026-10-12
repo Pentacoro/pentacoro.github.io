@@ -27,7 +27,7 @@ sys.mem.var.shSelect = true
 sys.mem.focused = null
 sys.mem.cfg = plexos.Config
 sys.mem.downloadCoreJSON = function (exportName="core") {
-    let jsonCore = plexos.Core
+    let jsonCore = File.serializeNode(plexos.Core.file)
     let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(jsonCore))
     let downloadAnchorNode = document.createElement('a')
     downloadAnchorNode.setAttribute("href",     dataStr)
@@ -101,12 +101,18 @@ root.ini.recreateFiles = async function (dir, newDir) {
         }
 
         //recreate file object
-        await File.create(newDir.cfg.path,Type,file.name,null,file.cfg,file[Skey],false)
+        await File.create({
+            path: newDir.cfg.path,
+            Type,
+            name: file.name,
+            conf: file.cfg,
+            content: file[Skey],
+        })
         let newFile = newDir.dir[file.name]
         
         //recreate icon object
         let oldIcon = newFile.cfg.icon
-        oldIcon.exte = newFile.exte
+        oldIcon.exte = newFile.cfg.exte
         newFile.cfg.icon = new Icon (oldIcon)
 
         if (Type === "DirectoryFile") {

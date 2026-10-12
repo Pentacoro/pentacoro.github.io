@@ -21,7 +21,7 @@ export default {
         //task creation
         let task = new Task(
             {
-                registryPath: `SYSTEM["File Properties"]`,
+                appID: /APPID/,
                 name : "File Properties",
                 onEnd : end,
                 node : null,

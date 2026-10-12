@@ -29,7 +29,7 @@ export default {
         //task creation
         let task = new Task(
             {
-                registryPath: `SYSTEM["Meta Creator"]`,
+                appID: /APPID/,
                 name : "Meta Creator",
                 onEnd : end,
                 node : null,

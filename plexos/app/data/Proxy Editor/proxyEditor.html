@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./css/proxyEditor.css">
+    <title>Proxy Editor</title>
+</head>
+<body>
+    <div class="container">
+        <div class="component_menubar"></div>
+        <div class="background">
+            <div class="tree"></div>
+            <div class="editor behind"></div>
+            <div class="json-loading hidden">loading...</div>
+        </div>
+        <div class="component_statusbar"></div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.52.2/min/vs/loader.js" class="imported"></script>
+    <script type="module" src="./js/shared.js"></script>
+    <script type="module" src="./js/history.js"></script>
+    <script type="module" src="./js/draft.js"></script>
+    <script type="module" src="./js/tree.js"></script>
+    <script type="module" src="./js/json.js"></script>
+    <script type="module" src="./js/proxyEditor.js"></script>
+    <script type="module" src="./js/events.js"></script>
+    <script type="module" src="./js/menubar.js"></script>
+</body>
+</html>

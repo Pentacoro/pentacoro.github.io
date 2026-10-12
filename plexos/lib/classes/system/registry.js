@@ -35,9 +35,11 @@ export default class Registry {
             if (!catalog || typeof catalog !== "object") continue
             for (const name of Object.keys(catalog)) {
                 if (name === "return") continue
+                if (catalog[name] && typeof catalog[name] === "object" && "appID" in catalog[name]) {
+                    delete catalog[name].appID
+                }
                 const id = this.generateSessionAppID(used)
-                catalog[name].appID = id
-                data.INDEX[id] = { name, bucket, path: { bucket, name } }
+                data.INDEX[id] = { name, bucket }
             }
         }
     }
@@ -54,6 +56,22 @@ export default class Registry {
             : null
         if (!registryFileEntry) throw new Error(`File ${file.cfg.path} not found in registry`)
         return ProxyFile.unwrapProxy(registryFileEntry)
+    }
+
+    rekeyFileEntries(oldPath, newPath) {
+        if (!oldPath || !newPath || oldPath === newPath) return
+        const data = this.fileFile()?.data
+        if (!data) return
+        const keys = Object.keys(ProxyFile.unwrapProxy(data) || {})
+        const prefix = oldPath + "/"
+        for (const key of keys) {
+            let next = null
+            if (key === oldPath) next = newPath
+            else if (key.startsWith(prefix)) next = newPath + key.slice(oldPath.length)
+            if (!next || next === key) continue
+            data[next] = data[key]
+            delete data[key]
+        }
     }
 
     resolveIndex(appID) {
@@ -94,18 +112,22 @@ export default class Registry {
     getAppIDByLauncher(url) {
         const normalized = (url || "").replace(/^\.\//, "/").replace(/\\/g, "/")
         const data = ProxyFile.unwrapProxy(this.appFile().data) || {}
+        const index = data.INDEX || {}
         for (const bucket of ["SYSTEM", "STANDALONE"]) {
             const catalog = data[bucket]
             if (!catalog || typeof catalog !== "object") continue
             for (const [name, entry] of Object.entries(catalog)) {
-                if (!entry || typeof entry !== "object") continue
+                if (!entry || typeof entry !== "object" || name === "return") continue
                 const dependents = Array.isArray(entry.launcherDependents) ? entry.launcherDependents : []
                 const paths = [entry.launcherScriptFilePath, ...dependents]
                     .filter(path => typeof path === "string" && path.length > 0)
                 for (const path of paths) {
                     const catalogPath = path.replace(/^\.\//, "/")
                     if (normalized === catalogPath || normalized.endsWith(catalogPath)) {
-                        return entry.appID || null
+                        for (const [appID, item] of Object.entries(index)) {
+                            if (item?.bucket === bucket && item?.name === name) return appID
+                        }
+                        return null
                     }
                 }
             }

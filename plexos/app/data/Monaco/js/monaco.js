@@ -18,14 +18,15 @@ function setLanguage(ext) {
 	}
 }
 
-require.config({ paths: { 'vs': 'https://unpkg.com/monaco-editor@latest/min/vs' } })
+const monacoBase = "https://cdn.jsdelivr.net/npm/monaco-editor@0.52.2/min"
+require.config({ paths: { 'vs': monacoBase + "/vs" } })
 window.MonacoEnvironment = { getWorkerUrl: () => proxy }
 
 let proxy = URL.createObjectURL(new Blob([`
 	self.MonacoEnvironment = {
-		baseUrl: 'https://unpkg.com/monaco-editor@latest/min/'
+		baseUrl: '${monacoBase}/'
 	};
-	importScripts('https://unpkg.com/monaco-editor@latest/min/vs/base/worker/workerMain.js');
+	importScripts('${monacoBase}/vs/base/worker/workerMain.js');
 `], { type: 'text/javascript' }))
 
 require(["vs/editor/editor.main"], function () {

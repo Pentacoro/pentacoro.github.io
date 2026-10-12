@@ -248,10 +248,11 @@ export async function runLauncher(url, args = {}, focus = null, name = ""){
     try {
         let data = await ajaxReturn("get", url)
         try {
+            const appid = plexos.Core.registry?.getAppIDByLauncher(url) || null
+            if (appid) data = repAid(data, appid, true)
             let proxy  = await blobModule(data)
             let module = await import(proxy)
 
-            const appid = plexos.Core.registry?.getAppIDByLauncher(url) || null
             await module.default.run(
                 {
                     taskid: taskID,
@@ -314,6 +315,10 @@ function repDir(data, parDir){ //replace root directory for local apps
 function repTid(data, taskId, stringify = false){ //pass the task id to app
     let newData = data.replaceAll("/TASKID/", stringify ? JSON.stringify(taskId):taskId)
     return newData
+}
+function repAid(data, appId, stringify = false){
+    if (!appId) return data
+    return data.replaceAll("/APPID/", stringify ? JSON.stringify(appId) : appId)
 }
 function repCid(data, compId, stringify = false){
     let newData = data.replaceAll("/COMPID/", stringify ? JSON.stringify(compId):compId)

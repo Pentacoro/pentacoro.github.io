@@ -10,7 +10,7 @@ export default {
         //task creation
         let task = new Task(
             {
-                registryPath: `SYSTEM["Window Manager"]`,
+                appID: /APPID/,
                 name : "Window Manager",
                 node : document.getElementById("windowLayer"),
                 from : "System", 

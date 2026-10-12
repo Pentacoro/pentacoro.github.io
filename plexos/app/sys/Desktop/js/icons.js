@@ -623,5 +623,8 @@ mem.orderIconPosition = function(){
 
 mem.writeIconConfig = function(){
     cfg.icon.icons = mem.filterIconListJson()
-    File.at(cfg.path+"/icon.json").write(JSON.stringify(cfg.icon, null, "\t"))
+    task.cmd("file.write", {
+        path: cfg.path+"/icon.json",
+        data: JSON.stringify(cfg.icon, null, "\t"),
+    })
 }

@@ -15,7 +15,7 @@ export default {
         //task creation
         let task = new Task(
             {
-                registryPath: `SYSTEM["Settings"]`,
+                appID: /APPID/,
                 name : "Desktop Grid Settings",
                 node : null,
                 from : "System", 

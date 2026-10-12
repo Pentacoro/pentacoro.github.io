@@ -59,7 +59,6 @@ export default class Task {
             return
         }
         this.appID = p.appID
-        this.registryPath = p.registryPath
         this.name = p.name
         this.node = p.node || this.node
         this.window = null
@@ -234,9 +233,43 @@ export default class Task {
     undo() {
         // to be implemented later
     }
-    async askPermission(allowance) {
-        return new Promise (async (resolve, reject) => {
-            await System.askPermission(this.appID,"allowance")
+    async askPermission(appID, allowance) {
+        let appName = appID
+        try {
+            appName = plexos.Core.registry.resolveIndex(appID).name
+        } catch {}
+
+        return new Promise((resolve) => {
+            let settled = false
+            const finish = (granted) => {
+                if (settled) return
+                settled = true
+                if (granted) {
+                    try {
+                        const params = plexos.Core.registry.getAppParams(appID)
+                        if (params && Array.isArray(params.systemPermissions)) {
+                            if (!params.systemPermissions.includes(allowance)) params.systemPermissions.push(allowance)
+                            const generic = String(allowance).split(".")[0]
+                            if (generic && !params.systemPermissions.includes(generic)) {
+                                params.systemPermissions.push(generic)
+                            }
+                        }
+                    } catch {}
+                }
+                resolve(!!granted)
+            }
+
+            this.popup(null, [
+                ["Allow", () => finish(true)],
+                ["Deny", () => finish(false)],
+            ], {
+                name: "Permission",
+                type: false,
+                title: "Permission required",
+                description: `${appName} is requesting <b>${allowance}</b>.`,
+                icon: "",
+                taskid: this.id,
+            })
         })
     }
 }

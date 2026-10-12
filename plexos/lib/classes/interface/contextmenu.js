@@ -104,6 +104,12 @@ export default class ContextMenu {
         
                 newButton.appendChild(newIcon)
                 newButton.appendChild(newText)
+                if (item.shortcut) {
+                    let shortcut = document.createElement("span")
+                    shortcut.className = "shortcut"
+                    shortcut.textContent = item.shortcut
+                    newButton.appendChild(shortcut)
+                }
 
                 newSection.appendChild(newButton)
 

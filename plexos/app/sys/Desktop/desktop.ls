@@ -22,8 +22,7 @@ export default {
         //task creation
         let task = new Task(
             {
-                registryPath: `SYSTEM["Desktop"]`,
-                appID: appid,
+                appID: /APPID/,
                 name : "Desktop",
                 onEnd : end,
                 node : document.getElementById("desktopLayer"),

@@ -48,6 +48,7 @@ let cfg = {
         txt:  "/plexos/app/data/Notepad/notepad.ls",
         json: "/plexos/app/data/Monaco/monaco.ls",
         js:   "/plexos/app/data/Monaco/monaco.ls",
+        proxy:"/plexos/app/data/Proxy Editor/proxyEditor.ls",
     }
 }
 export default cfg

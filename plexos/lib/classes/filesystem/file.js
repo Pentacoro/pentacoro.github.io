@@ -271,6 +271,10 @@ export default class File {
 
         fileName = fileName + (((confType != "DirectoryFile") && !fileName.includes(".")) ? "." + extension : "")
 
+        const content = (opts.content != null)
+            ? opts.content
+            : (skeyName === "meta" ? {} : opts.content)
+
         parent.dir[fileName] = new Type(
             {
                 name: fileName,
@@ -281,7 +285,7 @@ export default class File {
                         exte: (confType == "DirectoryFile") ? "dir" : extension,
                         icon: Icon
                     }),
-                [skeyName]: opts.content
+                [skeyName]: content
             }
         )
 
@@ -329,6 +333,7 @@ export default class File {
         file.cfg.path = finalAddress
         if (file.cfg.icon) file.cfg.icon.file = finalAddress
         if (file.dir) File.rerouteChildren(file, oldAddress, finalAddress)
+        plexos.Core?.registry?.rekeyFileEntries?.(oldAddress, finalAddress)
         for (let fileView of File.viewsOpened(parent.cfg.path)) {
             fileView.mem.getIcon(oldAddress)?.deleteNode?.()
         }
@@ -344,23 +349,30 @@ export default class File {
         const payload = data !== undefined ? data : content
         const sKey = File.classDefaults(file.cfg.class).skeyName
         if (file.cfg.class === "ProxyFile") {
-            file.data = (typeof payload === "object" && payload !== null)
-                ? payload
-                : payload
+            const wrap = file.constructor.convertToProxyModel
+            const obj = (payload && typeof payload === "object") ? payload : {}
+            file.data = wrap ? wrap(obj, file) : obj
         } else {
             file[sKey] = payload
         }
         return file
     }
-    static modify({ path, data, content, sys }) {
+    static modify({ path, data, content, sys, cfg }) {
         const file = File.at(path)
         if (!file) return
+        if (cfg && typeof cfg === "object") {
+            if ("hidden" in cfg) file.cfg.hidden = cfg.hidden
+            if ("edit" in cfg) file.cfg.edit = cfg.edit
+        }
         const patch = data ?? content ?? sys
-        const sKey = File.classDefaults(file.cfg.class).skeyName
-        if (patch && typeof patch === "object" && !Array.isArray(patch) && file[sKey] && typeof file[sKey] === "object") {
-            Object.assign(file[sKey], patch)
-        } else {
-            file[sKey] = patch
+        if (patch !== undefined) {
+            const sKey = File.classDefaults(file.cfg.class).skeyName
+            if (sKey === "dir") return file
+            if (patch && typeof patch === "object" && !Array.isArray(patch) && file[sKey] && typeof file[sKey] === "object") {
+                Object.assign(file[sKey], patch)
+            } else {
+                file[sKey] = patch
+            }
         }
         return file
     }
@@ -386,6 +398,7 @@ export default class File {
         if (file.cfg.icon) file.cfg.icon.file = newAddress
 
         if (file.dir) File.rerouteChildren(file, oldAddress, newAddress)
+        plexos.Core?.registry?.rekeyFileEntries?.(oldAddress, newAddress)
 
         renameKey(parent.dir, file.name, rename)
 

@@ -23,7 +23,7 @@ export default {
         //task creation
         let task = new Task(
             {
-                registryPath: `STANDALONE["Monaco"]`,
+                appID: /APPID/,
                 name : "Monaco",
                 onEnd : end,
                 node : null,

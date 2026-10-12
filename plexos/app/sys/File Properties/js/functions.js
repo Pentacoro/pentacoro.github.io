@@ -36,3 +36,40 @@ mem.prepMetadata = function () {
     if (!task.node.getElementById(task.id+"_metadata")) return
     task.node.querySelector(`#${task.id}_metadata .config-option.header>label>img`).setAttribute("src", mem.arg.meta.image)
 }
+
+mem.applyFileChanges = async function () {
+    const file = mem.arg
+    const draft = mem.var.configObject
+    if (!file?.cfg?.path || !draft) return
+
+    const displayName = mem.tab.general.fileName.value
+    const newName = (file.cfg.class === "DirectoryFile")
+        ? displayName
+        : displayName + mem.tab.general.fileExte.innerText
+
+    if (newName && newName !== file.name) {
+        const renamed = await task.cmd("file.rename", { path: file.cfg.path, rename: newName })
+        if (renamed) {
+            mem.arg = renamed
+            mem.var.configInitialState = renamed
+            draft.name = renamed.name
+            draft.cfg.path = renamed.cfg.path
+            if (draft.cfg.icon && renamed.cfg.icon) {
+                draft.cfg.icon.name = renamed.cfg.icon.name
+                draft.cfg.icon.file = renamed.cfg.icon.file
+                draft.cfg.icon.exte = renamed.cfg.icon.exte
+            }
+        }
+    }
+
+    const live = mem.arg
+    const sKey = File.classDefaults(live.cfg.class).skeyName
+    await task.cmd("file.modify", {
+        path: live.cfg.path,
+        cfg: {
+            hidden: !!draft.cfg.hidden,
+            edit: draft.cfg.edit !== false,
+        },
+        data: (sKey && sKey !== "dir") ? draft[sKey] : undefined,
+    })
+}

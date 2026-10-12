@@ -23,9 +23,8 @@ export default {
         //task creation
         let task = new Task(
             {
-                registryPath: `STANDALONE["Web Framer"]`,
                 name : "Web Framer",
-                appID: appid,
+                appID: /APPID/,
                 onEnd: end,
                 node : null,
                 id   : taskid
