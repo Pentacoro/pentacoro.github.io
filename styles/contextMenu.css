@@ -43,6 +43,8 @@
     cursor: default;
 }
 .contextSection>div>div{
+    width: 18px;
+    height: 18px;
     background-size: contain;
     background-position: center;
     background-repeat: no-repeat;

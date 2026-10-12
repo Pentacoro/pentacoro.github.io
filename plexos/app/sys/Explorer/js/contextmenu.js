@@ -14,7 +14,7 @@ mem.backContextMenu = [
         {name:"New",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/new2.svg')",func: [
             {name: "new", list: [
                 {name:"Directory",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/directory.svg')",func:async () => await task.mem.new(null,task,"DirectoryFile","New Folder")},
-                {name:"MetaFile",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/MetaFile.svg')",func:async () => await task.mem.new(null,task,"MetaFile","New MetaFile.meta")},
+                {name:"MetaFile",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/metafile.svg')",func:async () => await task.mem.new(null,task,"MetaFile","New MetaFile.meta")},
                 {name:"Text Document",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/textfile.svg')",func:async () => await task.mem.new(null,task,"StringFile","New Text Document.txt")},
             ]}
         ]},
