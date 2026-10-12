@@ -19,7 +19,7 @@ export default class TrashCan extends File {
             date : Date.now(),
             path : File.at(file, "parent").path
         }
-        File.delete(file)
+        File.delete({ path: file.cfg.path })
         this.dir.push(fileWrap)
     }
     restoreFile(fileWrap){

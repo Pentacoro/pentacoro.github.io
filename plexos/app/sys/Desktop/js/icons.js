@@ -446,7 +446,7 @@ mem.class.IconDesk = class IconDesk {
                 //insert into fyleSystem
                 if (iconText.textContent != editFile.name) { //if the name changed
                     //editFile.rename(iconText.textContent)
-                    File.rename({path: editFile.cfg.path, rename: iconText.textContent})
+                    task.cmd("file.rename", {path: editFile.cfg.path, rename: iconText.textContent})
                 }
     
                 thisIcon.statNode(1)

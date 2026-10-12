@@ -4,7 +4,7 @@ import {displayComponent} from "/plexos/lib/functions/dll.js"
 
 export default {
     app: `Theme Manager`,
-    run: function({taskid,appid,args,path,root}){
+    run: async function({taskid,appid,args,path,root}){
         let html = root + "/themeManager.html"
 
         //task creation
@@ -19,7 +19,7 @@ export default {
         )
         if (!task.id) return
 
-        displayComponent({
+        await displayComponent({
             url:html,
             taskid:task.id,
             container:task.node,

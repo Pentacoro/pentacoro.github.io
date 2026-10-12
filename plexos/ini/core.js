@@ -8,6 +8,7 @@ import ProxyFile from "../lib/classes/filesystem/proxy.js"
 import DirectoryFile from "../lib/classes/filesystem/directory.js"
 import Icon from "../lib/classes/interface/icon.js"
 import {runLauncher, getValue, ajaxReturn, storageAvailable} from "../lib/functions/dll.js"
+import ChangeLog from "../lib/classes/system/changeLog.js"
 import initialize from "./init.js"
 
 // SYSTEM TASK
@@ -37,18 +38,18 @@ sys.mem.downloadCoreJSON = function (exportName="core") {
 }
 sys.bus = new EventBus()
 sys.ini = {}
-sys.ini.openDesktop = function (address) {
-    let promiseInit = new Promise(async () => {
-        await runLauncher("./plexos/app/sys/Window Manager/windowManager.ls",)
-        await runLauncher("./plexos/app/sys/Theme Manager/themeManager.ls",)
-        await runLauncher("./plexos/app/sys/Desktop/desktop.ls",{path:address})
-    })
-    promiseInit.then( () => {
-        Task.get("Desktop").mem.grid.evaluateIconGrid()
-        Task.get("Desktop").mem.renderIcons()
-    })
+sys.ini.openDesktop = async function (address) {
+    await runLauncher("./plexos/app/sys/Window Manager/windowManager.ls")
+    await runLauncher("./plexos/app/sys/Theme Manager/themeManager.ls")
+    await runLauncher("./plexos/app/sys/Desktop/desktop.ls", {path:address})
+    let desktop = Task.get("Desktop")
+    if (desktop?.mem?.grid?.evaluateIconGrid) {
+        desktop.mem.grid.evaluateIconGrid()
+        desktop.mem.renderIcons()
+    }
 }
 sys.ini.run = async function () {
+    root.mem.booting = true
     await plexos.Core.ini.getPlexosDB()
     plexos.Core.file = await plexos.Core.ini.defineCore()
     initialize()
@@ -65,9 +66,11 @@ const root = new Task(
 )
 plexos.Core = root
 root.file = {}
+root.changeLog = new ChangeLog()
+root.mem.explorerUndoIndex = -1
 root.mem.classCompilers = {
     "ProxyFile": (file) => {
-        return ProxyFile.unwrapProxy(file)
+        return ProxyFile.unwrapProxy(file.data)
     }
 }
 root.ini = {}
@@ -218,13 +221,11 @@ root.ini.defineCoreByDB = async function(lastCoreName) {
     let dbCore = sys.user.localCores.filter(core=>core.name === lastCoreName)[0]
     let newCore = DirectoryFile.coreTemplate()
     root.file = newCore
-    await core.ini.recreateFiles(dbCore,newCore)
+    await root.ini.recreateFiles(dbCore,newCore)
     plexos.System.user.config.lastOpenedCore = newCore.name
     return newCore
 }
 root.mem.saveCore = async function () {
-    if (root.changeLog.length === 0) return
-
     await plexos.db.saveCore(root.file)
 }
 

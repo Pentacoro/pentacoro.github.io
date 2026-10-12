@@ -290,7 +290,7 @@ mem.class.IconDir = class IconDir {
     
                 //insert into fylesystem
                 if (iconText.textContent != editFile.name) { //if the name changed
-                    File.rename({path: editFile.cfg.path, rename: iconText.textContent})
+                    task.cmd("file.rename", {path: editFile.cfg.path, rename: iconText.textContent})
                 }
     
                 thisIcon.statNode(1)

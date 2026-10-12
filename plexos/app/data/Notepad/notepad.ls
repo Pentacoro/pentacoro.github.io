@@ -5,7 +5,7 @@ import {displayComponent} from "/plexos/lib/functions/dll.js"
 
 export default {
     application: `Notepad`,
-    run: function({taskid,appid,args,path,root}){
+    run: async function({taskid,appid,args,path,root}){
         let html = root + "/notepad.html"
 
         //on app init
@@ -45,7 +45,7 @@ export default {
 
         ini()
 
-        displayComponent({
+        await displayComponent({
             url:html,
             taskid:task.id,
             container:task.node

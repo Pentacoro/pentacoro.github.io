@@ -188,15 +188,21 @@ export default class Window {
 		// 1 => open
 		// 2 => maximized
 
-		if (Task.id(p.task).registryPath) {
-			const registryFile = File.at(`/plexos/reg/applications.proxy`)
-			const registryAppEntry = eval(`registryFile.data.${Task.id(p.task).registryPath}`)
-			const registryParameters = ProxyFile.unwrapProxy(registryAppEntry.windowDrawParameters.default)
-
-			this.appParams = (p.appParams!==undefined) ? new Window.AppParameters({...registryParameters, ...p.appParams}) : new Window.AppParameters({...registryParameters})
-		} else {
-			this.appParams = (p.appParams!==undefined) ? new Window.AppParameters(p.appParams) : new Window.AppParameters()
+		const taskRef = Task.id(p.task)
+		let registryParameters = {}
+		if (taskRef?.appID && plexos.Core.registry) {
+			try {
+				const registryAppEntry = plexos.Core.registry.getAppParams(taskRef.appID)
+				if (registryAppEntry?.windowDrawParameters?.default) {
+					registryParameters = ProxyFile.unwrapProxy(registryAppEntry.windowDrawParameters.default)
+				}
+			} catch (e) {
+				console.error(e)
+			}
 		}
+		this.appParams = (p.appParams!==undefined)
+			? new Window.AppParameters({...registryParameters, ...p.appParams})
+			: new Window.AppParameters(registryParameters)
 
 
 		this.drawParams = p.drawParams || null

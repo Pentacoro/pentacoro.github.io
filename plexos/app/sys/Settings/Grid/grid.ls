@@ -4,8 +4,8 @@ import {displayComponent} from "/plexos/lib/functions/dll.js"
 
 export default {
     app: `Desktop Grid Settings`,
-    run: function({taskid,appid,args,path,root}){
-        let html = root + "/deskGridOptions.html"
+    run: async function({taskid,appid,args,path,root}){
+        let html = root + "/grid.html"
 
         //on app init
         function ini() {
@@ -41,7 +41,7 @@ export default {
             }
         )
 
-        displayComponent({
+        await displayComponent({
             url:html,
             taskid:task.id,
             container:task.node,

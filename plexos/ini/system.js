@@ -51,12 +51,18 @@ plexos.db.getConfig = async () => {
         request.onerror = (event) => reject(event.target.error)
     })
 }
+plexos.db.txnDone = (transaction) => {
+    return new Promise((resolve, reject) => {
+        transaction.oncomplete = () => resolve()
+        transaction.onerror = () => reject(transaction.error)
+        transaction.onabort = () => reject(transaction.error)
+    })
+}
 plexos.db.setConfig = async(config) => {
     const db = await plexos.db.open()
-
-    db.transaction("Config", "readwrite").objectStore("Config").put(config, "config")
-
-    await db.transaction.complete
+    const transaction = db.transaction("Config", "readwrite")
+    transaction.objectStore("Config").put(config, "config")
+    await plexos.db.txnDone(transaction)
     console.log("Config saved!")
 }
 plexos.db.addUser = async (user) => {
@@ -96,38 +102,47 @@ plexos.db.saveUser = async (user) => {
     const db = await plexos.db.open()
     const transaction = db.transaction("Users", "readwrite")
     const store = transaction.objectStore("Users")
-
     store.put(user)
-
-    await transaction.complete
+    await plexos.db.txnDone(transaction)
     console.log("User saved!")
 }
 
-plexos.db.saveCore = async (core) => {
-    import("../lib/classes/filesystem/file.js")
-    //if there are localCores saved, check if core to be saved is already local
-    if (localCore.length > 0 &&  plexos.System.user.localCores.filter(localCore=>localCore.name === core.name).length === 1) {
-        let localCore = plexos.System.user.localCores.filter(localCore=>localCore.name === core.name)[0]
-        for (let change of plexos.Core.changeLog) {
-            switch (change.name) {
-                case "repath":
-                    if (change.dir === change.args.oldDir){
-                        delete File.at(change.args.oldPath,"parent","localCore")[change.args.oldName]
-                        File.at(change.file.cfg.path,"parent","localCore")[change.file.name] = File.at(change.path)
-                    }
-                    break
-                case "delete":
-                    delete File.at(change.path,"parent","localCore")[change.file.name]
-                    break
-                case "update", "create":
-                    File.at(change.path,"parent","localCore")[change.file.name] = JSON.parse(File.stringify(File.at(change.path)))
-                    break
-            }
+plexos.db.applyCorePlan = (stored, plan, File) => {
+    for (const op of plan) {
+        const type = op.type
+        if (type === "create" || type === "write" || type === "modify") {
+            const parent = File.jsonAt(stored, File.dirname(op.path))
+            if (parent?.dir && op.after) parent.dir[File.basename(op.path)] = op.after
+        } else if (type === "delete") {
+            const parent = File.jsonAt(stored, File.dirname(op.path))
+            if (parent?.dir) delete parent.dir[File.basename(op.path)]
+        } else if (type === "repath") {
+            const fromParent = File.jsonAt(stored, File.dirname(op.oldPath))
+            const toParent = File.jsonAt(stored, File.dirname(op.path))
+            if (!fromParent?.dir) continue
+            const node = fromParent.dir[File.basename(op.oldPath)]
+            delete fromParent.dir[File.basename(op.oldPath)]
+            if (toParent?.dir) toParent.dir[File.basename(op.path)] = op.after || node
         }
-    } else {
-        plexos.System.user.localCores.push(core)
     }
-    await plexos.db.saveUser(plexos.System.user)
+}
+
+plexos.db.saveCore = async (core) => {
+    const File = (await import("../lib/classes/filesystem/file.js")).default
+    const user = plexos.System.user
+    const snapshot = File.serializeNode(core)
+    snapshot.name = core.name || "core"
+    const pending = plexos.Core.changeLog.pending()
+    const existing = user.localCores.filter(local => local.name === snapshot.name)
+    if (existing.length === 1) {
+        const plan = plexos.Core.changeLog.getCommitPlan()
+        if (plan.length > 0) plexos.db.applyCorePlan(existing[0], plan, File)
+    } else {
+        user.localCores.push(snapshot)
+        plexos.System.user.config.lastOpenedCore = snapshot.name
+    }
+    plexos.Core.changeLog.markCommitted(pending)
+    await plexos.db.saveUser(user)
 }
 
 import("../lib/functions/prototype.js")

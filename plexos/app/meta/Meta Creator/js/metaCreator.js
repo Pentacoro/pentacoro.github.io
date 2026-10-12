@@ -88,7 +88,7 @@ mem.createMeta = async function () {
         } 
     }
 
-    File.rename({path: arg.file.cfg.path, rename: newName})
+    await task.cmd("file.rename", {path: arg.file.cfg.path, rename: newName})
 
     if(metaData){
         arg.file.meta.title = metaData.title

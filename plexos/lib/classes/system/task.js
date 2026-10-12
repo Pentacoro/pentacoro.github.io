@@ -2,7 +2,6 @@ import plexos from "../../../ini/system.js"
 import {genRanHex, runLauncher} from "/plexos/lib/functions/dll.js"
 import File from "../filesystem/file.js"
 import Component from "../interface/component.js"
-import ChangeLog from "./changeLog.js"
 import EventBus from "./eventbus.js"
 let System = plexos.System
 
@@ -37,9 +36,13 @@ export default class Task {
         Task.id(id).end()
     }
     static deleteSelectedNodes(pocket){
+        const actor = plexos.System.mem.focused
         for(let icon of pocket){
             icon.deleteNode()
-            if(File.at(icon.file)!=undefined) File.at(icon.file).delete()
+            if(File.at(icon.file)!=undefined) {
+                if (actor?.cmd) actor.cmd("file.delete", {path: icon.file})
+                else File.delete({path: icon.file})
+            }
         }
     }
     static System() {
@@ -66,7 +69,6 @@ export default class Task {
         this.windows = []
         this.blobList = []
         this.eventBus = new EventBus
-        this.changeLog = new ChangeLog
         this.components = []
         this.mem = {
             var: {},
@@ -124,15 +126,15 @@ export default class Task {
     async cmd(command, args) {
         const Command = (await import('./command.js')).default
         const cmdObj = {
-            author: this.name,          // app identifier for permissions
-            taskId: this.id,            // individual task instance ID for listener tracking
+            appID: this.appID,
+            author: this.name,
+            taskId: this.id,
             command: command,
             arguments: args,
             timestamp: Date.now(),
             status: "queried",
             message: ""
         }
-        console.log(cmdObj)
         return await Command.run(cmdObj)
     }
 

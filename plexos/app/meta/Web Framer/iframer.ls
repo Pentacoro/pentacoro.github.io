@@ -5,7 +5,7 @@ import {displayComponent} from "/plexos/lib/functions/dll.js"
 
 export default {
     application: `Web Framer`,
-    run: function({taskid,appid,args,path,root}){
+    run: async function({taskid,appid,args,path,root}){
         let html = root + "/iframer.html"
 
         //on app init
@@ -48,7 +48,7 @@ export default {
 
         ini()
 
-        displayComponent({
+        await displayComponent({
             url:html,
             taskid:task.id,
             container:task.node

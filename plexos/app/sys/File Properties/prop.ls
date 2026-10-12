@@ -5,7 +5,7 @@ import {displayComponent} from "/plexos/lib/functions/dll.js"
 
 export default {
     app: `File Properties`,
-    run: function({taskid,appid,args,path,root}){
+    run: async function({taskid,appid,args,path,root}){
         let html = root + "/prop.html"
 
         //on app init
@@ -47,7 +47,7 @@ export default {
 
         ini()
         
-        displayComponent({
+        await displayComponent({
             url:html,
             taskid:task.id,
             container:task.node

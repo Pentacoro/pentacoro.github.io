@@ -6,7 +6,7 @@ let System = plexos.System
 
 export default {
     app: `Popup`,
-    run: function({taskid,appid,args,path,root}){
+    run: async function({taskid,appid,args,path,root}){
         let html = (args.type) ? root + "/popup.html" : root + "/popupB.html"
 
         //on app init
@@ -56,7 +56,7 @@ export default {
                 
             ini()
 
-            displayComponent({
+            await displayComponent({
                 url:html,
                 taskid:taskid,
                 container:task.node

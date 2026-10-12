@@ -67,16 +67,98 @@ export default class File {
         }
     }
 
-    static stringify(file) {
-        const newJSON = {}
+    static basename(path = "") {
+        const parts = String(path).split("/").filter(Boolean)
+        return parts[parts.length - 1] || ""
+    }
+
+    static dirname(path = "") {
+        const parts = String(path).split("/").filter(Boolean)
+        parts.pop()
+        return parts.length ? "/" + parts.join("/") : ""
+    }
+
+    static jsonAt(root, path = "", get = "file") {
+        const parts = String(path).split("/").filter(Boolean)
+        if (get === "parent") {
+            if (parts.length === 0) return null
+            parts.pop()
+        }
+        let node = root
+        for (const part of parts) {
+            if (!node?.dir || node.dir[part] === undefined) return null
+            node = node.dir[part]
+        }
+        return node
+    }
+
+    static serializeNode(file) {
+        if (!file) return null
         const sKey = File.classDefaults(file.cfg.class).skeyName
+        const node = {
+            name: file.name,
+            cfg: file.cfg,
+        }
+        if (file.cfg.class === "DirectoryFile") {
+            node.dir = {}
+            for (const [name, child] of Object.entries(file.dir || {})) {
+                node.dir[name] = File.serializeNode(child)
+            }
+        } else {
+            const compiler = plexos.Core?.mem?.classCompilers?.[file.cfg.class]
+            node[sKey] = compiler ? compiler(file) : file[sKey]
+        }
+        return JSON.parse(JSON.stringify(node, (key, value) => {
+            if (key === "node" || typeof value === "function") return undefined
+            return value
+        }))
+    }
 
-        newJSON.name = file.name
-        newJSON.cfg = file.cfg
+    static stringify(file) {
+        return JSON.stringify(File.serializeNode(file))
+    }
 
-        newJSON[sKey] = (plexos.Core.mem.classCompilers[file.cfg.class]) ? plexos.Core.mem.classCompilers[file.cfg.class]() : file[sKey]
+    static payloadKey(fileOrClass) {
+        const Type = typeof fileOrClass === "string" ? fileOrClass : fileOrClass.cfg.class
+        return File.classDefaults(Type).skeyName
+    }
 
-        return JSON.stringify(newJSON)
+    static async restoreSerialized(serialized, path) {
+        const parentPath = File.dirname(path)
+        const parent = File.at(parentPath)
+        if (!parent) throw new Error(`Parent missing for ${path}`)
+        const Type = serialized.cfg?.class || "StringFile"
+        const sKey = File.classDefaults(Type).skeyName
+        await File.create({
+            path: parentPath,
+            Type,
+            name: serialized.name,
+            conf: serialized.cfg,
+            content: serialized[sKey],
+        })
+        if (Type === "DirectoryFile" && serialized.dir) {
+            const created = File.at(path)
+            created.dir = {}
+            for (const child of Object.values(serialized.dir)) {
+                await File.restoreSerialized(child, `${path}/${child.name}`)
+            }
+        }
+        return File.at(path)
+    }
+
+    static writeSerialized(path, serialized) {
+        const file = File.at(path)
+        if (!file || !serialized) return
+        const sKey = File.classDefaults(file.cfg.class).skeyName
+        if (file.cfg.class === "DirectoryFile") return
+        File.write({ path, data: serialized[sKey] })
+    }
+
+    static refreshViews() {
+        for (const task of plexos.Tasks) {
+            if (task.name === "Explorer" && task.mem?.refresh) task.mem.refresh()
+            if (task.name === "Desktop" && task.mem?.refresh) task.mem.refresh()
+        }
     }
 
     static classDefaults(Type) {
@@ -162,128 +244,165 @@ export default class File {
         return fileViews
     }
 
-    static async create
-    (   
-        path,
-        type, 
-        name, 
-        icon = null, 
-        conf = null, 
-        cont = null,
-        log = true,
-    ) {
-        let parent = File.at(path)
+    static async create(pathOrOpts, type, name, icon = null, conf = null, cont = null) {
+        const opts = (typeof pathOrOpts === "object" && pathOrOpts !== null && type === undefined)
+            ? pathOrOpts
+            : { path: pathOrOpts, Type: type, name, icon, conf, content: cont }
 
-        let defaults = File.classDefaults(type)
-        let confType = defaults.confType
-        let skeyName = defaults.skeyName
-        let extension = name.match(/(?:.(?<!\.))+$/s)[0]
-        let Type = await typeClass(type)
-        let Icon = (icon!=null) ? icon : await import("../interface/icon.js").then(module => new module.default(
+        const path = opts.path
+        const parent = File.at(path)
+        if (!parent) throw new Error(`Cannot create file: missing directory ${path}`)
+        const typeName = opts.Type || opts.type
+        const defaults = File.classDefaults(typeName)
+        const confType = defaults.confType
+        const skeyName = defaults.skeyName
+        let fileName = opts.name
+        const extensionMatch = fileName.match(/(?:.(?<!\.))+$/s)
+        const extension = extensionMatch ? extensionMatch[0] : ""
+        const Type = await typeClass(typeName)
+        const Icon = (opts.icon != null) ? opts.icon : await import("../interface/icon.js").then(module => new module.default(
             {
-                class: confType, 
-                name: name, 
-                exte: (confType=="DirectoryFile") ? "dir" : extension, 
+                class: confType,
+                name: fileName,
+                exte: (confType == "DirectoryFile") ? "dir" : extension,
                 state: 0
             }
-    ))
+        ))
 
-        name = name + (((confType!="DirectoryFile") && !name.includes(".")) ? "." + extension : "")
+        fileName = fileName + (((confType != "DirectoryFile") && !fileName.includes(".")) ? "." + extension : "")
 
-        parent.dir[name] = new Type
-        (
+        parent.dir[fileName] = new Type(
             {
-                name : name,
-                cfg  : conf || new Configuration (
-                {
-                    class : confType,
-                    move : true,
-                    exte : (confType=="DirectoryFile") ? "dir" : extension,
-                    icon : Icon
-                }),
-                [skeyName] : cont
+                name: fileName,
+                cfg: opts.conf || new Configuration(
+                    {
+                        class: confType,
+                        move: true,
+                        exte: (confType == "DirectoryFile") ? "dir" : extension,
+                        icon: Icon
+                    }),
+                [skeyName]: opts.content
             }
         )
 
-        parent.dir[name].cfg.path = parent.cfg.path+ "/" + name
-        parent.dir[name].cfg["icon"].file = parent.cfg.path+ "/" + name
+        parent.dir[fileName].cfg.path = parent.cfg.path + "/" + fileName
+        parent.dir[fileName].cfg["icon"].file = parent.cfg.path + "/" + fileName
 
-        //if (log) plexos.Core.logChange("create",parent.dir[name].cfg.path)
-
-        return parent.dir[name]
+        return parent.dir[fileName]
     }
 
-    static delete({path, log=true}) {
+    static delete({ path }) {
         const file = File.at(path)
-        const parent = File.at(path,"parent")
-
-        //if (log) plexos.Core.logChange("delete",child.cfg.path)
-
+        const parent = File.at(path, "parent")
+        if (!file || !parent) return
         delete parent.dir[file.name]
     }
-    static remove ({path, log=true}) {
-        let fileWrap = {
-            file : File.stringify(file),
-            date : Date.now(),
-            path : File.at(file, "parent").path
-        }
-        File.at("/trash").dir.push(fileWrap)
-        File.delete(file)
-    }
-    static restore({path, timestamp, log=true}) {
-
-    }
-    static move({path, to, log=true}) {
-        
-    }
-    static read({path}) {
-
-    }
-    static write({path, data, log=true}) {
-
-    }
-    static modify({path, sys, log=true}) {
-
-    }
-    static rename({path, rename, log=true}) {
+    static remove({ path }) {
         const file = File.at(path)
-        const parent  = File.at(path,"parent")
+        if (!file) return
+        const fileWrap = {
+            file: File.stringify(file),
+            date: Date.now(),
+            path: file.parent().cfg.path
+        }
+        const trash = File.at("/trash")
+        if (Array.isArray(trash.dir)) trash.dir.push(fileWrap)
+        else trash.dir[file.name] = file
+        File.delete({ path })
+    }
+    static restore({ path, timestamp }) {
+        return File.restoreSerialized(File.at(path), path)
+    }
+    static move({ path, to }) {
+        const file = File.at(path)
+        const dest = File.at(to)
+        const parent = file?.parent()
+        if (!file || !dest || !parent) return
+        const oldAddress = file.cfg.path
+        const newAddress = dest.cfg.path + "/" + file.name
+        if (dest.dir[file.name] && dest !== parent) {
+            file.name = File.returnAvailableName(file.name, file.cfg.icon, dest)
+        }
+        const finalAddress = dest.cfg.path + "/" + file.name
+        delete parent.dir[File.basename(oldAddress)]
+        dest.dir[file.name] = file
+        file.cfg.path = finalAddress
+        if (file.cfg.icon) file.cfg.icon.file = finalAddress
+        if (file.dir) File.rerouteChildren(file, oldAddress, finalAddress)
+        for (let fileView of File.viewsOpened(parent.cfg.path)) {
+            fileView.mem.getIcon(oldAddress)?.deleteNode?.()
+        }
+        file.render()
+        return file
+    }
+    static read({ path }) {
+        return File.at(path)
+    }
+    static write({ path, data, content }) {
+        const file = File.at(path)
+        if (!file) return
+        const payload = data !== undefined ? data : content
+        const sKey = File.classDefaults(file.cfg.class).skeyName
+        if (file.cfg.class === "ProxyFile") {
+            file.data = (typeof payload === "object" && payload !== null)
+                ? payload
+                : payload
+        } else {
+            file[sKey] = payload
+        }
+        return file
+    }
+    static modify({ path, data, content, sys }) {
+        const file = File.at(path)
+        if (!file) return
+        const patch = data ?? content ?? sys
+        const sKey = File.classDefaults(file.cfg.class).skeyName
+        if (patch && typeof patch === "object" && !Array.isArray(patch) && file[sKey] && typeof file[sKey] === "object") {
+            Object.assign(file[sKey], patch)
+        } else {
+            file[sKey] = patch
+        }
+        return file
+    }
+    static rerouteChildren(dir, oldAddress, newAddress) {
+        for (let pair of Object.entries(dir.dir)) {
+            let child = pair[1]
+            child.cfg.path = child.cfg.path.replace(oldAddress, newAddress)
+            if (child.cfg.icon) child.cfg.icon.file = String(child.cfg.icon.file).replace(oldAddress, newAddress)
+            if (child.dir) File.rerouteChildren(child, oldAddress, newAddress)
+        }
+    }
+    static rename({ path, rename }) {
+        const file = File.at(path)
+        const parent = File.at(path, "parent")
+        if (!file || !parent) return
 
-        rename = File.returnAvailableName(rename,null,file.parent())
+        rename = File.returnAvailableName(rename, null, file.parent())
 
         let newAddress = "" + parent.cfg.path + "/" + rename
         let oldAddress = file.cfg.path
-        let oldName = file.name
 
         file.cfg.path = newAddress
-        file.cfg.icon.file = newAddress
+        if (file.cfg.icon) file.cfg.icon.file = newAddress
 
-        if (file.dir) rerouteChildren(file)
-
-        function rerouteChildren(parent) {
-            for (let pair of Object.entries(parent.dir)) {
-                let file = pair[1]
-                file.cfg.path = file.cfg.path.replace(oldAddress, newAddress)
-                file.cfg.icon.file = file.cfg.icon.file.replace(oldAddress, newAddress)
-                if (file.exte === "dir") rerouteChildren(file)
-            }
-        }
+        if (file.dir) File.rerouteChildren(file, oldAddress, newAddress)
 
         renameKey(parent.dir, file.name, rename)
 
         let renamedFile = parent.dir[rename]
-        let extension = ((file.cfg.class==="DirectoryFile") ? "dir" : (rename.match(/\.(?:.(?<!\.))+$/s)!=null) ? rename.match(/(?:.(?<!\.))+$/s)[0] : "")
+        let extension = ((file.cfg.class === "DirectoryFile") ? "dir" : (rename.match(/\.(?:.(?<!\.))+$/s) != null) ? rename.match(/(?:.(?<!\.))+$/s)[0] : "")
 
         renamedFile.name = rename
         renamedFile.cfg.exte = extension
-        renamedFile.cfg.icon.name = rename
-        renamedFile.cfg.icon.exte = extension
+        if (renamedFile.cfg.icon) {
+            renamedFile.cfg.icon.name = rename
+            renamedFile.cfg.icon.exte = extension
+        }
 
         for (let fileView of File.viewsOpened(parent.cfg.path)) {
             fileView.mem.getIcon(oldAddress)?.rename(newAddress)
         }
-
-        //if (log) plexos.Core.logChange("repath",file.cfg.path,{oldPath:oldAddress})
+        return renamedFile
     }
 
     static open(path) {

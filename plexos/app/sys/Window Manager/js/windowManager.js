@@ -1,3 +1,4 @@
+import plexos from "/plexos/ini/system.js"
 import {getTask} from "/plexos/lib/functions/dll.js"
 import Task from "/plexos/lib/classes/system/task.js"
 import File from "/plexos/lib/classes/filesystem/file.js"
@@ -54,21 +55,22 @@ windowManager.getInitialDrawParams = function(window) {
     const filePath     = window.appParams.filePath
 
     let getRegistryAppParams = function (window) {
-        const registryFile = File.at(`/plexos/reg/applications.proxy`)
-
-        let registryAppEntry = eval(`registryFile.data.${Task.id(window.task).registryPath}`)
-
-        if (registryAppEntry.windowDrawParameters.return().current) return JSON.parse(JSON.stringify(registryAppEntry.windowDrawParameters.return().current))
+        const taskRef = Task.id(window.task)
+        if (!taskRef?.appID || !plexos.Core?.registry) return null
+        let registryAppEntry = plexos.Core.registry.getAppParams(taskRef.appID)
+        const draw = registryAppEntry?.windowDrawParameters
+        if (!draw) return null
+        const current = draw.current ? ProxyFile.unwrapProxy(draw.current) : null
+        if (current && Object.keys(current).length) return JSON.parse(JSON.stringify(current))
         return null
     }
 
     let getRegistryFileParams = function (window) {
-        const registryFile = File.at(`/plexos/reg/files.proxy`)
-
-        let registryFileEntry = registryFile.data[filePath]
-
-        if (!ProxyFile.isEmpty(registryFileEntry.applications[appname].windowDrawParameters)) return JSON.parse(JSON.stringify(registryFileEntry.applications[appname].windowDrawParameters.return()))
-        return null
+        if (!filePath) return null
+        const data = ProxyFile.unwrapProxy(File.at(`/plexos/reg/files.proxy`).data) || {}
+        const stored = data[filePath]?.applications?.[appname]?.windowDrawParameters
+        if (!stored || typeof stored !== "object" || Object.keys(stored).length === 0) return null
+        return JSON.parse(JSON.stringify(stored))
     }
     switch (window.appParams.saveDrawParameters) {
         case "default":
@@ -83,20 +85,24 @@ windowManager.getInitialDrawParams = function(window) {
     }
 }
 windowManager.setInitialDrawParams = function(window) {
-    const registryFile = File.at(`/plexos/reg/applications.proxy`)
     const appname      = Task.id(window.task).name
     const filePath     = window.appParams.filePath
+    const taskRef      = Task.id(window.task)
 
     switch (window.appParams.saveDrawParameters) {
         case "default":
         case "app" :
-        let registryAppEntry = eval(`registryFile.data.${Task.id(window.task).registryPath}`)
-            registryAppEntry.windowDrawParameters.current = JSON.parse(JSON.stringify(window.drawParams))
-            console.log (registryAppEntry.windowDrawParameters)
+            if (!taskRef?.appID || !plexos.Core?.registry) return
+            {
+                const pointer = plexos.Core.registry.resolveIndex(taskRef.appID)
+                const registryAppEntry = File.at(`/plexos/reg/applications.proxy`).data[pointer.bucket][pointer.name]
+                if (!registryAppEntry.windowDrawParameters) registryAppEntry.windowDrawParameters = {}
+                registryAppEntry.windowDrawParameters.current = JSON.parse(JSON.stringify(window.drawParams))
+            }
             return
         case "file":
-        let registryFileEntry = File.at(`/plexos/reg/files.proxy`).data[filePath]
-            registryFileEntry.applications[appname].windowDrawParameters = window.drawParams
+            if (!filePath) return
+            File.at(`/plexos/reg/files.proxy`).data[filePath].applications[appname].windowDrawParameters = JSON.parse(JSON.stringify(window.drawParams))
             return
     }
 }

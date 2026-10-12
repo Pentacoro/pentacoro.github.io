@@ -5,6 +5,20 @@ import ContextMenu from "/plexos/lib/classes/interface/contextmenu.js"
 let task = getTask(/TASKID/)
 let mem  = task.mem
 
+document.addEventListener("keydown", async (e) => {
+    if (plexos.System.mem.focused !== task) return
+    if (!e.ctrlKey) return
+    if (e.target?.isContentEditable) return
+    const key = e.key.toLowerCase()
+    if (key !== "z" && key !== "y") return
+    e.preventDefault()
+    if (key === "y" || (key === "z" && e.shiftKey)) {
+        await plexos.Core.changeLog.redoExplorer()
+    } else {
+        await plexos.Core.changeLog.undoExplorer()
+    }
+})
+
 task.onpaste = async function (e) {
 	try {
 		const urlRegex = /[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,10}\b(\/[-a-zA-Z0-9@:%_\+.~#?&//=]*)?/gi

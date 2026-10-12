@@ -3,7 +3,7 @@ import {displayComponent} from "/plexos/lib/functions/dll.js"
 
 export default {
     app: `Desktop`,
-    run: function({taskid,appid,args,path,root}){
+    run: async function({taskid,appid,args,path,root}){
         let html = root + "/desktop.html"
 
         //on app init
@@ -34,7 +34,7 @@ export default {
 
         ini()
 
-        displayComponent({
+        await displayComponent({
             url:html,
             taskid:task.id,
             container:task.node

@@ -79,8 +79,8 @@ export function nodeGetters(node, nodeSelector, id){
     }
 }
 export async function displayComponent({url, taskid, container, env, compid=null}){
-    let appHTML = ajaxReturn("get", url)
-    await appHTML.then( async data => {
+    try {
+        let data = await ajaxReturn("get", url)
         await loadFront({
             url:url,
             taskid:taskid,
@@ -89,10 +89,9 @@ export async function displayComponent({url, taskid, container, env, compid=null
             env:env,
             compid:compid,
         })
-    })
-    await appHTML.catch( e => {
-        console.err(e)
-    })
+    } catch (e) {
+        console.error(e)
+    }
 }
 export async function loadFront({url, taskid, data, container, focus = null, compid = null}){
     if (!Task.id(taskid)) return
@@ -246,25 +245,22 @@ export async function runLauncher(url, args = {}, focus = null, name = ""){
     let taskID = genRanHex(16)
     Task.checkUniqueID({id:taskID})
 
-    //get .ls file
-    let appLauncher = ajaxReturn("get", url)
-
-    appLauncher.then( async data => {
+    try {
+        let data = await ajaxReturn("get", url)
         try {
             let proxy  = await blobModule(data)
             let module = await import(proxy)
 
-            Task.get()
-        
-            module.default.run(
+            const appid = plexos.Core.registry?.getAppIDByLauncher(url) || null
+            await module.default.run(
                 {
                     taskid: taskID,
+                    appid,
                     args: args,
                     path: url,
                     root: url.replace(url.match(/\/(?:.(?<!\/))+$/s),"")
                 }
             )
-            if (focus) focus.loader(false)
         } catch (e) {
             console.error(e)
             /*evalErrorPopup
@@ -275,22 +271,16 @@ export async function runLauncher(url, args = {}, focus = null, name = ""){
             ) 
             */
         }
-    })
-    appLauncher.catch( e => {
-        //Task.System().mem.var.error = e
-        //Task.System().mem.var.errorB = [["Okay"]]
-        
+    } catch (e) {
         evalErrorPopup
         (
-            data,
+            null,
             "The application launcher at: <i>'" + url + "'</i> failed evaluation.",
             e
-        ) 
-    })
-    appLauncher.finally( e => {
-        //URL.revokeObjectURL(proxy)
+        )
+    } finally {
         if (focus) focus.loader(false)
-    })
+    }
 }
 export function evalErrorPopup(code, desc, error) {
     //add it to typeError stack

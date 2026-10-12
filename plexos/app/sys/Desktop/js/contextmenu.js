@@ -11,7 +11,7 @@ mem.deskContextMenu = [
             {name:"grid", list: [
                 {name:"Auto Length",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/autogrid.svg')",func:() => task.mem.grid.autoLength()},
                 {name:"Auto Margin",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/automargin.svg')",func:() => task.mem.grid.autoMargin()},
-                {name:"Grid Settings",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/gridsettings.svg')",func:() => runLauncher("/plexos/app/sys/Settings/Grid/deskGridOptions.ls",[],task)},
+                {name:"Grid Settings",icon:"url('plexos/res/themes/Plexos Hyper/icons/interface/contextMenu/gridsettings.svg')",func:() => runLauncher("/plexos/app/sys/Settings/Grid/grid.ls",[],task)},
                 ]
             }
         ]},

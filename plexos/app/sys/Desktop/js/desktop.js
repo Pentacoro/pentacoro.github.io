@@ -146,7 +146,7 @@ mem.deleteSelectedNodes = function(){
 	for(let icon of task.pocket){
 		icon.deleteNode()
 		//delete from filesystem
-		if(File.at(icon.file)!=undefined) File.delete({path: icon.file, log: true})
+		if(File.at(icon.file)!=undefined) task.cmd("file.delete", {path: icon.file})
 	}
 }
 

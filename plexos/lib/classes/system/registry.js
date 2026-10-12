@@ -1,42 +1,115 @@
-import plexos from "../../../ini/system.js"
-import { genRanHex } from "../../functions/dll.js"
-import File from "./file"
-import ProxyFile from "../filesystem/proxy"
+import File from "../filesystem/file.js"
+import ProxyFile from "../filesystem/proxy.js"
 
 export default class Registry {
     constructor(fileRegistryPath, appRegistryPath) {
         this.fileRegistryPath = fileRegistryPath
         this.appRegistryPath = appRegistryPath
     }
-    static getAllApps() {
-        const registryFile = File.at(this.appRegistryPath)
-        const registryAppIndex = ProxyFile.unwrapProxy(registryFile.data.INDEX)
-        return Object.keys(registryAppIndex).map(appID => registryAppIndex[appID])
+
+    appFile() {
+        return File.at(this.appRegistryPath)
     }
-    static getFileParams(file) {
-        const registryFile = File.at(this.fileRegistryPath)
-        const registryFileEntry = (!ProxyFile.isEmpty(registryFile.data[file.cfg.path])) ? registryFile.data[file.cfg.path] : null
+
+    fileFile() {
+        return File.at(this.fileRegistryPath)
+    }
+
+    generateSessionAppID(used = new Set()) {
+        let id
+        do {
+            id = [...crypto.getRandomValues(new Uint8Array(3))]
+                .map(b => b.toString(16).padStart(2, "0"))
+                .join("")
+        } while (used.has(id))
+        used.add(id)
+        return id
+    }
+
+    issueSessionAppIDs() {
+        const data = this.appFile().data
+        data.INDEX = {}
+        const used = new Set()
+        for (const bucket of ["SYSTEM", "STANDALONE"]) {
+            const catalog = data[bucket]
+            if (!catalog || typeof catalog !== "object") continue
+            for (const name of Object.keys(catalog)) {
+                if (name === "return") continue
+                const id = this.generateSessionAppID(used)
+                catalog[name].appID = id
+                data.INDEX[id] = { name, bucket, path: { bucket, name } }
+            }
+        }
+    }
+
+    getAllApps() {
+        const index = ProxyFile.unwrapProxy(this.appFile().data.INDEX) || {}
+        return Object.keys(index).map(appID => ({ appID, ...index[appID] }))
+    }
+
+    getFileParams(file) {
+        const registryFile = this.fileFile()
+        const registryFileEntry = (!ProxyFile.isEmpty(registryFile.data[file.cfg.path]))
+            ? registryFile.data[file.cfg.path]
+            : null
         if (!registryFileEntry) throw new Error(`File ${file.cfg.path} not found in registry`)
         return ProxyFile.unwrapProxy(registryFileEntry)
     }
-    static getAppParams(appID) {
-        const registryFile = File.at(this.appRegistryPath)
-        const registryAppEntry = (!ProxyFile.isEmpty(registryFile.data[appID])) ? registryFile.data[appID] : null
-        if (!registryAppEntry) throw new Error(`Application ${appID} not found in registry`)
-        return ProxyFile.unwrapProxy(registryAppEntry)
+
+    resolveIndex(appID) {
+        if (!appID) throw new Error("Application id missing")
+        const item = this.appFile().data.INDEX[appID]
+        if (ProxyFile.isEmpty(item)) throw new Error(`Application ${appID} not found in registry`)
+        return ProxyFile.unwrapProxy(item)
     }
-    static getAppID(appName) {
-        const registryFile = File.at(this.appRegistryPath)
-        const registryAppIndex = ProxyFile.unwrapProxy(registryFile.data.INDEX)
-        for (let appID in Object.keys(registryAppIndex)) {
-            if (registryAppIndex[appID].name === appName) return appID
+
+    getAppParams(appID) {
+        if (!appID) return null
+        const pointer = this.resolveIndex(appID)
+        const entry = this.appFile().data[pointer.bucket][pointer.name]
+        if (ProxyFile.isEmpty(entry)) throw new Error(`Application ${appID} not found in registry`)
+        return ProxyFile.unwrapProxy(entry)
+    }
+
+    getAppID(appName) {
+        const index = ProxyFile.unwrapProxy(this.appFile().data.INDEX) || {}
+        for (const [appID, item] of Object.entries(index)) {
+            if (item.name === appName) return appID
         }
         throw new Error(`Application ${appName} not found in registry`)
     }
-    static getAppRegistryPath(appID) {
-        const registryFile = File.at(this.appRegistryPath)
-        const registryAppIndexItem = (!ProxyFile.isEmpty(registryFile.data.INDEX[appID])) ? registryFile.data.INDEX[appID] : null
-        if (!registryAppIndexItem) throw new Error(`Application ${appID} not found in registry`)
-        return ProxyFile.unwrapProxy(registryAppIndexItem).path
+
+    tryGetAppID(appName) {
+        try {
+            return this.getAppID(appName)
+        } catch {
+            return null
+        }
+    }
+
+    getAppRegistryPath(appID) {
+        return this.resolveIndex(appID)
+    }
+
+    getAppIDByLauncher(url) {
+        const normalized = (url || "").replace(/^\.\//, "/").replace(/\\/g, "/")
+        const data = ProxyFile.unwrapProxy(this.appFile().data) || {}
+        for (const bucket of ["SYSTEM", "STANDALONE"]) {
+            const catalog = data[bucket]
+            if (!catalog || typeof catalog !== "object") continue
+            for (const [name, entry] of Object.entries(catalog)) {
+                if (!entry || typeof entry !== "object") continue
+                const dependents = Array.isArray(entry.launcherDependents) ? entry.launcherDependents : []
+                const paths = [entry.launcherScriptFilePath, ...dependents]
+                    .filter(path => typeof path === "string" && path.length > 0)
+                for (const path of paths) {
+                    const catalogPath = path.replace(/^\.\//, "/")
+                    if (normalized === catalogPath || normalized.endsWith(catalogPath)) {
+                        return entry.appID || null
+                    }
+                }
+            }
+        }
+        return null
     }
 }

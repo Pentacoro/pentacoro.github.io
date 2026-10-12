@@ -7,7 +7,7 @@ let System = plexos.System
 
 export default {
     app: `Meta Creator`,
-    run: function({taskid,appid,args,path,root}){
+    run: async function({taskid,appid,args,path,root}){
         if (args.window === undefined) args.window = true
         
         let html = root + ((args.window) ? "/metaCreator.html" : "/metaCreatorScript.html")
@@ -56,7 +56,7 @@ export default {
             
         ini()
 
-        displayComponent({
+        await displayComponent({
             url:html,
             taskid:taskid,
             container:(task.node) ? task.node : document.getElementById("systemLayer")
