@@ -128,6 +128,7 @@ plexos.db.applyCorePlan = (stored, plan, File) => {
 }
 
 plexos.db.saveCore = async (core) => {
+    // Same-named IDB core: apply the changelog plan instead of pushing a duplicate snapshot.
     const File = (await import("../lib/classes/filesystem/file.js")).default
     const user = plexos.System.user
     const snapshot = File.serializeNode(core)

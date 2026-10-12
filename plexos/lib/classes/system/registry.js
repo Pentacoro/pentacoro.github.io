@@ -15,6 +15,7 @@ export default class Registry {
         return File.at(this.fileRegistryPath)
     }
 
+    // Catalog entries do not store appID; INDEX is rebuilt each boot with unique 6-hex ids.
     generateSessionAppID(used = new Set()) {
         let id
         do {
@@ -26,7 +27,7 @@ export default class Registry {
         return id
     }
 
-    issueSessionAppIDs() {
+    issueSessionAppIDs() { // wipe INDEX and reissue so ids never persist in the catalog
         const data = this.appFile().data
         data.INDEX = {}
         const used = new Set()
@@ -86,7 +87,7 @@ export default class Registry {
         const pointer = this.resolveIndex(appID)
         const entry = this.appFile().data[pointer.bucket][pointer.name]
         if (ProxyFile.isEmpty(entry)) throw new Error(`Application ${appID} not found in registry`)
-        return ProxyFile.unwrapProxy(entry)
+        return ProxyFile.unwrapProxy(entry) // clone; reading the live proxy would auto-create missing keys
     }
 
     getAppID(appName) {
@@ -109,7 +110,7 @@ export default class Registry {
         return this.resolveIndex(appID)
     }
 
-    getAppIDByLauncher(url) {
+    getAppIDByLauncher(url) { // launcherScriptFilePath or launcherDependents, catalog path is source of truth
         const normalized = (url || "").replace(/^\.\//, "/").replace(/\\/g, "/")
         const data = ProxyFile.unwrapProxy(this.appFile().data) || {}
         const index = data.INDEX || {}

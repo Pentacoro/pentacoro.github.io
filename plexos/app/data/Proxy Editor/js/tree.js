@@ -106,6 +106,7 @@ mem.renderRow = function (key, value, path, depth, isIndex, ancestorLast, isLast
     } else {
         const val = document.createElement("input")
         val.className = "val"
+        val.style.height = "18px"
         val.value = value
         val.onchange = () => mem.writeValue(path, type === "number" ? Number(val.value) : val.value)
         row.append(val)

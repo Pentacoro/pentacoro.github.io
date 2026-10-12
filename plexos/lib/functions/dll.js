@@ -212,14 +212,17 @@ export async function loadFront({url, taskid, data, container, focus = null, com
     let cont = await stylizeData(data)
     container.innerHTML = cont.innerHTML
 
+    const wm = Task.get("Window Manager")
+    const ownerWindow = wm?.mem?.windows?.find(w => w.keyNodes?.content === container) || task.window // child window, not the parent task's primary
+
     //render window
-    plexos.System.bus.emit("window-stylized", task.window)
+    plexos.System.bus.emit("window-stylized", ownerWindow)
 
     if (compid) task.getComponent(compid).node = cont.children[0]
     await runScripts(container)
 
     //fit-content
-    plexos.System.bus.emit("window-scripted", task.window)
+    plexos.System.bus.emit("window-scripted", ownerWindow)
 
     //show contents once they're finished
     container.style.opacity = 1

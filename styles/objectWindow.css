@@ -21,6 +21,16 @@
 .window.building{
 	opacity: 0;
 }
+.window>.windowModalShield {
+	display: none;
+	position: absolute;
+	inset: 0;
+	z-index: 100;
+	cursor: default;
+}
+.window.modal-locked>.windowModalShield {
+	display: block;
+}
 
 .windowInner {
 	width: 100%;

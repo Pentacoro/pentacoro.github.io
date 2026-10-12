@@ -93,6 +93,7 @@ export default class File {
     }
 
     static serializeNode(file) {
+        // Walk the VFS without JSON.stringify hitting live Tasks or Proxy toJSON/then traps.
         if (!file) return null
         const sKey = File.classDefaults(file.cfg.class).skeyName
         const node = {

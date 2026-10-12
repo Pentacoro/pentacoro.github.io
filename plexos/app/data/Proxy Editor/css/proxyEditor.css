@@ -79,19 +79,15 @@
 }
 .row {
     display: flex;
-    align-items: stretch;
+    align-items: center;
     gap: 4px;
-    min-height: 22px;
+    min-height: 18px;
     padding: 1px 0;
     overflow: visible;
 }
 .row > .handle,
 .row > .toggle,
-.row > .key,
-.row > .val,
-.row > .type,
-.row > .hint,
-.row > .acts {
+.row > .hint {
     align-self: center;
 }
 .guides {
@@ -164,21 +160,45 @@
     user-select: none;
     cursor: grabbing;
 }
-.key, .val {
-    height: 20px;
+.key {
+    box-sizing: border-box;
+    height: 18px;
+    width: 140px;
+    flex: 0 0 140px;
     border: 1px solid #d8dee6;
     border-radius: 0;
+    appearance: none;
     background: #fff;
     font-family: inherit;
     font-size: 11px;
     font-weight: 400;
+    line-height: 16px;
     color: #8a96a4;
     padding: 0 4px;
+    margin: 0;
     outline: none;
     box-shadow: none;
 }
-.key { width: 140px; }
-.val { flex: 1 1 auto; min-width: 80px; }
+.val {
+    box-sizing: border-box;
+    height: 18px;
+    flex: 1 1 auto;
+    min-width: 80px;
+    width: 0;
+    border: 1px solid #d8dee6;
+    border-radius: 0;
+    appearance: none;
+    background: #fff;
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: 400;
+    line-height: 16px;
+    color: #8a96a4;
+    padding: 0 4px;
+    margin: 0;
+    outline: none;
+    box-shadow: none;
+}
 .row select.type {
     height: 18px;
     width: 78px;
@@ -205,7 +225,9 @@
 .row select.type:hover {
     background-color: #dde3ee !important;
 }
-.key:focus,
+.key:focus {
+    border-color: #cdd4de;
+}
 .val:focus {
     border-color: #cdd4de;
 }
@@ -217,10 +239,22 @@
     display: flex;
     gap: 2px;
 }
+.row > input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    min-height: 18px;
+    margin: 0;
+    flex: 0 0 18px;
+    align-self: center;
+    border-radius: 0;
+    accent-color: #4a5a6a;
+}
 .acts button {
     height: 18px;
+    min-height: 18px;
     min-width: 18px;
     border: 1px solid #c5ccd8;
+    border-radius: 0;
     background: #eef1f6;
     color: #4a5a6a;
     cursor: pointer;
@@ -235,7 +269,9 @@
 }
 .tree > .row:first-child button {
     height: 18px;
+    min-height: 18px;
     border: 1px solid #c5ccd8;
+    border-radius: 0;
     background: #eef1f6;
     color: #4a5a6a;
     cursor: pointer;

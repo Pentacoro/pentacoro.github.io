@@ -49,6 +49,8 @@ export default {
                         maximizeable: false,
                         resizeable: false,
                         sizeDrawMethod: "fit-content",
+                        initialDrawPosition: "window",
+                        parentTaskId: args.taskid || null,
                         saveDrawParameters: "disabled"
                     }
                 }

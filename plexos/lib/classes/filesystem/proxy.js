@@ -17,7 +17,7 @@ export default class ProxyFile extends File {
             get(target, prop, receiver) {
                 if (prop === 'return') return target.return
                 if (typeof prop === 'symbol') return Reflect.get(target, prop, receiver)
-                if (prop === 'toJSON' || prop === 'then') return undefined
+                if (prop === 'toJSON' || prop === 'then') return undefined // stringify / await must not auto-vivify
                 if (typeof prop === 'string' && prop in Object.prototype) return Reflect.get(target, prop, receiver)
                 if (!(prop in target)) {
                     target[prop] = ProxyFile.createDynamicProxy({}, file)

@@ -126,9 +126,37 @@ img {
     height: fit-content;
 }
 
+.body-light{
+    display: flex;
+    flex-direction: column;
+    background-color: #e8e8e8;
+    border: 1px solid #c7c7c7;
+}
+.body-light>.container{
+    border: 0;
+}
+.popup-checks{
+    display: none;
+    padding: 0 14px 14px 14px;
+}
+.popup-checks.has-checks{
+    display: flex;
+}
+.popup-checks>.config-option>label{
+    width: auto;
+    flex: 1;
+    height: 100%;
+    background-color: transparent;
+    padding-left: 0;
+    display: flex;
+    align-items: center;
+    align-self: center;
+}
+
 .config-footer{
     width: 100%;
     height: fit-content;
+    margin-top: 0;
     padding: 8px;
 
     display: block;

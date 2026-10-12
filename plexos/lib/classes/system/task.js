@@ -66,6 +66,7 @@ export default class Task {
         this.tasks = []
         this.pocket = []
         this.windows = []
+        this.persistentWindows = [] // modal child windows stacked over this task
         this.blobList = []
         this.eventBus = new EventBus
         this.components = []
@@ -87,6 +88,12 @@ export default class Task {
         for (let styleTag of document.head.getElementsByClassName(this.id)) {
             styleTag.parentElement.removeChild(styleTag)
         }
+        for (const extra of [...(this.persistentWindows || [])]) {
+            const extraTask = extra.task ? Task.id(extra.task) : null
+            if (extraTask && extraTask !== this) extraTask.end()
+            else extra.deleteNode?.()
+        }
+        this.persistentWindows = []
         if (this.window) {
             this.window.deleteNode()
         }
@@ -161,7 +168,47 @@ export default class Task {
             if (this.node) this.node.style.cursor = "progress"
         }
     }
+    topPersistentWindow() {
+        const stack = this.persistentWindows || []
+        return stack.length ? stack[stack.length - 1] : null
+    }
+    // Blink the top dialog instead of raising the parent.
+    attentionPersistent() {
+        const top = this.topPersistentWindow()
+        if (!top) return
+        const owner = Task.id(top.task)
+        if (owner && owner !== this) owner.focus()
+        else {
+            top.statNode()
+            top.focus()
+        }
+        let n = 0
+        if (top._attentionTimer) clearInterval(top._attentionTimer)
+        top._attentionTimer = setInterval(() => {
+            if (n % 2 === 0) top.blur()
+            else top.focus()
+            n++
+            if (n >= 6) {
+                clearInterval(top._attentionTimer)
+                top._attentionTimer = null
+                if (!top.node) return
+                const ownerTask = Task.id(top.task)
+                // Don't force focus back if the user switched windows mid-blink.
+                if (Task.System().mem.focused === ownerTask) top.focus()
+                else top.blur()
+            }
+        }, 80)
+    }
     focus() {
+        const top = this.topPersistentWindow()
+        if (top) {
+            const owner = Task.id(top.task)
+            this.window?.blur() // parent stays unfocused until the stack is empty
+            if (owner && owner !== this) {
+                owner.focus()
+                return
+            }
+        }
         if (Task.System().mem.focused === this) return
         if (Task.System().mem.focused) Task.System().mem.focused.blur()
         Task.System().mem.focused = this
@@ -190,15 +237,91 @@ export default class Task {
                 this.mem.selectionRange.commonAncestorContainer.blur()
             }
             this.window.blur()
-            this.window.statNode()
-            this.node.blur()
+            if (this.node) this.node.blur()
             if (this.node?.onblur) this.node.onblur()
         }
         if (this.onblur) this.onblur()
     }
     newWindow(arg) {
-        let newWindow = new Window(arg)
-        this.windows.push(newWindow)
+        return this.persistentWindow(arg)
+    }
+    // Layered modal owned by this task: a separate child Task + Window (permission dialogs, later Save As, etc.).
+    // Defaults to Popup, fit-content, centered on the parent; app / url / appParams override that. Parent is locked
+    // and blurred while the stack is non-empty. Closing the last child unlocks and restores parent focus.
+    async persistentWindow({
+        name,
+        url,
+        args,
+        onClose,
+        savePosition = false,
+        app = "Popup",
+        icon = null,
+        appParams = {},
+    } = {}) {
+        const Window = (await import("../interface/window.js")).default
+        const { displayComponent, genRanHex } = await import("/plexos/lib/functions/dll.js")
+        const appID = plexos.Core.registry?.tryGetAppID?.(app)
+            || plexos.Core.registry?.tryGetAppID?.("Popup")
+        const taskID = genRanHex(16)
+        Task.checkUniqueID({ id: taskID })
+        let closed = false
+        const finishClose = () => {
+            if (closed) return
+            closed = true
+            this.persistentWindows = (this.persistentWindows || []).filter(w => w.task !== taskID)
+            if (onClose) onClose()
+            if (this.persistentWindows.length) {
+                const next = this.topPersistentWindow()
+                const owner = next ? Task.id(next.task) : null
+                if (owner) owner.focus()
+            } else {
+                this.window?.unlockModal?.()
+                queueMicrotask(() => this.focus()) // after the child node is gone, so z-order stays sane
+            }
+        }
+        const childTask = new Task({
+            appID,
+            name: name || app,
+            onEnd: finishClose,
+            node: null,
+            from: this.name,
+            id: taskID
+        })
+        if (!childTask.id) {
+            finishClose()
+            return null
+        }
+        const win = new Window({
+            name: name || app,
+            task: taskID,
+            icon,
+            appParams: {
+                minimizeable: false,
+                maximizeable: false,
+                resizeable: false,
+                sizeDrawMethod: "fit-content",
+                initialDrawPosition: "window",
+                parentTaskId: this.id,
+                saveDrawParameters: savePosition ? "window" : "disabled",
+                windowKey: name || null,
+                savePosition: !!savePosition,
+                ...appParams,
+            }
+        })
+        this.persistentWindows.push(win)
+        this.window?.lockModal?.()
+        childTask.mem.arg = Object.assign({ taskid: this.id }, args || {}) // never clobber this.mem.arg
+        if (url) {
+            await displayComponent({
+                url,
+                taskid: taskID,
+                container: childTask.node
+            })
+        }
+        this.window?.blur()
+        const childOwner = Task.id(taskID)
+        if (childOwner) childOwner.focus()
+        return win
     }
     async newComponent({url,container,args}) {
         let component = new Component ({
@@ -233,7 +356,8 @@ export default class Task {
     undo() {
         // to be implemented later
     }
-    async askPermission(appID, allowance) {
+    // First use of persistentWindow: Allow / Deny, optional Remember writes the catalog.
+    async askPermission(appID, allowance, prompt) {
         let appName = appID
         try {
             appName = plexos.Core.registry.resolveIndex(appID).name
@@ -244,31 +368,45 @@ export default class Task {
             const finish = (granted) => {
                 if (settled) return
                 settled = true
-                if (granted) {
-                    try {
-                        const params = plexos.Core.registry.getAppParams(appID)
-                        if (params && Array.isArray(params.systemPermissions)) {
-                            if (!params.systemPermissions.includes(allowance)) params.systemPermissions.push(allowance)
-                            const generic = String(allowance).split(".")[0]
-                            if (generic && !params.systemPermissions.includes(generic)) {
-                                params.systemPermissions.push(generic)
-                            }
-                        }
-                    } catch {}
-                }
                 resolve(!!granted)
             }
+            const rememberDecision = ({ checked, value }) => {
+                if (!checked) return
+                try {
+                    const registry = plexos.Core.registry
+                    const pointer = registry.resolveIndex(appID)
+                    const entry = registry.appFile().data[pointer.bucket][pointer.name]
+                    const key = value ? "systemPermissions" : "systemProhibitions"
+                    const list = Array.isArray(entry[key]) ? [...entry[key]] : []
+                    if (!list.includes(allowance)) list.push(allowance)
+                    if (value) {
+                        const generic = String(allowance).split(".")[0] // e.g. file.modify also grants "file"
+                        if (generic && !list.includes(generic)) list.push(generic)
+                    }
+                    entry[key] = list
+                } catch {}
+            }
 
-            this.popup(null, [
-                ["Allow", () => finish(true)],
-                ["Deny", () => finish(false)],
-            ], {
+            this.persistentWindow({
                 name: "Permission",
-                type: false,
-                title: "Permission required",
-                description: `${appName} is requesting <b>${allowance}</b>.`,
-                icon: "",
-                taskid: this.id,
+                url: "/plexos/app/sys/Popup/popupB.html",
+                args: {
+                    title: "Permission required",
+                    description: prompt || `${appName} is requesting permission to ${allowance}.`,
+                    checks: [{
+                        id: "remember",
+                        label: `Remember for ${appName}`,
+                        action: rememberDecision,
+                    }],
+                    buttons: [
+                        { label: "Allow", value: true, action: () => finish(true) },
+                        { label: "Deny", value: false, action: () => finish(false) },
+                    ],
+                },
+                onClose: () => finish(false),
+            }).catch((e) => {
+                console.error(e)
+                finish(false)
             })
         })
     }

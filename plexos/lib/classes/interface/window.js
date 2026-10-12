@@ -1,5 +1,5 @@
 import plexos from "/plexos/ini/system.js"
-import {nodeGetters, iframeAntiHover} from "/plexos/lib/functions/dll.js"
+import {nodeGetters, iframeAntiHover, genRanHex} from "/plexos/lib/functions/dll.js"
 import Task from "../system/task.js"
 import File from "../filesystem/file.js"
 import ProxyFile from "../filesystem/proxy.js"
@@ -34,12 +34,18 @@ export default class Window {
 			// [ X , Y ]     => specify initial left and top positions
 			// "default"     => same as "event"
 			// "event"       => draw window below and to the right of event trigger
-			// "center"      => perfectly centered
+			// "center"      => perfectly centered on the desktop container
+			// "window"      => centered on the task's primary window
+
+			this.windowKey = p?.windowKey || null
+			this.savePosition = !!p?.savePosition
+			this.parentTaskId = p?.parentTaskId || null
 
 			this.saveDrawParameters = p?.saveDrawParameters || "disabled"
 			// "default"     => same as "app"
 			// "app"         => retrieve draw parameters from last closed app instance
 			// "file"        => retrieve draw parameters specific to each file opened in app instance (requires filePath)
+			// "window"      => named dialog: persist pos only under windowDrawParameters.windows[windowKey]
 			// "disabled"    => parameters are never saved to registry/always defined by initial parameters
 
 			if (p?.filePath!==undefined) this.filePath = p.filePath
@@ -68,9 +74,44 @@ export default class Window {
 		}
 	}
 
+	// Task that owns a modal stack blocking this window (parent chrome, or a lower dialog).
+	static hostOfPersistent(window) {
+		const own = Task.id(window.task)
+		if (own?.window === window && own.topPersistentWindow?.()) return own
+		const parentId = window.appParams?.parentTaskId
+		if (parentId) {
+			const parent = Task.id(parentId)
+			const top = parent?.topPersistentWindow?.()
+			if (top && top !== window) return parent
+			if (parent?.window === window && top) return parent
+		}
+		return null
+	}
+
 	static close(window) {
-		if (window.appParams.saveDrawParameters !== "disabled") Task.get("Window Manager").setInitialDrawParams(window)
-		Task.id(window.task).end()
+		if (window.appParams.saveDrawParameters !== "disabled" || window.appParams.savePosition) {
+			Task.get("Window Manager").setInitialDrawParams(window)
+		}
+		const task = Task.id(window.task)
+		if (!task) return
+		if (task.window === window) {
+			for (const extra of [...(task.persistentWindows || [])]) extra.deleteNode()
+			task.persistentWindows = []
+			task.end()
+			return
+		}
+		// Extra window on the same task (not a child Popup task).
+		task.persistentWindows = (task.persistentWindows || []).filter(w => w !== window)
+		task.windows = (task.windows || []).filter(w => w !== window)
+		const onClose = window.onClose
+		window.onClose = null
+		window.deleteNode()
+		if (onClose) onClose()
+		const next = task.persistentWindows.at(-1)
+		if (next) {
+			next.statNode()
+			next.focus()
+		}
 	}
 	defineSize() {
 		let calculateWindowSize = function(containerWidth, containerHeight, sizeRatio, aspectRatio) {
@@ -164,6 +205,18 @@ export default class Window {
 			drawPos.posY = this.appParams.initialDrawPosition[1]
 		} else {
 			switch (this.appParams.initialDrawPosition) {
+				case "window": { // center on parentTaskId's primary window, else desktop
+					const parentId = this.appParams.parentTaskId
+					const parent = (parentId ? Task.id(parentId)?.window : null) || Task.id(this.task)?.window
+					if (parent && parent !== this && parent.node) {
+						const pw = parent.drawParams.width || parent.node.offsetWidth
+						const ph = parent.drawParams.height || parent.node.offsetHeight
+						drawPos.posX = parent.drawParams.posX + (pw - this.node.offsetWidth) / 2
+						drawPos.posY = parent.drawParams.posY + (ph - this.node.offsetHeight) / 2
+						break
+					}
+				}
+				case "center":
 				default:
 					drawPos.posX = this.container.offsetWidth/2 - this.node.offsetWidth/2
 					drawPos.posY = this.container.offsetHeight/2 - this.node.offsetHeight/2
@@ -230,12 +283,16 @@ export default class Window {
 		Task.get("Window Manager").mem.windows.push(this)
 		this.createNode()
 
-		Task.id(this.task).window = this 
-		Task.id(this.task).node   = this.keyNodes.content
+		const owner = Task.id(this.task)
+		if (!owner.window) { // don't replace the caller's primary with a child dialog
+			owner.window = this
+			owner.node = this.keyNodes.content
+		}
     }
     createNode(){
 		let newWindow = document.createElement("div")
-		newWindow.setAttribute("class", "window "+this.task)
+		this.wid = "wid-" + genRanHex(8) // unique query scope; two windows must not share a task-id selector
+		newWindow.setAttribute("class", "window "+this.task+" "+this.wid)
 		newWindow.classList.add("building")
 		newWindow.setAttribute("id", "window_" + Task.get("Window Manager").mem.windows.indexOf(this))
 	
@@ -280,7 +337,13 @@ export default class Window {
 					if (button.class) newWindowButton.setAttribute("class", `windowButton ${button.class}`)
 					if (button.image) newWindowButton.style.backgroundImage = button.image
 					this.keyNodes.buttonPocket.appendChild(newWindowButton)
-					newWindowButton.onclick = button.function
+					newWindowButton.onclick = e => {
+						if (this.isModalLocked()) {
+							Task.id(this.task).attentionPersistent()
+							return
+						}
+						button.function(e)
+					}
 				}
 			}
 
@@ -299,14 +362,26 @@ export default class Window {
 				buttonMaximize.setAttribute("class", "windowButton O")
 				this.keyNodes.buttonPocket.appendChild(buttonMaximize)
 				this.keyNodes.buttons.maximize = buttonMaximize
-				buttonMaximize.onclick = () => Window.maximize(this)
+				buttonMaximize.onclick = () => {
+					if (this.isModalLocked()) {
+						Task.id(this.task).attentionPersistent()
+						return
+					}
+					Window.maximize(this)
+				}
 			}
 
 			let buttonClose = document.createElement("button")
 			buttonClose.setAttribute("class", "windowButton X")
 			this.keyNodes.buttonPocket.appendChild(buttonClose)
 			this.keyNodes.buttons.close = buttonClose
-			buttonClose.onclick = ()=> Window.close(this)
+			buttonClose.onclick = () => {
+				if (this.isModalLocked()) {
+					Task.id(this.task).attentionPersistent()
+					return
+				}
+				Window.close(this)
+			}
 
 		let newContent = document.createElement("div")
 		newContent.setAttribute("class", "content")
@@ -343,6 +418,16 @@ export default class Window {
 				newWindowBorder.appendChild(newWindowCbr)
 				newWindowBorder.appendChild(newWindowCbl)
 			}
+
+		const modalShield = document.createElement("div")
+		modalShield.setAttribute("class", "windowModalShield") // covers chrome + content while modal-locked
+		modalShield.onmousedown = e => {
+			e.preventDefault()
+			e.stopPropagation()
+			Task.id(this.task).attentionPersistent()
+		}
+		newWindow.appendChild(modalShield)
+		this.keyNodes.modalShield = modalShield
 	
 		document.getElementById("windowLayer").appendChild(newWindow)
 		
@@ -407,9 +492,16 @@ export default class Window {
 			}
 		}
 
-		nodeGetters(newContent, newContent.classList[0], newWindow.classList[1])
+		nodeGetters(newContent, newContent.classList[0], this.wid)
 		
 		this.node.onmousedown = e => {
+			const host = Window.hostOfPersistent(this)
+			if (host) {
+				e.stopPropagation()
+				e.preventDefault()
+				host.attentionPersistent()
+				return
+			}
 			Task.id(this.task).focus()
 			this.statNode()
 		}
@@ -552,6 +644,13 @@ export default class Window {
 		function dragMouseDown(e) {
 			e = e || window.event
 			e.preventDefault()
+
+			const host = Window.hostOfPersistent(_this)
+			if (host) {
+				e.stopPropagation()
+				host.attentionPersistent()
+				return
+			}
 	
 			_this.statNode()
 	
@@ -618,6 +717,13 @@ export default class Window {
 	
 		function initResize(e) {
 			e.preventDefault()
+
+			const host = Window.hostOfPersistent(_this)
+			if (host) {
+				e.stopPropagation()
+				host.attentionPersistent()
+				return
+			}
 	
 			_this.statNode()
 	
@@ -703,5 +809,16 @@ export default class Window {
 		this.cont.classList.add("blur")
 		this.node.blur()
 		if (this.node.onblur) this.node.onblur()
+	}
+	isModalLocked() {
+		return this.node?.classList.contains("modal-locked")
+	}
+	// Shown while a persistent child is open: blocks drag, resize, and window buttons.
+	lockModal() {
+		if (!this.node) return
+		this.node.classList.add("modal-locked")
+	}
+	unlockModal() {
+		this.node?.classList.remove("modal-locked")
 	}
 }

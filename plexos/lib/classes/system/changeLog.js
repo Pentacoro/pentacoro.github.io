@@ -4,7 +4,7 @@ import File from "../filesystem/file.js"
 export default class CoreChangeLog {
     constructor() {
         this.operations = []
-        this.explorerCursor = -1
+        this.explorerCursor = -1 // Explorer undo/redo share one cursor over explorer-authored ops
     }
 
     explorerAppID() {
@@ -56,6 +56,7 @@ export default class CoreChangeLog {
         return this.operations.filter(op => !op.committed && !op.fromHistory)
     }
 
+    // Incremental IDB save: rename/move become repath; overlapping paths go through a temp name first.
     getCommitPlan() {
         const source = this.pending().map(op => {
             if (op.type === "rename" || op.type === "move") {
@@ -158,7 +159,7 @@ export default class CoreChangeLog {
         }
     }
 
-    async undoExplorer() {
+    async undoExplorer() { // fromHistory so Command.run does not log the inverse again
         const ops = this.explorerOps()
         if (this.explorerCursor < 0 || !ops[this.explorerCursor]) return false
         const { op } = ops[this.explorerCursor]

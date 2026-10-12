@@ -16,11 +16,11 @@ export default class Command {
     }
 
     static hasPermission(required, permissions) {
-        const generic = required.split('.')[0]
+        const generic = required.split('.')[0] // "file.modify" also matches catalog "file"
         return permissions.includes(required) || permissions.includes(generic)
     }
 
-    static snapshot(path) {
+    static snapshot(path) { // plain JSON clone for the changelog, never the live Task/Proxy
         const file = File.at(path)
         return file ? File.serializeNode(file) : null
     }
@@ -34,7 +34,7 @@ export default class Command {
             appName = cmd.author
         }
         const explorerID = registry?.tryGetAppID("Explorer")
-        const isExplorer = cmd.appID && explorerID && cmd.appID === explorerID
+        const isExplorer = cmd.appID && explorerID && cmd.appID === explorerID // Explorer edits count as the user
         return {
             user: isExplorer ? (plexos.System.user?.name || null) : null,
             appID: cmd.appID || null,
@@ -45,6 +45,7 @@ export default class Command {
 
     static async run(cmd) {
         const commandMap = {
+            // ask(app) => permission dialog copy; msg => success log line
             'file.create': {
                 fn: (args) => File.create({
                     path: args.path,
@@ -55,15 +56,18 @@ export default class Command {
                     content: args.content ?? args.cont,
                 }),
                 msg: (args) => `File created at ${args.path || 'unknown'}`,
+                ask: (app) => `${app} is requesting permission to create files.`,
                 snapshotPath: (args, result) => result?.cfg?.path || (args.path + "/" + args.name),
             },
             'file.read': {
                 fn: (args) => File.read({ path: args.path }),
                 msg: () => 'File read successfully',
+                ask: (app) => `${app} is requesting permission to read files.`,
             },
             'file.write': {
                 fn: (args) => File.write({ path: args.path, data: args.data ?? args.content }),
                 msg: () => 'File written successfully',
+                ask: (app) => `${app} is requesting permission to write to files.`,
             },
             'file.modify': {
                 fn: (args) => File.modify({
@@ -72,20 +76,28 @@ export default class Command {
                     cfg: args.cfg,
                 }),
                 msg: () => 'File modified successfully',
+                ask: (app) => `${app} is requesting permission to modify files.`,
             },
             'file.delete': {
                 fn: (args) => File.delete({ path: args.path }),
                 msg: () => 'File deleted successfully',
+                ask: (app) => `${app} is requesting permission to delete files.`,
             },
             'file.move': {
                 fn: (args) => File.move({ path: args.path, to: args.to || args.newPath }),
                 msg: () => 'File moved successfully',
+                ask: (app) => `${app} is requesting permission to move files.`,
             },
             'file.rename': {
                 fn: (args) => File.rename({ path: args.path, rename: args.rename || args.newName }),
                 msg: () => 'File renamed successfully',
+                ask: (app) => `${app} is requesting permission to rename files.`,
             },
-            'task.launch': { fn: Task.launch, msg: () => 'Task launched successfully' },
+            'task.launch': {
+                fn: Task.launch,
+                msg: () => 'Task launched successfully',
+                ask: (app) => `${app} is requesting permission to launch applications.`,
+            },
             'event.on': {
                 fn: (args) => {
                     const task = Task.id(args.taskId)
@@ -97,7 +109,8 @@ export default class Command {
                     Task.System().bus.on(eventName, callback, priority, id)
                     task.globalListeners.push({ eventName, callback, id })
                 },
-                msg: () => ''
+                msg: () => '',
+                ask: (app) => `${app} is requesting permission to listen to global events.`,
             },
             'event.off': {
                 fn: (args) => {
@@ -109,7 +122,8 @@ export default class Command {
                     Task.System().bus.off(eventName, callback, id)
                     task.globalListeners = task.globalListeners.filter(l => !(l.eventName === eventName && l.callback === callback))
                 },
-                msg: () => ''
+                msg: () => '',
+                ask: (app) => `${app} is requesting permission to stop listening to global events.`,
             },
             'event.once': {
                 fn: (args) => {
@@ -127,13 +141,15 @@ export default class Command {
                     Task.System().bus.on(eventName, wrapper, priority, id)
                     task.globalListeners.push({ eventName, callback: wrapper, id })
                 },
-                msg: () => ''
+                msg: () => '',
+                ask: (app) => `${app} is requesting permission to listen to global events.`,
             },
             'event.emit': {
                 fn: (args) => {
                     Task.System().bus.emit(args.eventName, ...(args.args || []))
                 },
-                msg: () => ''
+                msg: () => '',
+                ask: (app) => `${app} is requesting permission to send global events.`,
             }
         }
 
@@ -156,7 +172,7 @@ export default class Command {
                 }
             }
 
-            const requiredPermission = cmd.command.startsWith('event.') ? 'event' : cmd.command
+            const requiredPermission = cmd.command.startsWith('event.') ? 'event' : cmd.command // all event.* share one grant
 
             if (prohibitions.length > 0 && Command.hasPermission(requiredPermission, prohibitions)) {
                 cmd.status = "failure"
@@ -165,7 +181,12 @@ export default class Command {
             }
 
             if (permissions.length > 0 && !Command.hasPermission(requiredPermission, permissions)) {
-                const granted = await Task.System().askPermission(cmd.appID || cmd.author, requiredPermission)
+                const actor = Task.id(cmd.taskId) || Task.System()
+                const appName = Command.authorFor(cmd).app || "This application"
+                const prompt = command.ask
+                    ? command.ask(appName)
+                    : `${appName} is requesting permission to ${requiredPermission}.`
+                const granted = await actor.askPermission(cmd.appID || cmd.author, requiredPermission, prompt)
                 if (!granted) {
                     cmd.status = "failure"
                     cmd.message = `Permission denied for ${requiredPermission}`
@@ -174,7 +195,7 @@ export default class Command {
             }
 
             const isFileCmd = cmd.command.startsWith("file.") && cmd.command !== "file.read"
-            const skipLog = cmd.arguments?.fromHistory
+            const skipLog = cmd.arguments?.fromHistory // undo/redo must not append another changelog entry
             let before = null
             if (isFileCmd && !skipLog && cmd.command !== "file.create") {
                 before = Command.snapshot(cmd.arguments.path)

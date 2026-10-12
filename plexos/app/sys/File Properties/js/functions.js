@@ -37,7 +37,7 @@ mem.prepMetadata = function () {
     task.node.querySelector(`#${task.id}_metadata .config-option.header>label>img`).setAttribute("src", mem.arg.meta.image)
 }
 
-mem.applyFileChanges = async function () {
+mem.applyFileChanges = async function () { // rename then file.modify; each goes through cmd / askPermission
     const file = mem.arg
     const draft = mem.var.configObject
     if (!file?.cfg?.path || !draft) return

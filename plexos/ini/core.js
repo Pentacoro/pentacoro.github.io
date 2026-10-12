@@ -26,7 +26,7 @@ sys.mem.var.dragging = false
 sys.mem.var.shSelect = true
 sys.mem.focused = null
 sys.mem.cfg = plexos.Config
-sys.mem.downloadCoreJSON = function (exportName="core") {
+sys.mem.downloadCoreJSON = function (exportName="core") { // Ctrl+S: serialized tree, not the live Core Task
     let jsonCore = File.serializeNode(plexos.Core.file)
     let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(jsonCore))
     let downloadAnchorNode = document.createElement('a')

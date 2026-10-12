@@ -12,7 +12,7 @@ mem.walkCollapse = function (value, path) {
     const entries = type === "array" ? value.map((item, i) => [i, item]) : Object.entries(value)
     for (const [key, child] of entries) mem.walkCollapse(child, path.concat([key]))
 }
-mem.loadDraft = function () {
+mem.loadDraft = function () { // edit a clone; save writes through file.write / cmd
     const file = File.at(mem.arg.fileAddr)
     const data = file ? ProxyFile.unwrapProxy(file.data) : {}
     mem.draft = (data && typeof data === "object" && !Array.isArray(data)) ? mem.clone(data) : {}
