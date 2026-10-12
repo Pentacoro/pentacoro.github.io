@@ -2,7 +2,7 @@ const typeMap = {
     "DirectoryFile": () => import("./directory.js"),
     "StringFile": () => import("./string.js"),
     "ProxyFile": () => import("./proxy.js"),
-    "MetaFile": () => import("./MetaFile.js"),
+    "MetaFile": () => import("./metafile.js"),
 };
 
 export default async function typeClass(type) {
