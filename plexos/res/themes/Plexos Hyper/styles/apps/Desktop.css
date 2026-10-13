@@ -3,7 +3,7 @@
 	position: relative;
 	z-index: -998;
 
-	background: #444444 url("/plexos/res/images/norrum/Desktop/fondoB.png") no-repeat fixed center center / cover;
+	background: var(--color-desktop) url("/plexos/res/images/norrum/Desktop/fondoB.png") no-repeat fixed center center / cover;
 
 	overflow: auto;
 }
@@ -32,10 +32,6 @@
 	width: 100%;
 	height: 100%;
 
-	background-color: #00A2E8;
-	border-top: solid 2px #71D5FF;
-	border-bottom: solid 2px #0F7B9B;
-	
 	z-index: -1;
 }
 
@@ -47,13 +43,6 @@
 	width: 120cqh;
 	height: 100cqh;
 
-	background-color: #00A2E8;
-	border-left: solid 2px #71D5FF;
-	border-top: solid 2px #71D5FF;
-	border-right: solid 2px #0F7B9B;
-	border-bottom: solid 2px #0F7B9B;
-
-	border-radius: 0;
 }
 
 #startButton:hover {
@@ -76,8 +65,8 @@
 	opacity: 0;
 	width: 1px;
 	height: 1px;
-	background-color: rgba(5, 125, 168, 0.4);
-	border: 1px solid rgb(71, 100, 110,0.9);
+	background-color: var(--color-select-fill);
+	border: 1px solid var(--color-select-border);
 	z-index: 5;
 }
 /*------------------------------------SELCT BOX*/
@@ -88,8 +77,8 @@
 	width:108px;
 	height: 108px;
 
-	background-color: rgb(0,155,255,0);
-	border: 3px solid rgb(0,0,0,0.0);
+	background-color: var(--color-icon-idle);
+	border: 3px solid var(--color-transparent);
 	border-radius: 8px;
 
 	z-index: -50;
@@ -101,24 +90,24 @@
 
 /*-STATES-----------*/
 .icon.active{
-	background-color: rgba(0, 119, 199, 0.7);
-	border: 3px solid rgb(255,255,255,0.10);
+	background-color: var(--color-icon-active);
+	border: 3px solid var(--color-icon-border);
 }
 .icon.active.blur{
-	background-color: rgba(104, 104, 104, 0.438);
-	border: 3px solid rgb(255,255,255,0.10);
+	background-color: var(--color-icon-active-blur);
+	border: 3px solid var(--color-icon-border);
 }
 .icon:hover, .icon.blur:hover{
-	border: 3px dotted rgb(255,255,255,0.15);
+	border: 3px dotted var(--color-icon-hover);
 }
 .icon.highlight{
-	border: 3px dotted rgb(255,255,255,0.30)
+	border: 3px dotted var(--color-icon-highlight);
 }
 .icon.moving{
 	opacity: 0.5;
 	z-index: 1000;
-	border: 3px solid rgb(0,0,0,0.0);
-	background-color: rgb(0,0,0,0);
+	border: 3px solid var(--color-transparent);
+	background-color: var(--color-transparent);
 	pointer-events: none;
 }
 /*-----------STATES-*/
@@ -136,15 +125,15 @@
 	height: 100%;
 	object-fit: contain;	
 
-	-webkit-filter: drop-shadow(0px 1px 4px rgb(0,0,0,.5));
-	filter: drop-shadow(0px 1px 4px rgb(0,0,0,.5));
+	-webkit-filter: drop-shadow(0px 1px 4px var(--color-shadow));
+	filter: drop-shadow(0px 1px 4px var(--color-shadow));
 }
 .icon>h3 {
 	height: 100%;
 	width: 100%;
-	color: white;
+	color: var(--color-white);
 	text-align: center;
-	text-shadow: 0px 0px 4px rgb(0,0,0,1);
+	text-shadow: 0px 0px 4px var(--color-shadow-hard);
 	/*font-size: 1em;*/
 	font-weight: 1;
 	user-select: none;

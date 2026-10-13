@@ -1,5 +1,6 @@
 import plexos from "/plexos/ini/system.js"
 import {getTask, selectText, clearSelection, nullifyOnEvents} from "/plexos/lib/functions/dll.js"
+import { themeConstruct } from "/plexos/lib/functions/theme.js"
 import Task from "/plexos/lib/classes/system/task.js"
 import File from "/plexos/lib/classes/filesystem/file.js"
 import ContextMenu from "/plexos/lib/classes/interface/contextmenu.js"
@@ -24,25 +25,11 @@ mem.class.IconDir = class IconDir {
     }
     createNode(){
         //Icon HTML structure-----|
-        let newIcon = document.createElement("div")
-        newIcon.setAttribute("class", "explorerIcon "+this.task)
-        newIcon.setAttribute("title", this.name)
-
-        let newIconImage = document.createElement("img")
-        newIconImage.setAttribute("class", "explorerIconImage "+this.task)
-        newIconImage.setAttribute("src", this.main().getImage())
-        newIcon.appendChild(newIconImage)
-
-        let newIconText = document.createElement("span")
-        newIconText.setAttribute("class", "explorerIconText "+this.task)
-        let newIconTextNode = document.createTextNode(this.name)
-        newIconText.appendChild(newIconTextNode)
-        newIcon.appendChild(newIconText)
-
-        task.node.getElementsByClassName("list")[0].appendChild(newIcon)
+        themeConstruct("explorerIcon", this, {
+            taskId: this.task,
+            list: mem.ui.view.keyNodes.list,
+        })
         //------------------------|
-
-        this.node = newIcon
     
         this.statNode()
         this.clic()
@@ -71,6 +58,7 @@ mem.class.IconDir = class IconDir {
                 this.node.classList.remove("moving")
                 if(!this.node.classList.contains("active")) this.node.className += " active"
                 if(!Task.id(this.task).pocket.includes(this)) Task.id(this.task).pocket.push(this)
+                mem.dialog?.select(this)
                 break
             case 2: 
                 if(!this.node.classList.contains("moving")) this.node.className += " moving"
@@ -84,6 +72,7 @@ mem.class.IconDir = class IconDir {
         function dragMouseDown(e, node, _this) {
             e = e || window.event
             e.preventDefault()
+            let ship = null
             
             //when mousedown on selected icon
             if (_this.state === 1) {
@@ -126,34 +115,15 @@ mem.class.IconDir = class IconDir {
                     icon.statNode(2)
                 }
 
-                if (document.getElementById("dragLayer").children.length === 0) {
-                    //make pocket representation on dragLayer--------||
-                    let pockImg = (Task.id(_this.task).pocket.length > 3) ? 3 : Task.id(_this.task).pocket.length
-    
-                    let iconShip = document.createElement("div")
-                    iconShip.setAttribute("class", "iconShip")
-
-                    let iconShipImg = document.createElement("div")
-                    iconShipImg.setAttribute("class", "iconShipImg")
-                    if (pockImg === 1) {
-                        iconShipImg.setAttribute("style", "background-image: url('"+_this.main().getImage()+"'); background-size: 68%;")
-                    } else {
-                        iconShipImg.setAttribute("style", "background-image: url('/plexos/res/themes/Plexos Hyper/icons/interface/fileDrag/pocket_ship_"+pockImg+".svg')")
-                    }
-    
-                    let iconShipSize = document.createElement("div")
-                    iconShipSize.setAttribute("class", "iconShipSize")
-                    iconShipSize.innerHTML = "<span>" + Task.id(_this.task).pocket.length + "</span>"
-    
-                    iconShip.appendChild(iconShipSize)
-                    iconShip.appendChild(iconShipImg)
-                    document.getElementById("dragLayer").appendChild(iconShip)
-                    //----------------------------------------------||
+                if (!ship) {
+                    ship = themeConstruct("dragShip", {
+                        count: Task.id(_this.task).pocket.length,
+                        image: _this.main().getImage(),
+                        layer: document.getElementById("dragLayer"),
+                    })
                 } else {
-                    let iconShip = document.getElementById("dragLayer").children[0]
-
-                    iconShip.style.top  = e.clientY - iconShip.offsetHeight/2 + "px"
-                    iconShip.style.left = e.clientX - iconShip.offsetWidth/2  + "px"
+                    ship.node.style.top  = e.clientY - ship.node.offsetHeight/2 + "px"
+                    ship.node.style.left = e.clientX - ship.node.offsetWidth/2  + "px"
                 }
                 System.mem.var.dragging = true
             }
@@ -163,8 +133,8 @@ mem.class.IconDir = class IconDir {
                 document.onmousemove = null
                 document.onmouseup   = null
 
-                //empty dragLayer
-                document.getElementById("dragLayer").innerHTML = ""
+                ship?.node.remove()
+                ship = null
     
                 //unselect other folders on mouseup W/O drag UNLESS ctrl
                 if(e.ctrlKey == false && System.mem.var.dragging == false && e.button == 0) {
@@ -195,6 +165,8 @@ mem.class.IconDir = class IconDir {
     open(){
         if (this.exte == "dir") {
             Task.id(this.task).mem.explorerInit(this.file, this.task)
+        } else if (mem.dialog) {
+            mem.dialog.pick(this)
         } else {
             File.open(this.file)
         }
@@ -208,8 +180,8 @@ mem.class.IconDir = class IconDir {
         this.name = this.main().name
         this.exte = this.main().exte
 
-        this.node.children[0].setAttribute("src", this.main().getImage())
-        this.node.children[1].textContent = this.name
+        this.keyNodes.image.setAttribute("src", this.main().getImage())
+        this.keyNodes.text.textContent = this.name
     }
     highlight(coin) {
         if (coin) {
@@ -228,7 +200,7 @@ mem.class.IconDir = class IconDir {
         this.render()
     }
     editName(e){
-        let iconText = this.node.childNodes[1]
+        let iconText = this.keyNodes.text
         let editFile = File.at(this.file)
         let editFrom = editFile.parent()
         let thisIcon = this

@@ -7,8 +7,8 @@ mem.cfg  = Task.get("Desktop").mem.cfg
 
 task.cmd("event.on", {eventName: "desktop-grid-length-change", callback: ()=> {
     task.mem.updateGridGraph()
-    task.node.getElementsByName("mem.cfg.grid.hLength")[0].value = mem.cfg.grid.hLength
-    task.node.getElementsByName("mem.cfg.grid.vLength")[0].value = mem.cfg.grid.vLength
+    mem.ui.fields.hLength.input.value = mem.cfg.grid.hLength
+    mem.ui.fields.vLength.input.value = mem.cfg.grid.vLength
 }})
 task.cmd("event.on", {eventName: "desktop-grid-margin-change", callback: ()=> {
     task.mem.updateTileGraph()

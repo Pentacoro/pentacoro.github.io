@@ -1,17 +1,16 @@
-import {getTask, displayComponent} from "/plexos/lib/functions/dll.js"
-import File from "/plexos/lib/classes/filesystem/file.js"
+import {getTask} from "/plexos/lib/functions/dll.js"
 
 let task = getTask(/TASKID/)
 let mem  = task.mem
+let sheet = mem.ui.sheet
 
 //begin with 1st tab selected
-task.node.getElementsByClassName("config-tab")[0].children[0].checked = true
+sheet.select("general")
 
 mem.prepGeneral()
 switch (mem.arg.cfg.class){
     case ("MetaFile") :
-        task.node.getElementsByClassName("config-tab")[1].classList.remove("hidden")
-        task.node.getElementsByClassName("config-tab")[1].children[0].checked = true
-        task.node.getElementsByClassName("config-tab")[1].dispatchEvent(new Event("click"))
+        sheet.showTab("metadata")
+        sheet.select("metadata")
         mem.prepMetadata()
 }

@@ -20,12 +20,12 @@
 
 	pointer-events: none;
 
-	background-image: url("../plexos/res/themes/Plexos Hyper/icons/files/folderPlaceholder.svg");
+	background-image: url("/THEME/icons/files/defaultFile.svg");
 	background-size: 80%;
 	background-repeat: no-repeat;
 	background-position: center;
 
-	background-color: rgba(0, 119, 199, 0.8);
+	background-color: var(--color-ship);
 	border-radius: 2px;
 	opacity: 0.6;
 }
@@ -37,8 +37,8 @@
 
 	z-index: 1;
 
-	background-color: rgb(2, 69, 194);
-	border: 0px 1px 0px 1px solid rgb(36, 36, 36);
+	background-color: var(--color-ship-badge);
+	border: 0px 1px 0px 1px solid var(--color-ship-badge-border);
 	border-radius: 0px;
 
 	opacity: 1;
@@ -48,5 +48,5 @@
 	height: 100%;
 
 	font-size: 1.2em;
-	color: white;
+	color: var(--color-white);
 }

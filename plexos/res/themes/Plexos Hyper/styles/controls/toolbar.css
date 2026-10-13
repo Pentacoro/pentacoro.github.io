@@ -1,0 +1,22 @@
+.sys-toolbar {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    background-color: var(--color-toolbar);
+    user-select: none;
+}
+.sys-toolbar > button:not(.sys-button) {
+    background-color: var(--color-toolbar);
+    border: 0;
+    color: var(--color-toolbar-text);
+    cursor: pointer;
+}
+.sys-toolbar > button:not(.sys-button):hover {
+    background-color: var(--color-toolbar-hover);
+}
+.sys-toolbar > button:not(.sys-button):active {
+    color: var(--color-toolbar-active);
+}
+.sys-toolbar > .config-option > label {
+    background-color: transparent;
+}

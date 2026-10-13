@@ -1,5 +1,6 @@
 import plexos from "../../ini/system.js"
 import Task from "../classes/system/task.js"
+import { themeRoot } from "./theme.js"
 
 export function ajax(method, url, callback = null, arg = null){
     let xhr = new XMLHttpRequest;
@@ -98,6 +99,7 @@ export async function loadFront({url, taskid, data, container, focus = null, com
     let task = Task.id(taskid)
     data = repDir(data,url)
     data = repTid(data,taskid,false)
+    data = repTheme(data)
     if (compid) data = repCid(data,compid,false)
     async function stylizeData(data) {
         return new Promise (async (resolve, reject) => {
@@ -129,6 +131,7 @@ export async function loadFront({url, taskid, data, container, focus = null, com
 
             for(let css of styleContents) {
                 css = repDir(css,url)
+                css = repTheme(css)
 
                 if (task.window){
                     let regex = /([^\r\n,{}]+)(,(?=[^}]*{)|\s*{)/g
@@ -163,6 +166,7 @@ export async function loadFront({url, taskid, data, container, focus = null, com
                     if (!imported) {
                         js = repDir(js,url)
                         js = repTid(js,taskid,true)
+                        js = repTheme(js)
                         if (compid) js = repCid(js,compid,true)
                     }
                     resolve({js,src,module,imported})
@@ -253,6 +257,7 @@ export async function runLauncher(url, args = {}, focus = null, name = ""){
         try {
             const appid = plexos.Core.registry?.getAppIDByLauncher(url) || null
             if (appid) data = repAid(data, appid, true)
+            data = repTheme(data)
             let proxy  = await blobModule(data)
             let module = await import(proxy)
 
@@ -318,6 +323,9 @@ function repDir(data, parDir){ //replace root directory for local apps
 function repTid(data, taskId, stringify = false){ //pass the task id to app
     let newData = data.replaceAll("/TASKID/", stringify ? JSON.stringify(taskId):taskId)
     return newData
+}
+function repTheme(data) {
+    return data.replaceAll("/THEME", themeRoot())
 }
 function repAid(data, appId, stringify = false){
     if (!appId) return data

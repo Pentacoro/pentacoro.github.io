@@ -1,5 +1,6 @@
 import plexos from "/plexos/ini/system.js"
 import {getTask, iframeAntiHover, selectText, clearSelection, nullifyOnEvents} from "/plexos/lib/functions/dll.js"
+import { themeConstruct } from "/plexos/lib/functions/theme.js"
 import File from "/plexos/lib/classes/filesystem/file.js"
 import ContextMenu from "/plexos/lib/classes/interface/contextmenu.js"
 
@@ -29,32 +30,10 @@ mem.class.IconDesk = class IconDesk {
         //Icon HTML structure-----|
         if (mem.iconArr.includes(this)) return
 
-        let newIcon = document.createElement("div")
-        this.node = newIcon
-
-        newIcon.setAttribute("class", "icon")
-        newIcon.setAttribute("title", this.name)
-        newIcon.setAttribute("id", "Icon: "+this.name)
-        if (this.coords) newIcon.setAttribute("style",  "left:"+this.coords.px+"px;"+
-                                                        "top:"+this.coords.py+"px;"+
-                                                        "width:"+cfg.grid.width+"px;"+
-                                                        "height:"+cfg.grid.height+"px;")
-
-        let newIconImage = document.createElement("img")
-        let newIconFrame = document.createElement("div")
-        newIconImage.setAttribute("class", "iconImage")
-        newIconImage.setAttribute("src", this.main().getImage())
-        newIconFrame.setAttribute("class", "iconFrame")
-        
-        newIconFrame.appendChild(newIconImage)
-        newIcon.appendChild(newIconFrame)
-
-        let newIconText = document.createElement("h3")
-        let newIconTextNode = document.createTextNode(this.name)
-        newIconText.appendChild(newIconTextNode)
-        newIcon.appendChild(newIconText)
-
-        document.getElementById("iconLayer").appendChild(newIcon)
+        themeConstruct("desktopIcon", this, {
+            grid: cfg.grid,
+            layer: document.getElementById("iconLayer"),
+        })
 
         mem.iconArr.push(this)
         //------------------------|
@@ -101,6 +80,7 @@ mem.class.IconDesk = class IconDesk {
     poseNode(){
         if (!this.node) return
         let node = this.node
+        const keys = this.keyNodes
 
         node.style.left = this.coords.tx + "px"
         node.style.top = this.coords.ty + "px"
@@ -121,7 +101,7 @@ mem.class.IconDesk = class IconDesk {
                 }
             }
             node.classList.add(styleName)
-            node.children[1].style.fontSize = ""
+            keys.text.style.fontSize = ""
             node.style.gridTemplateColumns = ""
         }
         function isBetween(a, b, c) {
@@ -160,12 +140,12 @@ mem.class.IconDesk = class IconDesk {
                 }
                 if (div > 1.5) {
                     stylize(node, "style3")
-                    node.children[1].style.fontSize = (h === 50) ? "" : rawr(node.children[1].offsetHeight, 37.6, 44) + "px"
+                    keys.text.style.fontSize = (h === 50) ? "" : rawr(keys.text.offsetHeight, 37.6, 44) + "px"
                 }
                 if (div > 3.5) {
                     stylize(node, "style4")
-                    node.style.gridTemplateColumns = node.children[0].offsetHeight + "px auto"
-                    node.children[1].style.fontSize = (h === 50) ? "" : rawr(node.children[1].offsetHeight, 37.6, 44) + "px"
+                    node.style.gridTemplateColumns = keys.frame.offsetHeight + "px auto"
+                    keys.text.style.fontSize = (h === 50) ? "" : rawr(keys.text.offsetHeight, 37.6, 44) + "px"
                 }
                 return
             }
@@ -178,8 +158,8 @@ mem.class.IconDesk = class IconDesk {
                 }
                 if (div > 2.5) {
                     stylize(node, "style4")
-                    node.style.gridTemplateColumns = node.children[0].offsetHeight + "px auto"
-                    node.children[1].style.fontSize = rawr(node.children[1].offsetHeight, 19.2, 44) + "px"
+                    node.style.gridTemplateColumns = keys.frame.offsetHeight + "px auto"
+                    keys.text.style.fontSize = rawr(keys.text.offsetHeight, 19.2, 44) + "px"
                 }
                 if (div > 6) {
                     stylize(node, "style2")
@@ -198,7 +178,7 @@ mem.class.IconDesk = class IconDesk {
             if (w > 200 || h > 200) {
                 if (isBetween(div, 0.5, 1.5)) {
                     stylize(node, "style7")
-                    node.children[1].style.fontSize = rawr(node.children[1].offsetHeight, 19.2, 44) + "px"
+                    keys.text.style.fontSize = rawr(keys.text.offsetHeight, 19.2, 44) + "px"
                 }
                 if (div < 0.5 || div > 1.5) {
                     stylize(node, "style2")
@@ -206,7 +186,7 @@ mem.class.IconDesk = class IconDesk {
                 return
             }
         }
-        this.node.childNodes[1].innerText = this.name
+        keys.text.innerText = this.name
     }
     render(){
         this.statNode()
@@ -218,8 +198,8 @@ mem.class.IconDesk = class IconDesk {
         this.name = this.main().name
         this.exte = this.main().exte
 
-        this.node.children[0].children[0].setAttribute("src", this.main().getImage())
-        this.node.children[1].textContent = this.name
+        this.keyNodes.image.setAttribute("src", this.main().getImage())
+        this.keyNodes.text.textContent = this.name
 
         mem.writeIconConfig()
     }
@@ -383,7 +363,7 @@ mem.class.IconDesk = class IconDesk {
     }
     editName(e){
         if (!this.node) return
-        let iconText = this.node.childNodes[1]
+        let iconText = this.keyNodes.text
         let editFile = File.at(this.file)
         let editFrom = editFile.parent()
         let thisIcon = this

@@ -30,7 +30,7 @@ export default {
             {
                 name : "Desktop Grid Settings",
                 task : task.id, 
-                icon : "/plexos/res/themes/Plexos Hyper/icons/files/settingsPlaceholder.svg",
+                icon : "/THEME/icons/files/settingsPlaceholder.svg",
                 appParams : {
                     minimizeable: true,
                     maximizeable: false,

@@ -4,6 +4,8 @@ import ContextMenu from "/plexos/lib/classes/interface/contextmenu.js"
 
 let task = getTask(/TASKID/)
 let mem  = task.mem
+let nav  = mem.ui.nav.keyNodes
+let list = mem.ui.view.keyNodes.list
 
 document.addEventListener("keydown", async (e) => {
     if (plexos.System.mem.focused !== task) return
@@ -38,11 +40,11 @@ task.onpaste = async function (e) {
 }
 
 //history back [<]
-task.node.getElementsByClassName("back")[0].onclick = e => {
+nav.back.onclick = e => {
 
 }
 //parent dir
-task.node.getElementsByClassName("parent")[0].onclick = e => {
+nav.up.onclick = e => {
     if (mem.address !== "") {
         try {
             mem.explorerInit(mem.dirObject.parent().cfg.path, task.id)
@@ -72,21 +74,21 @@ task.node.getElementsByClassName("parent")[0].onclick = e => {
     }
 }
 //refresh
-task.node.getElementsByClassName("refresh")[0].onclick = e => {
+nav.refresh.onclick = e => {
     mem.refresh()
 }
 
 //background click listeners
-task.node.getElementsByClassName("list")[0].onmousedown = e => {
-    if (e.target.classList.contains("list")) {
+list.onmousedown = e => {
+    if (e.target === list) {
         for (let icon of task.pocket) {
             icon.statNode(0)
             task.pocket = task.pocket.remove(icon)
         }
     }
 }
-task.node.getElementsByClassName("list")[0].oncontextmenu = e => {
-    if (e.target.classList.contains("list")) {
+list.oncontextmenu = e => {
+    if (e.target === list) {
         ContextMenu.open(e, task, mem.backContextMenu)
     }
 }

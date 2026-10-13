@@ -6,8 +6,8 @@
     width: auto;
     height: auto;
 
-    background-color: #a1a1a1;
-    border: solid 1px #a1a1a1;
+    background-color: var(--color-menu-frame);
+    border: solid 1px var(--color-menu-frame);
     gap: 1px;
 
     display: flex;
@@ -19,10 +19,10 @@
     /*image-rendering: crisp-edges;*/
 }
 .clickContext.shadow{
-    filter: drop-shadow(2px 2px 1px rgba(0, 0, 0, 0.4));
+    filter: drop-shadow(2px 2px 1px var(--color-shadow-soft));
 }
 .contextSection{
-    background-color: #eeeeee;
+    background-color: var(--color-menu-section);
 }
 .contextSection>div{
     display: grid;
@@ -36,7 +36,7 @@
 }
 .contextSection>div>span{
     font-family: Arial, Helvetica, sans-serif;
-    color: #2c2c2c;
+    color: var(--color-menu-text);
     padding-left: 5px;
     margin: 0em;
 
@@ -56,7 +56,7 @@
     height: 100%;
 }
 .contextSection>div>.shortcut{
-    color: #8a8a8a;
+    color: var(--color-menu-shortcut);
     font-size: 11px;
     padding-left: 12px;
     margin: 0;
@@ -65,13 +65,13 @@
     overflow: visible;
 }
 .contextSection>div:hover , .contextSection>div.hover{
-    background-color: #9ecbdf;
+    background-color: var(--color-menu-hover);
 }
 .contextSection>div.disabled{
-    background-color: #dbdbdb;
+    background-color: var(--color-menu-disabled);
 }
 .contextSection>div.disabled:hover{
-    background-color: #cccccc;
+    background-color: var(--color-menu-disabled-hover);
 }
 .contextSection>div.disabled>*{
     opacity: .4;

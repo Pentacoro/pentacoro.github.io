@@ -2,6 +2,7 @@ import plexos from "/plexos/ini/system.js"
 import {getTask, imposeValues, runLauncher} from "/plexos/lib/functions/dll.js"
 import File from "/plexos/lib/classes/filesystem/file.js"
 import Icon from "/plexos/lib/classes/interface/icon.js"
+import ContextMenu from "/plexos/lib/classes/interface/contextmenu.js"
 
 let task = getTask(/TASKID/)
 let mem  = task.mem
@@ -168,9 +169,9 @@ mem.refresh = function() {
 
 mem.new = async function(Type, name){
 	//Make sure icon appears at center of initial right click-------|
-	let contextMenu = document.getElementsByClassName("clickContext sub_0")[0]
-	let initialX = (contextMenu) ? parseInt(window.getComputedStyle(document.getElementsByClassName("clickContext sub_0")[0],null).getPropertyValue("left")) : 0
-	let initialY = (contextMenu) ? parseInt(window.getComputedStyle(document.getElementsByClassName("clickContext sub_0")[0],null).getPropertyValue("top"))  : 0
+	let contextMenu = ContextMenu.node
+	let initialX = (contextMenu) ? parseInt(window.getComputedStyle(contextMenu,null).getPropertyValue("left")) : 0
+	let initialY = (contextMenu) ? parseInt(window.getComputedStyle(contextMenu,null).getPropertyValue("top"))  : 0
 
 	let editFrom = mem.dirObject
 	let path = editFrom.cfg.path

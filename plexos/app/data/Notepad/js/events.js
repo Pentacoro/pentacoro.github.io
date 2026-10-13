@@ -22,7 +22,8 @@ function onKeyDown(e) {
 document.addEventListener("keydown", onKeyDown, true)
 
 const prevEnd = task.onEnd
-task.onEnd = () => {
+task.onEnd = async () => {
+    const allow = await prevEnd?.()
+    if (allow === false) return false
     document.removeEventListener("keydown", onKeyDown, true)
-    if (prevEnd) prevEnd()
 }

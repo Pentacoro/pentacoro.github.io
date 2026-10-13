@@ -1,5 +1,6 @@
 import plexos from "/plexos/ini/system.js"
 import {runLauncher} from "../../functions/dll.js"
+import { themeConstruct, themeRoot } from "/plexos/lib/functions/theme.js"
 import Task from "../system/task.js" //file explorer deletion
 import File from "../filesystem/file.js"
 
@@ -10,6 +11,11 @@ export default class ContextMenu {
     static target     = null
     static node       = null
     static menu       = []
+    static levels     = [] //[{node, options}] per depth, 0 = root menu
+
+    static contains(element) {
+        return ContextMenu.levels.some(level => level.node.contains(element))
+    }
 
     //open context menu
     static open = function(e, target, menu=null) {
@@ -19,9 +25,8 @@ export default class ContextMenu {
         ContextMenu.target = target
         let contextVar = e.contextVar || null
         
-        let newMenu = document.createElement("div")
-        newMenu.setAttribute("class", "clickContext sub_0 shadow")
-        document.getElementById("contextLayer").appendChild(newMenu)
+        const ui = themeConstruct("contextMenu")
+        let newMenu = ui.createRoot()
         ContextMenu.node = newMenu
 
         newMenu.style.top  = e.clientY + "px"
@@ -50,6 +55,7 @@ export default class ContextMenu {
         ContextMenu.target   = null
         ContextMenu.node     = null
         ContextMenu.menu     = []
+        ContextMenu.levels   = []
     }
     static applyTemplates = function (e, target, menu=null) {
         let menuTemplates = eval(File.at(ContextMenu.configAddr + "/templates.js").data)
@@ -74,141 +80,78 @@ export default class ContextMenu {
         return menuTemplates[menuTemplates.indexOf(menuTemplates.find(temp=>temp.class==="Default"))]
     }
 
-    static draw = function(node, arr) {
-        //id-number-magic
-        let x = 0
-        let z = 1
+    static draw = function(node, arr, depth = 0) {
+        const ui = themeConstruct("contextMenu")
+        const level = { node, options: [] }
+        ContextMenu.levels[depth] = level
 
-        let classInt = 0
-        
-        //for each section
-        for(let section of arr) {
-            let newSection = document.createElement("div")
-            newSection.classList.add("contextSection")
+        for (let section of arr) {
+            let newSection = ui.createSection()
 
-            //id-number-magic
-            let y = 0
-
-            //for each item
-            for(let item of section.list) {
-                let id = "drop_" + ContextMenu.subMenus + "_" + (x + y + z)
-
-                let newButton = document.createElement("div")
-                newButton.id = id
-                newButton.classList.add("dropOpt")
-                
-                let newIcon = document.createElement("div")
-                newIcon.style.backgroundImage = item.icon
-                let newText = document.createElement("span")
-                newText.innerHTML = item.name
-        
-                newButton.appendChild(newIcon)
-                newButton.appendChild(newText)
-                if (item.shortcut) {
-                    let shortcut = document.createElement("span")
-                    shortcut.className = "shortcut"
-                    shortcut.textContent = item.shortcut
-                    newButton.appendChild(shortcut)
-                }
-
+            for (let item of section.list) {
+                let newButton = ui.createOption({
+                    id: "drop_" + depth + "_" + level.options.length,
+                    name: item.name,
+                    icon: item.icon?.replaceAll("/THEME", themeRoot()),
+                    shortcut: item.shortcut,
+                    hasChildren: Array.isArray(item.func),
+                })
+                level.options.push(newButton)
                 newSection.appendChild(newButton)
 
                 newButton.onclick = e => e.preventDefault()
-                if (typeof arr[x].list[y].func  === "function") {
-                    let index = [x,y]
-                    let nbttn = arr[index[0]].list[index[1]]
-                    let subms = ContextMenu.subMenus
-                    if (nbttn.bool==undefined||nbttn.bool){
+                if (typeof item.func === "function") {
+                    if (item.bool == undefined || item.bool) {
                         newButton.onclick = e => {
                             e.preventDefault()
-                            nbttn.func()
+                            item.func()
                             ContextMenu.close()
                         }
                     } else {
                         newButton.classList.add("disabled")
                     }
-                    newButton.onmouseover = e => closeSubOpt(subms)
-                } else if (Array.isArray(arr[x].list[y].func)) {
-                    let index = [x,y]
-                    let nbttn = arr[index[0]].list[index[1]]
-                    let subms = ContextMenu.subMenus
-                    let arg = x+y+z
+                    newButton.onmouseover = e => closeSubmenus(depth)
+                } else if (Array.isArray(item.func)) {
                     newButton.onmouseover = e => {
-                        closeSubOpt(subms)
-                        openSubOpt(nbttn, arg, subms)
+                        closeSubmenus(depth)
+                        openSubmenu(item, newButton, depth)
                     }
-                    let newLast = document.createElement("span")
-                    newLast.setAttribute("class", "last")
-                    //newLast.setAttribute("style", "font-weight: bold")
-                    newLast.setAttribute("style", "text-align: right;")
-                    newLast.innerHTML = "❯"
-                    newButton.appendChild(newLast)
                 }
                 newButton.onmousedown = e => e.preventDefault()
-                //id-number-magic
-                y++
             }
 
-            //get on document
             node.appendChild(newSection)
-
-            //id-number-magic
-            z = z + (section.list.length - 1)
-            x++
         }
-        function openSubOpt(opt, optPos, sub) {
-            //check if submenu isn't open already
-            for (let subM of document.getElementsByClassName("clickContext")) {
-                if (subM.classList[1].match(/[sub_](\d+)/)) {
-                    classInt = parseInt(subM.classList[1].match(/(\d+)/)[0])
-                    if (classInt > sub) return
-                }
-            }
-            //references to main menu and submenu option
-            let main  = document.getElementsByClassName("clickContext sub_0")[0]
-            let menu  = document.getElementsByClassName("clickContext sub_" + ContextMenu.subMenus)[0]
-            let rect1 = menu.getBoundingClientRect()
-            let from  = document.getElementById("drop_" + ContextMenu.subMenus + "_" + optPos)
-            let rect2 = from.getBoundingClientRect()
 
-            ContextMenu.subMenus++
+        function openSubmenu(item, from, depth) {
+            if (ContextMenu.levels[depth + 1]) return
+
+            const root   = ContextMenu.levels[0].node
+            const parent = ContextMenu.levels[depth].node
+            const rect1  = parent.getBoundingClientRect()
+            const rect2  = from.getBoundingClientRect()
 
             //make submenu option stay hover colored
-            if (!from.classList.contains("hover")) from.classList.add("hover")
+            from.classList.add("hover")
 
-            let newSub = document.createElement("div")
-            newSub.setAttribute("class", "clickContext sub_" + ContextMenu.subMenus + " subMenu shadow")
-            document.getElementById("contextLayer").appendChild(newSub)
+            ContextMenu.subMenus = depth + 1
+            let newSub = ui.createSubmenu(depth + 1)
 
-            //position of submenu
-            newSub.style.left  = rect1.left + menu.offsetWidth - 1 + "px"
+            newSub.style.left  = rect1.left + parent.offsetWidth - 1 + "px"
             newSub.style.top   = rect2.top - 1 + "px"
-            newSub.style.minWidth = main.offsetWidth - main.offsetWidth / 3 + "px"
+            newSub.style.minWidth = root.offsetWidth - root.offsetWidth / 3 + "px"
 
-            ContextMenu.draw(newSub, opt.func)
+            ContextMenu.draw(newSub, item.func, depth + 1)
         }
 
-        function closeSubOpt(trigger) {
-            //
-            let delArr = []
-            //add every submenu up to trigger to deletion queue
-            for (let menu of document.getElementsByClassName("clickContext")) {
-                classInt = menu.classList[1].match(/(\d+)/)[0]
-                if (classInt > trigger) {
-                    delArr.push(menu)
-                }
+        function closeSubmenus(depth) {
+            for (let level of ContextMenu.levels.splice(depth + 1)) {
+                level.node.remove()
             }
-            for (let item of delArr) {
-                item.parentElement.removeChild(item)
+            for (let option of ContextMenu.levels[depth]?.options || []) {
+                option.classList.remove("hover")
             }
-            //remove hover class from previous menu
-            for (let sect of document.getElementsByClassName("sub_"+(trigger))[0].children){
-                for (let opt of sect.children) {
-                    if (opt.classList.contains("hover")) opt.classList.remove("hover")
-                }
-            }
-        
-            ContextMenu.subMenus = trigger
+            ContextMenu.subMenus = depth
         }
     }
 }

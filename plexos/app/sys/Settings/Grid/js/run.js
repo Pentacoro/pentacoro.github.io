@@ -4,17 +4,17 @@ let task = getTask(/TASKID/)
 let mem  = task.mem
 
 //begin with 1st tab selected
-task.node.getElementsByClassName("config-tab")[0].children[0].checked = true
+mem.ui.sheet.select("grid")
 
 await displayComponent({
     url:"/plexos/res/components/graphs/desktop/grid_graph/grid_graph.html",
     taskid:task.id,
-    container:task.node.getElementsByClassName("grid_graph_container")[0]
+    container:mem.ui.graphs.grid
 })
 await displayComponent({
     url:"/plexos/res/components/graphs/desktop/tile_graph/tile_graph.html",
     taskid:task.id,
-    container:task.node.getElementsByClassName("tile_graph_container")[0]
+    container:mem.ui.graphs.tile
 })
 
 //set values to booleans

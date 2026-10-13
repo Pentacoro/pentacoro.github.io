@@ -1,21 +1,33 @@
-import plexos from "/plexos/ini/system.js"
-import {getTask, isKeyWrite} from "/plexos/lib/functions/dll.js"
-let cfg = plexos.Settings
+import {getTask} from "/plexos/lib/functions/dll.js"
+import {wireSheet} from "/plexos/lib/functions/controls.js"
 
 let task = getTask(/TASKID/)
 let mem  = task.mem
 
-//name input
-task.node.getElementById(`${task.id}_fileName`).addEventListener("change", e => mem.onNameChange(e))
-task.node.getElementById(`${task.id}_fileName`).addEventListener("keydown", e => {if (isKeyWrite(e)) mem.onNameChange(e)})
-task.node.getElementById(`${task.id}_fileName`).addEventListener("paste", async e => {
-    const paste = await navigator.clipboard.readText()
-    if (paste) mem.onNameChange(e)
+//on app close
+task.onEnd = function () {
+    mem.var.configObject = mem.var.configInitialState
+    task.emit(task.id+"-closed")
+}
+
+//footer buttons; on editable change
+mem.onChange = wireSheet(mem.ui.sheet, task, {
+    change: () => task.emit(task.id+"-change"),
+    apply: async () => {
+        task.emit(task.id+"-applyBefore")
+        await mem.applyFileChanges()
+        task.emit(task.id+"-apply")
+    },
 })
 
-mem.onNameChange = function (e) {
-    mem.onChange()
+//deselection
+document.onmousedown = e => {
+    if (window.getSelection) {window.getSelection().removeAllRanges()}
+    else if (document.selection) {document.selection.empty()}
 }
+
+//name input
+mem.tab.general.fileName.addEventListener("input", () => mem.onChange())
 
 task.on(task.id+"-apply", () => {
     mem.arg.render()

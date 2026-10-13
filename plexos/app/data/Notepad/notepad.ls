@@ -7,18 +7,20 @@ export default {
     application: `Notepad`,
     run: async function({taskid,appid,args,path,root}){
         let html = root + "/notepad.html"
+        const file = args?.path ? File.at(args.path) : null
 
         //on app init
         function ini() {
             let task = Task.id(taskid)
             let arg  = task.mem.arg
 
-            arg.textData = File.at(args.path).data
-            arg.fileAddr = args.path
+            arg.textData = file?.data ?? ""
+            arg.fileAddr = file ? args.path : null
         }
-        //on app end
-        function end() {
-
+        //on app end. Return false to keep the window open.
+        async function end() {
+            const app = Task.id(taskid)
+            if (typeof app?.mem?.confirmUnsaved === "function") return await app.mem.confirmUnsaved()
         }
 
         //task creation
@@ -36,9 +38,9 @@ export default {
         //window generation
         new Window(
             {
-                name : File.at(args.path).name+" - Notepad",
+                name : (file ? file.name : "Untitled") + " - Notepad",
                 task : task.id, 
-                icon : (File.at(args.path)) ? File.at(args.path).cfg.icon.getImage() : "/plexos/res/themes/Plexos Hyper/icons/files/defaultFile.svg",
+                icon : file ? file.cfg.icon.getImage() : "/THEME/icons/files/defaultTXT.svg",
             }
         )
 

@@ -6,14 +6,18 @@ import {displayComponent} from "/plexos/lib/functions/dll.js"
 export default {
     app: `Explorer`,
     run: async function({taskid,appid,args,path,root}){
-        let html = (args.type) ? root + "/explorer"+args.type+".html" :  root + "/explorer.html"
+        let html = root + "/explorer.html"
 
         //on app init
         function ini() {
             let task = Task.id(taskid)
             let arg  = task.mem.arg
             
-            arg.address = args.path
+            arg.address  = args.path
+            arg.mode     = args.mode || null
+            arg.fileName = args.fileName || ""
+            arg.types    = args.types || []
+            arg.onResult = args.onResult || null
         }
         //on app end
         function end() {
@@ -37,8 +41,7 @@ export default {
             {
                 name : args.name,
                 task : task.id, 
-                icon : (File.at(args.path)) ? File.at(args.path).cfg.icon.getImage() : "/plexos/res/themes/Plexos Hyper/icons/files/defaultDIR.svg",
-            }
+                icon : (File.at(args.path)) ? File.at(args.path).cfg.icon.getImage() : "/THEME/icons/files/defaultDIR.svg",            }
         )
 
         ini()

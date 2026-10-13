@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="./css/explorer.css">
+    <link rel="stylesheet" href="/THEME/styles/apps/Explorer.css">
 
     <style></style>
 
@@ -12,32 +12,14 @@
 </head>
 <body>
 
-    <div class="container">
+    <div class="container" id="/TASKID/_root"></div>
 
-        <div class="nav">
-            <button class="back">◀</button>
-            <button class="forth">▶</button>
-            <button class="parent">▲</button>
-
-            <div class="addressBox">
-                <span class="address">xcorex</span>
-            </div>
-
-            <button class="refresh">⭮</button>
-        </div>
-
-            <div class="background">
-                <div class="list">
-
-                </div>
-            </div>
-
-    </div>
-
+    <script type="module" src="./js/ui.js"></script>
     <script type="module" src="./js/contextmenu.js"></script>
     <script type="module" src="./js/icons.js"></script>
     <script type="module" src="./js/explorer.js"></script>
     <script type="module" src="./js/events.js"></script>
+    <script type="module" src="./js/dialog.js"></script>
     <script type="module" src="./js/run.js"></script>
 </body>
 </html>

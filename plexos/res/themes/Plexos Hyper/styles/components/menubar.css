@@ -3,30 +3,14 @@
     height: fit-content;
     width: 100%;
 
-    display: flex;
     flex-wrap: wrap;
-    background-color: rgb(195, 203, 221);
     z-index: 100;
-
-    user-select: none;
 }
 .menubar_container>button{
-    background-color: rgb(195, 203, 221);
     height: 20px;
-    border: 0px;
     font-size: 1em;
-    color: rgb(90, 108, 126);
-    cursor: pointer;
     padding-left:  .5em;
     padding-right: .5em;
-
-    user-select: none;
-}
-.menubar_container>button:active{
-    color: rgb(123, 140, 156);
-}
-.menubar_container>button:hover{
-    background-color: rgb(162, 166, 177);
 }
 
 .statusbar_container {
@@ -38,8 +22,8 @@
     padding: 0 8px;
     font-size: 11px;
     line-height: 20px;
-    background-color: rgb(195, 203, 221);
-    color: rgb(90, 108, 126);
+    background-color: var(--color-toolbar);
+    color: var(--color-toolbar-text);
     user-select: none;
     z-index: 100;
 }
@@ -50,10 +34,10 @@
     white-space: nowrap;
 }
 .statusbar_container > .status-msg.error {
-    color: #a33;
+    color: var(--color-status-error);
 }
 .statusbar_container > .status-msg.ok {
-    color: #2a6;
+    color: var(--color-status-ok);
 }
 
 /*>>>>>>> Anything that changes on blur goes here <<<<<<<*/

@@ -1,5 +1,6 @@
 import plexos from "/plexos/ini/system.js"
 import {nodeGetters, iframeAntiHover, genRanHex} from "/plexos/lib/functions/dll.js"
+import { themeConstruct } from "/plexos/lib/functions/theme.js"
 import Task from "../system/task.js"
 import File from "../filesystem/file.js"
 import ProxyFile from "../filesystem/proxy.js"
@@ -45,7 +46,7 @@ export default class Window {
 			// "default"     => same as "app"
 			// "app"         => retrieve draw parameters from last closed app instance
 			// "file"        => retrieve draw parameters specific to each file opened in app instance (requires filePath)
-			// "window"      => named dialog: persist pos only under windowDrawParameters.windows[windowKey]
+			// "window"      => named dialog: persist under windowDrawParameters.windows[windowKey] (pos only when fit-content)
 			// "disabled"    => parameters are never saved to registry/always defined by initial parameters
 
 			if (p?.filePath!==undefined) this.filePath = p.filePath
@@ -290,146 +291,51 @@ export default class Window {
 		}
     }
     createNode(){
-		let newWindow = document.createElement("div")
 		this.wid = "wid-" + genRanHex(8) // unique query scope; two windows must not share a task-id selector
-		newWindow.setAttribute("class", "window "+this.task+" "+this.wid)
-		newWindow.classList.add("building")
-		newWindow.setAttribute("id", "window_" + Task.get("Window Manager").mem.windows.indexOf(this))
-	
-		let newWindowInner = document.createElement("div")
-		newWindowInner.setAttribute("class", "windowInner")
-		newWindow.appendChild(newWindowInner)
-		this.keyNodes.innerDrawing = newWindowInner
-	
-			let newHeader = document.createElement("div")
-			newHeader.setAttribute("class", "header")
-			newWindowInner.appendChild(newHeader)
-			this.keyNodes.windowHeader = newHeader
-			this.keyNodes.dragElements.push(newHeader)
+		this._windowIndex = Task.get("Window Manager").mem.windows.indexOf(this)
+		themeConstruct("window", this)
 
-			let newHeaderBackground = document.createElement("div")
-			newHeaderBackground.setAttribute("class", "headerBackground")
-			newHeader.appendChild(newHeaderBackground)
-
-			if (this.icon) {
-				let newHeaderIcon = document.createElement("img")
-				newHeaderIcon.setAttribute("class", "headerIcon")
-				newHeaderIcon.setAttribute("src", this.icon)
-				newHeader.appendChild(newHeaderIcon)
-				this.keyNodes.image = newHeaderIcon
+		if (this.keyNodes.modalShield) {
+			this.keyNodes.modalShield.onmousedown = e => {
+				e.preventDefault()
+				e.stopPropagation()
+				Task.id(this.task).attentionPersistent()
 			}
-
-			let newHeaderText = document.createElement("span")
-			newHeaderText.setAttribute("class", "headerText")
-			newHeader.appendChild(newHeaderText)
-			let newWindowTextNode = document.createTextNode(this.name)
-			newHeaderText.appendChild(newWindowTextNode)
-			this.keyNodes.title = newHeaderText
-
-			let newHeaderButtons = document.createElement("div")
-			newHeaderButtons.setAttribute("class", "headerButtons")
-			newHeader.appendChild(newHeaderButtons)
-			this.keyNodes.buttonPocket = newHeaderButtons
-
-			if (this.appParams.buttons.length>0) {
-				for (let button of this.appParams.buttons) {
-					let newWindowButton = document.createElement("button")
-					if (button.class) newWindowButton.setAttribute("class", `windowButton ${button.class}`)
-					if (button.image) newWindowButton.style.backgroundImage = button.image
-					this.keyNodes.buttonPocket.appendChild(newWindowButton)
-					newWindowButton.onclick = e => {
-						if (this.isModalLocked()) {
-							Task.id(this.task).attentionPersistent()
-							return
-						}
-						button.function(e)
-					}
-				}
-			}
-
-			if (this.appParams.minimizeable) {
-				let buttonMinimize = document.createElement("button")
-				buttonMinimize.setAttribute("class", "windowButton _")
-				this.keyNodes.buttonPocket.appendChild(buttonMinimize)
-				this.keyNodes.buttons.minimize = buttonMinimize
-				buttonMinimize.onclick = e => {
+		}
+		if (this.keyNodes.buttons.minimize) {
+			this.keyNodes.buttons.minimize.onclick = () => {}
+		}
+		if (this.keyNodes.buttons.maximize) {
+			this.keyNodes.buttons.maximize.onclick = () => {
+				if (this.isModalLocked()) {
+					Task.id(this.task).attentionPersistent()
 					return
 				}
+				Window.maximize(this)
 			}
-
-			if (this.appParams.maximizeable) {
-				let buttonMaximize = document.createElement("button")
-				buttonMaximize.setAttribute("class", "windowButton O")
-				this.keyNodes.buttonPocket.appendChild(buttonMaximize)
-				this.keyNodes.buttons.maximize = buttonMaximize
-				buttonMaximize.onclick = () => {
-					if (this.isModalLocked()) {
-						Task.id(this.task).attentionPersistent()
-						return
-					}
-					Window.maximize(this)
-				}
-			}
-
-			let buttonClose = document.createElement("button")
-			buttonClose.setAttribute("class", "windowButton X")
-			this.keyNodes.buttonPocket.appendChild(buttonClose)
-			this.keyNodes.buttons.close = buttonClose
-			buttonClose.onclick = () => {
+		}
+		if (this.keyNodes.buttons.close) {
+			this.keyNodes.buttons.close.onclick = () => {
 				if (this.isModalLocked()) {
 					Task.id(this.task).attentionPersistent()
 					return
 				}
 				Window.close(this)
 			}
-
-		let newContent = document.createElement("div")
-		newContent.setAttribute("class", "content")
-		newWindowInner.appendChild(newContent)
-		this.keyNodes.content = newContent
-		
-		let newWindowBorder = document.createElement("div")
-		newWindowBorder.setAttribute("class", "windowBorder")
-		newWindow.appendChild(newWindowBorder)
-	
-			if (this.appParams.resizeable) {
-				let newWindowEtop = document.createElement("div")
-				newWindowEtop.setAttribute("class", "windowEdge windowEtop")
-				let newWindowEbot = document.createElement("div")
-				newWindowEbot.setAttribute("class", "windowEdge windowEbot")
-				let newWindowElef = document.createElement("div")
-				newWindowElef.setAttribute("class", "windowEdge windowElef")
-				let newWindowErig = document.createElement("div")
-				newWindowErig.setAttribute("class", "windowEdge windowErig")
-				let newWindowCtl = document.createElement("div")
-				newWindowCtl.setAttribute("class", "windowCorner windowCtl")
-				let newWindowCtr = document.createElement("div")
-				newWindowCtr.setAttribute("class", "windowCorner windowCtr")
-				let newWindowCbr = document.createElement("div")
-				newWindowCbr.setAttribute("class", "windowCorner windowCbr")
-				let newWindowCbl = document.createElement("div")
-				newWindowCbl.setAttribute("class", "windowCorner windowCbl")
-				newWindowBorder.appendChild(newWindowEtop)
-				newWindowBorder.appendChild(newWindowEbot)
-				newWindowBorder.appendChild(newWindowElef)
-				newWindowBorder.appendChild(newWindowErig)
-				newWindowBorder.appendChild(newWindowCtl)
-				newWindowBorder.appendChild(newWindowCtr)
-				newWindowBorder.appendChild(newWindowCbr)
-				newWindowBorder.appendChild(newWindowCbl)
-			}
-
-		const modalShield = document.createElement("div")
-		modalShield.setAttribute("class", "windowModalShield") // covers chrome + content while modal-locked
-		modalShield.onmousedown = e => {
-			e.preventDefault()
-			e.stopPropagation()
-			Task.id(this.task).attentionPersistent()
 		}
-		newWindow.appendChild(modalShield)
-		this.keyNodes.modalShield = modalShield
-	
-		document.getElementById("windowLayer").appendChild(newWindow)
+		for (const button of this.node.getElementsByClassName("windowButton")) {
+			if (button._themeAction) {
+				button.onclick = e => {
+					if (this.isModalLocked()) {
+						Task.id(this.task).attentionPersistent()
+						return
+					}
+					button._themeAction(e)
+				}
+			}
+		}
+
+		const newWindow = this.node
 		
 		if(this.drawParams===null) {
 			this.drawParams = {
@@ -470,7 +376,7 @@ export default class Window {
 		)
 
 		this.node = newWindow
-		this.cont = newContent
+		this.cont = this.keyNodes.content
 
 		//adjust size for content if set to that method
 		if (this.appParams.sizeDrawMethod === "content" || this.appParams.sizeDrawMethod === "default") {
@@ -492,7 +398,7 @@ export default class Window {
 			}
 		}
 
-		nodeGetters(newContent, newContent.classList[0], this.wid)
+		nodeGetters(this.cont, this.cont.classList[0], this.wid)
 		
 		this.node.onmousedown = e => {
 			const host = Window.hostOfPersistent(this)

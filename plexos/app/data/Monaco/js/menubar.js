@@ -6,9 +6,9 @@ let mem  = task.mem
 
 mem.menubar = {}
 mem.menubar.menubarButtons = ["File","Edit","Format","View","Help"]
-mem.menubar.contextOptions = function (button) {
+mem.menubar.contextOptions = function (button, name) {
     let envfocus = plexos.System.mem.focused
-    switch (button.innerText) {
+    switch (name) {
         case "File":
             return {
                 menu: [

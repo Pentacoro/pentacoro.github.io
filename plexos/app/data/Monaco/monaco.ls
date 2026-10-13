@@ -38,7 +38,7 @@ export default {
             {
                 name : File.at(args.path).name+" - Monaco",
                 task : task.id, 
-                icon : (File.at(args.path)) ? File.at(args.path).cfg.icon.getImage() : "/plexos/res/themes/Plexos Hyper/icons/files/defaultFile.svg",
+                icon : (File.at(args.path)) ? File.at(args.path).cfg.icon.getImage() : "/THEME/icons/files/defaultFile.svg",
                 appParams: {
                     minimizeable: true,
                     maximizeable: true,

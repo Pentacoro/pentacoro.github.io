@@ -39,8 +39,8 @@ sys.mem.downloadCoreJSON = function (exportName="core") { // Ctrl+S: serialized 
 sys.bus = new EventBus()
 sys.ini = {}
 sys.ini.openDesktop = async function (address) {
-    await runLauncher("./plexos/app/sys/Window Manager/windowManager.ls")
     await runLauncher("./plexos/app/sys/Theme Manager/themeManager.ls")
+    await runLauncher("./plexos/app/sys/Window Manager/windowManager.ls")
     await runLauncher("./plexos/app/sys/Desktop/desktop.ls", {path:address})
     let desktop = Task.get("Desktop")
     if (desktop?.mem?.grid?.evaluateIconGrid) {

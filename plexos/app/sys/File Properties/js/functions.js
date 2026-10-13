@@ -17,7 +17,7 @@ let dateFormatter = new Intl.DateTimeFormat('en-UK',
 )
 
 mem.prepGeneral = function () {
-    task.node.querySelector(`#${task.id}_general .config-option.header>label>img`).setAttribute("src", mem.arg.cfg.icon.getImage())
+    mem.ui.fileIcon.setAttribute("src", mem.arg.cfg.icon.getImage())
     tab.general.fileName.value = mem.arg.displayName()
     tab.general.fileClass.innerText = mem.arg.cfg.class 
     tab.general.fileExte.innerText = "."+mem.arg.cfg.exte 
@@ -28,13 +28,13 @@ mem.prepGeneral = function () {
     tab.general.fileDateModified.innerText = ( (mem.arg.cfg.date.Modified) ? dateFormatter.format(new Date(mem.arg.cfg.date.Modified)) : mem.arg.cfg.date.Modified)
     tab.general.fileDateAccessed.innerText = ( (mem.arg.cfg.date.Accessed) ? dateFormatter.format(new Date(mem.arg.cfg.date.Accessed)) : mem.arg.cfg.date.Accessed)
 
-    for (let pair of Object.entries(tab.general)) {
-        if (pair[1].innerText === "undefined") pair[1].parentElement.remove()
+    for (let [key, node] of Object.entries(tab.general)) {
+        if (node.innerText === "undefined") mem.rows[key]?.remove()
     }
 }
 mem.prepMetadata = function () {
-    if (!task.node.getElementById(task.id+"_metadata")) return
-    task.node.querySelector(`#${task.id}_metadata .config-option.header>label>img`).setAttribute("src", mem.arg.meta.image)
+    if (!mem.ui.metaImage) return
+    mem.ui.metaImage.setAttribute("src", mem.arg.meta.image)
 }
 
 mem.applyFileChanges = async function () { // rename then file.modify; each goes through cmd / askPermission

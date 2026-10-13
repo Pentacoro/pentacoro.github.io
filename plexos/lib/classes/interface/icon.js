@@ -1,4 +1,5 @@
 import File from "../filesystem/file.js"
+import {themeRoot} from "../../functions/theme.js"
 
 export default class Icon {
     state = 0
@@ -24,7 +25,8 @@ export default class Icon {
                 if (Object.keys(File.at(this.file).dir).length > 0) return File.classDefaults("DirectoryFile").iconImag.replace("DIR", "DIRc")
                 else return File.classDefaults("DirectoryFile").iconImag
             case "can":
-                return File.classDefaults("TrashCan").iconImag
+                if (File.at(this.file)?.dir?.length > 0) return File.classDefaults("TrashCan").iconImag.replace("trash.svg", "trashUsed.svg")
+                else return File.classDefaults("TrashCan").iconImag
             case "txt" || "js" || "css" || "html":
                 return File.classDefaults("StringFile").iconImag
             case "proxy":
@@ -35,6 +37,8 @@ export default class Icon {
                 return File.at(this.file).meta.icon
             case "img":
                 return File.at(this.file).meta.url
+            default:
+                return `${themeRoot()}/icons/files/defaultFile.svg`
         }
     }
 }

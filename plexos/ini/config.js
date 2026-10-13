@@ -1,6 +1,7 @@
 let cfg = {
     system: {
-        basePath: window.location
+        basePath: window.location,
+        theme: "Plexos Hyper",
     },
     audio: {
         icons: false,

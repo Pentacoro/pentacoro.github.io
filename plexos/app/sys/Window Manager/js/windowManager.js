@@ -110,6 +110,9 @@ windowManager.getInitialDrawParams = function(window) {
             let registryAppEntry = plexos.Core.registry.getAppParams(taskRef.appID)
             const saved = readUserDrawParams(registryAppEntry?.windowDrawParameters?.windows?.[key]?.current)
             if (!saved) return null
+            if (window.appParams.sizeDrawMethod !== "fit-content" && saved.width > 0 && saved.height > 0) {
+                return { posX: saved.posX, posY: saved.posY, width: saved.width, height: saved.height, maximized: !!saved.maximized }
+            }
             return { posX: saved.posX, posY: saved.posY, width: 0, height: 0, maximized: false }
         }
         case "file":
@@ -144,10 +147,11 @@ windowManager.setInitialDrawParams = function(window) {
             if (!registryAppEntry.windowDrawParameters.windows) registryAppEntry.windowDrawParameters.windows = {}
             const key = window.appParams.windowKey
             if (!registryAppEntry.windowDrawParameters.windows[key]) registryAppEntry.windowDrawParameters.windows[key] = {}
-            writeUserDrawParams(registryAppEntry.windowDrawParameters.windows[key], {
-                posX: window.drawParams.posX,
-                posY: window.drawParams.posY,
-            })
+            writeUserDrawParams(registryAppEntry.windowDrawParameters.windows[key],
+                (window.appParams.sizeDrawMethod === "fit-content")
+                    ? { posX: window.drawParams.posX, posY: window.drawParams.posY }
+                    : window.drawParams
+            )
             return
         }
         case "file":

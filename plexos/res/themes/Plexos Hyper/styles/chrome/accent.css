@@ -1,0 +1,13 @@
+.sys-chrome {
+    background-color: var(--color-accent);
+    border-top: solid 2px var(--color-accent-light);
+    border-bottom: solid 2px var(--color-accent-dark);
+}
+.sys-chrome-bevel {
+    background-color: var(--color-accent);
+    border-left: solid 2px var(--color-accent-light);
+    border-top: solid 2px var(--color-accent-light);
+    border-right: solid 2px var(--color-accent-dark);
+    border-bottom: solid 2px var(--color-accent-dark);
+    border-radius: 0;
+}

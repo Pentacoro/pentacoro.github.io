@@ -2,6 +2,7 @@ import plexos from "../../../ini/system.js"
 import typeClass from "./filetypes.js"
 import Configuration from "./configuration.js"
 import {renameKey, runLauncher, calculateStringSize} from  "../../functions/dll.js"
+import {themeRoot} from "../../functions/theme.js"
 
 export default class File {
     static at(path = "", get = "file", from = `plexos.Core["file"]`) {
@@ -171,24 +172,29 @@ export default class File {
         
         switch (Type) {
             case "DirectoryFile":
-                defaults.iconImag = "plexos/res/themes/Plexos Hyper/icons/files/defaultDIR.svg"
+                defaults.iconImag = `${themeRoot()}/icons/files/defaultDIR.svg`
                 defaults.confType = "DirectoryFile"
                 defaults.skeyName = "dir"
                 break
             case "MetaFile": 
-                defaults.iconImag = "plexos/res/themes/Plexos Hyper/icons/files/defaultMSF.svg"
+                defaults.iconImag = `${themeRoot()}/icons/files/defaultMSF.svg`
                 defaults.confType = "MetaFile"
                 defaults.skeyName = "meta"
                 break
             case "StringFile":
-                defaults.iconImag = "plexos/res/themes/Plexos Hyper/icons/files/defaultTXT.svg"
+                defaults.iconImag = `${themeRoot()}/icons/files/defaultTXT.svg`
                 defaults.confType = "StringFile"
                 defaults.skeyName = "data"
                 break
             case "ProxyFile":
-                defaults.iconImag = "plexos/res/themes/Plexos Hyper/icons/files/proxy.svg"
+                defaults.iconImag = `${themeRoot()}/icons/files/proxy.svg`
                 defaults.confType = "ProxyFile"
                 defaults.skeyName = "data"
+                break
+            case "TrashCan":
+                defaults.iconImag = `${themeRoot()}/icons/files/trash.svg`
+                defaults.confType = "TrashCan"
+                defaults.skeyName = "dir"
                 break
         }
     
@@ -238,7 +244,9 @@ export default class File {
     static viewsOpened = function (path) {
         let fileViews = []
         for (let task of plexos.Tasks) {
-            if ((task.name === "Explorer" || task.name === "Desktop") && task.mem.dirObject.cfg.path === path) {
+            const mem = task.mem
+            if (mem?.dirObject?.cfg?.path !== path) continue
+            if (typeof mem.createExplorerIcons === "function" || typeof mem.createDesktopIcons === "function") {
                 fileViews.push(task)
             }
         }
@@ -259,7 +267,7 @@ export default class File {
         const skeyName = defaults.skeyName
         let fileName = opts.name
         const extensionMatch = fileName.match(/(?:.(?<!\.))+$/s)
-        const extension = extensionMatch ? extensionMatch[0] : ""
+        const extension = (extensionMatch && fileName.includes(".")) ? extensionMatch[0] : ""
         const Type = await typeClass(typeName)
         const Icon = (opts.icon != null) ? opts.icon : await import("../interface/icon.js").then(module => new module.default(
             {
@@ -269,8 +277,6 @@ export default class File {
                 state: 0
             }
         ))
-
-        fileName = fileName + (((confType != "DirectoryFile") && !fileName.includes(".")) ? "." + extension : "")
 
         const content = (opts.content != null)
             ? opts.content
@@ -426,7 +432,8 @@ export default class File {
 
     render() {
         for (let fileView of File.viewsOpened(this.parent().cfg.path)) {
-            fileView.mem["create"+fileView.name+"Icons"]([this])
+            const create = fileView.mem.createExplorerIcons || fileView.mem.createDesktopIcons
+            create?.call(fileView.mem, [this])
         }
     }
 

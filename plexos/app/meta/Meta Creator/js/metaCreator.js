@@ -25,7 +25,7 @@ mem.createMeta = async function () {
 
     if(!url.match(urlRegex)) {
         if (task.node) {
-            nodeUrl.parentElement.children[2].style.backgroundImage = 'url("/plexos/res/themes/Plexos Hyper/icons/interface/forms/error.png")'
+            nodeUrl.parentElement.children[2].style.backgroundImage = 'url("/THEME/icons/interface/forms/error.png")'
             nodeUrl.parentElement.children[2].style.display = 'block'
             nodeUrl.parentElement.children[2].setAttribute("title", "Invalid URL")
             return

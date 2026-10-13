@@ -10,7 +10,6 @@
     width: 400px;
     height: fit-content;
 
-    background-color: #d8d8d8;
     overflow: hidden;
 }
 .container {
@@ -18,8 +17,6 @@
     flex-direction: row;
     gap: 14px;
     padding: 14px;
-    background-color: #e8e8e8;
-    border: 1px solid #c7c7c7;
 }
 img {
     width: 60px;
@@ -35,37 +32,21 @@ img {
 .message>p{
     width: 100%;
 }
-.option{
-    width: 100%;
-    height: 100%;
-    border: 0;
-    border-radius: 0;
-    background-color: #cfcfcf;
-
-    cursor: pointer;
-}
-.option:active{
-    width: 100%;
-    height: 100%;
-    border: 0;
-    border-radius: 0;
-    background-color: #b6b6b6;
-}
 .details{
     display: flex;
     position: relative;
     height: 300px;
-    background-color: white;
+    background-color: var(--color-white);
 
-    border-left: 1px solid #cfcfcf;
-    border-right: 1px solid #cfcfcf;
+    border-left: 1px solid var(--color-details-edge);
+    border-right: 1px solid var(--color-details-edge);
     
     text-overflow: clip;
     overflow-y: scroll;
     overflow-x: hidden;
 
     scrollbar-width: thin;
-    scrollbar-color: #c1c1c1 #ffffff;
+    scrollbar-color: var(--color-details-scroll) var(--color-white);
 }
 .details>.errorStack{
     white-space: pre;
@@ -78,25 +59,18 @@ img {
 .details>p{
     margin: 0px 8px 8px 8px;
     padding-top: 8px;
-    border-top: 2px solid rgb(129, 129, 129);
+    border-top: 2px solid var(--color-details-rule);
 }
 .details>p:first-child{
     border-top: 0;
 }
 .details>p>b{
     font-size: 11px;
-    color: blue;
+    color: var(--color-link);
 }
 .expand{
     position: relative;
-
     width: 100%;
-    height: 30px;
-
-    background-color: #e8e8e8;
-    border: 1px solid #c7c7c7;
-
-    cursor: pointer;
 }
 .expand.closed>p::before{
     position: absolute;
@@ -105,7 +79,7 @@ img {
     font-size: 11px;
     justify-content: center;
     content: "▶";
-    color: rgb(68, 68, 68);
+    color: var(--color-expand-closed);
 }
 .expand.open>p::before{
     position: absolute;
@@ -115,11 +89,7 @@ img {
     margin-top: 2px;
     justify-content: center;
     content: "▼";
-    color: rgb(152, 152, 152);
-}
-.expand:active{
-    width: 100%;
-    background-color: #d8d8d8;
+    color: var(--color-expand-open);
 }
 .codeParser{
     width: 100%;
@@ -129,8 +99,6 @@ img {
 .body-light{
     display: flex;
     flex-direction: column;
-    background-color: #e8e8e8;
-    border: 1px solid #c7c7c7;
 }
 .body-light>.container{
     border: 0;
@@ -146,7 +114,7 @@ img {
     width: auto;
     flex: 1;
     height: 100%;
-    background-color: transparent;
+    background-color: var(--color-transparent);
     padding-left: 0;
     display: flex;
     align-items: center;
@@ -158,37 +126,16 @@ img {
     height: fit-content;
     margin-top: 0;
     padding: 8px;
-
-    display: block;
-    flex-direction: row;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 4px;
-
     overflow: hidden;
 }
 .config-footer.row{
     display: flex;
 }
+.config-footer.disclosure{
+    display: block;
+}
+.config-footer.row .sys-button,
 .config-footer.row .config-footer-button{
     flex: 1;
     width: auto;
-}
-.config-footer-button{
-    width: 100%;
-    height: 30px;
-
-    background-color: #e8e8e8;
-    border: 1px solid #c7c7c7;
-    border-radius: 0;
-}
-.config-footer-button:hover{
-    background-color: #f5f5f5;
-}
-.config-footer-button:active{
-    background-color: #d8d8d8;
-}
-.config-footer-button.disabled{
-    background-color: #d8d8d8;
-    color: #888888;
 }

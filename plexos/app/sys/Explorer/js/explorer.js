@@ -24,6 +24,11 @@ mem.createExplorerIcons = async function(array) {
 mem.refresh = function () {
     mem.explorerInit(mem.dirObject.cfg.path, task.id, "refresh")
 }
+mem.passesFilter = function (file) {
+    if (!mem.typeFilter) return true
+    if (file.cfg.system || file.cfg.class === "ProxyFile") return true
+    return mem.typeFilter.includes(file.cfg.exte?.toLowerCase())
+}
 mem.getIcon = function(path){
     let find = mem.iconArray.filter(icon => icon.file === path)
     return ((find.length>0) ? find[0] : null)
@@ -38,7 +43,7 @@ mem.explorerInit = function (dir, id, act = null) {
         let dirPlex   = []
 
         for (let icon of task.mem.iconArray){
-            task.node.getElementsByClassName("list")[0].removeChild(icon.node)
+            mem.ui.view.keyNodes.list.removeChild(icon.node)
         }
 
         task.mem.iconArray = []
@@ -53,7 +58,7 @@ mem.explorerInit = function (dir, id, act = null) {
             }
         }
         for (let item of dirList) {
-            if(item[1].cfg.class !=  "DirectoryFile") {
+            if(item[1].cfg.class !=  "DirectoryFile" && mem.passesFilter(item[1])) {
                 dirFile.push(item[1])
             }
         }
@@ -67,10 +72,12 @@ mem.explorerInit = function (dir, id, act = null) {
         dirFile.sort  ((a, b) => a.name.localeCompare(b.name))
         dirPlex.sort  ((a, b) => a.name.localeCompare(b.name))
 
-        task.node.getElementsByClassName("address")[0].innerHTML = dir
+        mem.ui.nav.keyNodes.address.textContent = dir
 
-        task.window.setTitle(activeObj.name)
-        task.window.setImage(activeObj.cfg.icon.getImage())
+        if (!mem.arg.mode) {
+            task.window.setTitle(activeObj.name)
+            task.window.setImage(activeObj.cfg.icon.getImage())
+        }
 
         mem.createExplorerIcons(dirPlex).then( e => mem.createExplorerIcons(dirFolder).then(e => mem.createExplorerIcons(dirFile)))
         
@@ -107,8 +114,10 @@ mem.new = async function(e, _this, Type, name){
 				}
             )
 			await task.cmd("file.create", {path: editFrom.cfg.path, Type: Type, name: name, newFileIcon: newFileIcon})
-            editFrom.dir[name].render(task.id)
-            return newFileIcon
+            const created = editFrom.dir[name]
+            if (!created) return null
+            created.render()
+            return created
 		} else {
 			let exte = name.match(/\.(?:.(?<!\.))+$/s)
 			exte = (exte!=null && exte.length > 0) ? exte[0] : ""
@@ -122,8 +131,7 @@ mem.new = async function(e, _this, Type, name){
 		}
 	}
     
-    let newFileIcon = await createExplorerFile(name)
-
-    let createdIcon = mem.iconArray[mem.iconArray.length - 1]
-    createdIcon.editName()
+    const created = await createExplorerFile(name)
+    if (!created) return
+    mem.getIcon(created.cfg.path)?.editName()
 }

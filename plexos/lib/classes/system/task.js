@@ -83,8 +83,20 @@ export default class Task {
         plexos.Tasks.push(this)
     }
 
-    end () {
-        if (this.onEnd) this.onEnd()
+    async end () {
+        if (this._ending) return
+        this._ending = true
+        let allow = true
+        try {
+            if (typeof this.onEnd === "function") allow = await this.onEnd()
+        } catch (error) {
+            this._ending = false
+            throw error
+        }
+        if (allow === false) {
+            this._ending = false
+            return
+        }
         for (let styleTag of document.head.getElementsByClassName(this.id)) {
             styleTag.parentElement.removeChild(styleTag)
         }

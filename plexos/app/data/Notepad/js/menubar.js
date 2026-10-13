@@ -6,18 +6,18 @@ let mem  = task.mem
 
 mem.menubar = {}
 mem.menubar.menubarButtons = ["File","Edit","Format","View","Help"]
-mem.menubar.contextOptions = function (button) {
+mem.menubar.contextOptions = function (button, name) {
     let envfocus = plexos.System.mem.focused
-    switch (button.innerText) {
+    switch (name) {
         case "File":
             return {
                 menu: [
                     {name: "prop", list: [
-                        {name:"New",icon:"url('')",func: () => {return}},
-                        {name:"New Window",icon:"url('')",func: () => {return}},
-                        {name:"Open...",icon:"url('')",func: () => {return} },
+                        {name:"New",icon:"url('')",func: () => mem.new?.()},
+                        {name:"New Window",icon:"url('')",func: () => mem.newWindow?.()},
+                        {name:"Open...",icon:"url('')",func: () => mem.open?.() },
                         {name:"Save",icon:"url('')",shortcut:"Ctrl+S",func: () => mem.save?.()},
-                        {name:"Save As...",icon:"url('')",func: () => {return} },
+                        {name:"Save As...",icon:"url('')",func: () => mem.saveAs?.() },
                     ]},
                     {name: "exit", list: [
                         {name:"Exit",icon:"url('')",func: () => {return}},

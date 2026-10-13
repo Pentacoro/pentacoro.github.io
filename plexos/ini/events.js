@@ -4,19 +4,9 @@ import ContextMenu from "../lib/classes/interface/contextmenu.js"
 
 //close context menu on mousedown anywhere
 window.addEventListener("mousedown", (e) => {
-	if (e.target.parentElement.parentElement){
-		if(
-			e.target.parentElement.classList.contains("contextSection") == false && 
-			e.target.parentElement.parentElement.classList.contains("contextSection") == false &&
-            !e.target.contextMenu
-		) {
-			ContextMenu.close()
-			clearSelection()
-		}
-	} else{
-		ContextMenu.close()
-        clearSelection()
-	}
+	if (ContextMenu.contains(e.target) || e.target.contextMenu) return
+	ContextMenu.close()
+	clearSelection()
 })
 
 window.addEventListener("resize", e => {

@@ -38,7 +38,7 @@ export default {
             {
                 name : args.name,
                 task : task.id, 
-                icon : (File.at(args.path)) ? File.at(args.path).cfg.icon.getImage() : "/plexos/res/themes/Plexos Hyper/icons/files/defaultMSF.svg",
+                icon : (File.at(args.path)) ? File.at(args.path).cfg.icon.getImage() : "/THEME/icons/files/defaultMSF.svg",
                 appParams: {
                     filePath: args.path,
                 }

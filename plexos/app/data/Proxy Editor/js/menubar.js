@@ -6,8 +6,8 @@ let mem  = task.mem
 
 mem.menubar = {}
 mem.menubar.menubarButtons = ["File","Edit","View","Help"]
-mem.menubar.contextOptions = function (button) {
-    switch (button.innerText) {
+mem.menubar.contextOptions = function (button, name) {
+    switch (name) {
         case "File":
             return {
                 menu: [

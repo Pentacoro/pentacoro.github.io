@@ -1,0 +1,7 @@
+.sys-panel {
+    background-color: var(--color-panel);
+}
+.sys-inset {
+    background-color: var(--color-inset);
+    border: 1px solid var(--color-border);
+}

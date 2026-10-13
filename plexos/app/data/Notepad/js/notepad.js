@@ -1,4 +1,6 @@
-import {getTask, selectText} from "/plexos/lib/functions/dll.js"
+import {getTask, selectText, runLauncher} from "/plexos/lib/functions/dll.js"
+import {fileDialog} from "/plexos/lib/functions/dialogs.js"
+import {themeRoot} from "/plexos/lib/functions/theme.js"
 import File from "/plexos/lib/classes/filesystem/file.js"
 
 let task = getTask(/TASKID/)
@@ -16,8 +18,9 @@ mem.snapText = function () {
     return mem.textArea.value ?? ""
 }
 mem.syncDirty = function () {
-    if (mem.statusbar?.setDirty) mem.statusbar.setDirty(mem.snapText() !== mem.savedSnap)
-    else mem.dirty = mem.snapText() !== mem.savedSnap
+    const dirty = mem.snapText() !== mem.savedSnap
+    if (mem.statusbar?.setDirty) mem.statusbar.setDirty(dirty)
+    else mem.dirty = dirty
 }
 mem.resetLog = function () {
     mem.log = [mem.snapText()]
@@ -75,22 +78,113 @@ mem.redo = function () {
     mem.applyLogEntry()
     mem.statusbar?.setMessage?.("Redo")
 }
-mem.save = function () {
+mem.save = async function () {
+    if (!mem.arg.fileAddr) return mem.saveAs()
     if (mem.historyTimer) {
         clearTimeout(mem.historyTimer)
         mem.historyTimer = null
         mem.recordChange()
     }
-    task.cmd("file.write", { path: mem.arg.fileAddr, data: mem.snapText() })
+    await task.cmd("file.write", { path: mem.arg.fileAddr, data: mem.snapText() })
     mem.savedSnap = mem.snapText()
     mem.syncDirty()
     mem.statusbar?.setMessage?.("Saved", "ok")
+    return true
+}
+mem.currentFile = function () {
+    return mem.arg.fileAddr ? File.at(mem.arg.fileAddr) : null
 }
 mem.reload = function () {
-    const file = File.at(mem.arg.fileAddr)
+    const file = mem.currentFile()
     mem.textArea.value = file?.data ?? ""
     mem.resetLog()
     mem.statusbar?.setMessage?.("")
+}
+mem.fileTypes = [{ label: "Text Document (*.txt)", exte: ["txt"] }]
+mem.folder = function () {
+    return mem.currentFile()?.parent()?.cfg.path
+}
+mem.setFile = function (path) {
+    const file = File.at(path)
+    mem.arg.fileAddr = path
+    task.window.setTitle(file.name + " - Notepad")
+    task.window.setImage(file.cfg.icon.getImage())
+}
+mem.setUntitled = function () {
+    mem.arg.fileAddr = null
+    task.window.setTitle("Untitled - Notepad")
+    task.window.setImage(File.classDefaults("StringFile").iconImag)
+}
+mem.new = async function () {
+    if (!await mem.confirmUnsaved()) return
+    mem.setUntitled()
+    mem.textArea.value = ""
+    mem.resetLog()
+    mem.statusbar?.setMessage?.("")
+}
+mem.newWindow = function () {
+    runLauncher("/plexos/app/data/Notepad/notepad.ls", {})
+}
+mem.confirmUnsaved = async function () {
+    if (!mem.dirty) return true
+    const choice = await new Promise((resolve) => {
+        task.persistentWindow({
+            name: "Notepad",
+            url: "/plexos/app/sys/Popup/popupB.html",
+            args: {
+                image: `${themeRoot()}/icons/interface/forms/info.png`,
+                title: "Save changes?",
+                description: `Do you want to save the changes to ${mem.currentFile()?.name ?? "Untitled"} before continuing?`,
+                buttons: [
+                    { label: "Save",    action: () => resolve("save") },
+                    { label: "Discard", action: () => resolve("discard") },
+                    { label: "Cancel",  action: () => resolve("cancel") },
+                ],
+            },
+            onClose: () => resolve("cancel"),
+        })
+    })
+    if (choice === "save") return await mem.save()
+    return choice === "discard"
+}
+mem.open = async function () {
+    const path = await fileDialog({ mode: "open", path: mem.folder(), types: mem.fileTypes, parentTaskId: task.id })
+    if (!path) return
+    const file = File.at(path)
+    if (file.cfg.class !== "StringFile") {
+        File.open(path)
+        return
+    }
+    if (!await mem.confirmUnsaved()) return
+    mem.setFile(path)
+    mem.textArea.value = file.data ?? ""
+    mem.resetLog()
+    mem.statusbar?.setMessage?.("Opened", "ok")
+}
+mem.saveAs = async function () {
+    let path = await fileDialog({
+        mode: "save",
+        path: mem.folder(),
+        fileName: mem.currentFile()?.name ?? "Untitled.txt",
+        types: mem.fileTypes,
+        parentTaskId: task.id,
+    })
+    if (!path) return false
+    const existing = File.at(path)
+    if (existing && existing.cfg.class !== "StringFile") {
+        mem.statusbar?.setMessage?.("Can't save over a non-text file", "error")
+        return false
+    }
+    if (!existing) {
+        const folder = path.slice(0, path.lastIndexOf("/"))
+        const name = path.slice(path.lastIndexOf("/") + 1)
+        const created = await task.cmd("file.create", { path: folder, Type: "StringFile", name, content: "" })
+        if (!created) return false
+        path = created.cfg.path
+        File.refreshViews()
+    }
+    mem.setFile(path)
+    return mem.save()
 }
 
 mem.textArea.value = mem.arg.textData ?? ""
