@@ -31,6 +31,37 @@ export async function loadThemeConstructors() {
         name: themeName(),
         root,
         constructors,
+        schemes: null,
+        colorScheme: null,
     }
+    try {
+        plexos.Theme.schemes = (await import(`${root}/schemes.js`)).default
+    } catch { /* this theme has no color schemes */ }
     return plexos.Theme
+}
+
+export function resolveColorScheme(name) {
+    const schemes = plexos.Theme?.schemes
+    if (!schemes?.list?.length) return null
+    const wanted = name || plexos.Settings?.system?.colorScheme || schemes.default
+    return schemes.list.find(scheme => scheme.name === wanted) || schemes.list.find(scheme => scheme.name === schemes.default) || schemes.list[0]
+}
+
+export function applyColorScheme(name) {
+    const chosen = resolveColorScheme(name)
+    if (!chosen) return null
+    if (plexos.Settings.system.colorScheme !== chosen.name) {
+        plexos.Settings.system.colorScheme = chosen.name
+        import("/plexos/ini/init.js").then(mod => mod.writeSettingsFile())
+    }
+    plexos.Theme.colorScheme = chosen.name
+    let link = document.getElementById("theme-scheme")
+    if (!link) {
+        link = document.createElement("link")
+        link.id = "theme-scheme"
+        link.rel = "stylesheet"
+        document.head.appendChild(link)
+    }
+    link.href = `${themeRoot()}/${chosen.file}`
+    return chosen.name
 }

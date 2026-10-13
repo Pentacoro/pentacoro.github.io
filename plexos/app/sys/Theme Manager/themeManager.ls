@@ -1,7 +1,7 @@
 import plexos from "/plexos/ini/system.js"
 import Task from "/plexos/lib/classes/system/task.js"
 import {displayComponent} from "/plexos/lib/functions/dll.js"
-import {loadThemeConstructors, applyThemeFavicon} from "/plexos/lib/functions/theme.js"
+import {loadThemeConstructors, applyThemeFavicon, applyColorScheme} from "/plexos/lib/functions/theme.js"
 
 export default {
     app: `Theme Manager`,
@@ -26,5 +26,6 @@ export default {
             taskid:task.id,
             container:task.node,
         })
+        applyColorScheme()
     }
 }

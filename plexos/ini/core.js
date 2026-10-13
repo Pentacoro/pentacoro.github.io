@@ -52,7 +52,7 @@ sys.ini.run = async function () {
     root.mem.booting = true
     await plexos.Core.ini.getPlexosDB()
     plexos.Core.file = await plexos.Core.ini.defineCore()
-    initialize()
+    await initialize()
 }
 
 // CORE TASK

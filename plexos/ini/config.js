@@ -2,6 +2,7 @@ let cfg = {
     system: {
         basePath: window.location,
         theme: "Plexos Hyper",
+        colorScheme: "Purple",
     },
     audio: {
         icons: false,
@@ -52,4 +53,15 @@ let cfg = {
         proxy:"/plexos/app/data/Proxy Editor/proxyEditor.ls",
     }
 }
+
+export function settingsData() {
+    const { basePath, ...system } = cfg.system
+    return {
+        system,
+        audio: cfg.audio,
+        desktop: cfg.desktop,
+        apps: cfg.apps,
+    }
+}
+
 export default cfg

@@ -11,14 +11,6 @@
     --color-field-border: #969696;
     --color-button-hover: #F5F5F5;
 
-    --color-accent: #00A2E8;
-    --color-accent-light: #71D5FF;
-    --color-accent-dark: #0F7B9B;
-    --color-accent-press: #188CAF;
-    --color-chrome-blur: #75AACA;
-    --color-chrome-blur-light: #94C4E2;
-    --color-chrome-blur-dark: #6797B5;
-    --color-window-outline: #4F6169;
     --color-title: #FFFFFF;
 
     --color-close: #FF5189;
@@ -29,21 +21,12 @@
     --color-winbtn-idle-light: #F7E38A00;
     --color-winbtn-idle-dark: #E0AB1800;
 
-    --color-toolbar: #C3CBDD;
-    --color-toolbar-text: #5A6C7E;
-    --color-toolbar-hover: #CFD5E4;
-    --color-toolbar-active: #7B8C9C;
-    --color-toolbar-edge-light: #CBD1E0;
-    --color-toolbar-edge-dark: #9AA2B4;
-    --color-toolbar-flat: #AEB7CC;
-    --color-toolbar-field-border: #8F96AB;
     --color-toolbar-placeholder: #A7A7A7;
 
     --color-menu-frame: #A1A1A1;
     --color-menu-section: #EEEEEE;
     --color-menu-text: #2C2C2C;
     --color-menu-shortcut: #8A8A8A;
-    --color-menu-hover: #9ECBDF;
     --color-menu-disabled: #DBDBDB;
     --color-menu-disabled-hover: #CCCCCC;
     --color-shadow-soft: #00000066;
@@ -58,21 +41,14 @@
     --color-expand-open: #989898;
 
     --color-desktop: #444444;
-    --color-select-fill: #057DA866;
-    --color-select-border: #47646EE6;
     --color-icon-idle: #009BFF00;
-    --color-icon-active: #0077C7B3;
     --color-icon-active-blur: #68686870;
     --color-icon-border: #FFFFFF1A;
     --color-icon-hover: #FFFFFF26;
     --color-icon-highlight: #FFFFFF4D;
-    --color-ship: #0077C7CC;
-    --color-ship-badge: #0245C2;
     --color-ship-badge-border: #242424;
 
     --color-explorer-idle-border: #FFFFFF00;
-    --color-explorer-select: #6FA1E49F;
-    --color-explorer-select-ghost: #6FA2E438;
     --color-explorer-select-blur: #8A8A8A6C;
     --color-explorer-border: #00000014;
     --color-explorer-hover: #00000026;
