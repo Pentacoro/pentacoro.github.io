@@ -1,4 +1,4 @@
-import plexos from "/plexos/ini/system.js"
+import plexos from "/boot/plexos.js"
 import {getTask, runLauncher} from "/plexos/lib/functions/dll.js"
 import ContextMenu from "/plexos/lib/classes/interface/contextmenu.js"
 

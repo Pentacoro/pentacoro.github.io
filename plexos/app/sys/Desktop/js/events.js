@@ -1,4 +1,4 @@
-import plexos from "/plexos/ini/system.js"
+import plexos from "/boot/plexos.js"
 import {runLauncher, iframeAntiHover, areRectanglesOverlap} from "/plexos/lib/functions/dll.js"
 import Task from "/plexos/lib/classes/system/task.js"
 import File from "/plexos/lib/classes/filesystem/file.js"

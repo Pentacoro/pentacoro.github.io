@@ -1,12 +1,11 @@
-import plexos from "/plexos/ini/system.js"
+import plexos from "/boot/plexos.js"
 import Task from "/plexos/lib/classes/system/task.js"
-import {displayComponent} from "/plexos/lib/functions/dll.js"
-import {loadThemeConstructors, applyThemeFavicon, applyColorScheme} from "/plexos/lib/functions/theme.js"
+import {applyThemeFace} from "/plexos/lib/functions/theme.js"
 
 export default {
     app: `Theme Manager`,
     run: async function({taskid,appid,args,path,root}){
-        let html = root + "/themeManager.html"
+        plexos.Theme = { ...(plexos.Theme || {}), face: args?.face || plexos.Theme?.face || "landing" }
 
         let task = new Task(
             {
@@ -19,13 +18,6 @@ export default {
         )
         if (!task.id) return
 
-        await loadThemeConstructors()
-        applyThemeFavicon()
-        await displayComponent({
-            url:html,
-            taskid:task.id,
-            container:task.node,
-        })
-        applyColorScheme()
+        await applyThemeFace(plexos.Theme.face)
     }
 }

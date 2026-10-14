@@ -1,4 +1,4 @@
-import plexos from "/plexos/ini/system.js"
+import plexos from "/boot/plexos.js"
 import {getTask} from "/plexos/lib/functions/dll.js"
 import Task from "/plexos/lib/classes/system/task.js"
 import File from "/plexos/lib/classes/filesystem/file.js"
@@ -16,10 +16,14 @@ windowManager.cmd("event.on", {eventName: "desktop-open", callback: ()=>{
     windowManager.node.style.left = document.getElementById("desktopLayer").offsetLeft + "px"
 }})
 windowManager.cmd("event.on", {eventName: "viewport-resize", callback: ()=>{
-    windowManager.node.style.width  = document.getElementById("desktopLayer").offsetWidth + "px"
-    windowManager.node.style.height = document.getElementById("desktopLayer").offsetHeight + "px"
-    windowManager.node.style.top  = document.getElementById("desktopLayer").offsetTop + "px"
-    windowManager.node.style.left = document.getElementById("desktopLayer").offsetLeft + "px"
+    const desktop = document.getElementById("desktopLayer")
+    // Landing hides the desktop, and a hidden layer reports 0×0. Copying that
+    // collapses #windowLayer on the first resize.
+    if (!desktop || getComputedStyle(desktop).display === "none") return
+    windowManager.node.style.width  = desktop.offsetWidth + "px"
+    windowManager.node.style.height = desktop.offsetHeight + "px"
+    windowManager.node.style.top  = desktop.offsetTop + "px"
+    windowManager.node.style.left = desktop.offsetLeft + "px"
 }})
 windowManager.cmd("event.on", {eventName: "window-stylized", callback: (window) => {
     if (window && window.appParams.sizeDrawMethod !== "fit-content") {

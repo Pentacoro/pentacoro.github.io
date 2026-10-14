@@ -1,4 +1,4 @@
-import plexos from "../../../ini/system.js"
+import plexos from "../../../../boot/plexos.js"
 import File from "../filesystem/file.js"
 import Task from "./task.js"
 

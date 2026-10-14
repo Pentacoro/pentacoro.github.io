@@ -1,4 +1,4 @@
-import plexos from "/plexos/ini/system.js"
+import plexos from "/boot/plexos.js"
 import {getTask} from "/plexos/lib/functions/dll.js"
 
 let task = getTask(/TASKID/)

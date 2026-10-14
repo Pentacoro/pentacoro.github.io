@@ -1,4 +1,4 @@
-import plexos from "../../ini/system.js"
+import plexos from "../../../boot/plexos.js"
 import Task from "../classes/system/task.js"
 import { themeRoot } from "./theme.js"
 
@@ -234,7 +234,7 @@ export async function loadFront({url, taskid, data, container, focus = null, com
 }
 export async function blobModule(data) {
     data = data.replace(/import\s+([^'"]+)\s+from\s+['"]([^'"]+)['"]/g, (match, what, path) => {
-        const absolutePath = new URL(path, plexos.Settings.system.basePath).href
+        const absolutePath = new URL(path, plexos.Boot.basePath).href
         return `import ${what} from '${absolutePath}'`
     })
     return URL.createObjectURL(new Blob([`${data}`], { type: 'text/javascript' }))

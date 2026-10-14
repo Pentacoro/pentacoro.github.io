@@ -1,4 +1,4 @@
-import plexos from "/plexos/ini/system.js"
+import plexos from "/boot/plexos.js"
 import Task from "/plexos/lib/classes/system/task.js"
 import Window from "/plexos/lib/classes/interface/window.js"
 import {displayComponent} from "/plexos/lib/functions/dll.js"

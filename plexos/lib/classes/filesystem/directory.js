@@ -1,5 +1,5 @@
 import File from "./file.js"
-import plexos from "../../../ini/system.js"
+import plexos from "../../../../boot/plexos.js"
 import Configuration from "./configuration.js"
 
 import Icon from "../interface/icon.js"

@@ -1,5 +1,5 @@
-import plexos from "/plexos/ini/system.js"
-import {runLauncher} from "../../functions/dll.js"
+import plexos from "/boot/plexos.js"
+import {runLauncher, clearSelection} from "../../functions/dll.js"
 import { themeConstruct, themeRoot } from "/plexos/lib/functions/theme.js"
 import Task from "../system/task.js" //file explorer deletion
 import File from "../filesystem/file.js"
@@ -58,7 +58,13 @@ export default class ContextMenu {
         ContextMenu.levels   = []
     }
     static applyTemplates = function (e, target, menu=null) {
-        let menuTemplates = eval(File.at(ContextMenu.configAddr + "/templates.js").data)
+        // No core yet: the template file lives in the mounted filesystem.
+        let templatesFile = null
+        try {
+            templatesFile = File.at(ContextMenu.configAddr + "/templates.js")
+        } catch { /* Core.file is not mounted */ }
+        if (!templatesFile?.data) return menu || []
+        let menuTemplates = eval(templatesFile.data)
         //find matching template class
         for (let template of menuTemplates) {
             if (target.constructor.name === template.class) {
@@ -155,3 +161,10 @@ export default class ContextMenu {
         }
     }
 }
+
+// A click that is not the menu closes it and drops any text selection.
+window.addEventListener("mousedown", (e) => {
+	if (ContextMenu.contains(e.target) || e.target.contextMenu) return
+	ContextMenu.close()
+	clearSelection()
+})

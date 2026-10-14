@@ -1,4 +1,4 @@
-import plexos from "../../../ini/system.js"
+import plexos from "../../../../boot/plexos.js"
 import typeClass from "./filetypes.js"
 import Configuration from "./configuration.js"
 import {renameKey, runLauncher, calculateStringSize} from  "../../functions/dll.js"

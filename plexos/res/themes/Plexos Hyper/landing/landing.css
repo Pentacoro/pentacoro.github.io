@@ -1,0 +1,528 @@
+@import url("../styles/chrome/contextMenu.css");
+
+/*LANDING STAGE------------------------------*/
+:root {
+	--color-accent: #7660A9;
+	--color-accent-light: #B4A6D3;
+	--color-accent-dark: #524474;
+	--landing-field: #1c1730;
+	--landing-tile: min(168px, 36vh, 28vw);
+	--landing-gap: 36px;
+	--color-menu-frame: #A1A1A1;
+	--color-menu-section: #EEEEEE;
+	--color-menu-text: #2C2C2C;
+	--color-menu-shortcut: #8A8A8A;
+	--color-menu-disabled: #DBDBDB;
+	--color-menu-disabled-hover: #CCCCCC;
+	--color-menu-hover: #B3AECB;
+	--color-shadow-soft: #00000066;
+}
+
+body.booting {
+	background:
+		radial-gradient(ellipse at 50% 18%, #3a305f 0%, transparent 52%),
+		var(--landing-field);
+	color: white;
+	font-family: "Segoe UI", system-ui, sans-serif;
+}
+
+body.booting #windowLayer {
+	/* Inline sizes from the window manager lose to this while the desktop is hidden. */
+	position: fixed !important;
+	inset: 0 !important;
+	top: 0 !important;
+	left: 0 !important;
+	width: 100% !important;
+	height: 100% !important;
+	pointer-events: none;
+	z-index: 2;
+}
+
+body.booting .landing-window {
+	left: 0 !important;
+	top: 0 !important;
+	width: 100% !important;
+	height: 100% !important;
+	border-radius: 0;
+	box-shadow: none;
+	background: transparent;
+	pointer-events: all;
+}
+
+body.booting .landing-window .header,
+body.booting .landing-window .windowBorder,
+body.booting .landing-window .headerButtons,
+body.booting .landing-window .windowModalShield {
+	display: none;
+}
+
+body.booting .landing-window .windowInner,
+body.booting .landing-window .content {
+	width: 100%;
+	height: 100%;
+	display: block;
+	background: transparent;
+	outline: none;
+	overflow: hidden;
+	padding: 0;
+}
+
+.landing-stage {
+	position: relative;
+	width: 100%;
+	height: 100%;
+	color: white;
+}
+
+.landing-users {
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	display: flex;
+	align-items: flex-start;
+	justify-content: center;
+	gap: 28px;
+	/* Anchor on the square. The name underneath just takes space and must not shift it. */
+	padding: 4px 4px 0;
+	transform: translate(-50%, calc(var(--landing-tile) / -2 - 4px));
+	max-width: calc(100% - 48px);
+	overflow-x: auto;
+	z-index: 1;
+}
+
+/* The scroll clips anything outside the row. Leave it open while the square is traveling. */
+.landing-users.sliding,
+.landing-stage.picked .landing-users {
+	overflow: visible;
+}
+
+/* Right edge of the square stops just left of the midline. */
+.landing-stage.picked .landing-users {
+	left: 50%;
+	transform: translate(calc(-100% - var(--landing-gap) + 4px), calc(var(--landing-tile) / -2 - 4px));
+	max-width: none;
+}
+
+.landing-tile {
+	width: var(--landing-tile);
+	flex: 0 0 var(--landing-tile);
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 12px;
+	padding: 0;
+	border: 0;
+	background: none;
+	color: white;
+	cursor: pointer;
+	font: inherit;
+	transition: opacity 0.4s ease;
+}
+
+.landing-tile.gone {
+	opacity: 0;
+	pointer-events: none;
+}
+
+/* Pinned on the stage, out of the row, so the chosen square can take the midline. */
+.landing-tile.parked {
+	position: absolute;
+	z-index: 0;
+}
+
+.landing-avatar {
+	width: var(--landing-tile);
+	height: var(--landing-tile);
+	object-fit: cover;
+	background: var(--color-accent);
+	color: white;
+	display: grid;
+	place-items: center;
+	font-size: 64px;
+	font-weight: 600;
+}
+
+.landing-plus {
+	position: relative;
+	font-size: 0;
+}
+
+.landing-plus::before,
+.landing-plus::after {
+	content: "";
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	background: white;
+	transform: translate(-50%, -50%);
+}
+
+.landing-plus::before {
+	width: 48px;
+	height: 3px;
+}
+
+.landing-plus::after {
+	width: 3px;
+	height: 48px;
+}
+
+.landing-tile:hover .landing-avatar,
+.landing-tile:focus-visible .landing-avatar {
+	box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.92);
+}
+
+/*LANDING CONTEXT MENU-----------------------*/
+body.booting .clickContext {
+	min-width: 148px;
+	padding: 4px 0;
+	background: #241c3d;
+	border: 1px solid rgba(255, 255, 255, 0.16);
+	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+	gap: 0;
+	filter: none;
+}
+
+body.booting .contextSection {
+	background: transparent;
+}
+
+body.booting .contextSection > div {
+	grid-template-columns: minmax(0, 1fr);
+	padding: 7px 14px;
+	column-gap: 0;
+}
+
+body.booting .contextSection > div > div {
+	display: none;
+}
+
+body.booting .contextSection > div > span {
+	font-family: "Segoe UI", system-ui, sans-serif;
+	color: white;
+	font-size: 15px;
+	padding-left: 0;
+	cursor: pointer;
+}
+
+body.booting .contextSection > div:hover,
+body.booting .contextSection > div.hover {
+	background: rgba(255, 255, 255, 0.16);
+}
+
+.landing-file {
+	display: none;
+}
+
+.landing-popup {
+	position: absolute;
+	inset: 0;
+	z-index: 6;
+	display: grid;
+	place-items: center;
+	background: rgba(12, 8, 24, 0.55);
+}
+
+.landing-popup-card {
+	width: min(320px, calc(100% - 48px));
+	padding: 18px;
+	background: #241c3d;
+	border: 1px solid rgba(255, 255, 255, 0.16);
+}
+
+.landing-name {
+	font-size: 16px;
+	line-height: 1.25;
+	text-align: center;
+	max-width: var(--landing-tile);
+}
+
+.landing-logon {
+	position: absolute;
+	left: calc(50% + var(--landing-gap));
+	top: calc(50% - (var(--landing-tile) / 2));
+	width: min(380px, calc(50% - (var(--landing-gap) * 2)));
+	max-height: calc(100% - 48px);
+	overflow: auto;
+	opacity: 0;
+	pointer-events: none;
+	z-index: 1;
+	transition: opacity 0.45s ease;
+}
+
+.landing-stage.picked .landing-logon.open {
+	opacity: 1;
+	pointer-events: all;
+	transition-delay: 0.15s;
+}
+
+.landing-stage.picked .landing-logon.together.open {
+	transition-delay: 0s;
+}
+
+/* A long core list grows until two thirds of the view, then the rows scroll. */
+.landing-logon.cores {
+	display: flex;
+	flex-direction: column;
+	max-height: 66.666vh;
+	overflow: hidden;
+}
+
+.landing-tabs {
+	display: flex;
+	gap: 18px;
+	margin-bottom: 12px;
+}
+
+.landing-tab,
+.landing-core,
+.landing-config,
+.landing-button {
+	font: inherit;
+	cursor: pointer;
+}
+
+.landing-tab {
+	padding: 0 0 4px;
+	border: 0;
+	border-bottom: 2px solid transparent;
+	background: none;
+	color: rgba(255, 255, 255, 0.62);
+}
+
+.landing-tab.on {
+	color: white;
+	border-bottom-color: white;
+}
+
+.landing-list {
+	display: flex;
+	flex-direction: column;
+	overflow: auto;
+}
+
+.landing-logon.cores .landing-list {
+	flex: 1 1 auto;
+	min-height: 0;
+}
+
+/* The placeholder is the list's only row. A shrinkable scroller would clip it to nothing. */
+.landing-logon.cores .landing-list:not(:has(.landing-core)) {
+	flex: 0 0 auto;
+	min-height: auto;
+	overflow: visible;
+}
+
+.landing-logon.cores .landing-tabs,
+.landing-logon.cores .landing-note,
+.landing-logon.cores .landing-core.add {
+	flex: none;
+}
+
+.landing-core {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	width: 100%;
+	text-align: left;
+	padding: 7px 10px;
+	border: 0;
+	background: transparent;
+	color: white;
+	font-size: 16px;
+}
+
+.landing-core:hover,
+.landing-core:focus-visible {
+	background: rgba(255, 255, 255, 0.16);
+}
+
+.landing-core.add {
+	width: auto;
+	margin-top: 10px;
+	padding-left: 10px;
+	color: rgba(255, 255, 255, 0.82);
+}
+
+.landing-core small,
+.landing-note,
+.landing-lead {
+	color: rgba(255, 255, 255, 0.66);
+	font-size: 13px;
+}
+
+.landing-note,
+.landing-lead {
+	margin: 0 0 12px;
+}
+
+.landing-menu {
+	display: flex;
+	flex-direction: column;
+	margin-top: 4px;
+}
+
+.landing-menu[hidden] {
+	display: none;
+}
+
+.landing-config {
+	position: absolute;
+	left: 28px;
+	bottom: 22px;
+	z-index: 3;
+	padding: 8px 2px;
+	border: 0;
+	background: transparent;
+	color: white;
+	font-size: 15px;
+}
+
+.landing-config:hover,
+.landing-config:focus-visible {
+	text-decoration: underline;
+}
+
+.landing-form {
+	position: absolute;
+	left: 28px;
+	bottom: 64px;
+	z-index: 4;
+	width: 260px;
+	padding: 16px;
+	background: rgba(16, 12, 32, 0.88);
+	border: 1px solid rgba(255, 255, 255, 0.16);
+	color: white;
+}
+
+.landing-form[hidden] {
+	display: none;
+}
+
+.landing-stage.empty .landing-form {
+	left: 50%;
+	top: 50%;
+	bottom: auto;
+	transform: translate(-50%, -50%);
+}
+
+.landing-field {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	margin-bottom: 12px;
+	font-size: 13px;
+	color: rgba(255, 255, 255, 0.8);
+}
+
+.landing-field-head {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 16px;
+}
+
+.landing-field input[type="text"],
+.landing-field input[type="file"] {
+	font: inherit;
+	color: white;
+}
+
+.landing-field input[type="text"] {
+	padding: 8px 10px;
+	border: 1px solid rgba(255, 255, 255, 0.22);
+	background: rgba(255, 255, 255, 0.08);
+	outline: none;
+}
+
+.landing-field input[type="text"]:focus,
+.landing-field input[type="text"]:focus-visible {
+	outline: none;
+	box-shadow: none;
+	border-color: rgba(255, 255, 255, 0.22);
+}
+
+.landing-field select {
+	padding: 8px 10px;
+	border: 1px solid rgba(255, 255, 255, 0.22);
+	background: rgba(255, 255, 255, 0.08);
+	color: white;
+	font: inherit;
+	outline: none;
+	color-scheme: dark;
+}
+
+.landing-field select:focus,
+.landing-field select:focus-visible {
+	outline: none;
+	box-shadow: none;
+}
+
+.landing-edit-nav {
+	display: flex;
+	justify-content: space-between;
+	margin-top: 2px;
+}
+
+.landing-link {
+	border: 0;
+	padding: 0;
+	background: none;
+	color: white;
+	font: inherit;
+	font-size: 15px;
+	cursor: pointer;
+}
+
+.landing-link:hover,
+.landing-link:focus-visible {
+	text-decoration: underline;
+	outline: none;
+}
+
+.landing-portrait {
+	width: 72px;
+	height: 72px;
+	margin-bottom: 12px;
+	object-fit: cover;
+	display: grid;
+	place-items: center;
+	background: var(--color-accent);
+	color: white;
+	font-size: 28px;
+}
+
+.landing-actions {
+	display: flex;
+	gap: 8px;
+}
+
+.landing-button {
+	border: 0;
+	padding: 7px 12px;
+	background: var(--color-accent);
+	color: white;
+}
+
+.landing-button.quiet {
+	background: transparent;
+	color: white;
+	border: 1px solid rgba(255, 255, 255, 0.35);
+}
+
+.landing-button:disabled {
+	opacity: 0.55;
+	cursor: default;
+}
+
+.landing-error {
+	margin: 0 0 8px;
+	color: #ffb7c3;
+	font-size: 12px;
+}
+
+.landing-field-head .landing-error {
+	flex: 1;
+	margin: 0;
+	text-align: right;
+}

@@ -1,4 +1,4 @@
-import plexos from "/plexos/ini/system.js"
+import plexos from "/boot/plexos.js"
 import {getTask, iframeAntiHover, selectText, clearSelection, nullifyOnEvents} from "/plexos/lib/functions/dll.js"
 import { themeConstruct } from "/plexos/lib/functions/theme.js"
 import File from "/plexos/lib/classes/filesystem/file.js"

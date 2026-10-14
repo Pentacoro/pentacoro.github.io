@@ -1,4 +1,4 @@
-import plexos from "../../../ini/system.js"
+import plexos from "../../../../boot/plexos.js"
 import {displayComponent, genRanHex} from "/plexos/lib/functions/dll.js"
 import File from "../filesystem/file.js"
 import Task from "../system/task.js"

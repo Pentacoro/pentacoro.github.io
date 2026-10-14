@@ -14,6 +14,15 @@ body {
 	z-index: -999;
 }
 
+body.booting {
+	background: #1c1730;
+}
+
+body.booting #desktopLayer,
+body.booting #overlayLayer {
+	display: none;
+}
+
 #overlayLayer {
 	z-index: 100;
 }
