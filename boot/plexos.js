@@ -144,19 +144,21 @@ plexos.db.saveCore = async (core) => {
     // Remote cores stay read-only: nothing is written back to IndexedDB.
     if (plexos.Core?.mem?.readOnly) return
     if (!plexos.System?.user) return
-    // Same-named IDB core: apply the changelog plan instead of pushing a duplicate snapshot.
+    // Capture before the import await, so a change that lands mid-save stays for the next flush.
+    const pending = plexos.Core.changeLog.pending()
+    if (!pending.length) return
+    const name = core.name || "core"
     const File = (await import("../plexos/lib/classes/filesystem/file.js")).default
     const user = plexos.System.user
-    const snapshot = File.serializeNode(core)
-    snapshot.name = core.name || "core"
-    const pending = plexos.Core.changeLog.pending()
-    const existing = user.localCores.filter(local => local.name === snapshot.name)
+    const existing = user.localCores.filter(local => local.name === name)
     if (existing.length === 1) {
-        const plan = plexos.Core.changeLog.getCommitPlan()
+        const plan = plexos.Core.changeLog.getCommitPlan(pending)
         if (plan.length > 0) plexos.db.applyCorePlan(existing[0], plan, File)
     } else {
+        const snapshot = File.serializeNode(core)
+        snapshot.name = name
         user.localCores.push(snapshot)
-        plexos.System.user.config.lastOpenedCore = snapshot.name
+        plexos.System.user.config.lastOpenedCore = name
     }
     plexos.Core.changeLog.markCommitted(pending)
     await plexos.db.saveUser(user)

@@ -1,4 +1,5 @@
 import plexos from "/boot/plexos.js"
+import { coreReadOnly } from "/plexos/lib/functions/readOnly.js"
 import {runLauncher, iframeAntiHover, areRectanglesOverlap} from "/plexos/lib/functions/dll.js"
 import Task from "/plexos/lib/classes/system/task.js"
 import File from "/plexos/lib/classes/filesystem/file.js"
@@ -10,6 +11,7 @@ let desktop = task
 let mem     = task.mem
 
 desktop.onpaste = async function (e) {
+	if (coreReadOnly()) return
 	try {
 		const urlRegex = /[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,10}\b(\/[-a-zA-Z0-9@:%_\+.~#?&//=]*)?/gi
         const paste = await navigator.clipboard.readText()
@@ -29,6 +31,7 @@ desktop.onpaste = async function (e) {
 
 //undo | ctrl + z
 window.addEventListener("keydown", async e => {
+	if (coreReadOnly()) return
 	if (e.key === "z" && e.ctrlKey) {  
 		e.preventDefault()
 

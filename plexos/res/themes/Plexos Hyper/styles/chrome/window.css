@@ -28,8 +28,13 @@
 	z-index: 100;
 	cursor: default;
 }
+.window.modal-locked>.windowInner,
+.window.modal-locked>.windowBorder {
+	pointer-events: none;
+}
 .window.modal-locked>.windowModalShield {
 	display: block;
+	inset: -8px;
 }
 
 .windowInner {

@@ -1,4 +1,5 @@
 import {getTask, selectText, runLauncher} from "/plexos/lib/functions/dll.js"
+import { coreReadOnly } from "/plexos/lib/functions/readOnly.js"
 import {fileDialog} from "/plexos/lib/functions/dialogs.js"
 import {themeRoot} from "/plexos/lib/functions/theme.js"
 import File from "/plexos/lib/classes/filesystem/file.js"
@@ -197,6 +198,7 @@ mem.textArea.addEventListener("input", () => {
 task.window.node.addEventListener("keydown", (e) => {
     if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "s") {
         e.preventDefault()
+        if (coreReadOnly()) return
         mem.save()
     }
 })

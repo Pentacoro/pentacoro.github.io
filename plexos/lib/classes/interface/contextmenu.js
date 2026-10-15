@@ -1,5 +1,6 @@
 import plexos from "/boot/plexos.js"
 import {runLauncher, clearSelection} from "../../functions/dll.js"
+import { coreReadOnly, menuItemWrites } from "../../functions/readOnly.js"
 import { themeConstruct, themeRoot } from "/plexos/lib/functions/theme.js"
 import Task from "../system/task.js" //file explorer deletion
 import File from "../filesystem/file.js"
@@ -106,15 +107,15 @@ export default class ContextMenu {
                 newSection.appendChild(newButton)
 
                 newButton.onclick = e => e.preventDefault()
-                if (typeof item.func === "function") {
-                    if (item.bool == undefined || item.bool) {
-                        newButton.onclick = e => {
-                            e.preventDefault()
-                            item.func()
-                            ContextMenu.close()
-                        }
-                    } else {
-                        newButton.classList.add("disabled")
+                const enabled = !(coreReadOnly() && menuItemWrites(item)) && (item.bool == undefined || item.bool)
+                if (!enabled) {
+                    newButton.classList.add("disabled")
+                    newButton.onmouseover = e => closeSubmenus(depth)
+                } else if (typeof item.func === "function") {
+                    newButton.onclick = e => {
+                        e.preventDefault()
+                        item.func()
+                        ContextMenu.close()
                     }
                     newButton.onmouseover = e => closeSubmenus(depth)
                 } else if (Array.isArray(item.func)) {

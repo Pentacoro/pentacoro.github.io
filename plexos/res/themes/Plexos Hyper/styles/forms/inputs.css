@@ -180,3 +180,20 @@
 .config-footer>.start{
     margin-right: auto;
 }
+html.core-readonly input:disabled,
+html.core-readonly textarea:disabled,
+html.core-readonly select:disabled {
+    opacity: 0.55;
+    cursor: default;
+}
+html.core-readonly .tree button:not(.toggle),
+html.core-readonly .icon-custom button,
+html.core-readonly .icon-custom input,
+html.core-readonly .icon-custom select,
+html.core-readonly .icon-stage {
+    pointer-events: none;
+}
+html.core-readonly .tree button:not(.toggle),
+html.core-readonly .icon-custom button {
+    opacity: 0.45;
+}

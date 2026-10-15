@@ -26,3 +26,10 @@ body.booting #overlayLayer {
 #overlayLayer {
 	z-index: 100;
 }
+
+#dragLayer {
+	position: fixed;
+	inset: 0;
+	z-index: 80;
+	pointer-events: none;
+}

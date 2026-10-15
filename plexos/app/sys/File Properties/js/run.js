@@ -8,6 +8,7 @@ let sheet = mem.ui.sheet
 sheet.select("general")
 
 mem.prepGeneral()
+mem.bindIconEditor()
 switch (mem.arg.cfg.class){
     case ("MetaFile") :
         sheet.showTab("metadata")

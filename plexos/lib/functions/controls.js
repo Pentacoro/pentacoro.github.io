@@ -1,4 +1,5 @@
 import { themeConstruct } from "./theme.js"
+import { coreReadOnly } from "./readOnly.js"
 
 const behaviours = {
     disclosure(control) {
@@ -107,6 +108,14 @@ export function bindAuto(keyNodes, { target, path, autoPath, onChange } = {}) {
 
 export function wireSheet(sheet, task, { change, apply } = {}) {
     const { accept, cancel, apply: applyButton } = sheet.keyNodes.buttons
+    if (coreReadOnly()) {
+        setDisabled(accept, true)
+        setDisabled(applyButton, true)
+        accept.onclick = () => {}
+        cancel.onclick = () => task.end()
+        applyButton.onclick = () => {}
+        return function changed() { change?.() }
+    }
     accept.onclick = async () => {
         await apply?.()
         task.end()

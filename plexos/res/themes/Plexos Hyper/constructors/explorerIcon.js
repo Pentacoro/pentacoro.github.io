@@ -3,10 +3,26 @@ export default function constructExplorerIcon(icon, { taskId, list }) {
     node.setAttribute("class", "explorerIcon " + taskId)
     node.setAttribute("title", icon.name)
 
+    const frame = document.createElement("div")
+    frame.setAttribute("class", "iconFrame")
+    const square = document.createElement("div")
+    square.setAttribute("class", "iconSquare")
+    const art = document.createElement("div")
+    art.setAttribute("class", "iconArt")
     const image = document.createElement("img")
-    image.setAttribute("class", "explorerIconImage " + taskId)
+    image.setAttribute("class", "explorerIconImage iconImage " + taskId)
     image.setAttribute("src", icon.main().getImage())
-    node.appendChild(image)
+    const layers = document.createElement("div")
+    layers.setAttribute("class", "iconLayers")
+    const front = document.createElement("img")
+    front.setAttribute("class", "iconFront")
+    front.draggable = false
+    const stickers = document.createElement("div")
+    stickers.setAttribute("class", "iconStickers")
+    art.append(image, layers, front, stickers)
+    square.append(art)
+    frame.append(square)
+    node.append(frame)
 
     const text = document.createElement("span")
     text.setAttribute("class", "explorerIconText " + taskId)
@@ -15,6 +31,6 @@ export default function constructExplorerIcon(icon, { taskId, list }) {
 
     list.appendChild(node)
     icon.node = node
-    icon.keyNodes = { image, text }
+    icon.keyNodes = { frame, square, art, image, layers, front, stickers, text }
     return node
 }

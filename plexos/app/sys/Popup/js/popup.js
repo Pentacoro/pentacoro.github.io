@@ -12,7 +12,7 @@ const message = control("messageBox", {
     description: arg.description,
     inset: true,
 })
-const details = control("disclosure", { label: "Details" })
+const details = control("disclosure", { label: "More details" })
 popup.node.append(message.node, details.node)
 task.node.getElementById(task.id + "_root").appendChild(popup.node)
 
@@ -22,12 +22,18 @@ mem.error   = getTask(arg.taskid).mem.var.error
 
 mem.drawCode = async function () {
     let codeParser = mem.var.details.getElementsByClassName("codeParser")[0]
-    let sourcedScript = await ajaxReturn("GET",mem.error.fileName)
+    let code = mem.error.script
+    if (mem.error.fileName) {
+        try {
+            let sourcedScript = await ajaxReturn("GET", mem.error.fileName)
+            if (sourcedScript !== mem.error.script) code = sourcedScript
+        } catch (e) {}
+    }
     await task.newComponent({
         url:"/plexos/res/components/codeParser/code.html",
         task:this,
         container:codeParser,
-        args:{code:((sourcedScript===mem.error.script) ? mem.error.script : sourcedScript)},
+        args:{code},
     })
     let scrollBar = document.createElement("div")
     scrollBar.setAttribute("id", "scrollBar-codeParser")

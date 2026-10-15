@@ -1,9 +1,12 @@
 import plexos from "/boot/plexos.js"
 import {getTask, selectText, clearSelection, nullifyOnEvents} from "/plexos/lib/functions/dll.js"
 import { themeConstruct } from "/plexos/lib/functions/theme.js"
+import { fitIconSize } from "/plexos/lib/classes/interface/icon.js"
+import { coreReadOnly } from "/plexos/lib/functions/readOnly.js"
 import Task from "/plexos/lib/classes/system/task.js"
 import File from "/plexos/lib/classes/filesystem/file.js"
 import ContextMenu from "/plexos/lib/classes/interface/contextmenu.js"
+import { destinationAt, moveFiles } from "/plexos/app/sys/System/File Management/move.js"
 
 let System = plexos.System
 let task = getTask(/TASKID/)
@@ -33,6 +36,7 @@ mem.class.IconDir = class IconDir {
     
         this.statNode()
         this.clic()
+        this.paintIcon()
     }
     deleteNode(){
         this.node.parentNode.removeChild(this.node)
@@ -73,6 +77,15 @@ mem.class.IconDir = class IconDir {
             e = e || window.event
             e.preventDefault()
             let ship = null
+            let armed = false
+            const originX = e.clientX
+            const originY = e.clientY
+            const placeShip = (event) => {
+                const halfW = ship.node.offsetWidth / 2 || 43
+                const halfH = ship.node.offsetHeight / 2 || 43
+                ship.node.style.left = (event.clientX - halfW) + "px"
+                ship.node.style.top = (event.clientY - halfH) + "px"
+            }
             
             //when mousedown on selected icon
             if (_this.state === 1) {
@@ -110,6 +123,11 @@ mem.class.IconDir = class IconDir {
     
             function dragMouseMove(e, node) {
                 e.preventDefault()
+                if (coreReadOnly()) return
+                if (!armed) {
+                    if (Math.hypot(e.clientX - originX, e.clientY - originY) < 3) return
+                    armed = true
+                }
 
                 for (let icon of Task.id(_this.task).pocket){
                     icon.statNode(2)
@@ -120,11 +138,11 @@ mem.class.IconDir = class IconDir {
                         count: Task.id(_this.task).pocket.length,
                         image: _this.main().getImage(),
                         layer: document.getElementById("dragLayer"),
+                        x: e.clientX - 43,
+                        y: e.clientY - 43,
                     })
-                } else {
-                    ship.node.style.top  = e.clientY - ship.node.offsetHeight/2 + "px"
-                    ship.node.style.left = e.clientX - ship.node.offsetWidth/2  + "px"
                 }
+                placeShip(e)
                 System.mem.var.dragging = true
             }
     
@@ -135,6 +153,8 @@ mem.class.IconDir = class IconDir {
 
                 ship?.node.remove()
                 ship = null
+                const paths = Task.id(_this.task).pocket.map(icon => icon.file)
+                const dest = System.mem.var.dragging ? destinationAt(e.clientX, e.clientY, paths) : null
     
                 //unselect other folders on mouseup W/O drag UNLESS ctrl
                 if(e.ctrlKey == false && System.mem.var.dragging == false && e.button == 0) {
@@ -151,6 +171,7 @@ mem.class.IconDir = class IconDir {
                     }
                 }
                 System.mem.var.dragging = false
+                if (dest) moveFiles(paths, dest, { x: e.clientX, y: e.clientY })
             }
         }
     }
@@ -180,8 +201,28 @@ mem.class.IconDir = class IconDir {
         this.name = this.main().name
         this.exte = this.main().exte
 
-        this.keyNodes.image.setAttribute("src", this.main().getImage())
+        this.paintIcon()
         this.keyNodes.text.textContent = this.name
+    }
+    paintIcon() {
+        const frame = this.keyNodes?.frame
+        const square = this.keyNodes?.square
+        const record = this.main?.()
+        if (!frame || !square || !record?.paint) return
+        const apply = () => {
+            const style = getComputedStyle(frame)
+            const padX = parseFloat(style.paddingLeft) + parseFloat(style.paddingRight)
+            const padY = parseFloat(style.paddingTop) + parseFloat(style.paddingBottom)
+            const room = Math.min(frame.clientWidth - padX, frame.clientHeight - padY)
+            if (room <= 0) return false
+            const side = fitIconSize(room)
+            square.style.width = side + "px"
+            square.style.height = side + "px"
+            record.paint(this.keyNodes, side)
+            return true
+        }
+        if (apply()) return
+        requestAnimationFrame(() => { apply() })
     }
     highlight(coin) {
         if (coin) {
@@ -200,6 +241,7 @@ mem.class.IconDir = class IconDir {
         this.render()
     }
     editName(e){
+        if (coreReadOnly()) return
         let iconText = this.keyNodes.text
         let editFile = File.at(this.file)
         let editFrom = editFile.parent()

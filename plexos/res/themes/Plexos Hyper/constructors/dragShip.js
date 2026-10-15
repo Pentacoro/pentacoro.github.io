@@ -1,4 +1,4 @@
-export default function constructDragShip({ count, image, layer }) {
+export default function constructDragShip({ count, image, layer, x, y }) {
     const node = document.createElement("div")
     node.setAttribute("class", "iconShip")
 
@@ -20,6 +20,8 @@ export default function constructDragShip({ count, image, layer }) {
 
     node.appendChild(countBox)
     node.appendChild(imageBox)
+    if (x != null) node.style.left = x + "px"
+    if (y != null) node.style.top = y + "px"
     layer.appendChild(node)
 
     return { node, keyNodes: { image: imageBox, count: countText } }

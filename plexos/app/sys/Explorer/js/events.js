@@ -1,4 +1,5 @@
 import plexos from "/boot/plexos.js"
+import { coreReadOnly } from "/plexos/lib/functions/readOnly.js"
 import {getTask, runLauncher} from "/plexos/lib/functions/dll.js"
 import ContextMenu from "/plexos/lib/classes/interface/contextmenu.js"
 
@@ -8,6 +9,7 @@ let nav  = mem.ui.nav.keyNodes
 let list = mem.ui.view.keyNodes.list
 
 document.addEventListener("keydown", async (e) => {
+    if (coreReadOnly()) return
     if (plexos.System.mem.focused !== task) return
     if (!e.ctrlKey) return
     if (e.target?.isContentEditable) return
@@ -22,6 +24,7 @@ document.addEventListener("keydown", async (e) => {
 })
 
 task.onpaste = async function (e) {
+	if (coreReadOnly()) return
 	try {
 		const urlRegex = /[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,10}\b(\/[-a-zA-Z0-9@:%_\+.~#?&//=]*)?/gi
         const paste = await navigator.clipboard.readText()

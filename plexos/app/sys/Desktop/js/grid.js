@@ -1,5 +1,6 @@
 import Task from "/plexos/lib/classes/system/task.js"
 import File from "/plexos/lib/classes/filesystem/file.js"
+import { coreReadOnly } from "/plexos/lib/functions/readOnly.js"
 
 let task    = Task.id(/TASKID/)
 let desktop = task
@@ -467,7 +468,12 @@ mem.grid.evaluateIconGrid = function (
     desktop.mem.grid.checkGridGap()
 
     //save changes in config source file
-    if (!gridSettings) File.at(cfg.path+"/grid.json").write(JSON.stringify(eval(cfg.grid), null, "\t"))
+    if (!gridSettings && !coreReadOnly()) {
+        task.cmd("file.write", {
+            path: cfg.path + "/grid.json",
+            data: JSON.stringify(cfg.grid, null, "\t"),
+        })
+    }
 }
 desktop.mem.grid.gridAvailable = function(x, y){
     if(desktop.mem.grid.gridExists(x, y)){

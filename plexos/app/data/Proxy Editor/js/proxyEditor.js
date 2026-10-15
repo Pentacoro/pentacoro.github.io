@@ -1,4 +1,5 @@
 import {getTask} from "/plexos/lib/functions/dll.js"
+import { coreReadOnly } from "/plexos/lib/functions/readOnly.js"
 
 let task = getTask(/TASKID/)
 let mem  = task.mem
@@ -29,6 +30,7 @@ mem.setCollapsed = function (all) {
 task.window.node.addEventListener("keydown", (e) => {
     if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "s") {
         e.preventDefault()
+        if (coreReadOnly()) return
         mem.saveDraft()
     }
 })

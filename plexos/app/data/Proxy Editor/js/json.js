@@ -1,4 +1,5 @@
 import {getTask} from "/plexos/lib/functions/dll.js"
+import { coreReadOnly } from "/plexos/lib/functions/readOnly.js"
 
 let task = getTask(/TASKID/)
 let mem  = task.mem
@@ -54,6 +55,8 @@ mem.initJsonEditor = function () {
             fontSize: "12px",
             theme: "vs-dark",
             automaticLayout: true,
+            readOnly: coreReadOnly(),
+            domReadOnly: coreReadOnly(),
             minimap: { enabled: false },
             tabSize: 4,
             indentSize: 4,

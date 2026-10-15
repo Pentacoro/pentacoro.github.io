@@ -172,27 +172,27 @@ export default class File {
         
         switch (Type) {
             case "DirectoryFile":
-                defaults.iconImag = `${themeRoot()}/icons/files/defaultDIR.svg`
+                defaults.iconImag = `${themeRoot()}/icons/files/images/folder.svg`
                 defaults.confType = "DirectoryFile"
                 defaults.skeyName = "dir"
                 break
             case "MetaFile": 
-                defaults.iconImag = `${themeRoot()}/icons/files/defaultMSF.svg`
+                defaults.iconImag = `${themeRoot()}/icons/files/images/meta.svg`
                 defaults.confType = "MetaFile"
                 defaults.skeyName = "meta"
                 break
             case "StringFile":
-                defaults.iconImag = `${themeRoot()}/icons/files/defaultTXT.svg`
+                defaults.iconImag = `${themeRoot()}/icons/files/images/text.svg`
                 defaults.confType = "StringFile"
                 defaults.skeyName = "data"
                 break
             case "ProxyFile":
-                defaults.iconImag = `${themeRoot()}/icons/files/proxy.svg`
+                defaults.iconImag = `${themeRoot()}/icons/files/images/proxy.svg`
                 defaults.confType = "ProxyFile"
                 defaults.skeyName = "data"
                 break
             case "TrashCan":
-                defaults.iconImag = `${themeRoot()}/icons/files/trash.svg`
+                defaults.iconImag = `${themeRoot()}/icons/files/images/trash.svg`
                 defaults.confType = "TrashCan"
                 defaults.skeyName = "dir"
                 break
@@ -333,6 +333,14 @@ export default class File {
         const newAddress = dest.cfg.path + "/" + file.name
         if (dest.dir[file.name] && dest !== parent) {
             file.name = File.returnAvailableName(file.name, file.cfg.icon, dest)
+            const extension = file.cfg.class === "DirectoryFile"
+                ? "dir"
+                : ((file.name.match(/\.(?:.(?<!\.))+$/s) || [""])[0] || "")
+            file.cfg.exte = extension
+            if (file.cfg.icon) {
+                file.cfg.icon.name = file.name
+                file.cfg.icon.exte = extension
+            }
         }
         const finalAddress = dest.cfg.path + "/" + file.name
         delete parent.dir[File.basename(oldAddress)]
@@ -370,6 +378,16 @@ export default class File {
         if (cfg && typeof cfg === "object") {
             if ("hidden" in cfg) file.cfg.hidden = cfg.hidden
             if ("edit" in cfg) file.cfg.edit = cfg.edit
+            if (cfg.icon && file.cfg.icon) {
+                const icon = file.cfg.icon
+                const patch = cfg.icon
+                if (patch.render) icon.render = patch.render
+                if (patch.stickers) icon.stickers = JSON.parse(JSON.stringify(patch.stickers))
+                if (Array.isArray(patch.layers)) icon.layers = patch.layers.map(item => ({ ...item }))
+                if (patch.layered === true || patch.layered === false) icon.layered = patch.layered
+                if (patch.sizes) icon.sizes = { ...patch.sizes }
+                if ("image" in patch) icon.image = patch.image
+            }
         }
         const patch = data ?? content ?? sys
         if (patch !== undefined) {

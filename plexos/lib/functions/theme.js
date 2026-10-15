@@ -28,7 +28,7 @@ export function applyThemeFavicon() {
 export async function loadThemeConstructors() {
     const root = themeRoot()
     const face = plexos.Theme?.face || "session"
-    const kinds = ["window", "contextMenu", "desktopIcon", "explorerIcon", "dragShip", "controls"]
+    const kinds = ["window", "contextMenu", "desktopIcon", "explorerIcon", "dragShip", "controls", "folderIcon"]
     const constructors = {}
     for (const kind of kinds) {
         constructors[kind] = (await import(`${root}/constructors/${kind}.js`)).default

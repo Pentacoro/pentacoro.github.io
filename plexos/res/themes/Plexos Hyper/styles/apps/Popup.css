@@ -12,6 +12,9 @@
 
     overflow: hidden;
 }
+.popup > .disclosure > .disclosure-button.sys-inset{
+    border-top: 0;
+}
 .container {
     display: flex;
     flex-direction: row;
@@ -67,29 +70,6 @@ img {
 .details>p>b{
     font-size: 11px;
     color: var(--color-link);
-}
-.expand{
-    position: relative;
-    width: 100%;
-}
-.expand.closed>p::before{
-    position: absolute;
-    left: 6px;
-    
-    font-size: 11px;
-    justify-content: center;
-    content: "▶";
-    color: var(--color-expand-closed);
-}
-.expand.open>p::before{
-    position: absolute;
-    left: 4px;
-
-    font-size: 11px;
-    margin-top: 2px;
-    justify-content: center;
-    content: "▼";
-    color: var(--color-expand-open);
 }
 .codeParser{
     width: 100%;

@@ -49,6 +49,12 @@ export default class CoreChangeLog {
         if (record.author.appID === this.explorerAppID() && !record.fromHistory) {
             this.explorerCursor = this.explorerOps().length - 1
         }
+        if (!record.fromHistory) {
+            queueMicrotask(() => {
+                if (plexos.Core?.mem?.booting || plexos.Core?.mem?.readOnly) return
+                plexos.Core?.mem?.saveCore?.()
+            })
+        }
         return record
     }
 
@@ -57,8 +63,8 @@ export default class CoreChangeLog {
     }
 
     // Incremental IDB save: rename/move become repath; overlapping paths go through a temp name first.
-    getCommitPlan() {
-        const source = this.pending().map(op => {
+    getCommitPlan(operations = this.pending()) {
+        const source = operations.map(op => {
             if (op.type === "rename" || op.type === "move") {
                 return { ...op, type: "repath", oldPath: op.oldPath, path: op.path }
             }

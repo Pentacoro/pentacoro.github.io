@@ -1,0 +1,111 @@
+.transfer {
+    display: flex;
+    flex-direction: column;
+    width: 440px;
+    color: var(--color-toolbar-text, #333);
+}
+
+.transfer.sys-inset {
+    border: 0;
+}
+
+.transfer-stage {
+    height: 84px;
+    flex: none;
+}
+
+.transfer-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 0 14px 10px;
+}
+
+.transfer-summary {
+    line-height: 1.3;
+}
+
+.transfer-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.transfer-percent {
+    flex: 1;
+}
+
+.transfer-actions {
+    display: flex;
+    gap: 4px;
+    flex: none;
+}
+
+.transfer-actions button {
+    width: 28px;
+    height: 22px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-white);
+    border: 1px solid var(--color-border);
+    color: var(--color-toolbar-text, #333);
+    cursor: pointer;
+}
+
+.transfer-actions button:hover {
+    background: var(--color-toolbar-hover);
+}
+
+.transfer-actions button:active {
+    background: var(--color-toolbar-active);
+    color: var(--color-white);
+}
+
+.transfer-glyph.pause {
+    width: 8px;
+    height: 10px;
+    box-sizing: border-box;
+    border-left: 2px solid currentColor;
+    border-right: 2px solid currentColor;
+}
+
+.transfer-glyph.play {
+    width: 0;
+    height: 0;
+    border-top: 5px solid transparent;
+    border-bottom: 5px solid transparent;
+    border-left: 7px solid currentColor;
+    margin-left: 2px;
+}
+
+.transfer-cancel {
+    font-size: 18px;
+    line-height: 1;
+    padding-bottom: 2px;
+}
+
+.transfer-details {
+    display: none;
+    flex-direction: column;
+    gap: 2px;
+    color: var(--color-muted);
+}
+
+.transfer-details.open {
+    display: flex;
+}
+
+.transfer-track {
+    width: 100%;
+    height: 16px;
+    flex: none;
+    background: var(--color-toolbar);
+}
+
+.transfer-bar {
+    height: 100%;
+    width: 0%;
+    background: var(--color-accent);
+}

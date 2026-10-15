@@ -1,4 +1,5 @@
 import {getTask} from "/plexos/lib/functions/dll.js"
+import { coreReadOnly } from "/plexos/lib/functions/readOnly.js"
 
 let task = getTask(/TASKID/)
 let mem  = task.mem
@@ -132,11 +133,13 @@ mem.renderRow = function (key, value, path, depth, isIndex, ancestorLast, isLast
     return row
 }
 mem.writeValue = function (path, value) {
+    if (coreReadOnly()) return
     const parent = mem.atPath(mem.draft, mem.parentPath(path))
     parent[path[path.length - 1]] = value
     mem.recordChange()
 }
 mem.renameKey = function (path, next) {
+    if (coreReadOnly()) return
     const parent = mem.atPath(mem.draft, mem.parentPath(path))
     const prev = path[path.length - 1]
     next = String(next)
@@ -154,6 +157,7 @@ mem.changeType = function (path, type) {
     mem.render()
 }
 mem.addChild = function (path) {
+    if (coreReadOnly()) return
     const parent = mem.atPath(mem.draft, path)
     if (Array.isArray(parent)) parent.push("")
     else parent[mem.uniqueKey(parent, "key")] = ""
@@ -162,6 +166,7 @@ mem.addChild = function (path) {
     mem.render()
 }
 mem.deleteKey = function (path) {
+    if (coreReadOnly()) return
     const parent = mem.atPath(mem.draft, mem.parentPath(path))
     const key = path[path.length - 1]
     if (Array.isArray(parent)) parent.splice(key, 1)
@@ -229,7 +234,7 @@ mem.dropAt = function (row, clientY) {
     return { parent, index: index + 1, where: "after" }
 }
 mem.startDrag = function (e, path, row) {
-    if (e.button !== 0) return
+    if (coreReadOnly() || e.button !== 0) return
     e.preventDefault()
     e.stopPropagation()
     const origin = { x: e.clientX, y: e.clientY }
@@ -260,7 +265,7 @@ mem.startDrag = function (e, path, row) {
     window.addEventListener("mouseup", onUp)
 }
 mem.moveEntry = function (from, drop) {
-    if (!from?.length || !drop) return
+    if (coreReadOnly() || !from?.length || !drop) return
     if (mem.isInside(from, drop.parent)) return
     const fromParent = mem.parentPath(from)
     const fromIndex = mem.siblingIndex(from)

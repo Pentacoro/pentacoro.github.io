@@ -62,14 +62,22 @@ export default {
         return { node, keyNodes: { buttons: nodes } }
     },
 
-    disclosure({ label = "Details" } = {}) {
-        const node = el("div", "config-footer disclosure")
-        const button = el("button", "sys-button expand closed")
-        button.appendChild(el("p", null, label))
+    disclosureButton({ label = "More details" } = {}) {
+        const button = el("button", "disclosure-button closed sys-inset")
+        button.type = "button"
+        const chevron = el("span", "disclosure-chevron", "\u25be")
+        const text = el("span", null, label)
+        button.append(chevron, text)
+        return { node: button, keyNodes: { button, chevron, text } }
+    },
+
+    disclosure({ label = "More details" } = {}) {
+        const built = this.disclosureButton({ label })
+        const node = el("div", "disclosure")
         const panel = el("div", "details")
         panel.style.display = "none"
-        node.append(button, panel)
-        return { node, keyNodes: { button, panel } }
+        node.append(built.node, panel)
+        return { node, keyNodes: { button: built.node, chevron: built.keyNodes.chevron, text: built.keyNodes.text, panel } }
     },
 
     propertySheet({ tabs = [], buttons = [], idPrefix = "sheet" } = {}) {

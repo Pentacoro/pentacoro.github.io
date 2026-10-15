@@ -1,8 +1,11 @@
 import plexos from "/boot/plexos.js"
 import {getTask, iframeAntiHover, selectText, clearSelection, nullifyOnEvents} from "/plexos/lib/functions/dll.js"
 import { themeConstruct } from "/plexos/lib/functions/theme.js"
+import { fitIconSize } from "/plexos/lib/classes/interface/icon.js"
+import { coreReadOnly } from "/plexos/lib/functions/readOnly.js"
 import File from "/plexos/lib/classes/filesystem/file.js"
 import ContextMenu from "/plexos/lib/classes/interface/contextmenu.js"
+import { destinationAt, moveFiles } from "/plexos/app/sys/System/File Management/move.js"
 
 let System = plexos.System
 let task = getTask(/TASKID/)
@@ -21,7 +24,9 @@ mem.class.IconDesk = class IconDesk {
         this.name = p.name
         this.exte = p.exte || ((this.class==="DirectoryFile") ? "dir" : (this.name.match(/\.(?:.(?<!\.))+$/s)!=null) ? this.name.match(/(?:.(?<!\.))+$/s)[0] : "")
         
-        this.coords = p.coords || cfg.icon.icons.filter(icon=>icon.name===this.name)[0]?.coords || null
+        const listed = cfg.icon.icons.find(icon => icon.name === this.name)?.coords
+        const source = p.coords || listed || null
+        this.coords = source ? { ...source } : null
 
         this.drop = []
         this.main = function(){return File.at(this.file).cfg.icon}
@@ -87,11 +92,6 @@ mem.class.IconDesk = class IconDesk {
         node.style.width = cfg.grid.width + "px"
         node.style.height = cfg.grid.height + "px"
     
-        function rawr(px, dem = 2.35, dpx = 44) {
-            let per = px/dpx * 100
-            let nem = per/100 * dem
-            return nem
-        }
         function stylize(node, styleName = "style1") {
             let styleClass
             for (let className of node.classList) {
@@ -140,12 +140,10 @@ mem.class.IconDesk = class IconDesk {
                 }
                 if (div > 1.5) {
                     stylize(node, "style3")
-                    keys.text.style.fontSize = (h === 50) ? "" : rawr(keys.text.offsetHeight, 37.6, 44) + "px"
                 }
                 if (div > 3.5) {
                     stylize(node, "style4")
                     node.style.gridTemplateColumns = keys.frame.offsetHeight + "px auto"
-                    keys.text.style.fontSize = (h === 50) ? "" : rawr(keys.text.offsetHeight, 37.6, 44) + "px"
                 }
                 return
             }
@@ -159,7 +157,6 @@ mem.class.IconDesk = class IconDesk {
                 if (div > 2.5) {
                     stylize(node, "style4")
                     node.style.gridTemplateColumns = keys.frame.offsetHeight + "px auto"
-                    keys.text.style.fontSize = rawr(keys.text.offsetHeight, 19.2, 44) + "px"
                 }
                 if (div > 6) {
                     stylize(node, "style2")
@@ -178,7 +175,6 @@ mem.class.IconDesk = class IconDesk {
             if (w > 200 || h > 200) {
                 if (isBetween(div, 0.5, 1.5)) {
                     stylize(node, "style7")
-                    keys.text.style.fontSize = rawr(keys.text.offsetHeight, 19.2, 44) + "px"
                 }
                 if (div < 0.5 || div > 1.5) {
                     stylize(node, "style2")
@@ -187,6 +183,27 @@ mem.class.IconDesk = class IconDesk {
             }
         }
         keys.text.innerText = this.name
+        this.paintIcon()
+    }
+    paintIcon() {
+        const frame = this.keyNodes?.frame
+        const square = this.keyNodes?.square
+        const record = this.main?.()
+        if (!frame || !square || !record?.paint) return
+        const apply = () => {
+            const style = getComputedStyle(frame)
+            const padX = parseFloat(style.paddingLeft) + parseFloat(style.paddingRight)
+            const padY = parseFloat(style.paddingTop) + parseFloat(style.paddingBottom)
+            const room = Math.min(frame.clientWidth - padX, frame.clientHeight - padY)
+            if (room <= 0) return false
+            const side = fitIconSize(room)
+            square.style.width = side + "px"
+            square.style.height = side + "px"
+            record.paint(this.keyNodes, side)
+            return true
+        }
+        if (apply()) return
+        requestAnimationFrame(() => { apply() })
     }
     render(){
         this.statNode()
@@ -198,7 +215,7 @@ mem.class.IconDesk = class IconDesk {
         this.name = this.main().name
         this.exte = this.main().exte
 
-        this.keyNodes.image.setAttribute("src", this.main().getImage())
+        this.paintIcon()
         this.keyNodes.text.textContent = this.name
 
         mem.writeIconConfig()
@@ -214,7 +231,10 @@ mem.class.IconDesk = class IconDesk {
     drag(e){
         let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0
         let node = this.node
-        let _this = this 
+        let _this = this
+        let armed = false
+        let originX = 0
+        let originY = 0
 	
         dragMouseDown(e)
         function dragMouseDown(e) {
@@ -222,6 +242,8 @@ mem.class.IconDesk = class IconDesk {
             e.preventDefault()
             
             //get initial cursor position:
+            originX = e.clientX
+            originY = e.clientY
             pos3 = e.clientX + task.node.scrollLeft
             pos4 = e.clientY + task.node.scrollTop
             
@@ -262,13 +284,18 @@ mem.class.IconDesk = class IconDesk {
             }
             
             document.onmouseup = closeDragIcon
-            if(e.button == 0) document.onmousemove = iconDrag
+            if(e.button == 0 && !coreReadOnly()) document.onmousemove = iconDrag
             iframeAntiHover(true)
         }								 
     
         function iconDrag(e) {
             e = e || window.event
             e.preventDefault()
+            if (!armed) {
+                if (Math.hypot(e.clientX - originX, e.clientY - originY) < 3) return
+                armed = true
+                for (let icon of task.pocket) icon.node.style.pointerEvents = "none"
+            }
             
             //calculate new cursor position:
             pos1 = pos3 - e.clientX
@@ -300,6 +327,27 @@ mem.class.IconDesk = class IconDesk {
             document.onmouseup = null
             document.onmousemove = null
             iframeAntiHover(false)
+            const paths = task.pocket.map(icon => icon.file)
+            const dest = System.mem.var.dragging ? destinationAt(e.clientX, e.clientY, paths) : null
+            for (let icon of task.pocket) if (icon.node) icon.node.style.pointerEvents = ""
+            if (dest) {
+                for (let icon of task.pocket) {
+                    document.getElementById("iconLayer").appendChild(icon.node)
+                    icon.statNode(1)
+                    icon.highlight(false)
+                }
+                System.mem.var.dragging = false
+                moveFiles(paths, dest, { x: e.clientX, y: e.clientY }).finally(() => {
+                    const left = task.pocket.filter(icon => paths.includes(icon.file) && icon.node)
+                    if (left.length) mem.repositionIcons(left, true)
+                    for (const icon of left) {
+                        icon.poseNode()
+                        icon.statNode(1)
+                    }
+                    mem.writeIconConfig()
+                })
+                return
+            }
             
             let iconsToValidate = []
     
@@ -362,7 +410,7 @@ mem.class.IconDesk = class IconDesk {
         this.render()
     }
     editName(e){
-        if (!this.node) return
+        if (!this.node || coreReadOnly()) return
         let iconText = this.keyNodes.text
         let editFile = File.at(this.file)
         let editFrom = editFile.parent()
@@ -529,6 +577,22 @@ mem.repositionIcons = function(icons, mustSet = false){
             ax:null,
             ay:null
         }
+
+        // Saved slot wins over pixel math, so a margin change cannot shove everyone.
+        if (mustSet && Number.isInteger(icon.coords.ax) && Number.isInteger(icon.coords.ay) && mem.grid.gridExists(icon.coords.ax, icon.coords.ay)) {
+            const kept = mem.grid.gridArr[icon.coords.ax][icon.coords.ay]
+            if (!kept.used) {
+                kept.used = true
+                kept.icon = icon
+                icon.coords.px = kept.posX
+                icon.coords.py = kept.posY
+                icon.coords.tx = kept.posX
+                icon.coords.ty = kept.posY
+                File.at(icon.file).cfg.coords = icon.coords
+                validatedIcons.push(icon)
+                return
+            }
+        }
     
         //get previous position in grid array
         let px = Math.round((icon.coords.px - wm)/(w + wm))
@@ -591,17 +655,41 @@ mem.repositionIcons = function(icons, mustSet = false){
     return validatedIcons
 }
 
+mem.cellFromPoint = function(clientX, clientY) {
+    const cols = mem.grid.gridArr
+    if (!cols.length || !cols[0]) return null
+    const w = cfg.grid.width
+    const h = cfg.grid.height
+    const wm = (cfg.grid.modHmargin == 0) ? cfg.grid.hMargin : cfg.grid.modHmargin
+    const hm = (cfg.grid.modVmargin == 0) ? cfg.grid.vMargin : cfg.grid.modVmargin
+    const localX = clientX + task.node.scrollLeft
+    const localY = clientY + task.node.scrollTop
+    const ax = Math.max(0, Math.min(cols.length - 1, Math.round((localX - w / 2 - wm) / (w + wm))))
+    const ay = Math.max(0, Math.min(cols[0].length - 1, Math.round((localY - h / 2 - hm) / (h + hm))))
+    return { ax, ay }
+}
+
+// First free cell in column order. placementOrigin, when set, is where that scan starts.
 mem.orderIconPosition = function(){
-    for (let x = 0; x < mem.grid.gridArr.length; x++){
-        for(let y = 0; y < mem.grid.gridArr[x].length; y++){
-            if (mem.grid.gridArr[x][y].used == false){
-                return [mem.grid.gridArr[x][y],x,y]
-            }
-        }
+    const cols = mem.grid.gridArr
+    if (!cols.length || !cols[0]) return
+    const rows = cols[0].length
+    const origin = mem.placementOrigin
+    const startX = origin ? Math.max(0, Math.min(origin.ax, cols.length - 1)) : 0
+    const startY = origin ? Math.max(0, Math.min(origin.ay, rows - 1)) : 0
+    const total = cols.length * rows
+    const start = startX * rows + startY
+    for (let n = 0; n < total; n++) {
+        const i = (start + n) % total
+        const x = Math.floor(i / rows)
+        const y = i % rows
+        const cell = cols[x]?.[y]
+        if (cell && cell.used == false) return [cell, x, y]
     }
 }
 
 mem.writeIconConfig = function(){
+    if (coreReadOnly()) return
     cfg.icon.icons = mem.filterIconListJson()
     task.cmd("file.write", {
         path: cfg.path+"/icon.json",

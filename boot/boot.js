@@ -3,7 +3,7 @@
 // User squares sit in a centered row. Picking one slides it to the left of the
 // screen's midline and opens that user's cores on the right. Mounting a core
 // closes this stage, swaps in the core's session face from settings.json, and
-// only then opens the desktop. A remote core is mounted read-only.
+// only then opens the desktop. Boot opens a writable local clone of the Plexos core.
 import "../plexos/lib/functions/prototype.js"
 import "./system.js"
 import "../plexos/ini/events.js"
@@ -11,6 +11,10 @@ import plexos from "./plexos.js"
 import Task from "../plexos/lib/classes/system/task.js"
 import { runLauncher } from "../plexos/lib/functions/dll.js"
 import { showUsers } from "./users.js"
+import { bootLocalPlexos } from "./cores.js"
+
+// Temporary. Skip the landing and open the local Plexos clone.
+const bootLocalClone = true
 
 async function loadConfig() {
     // Landing theme and the last user live in IndexedDB, before any core is mounted.
@@ -56,6 +60,10 @@ async function boot() {
     await runLauncher("./plexos/app/sys/Window Manager/windowManager.ls")
     if (!Task.get("Window Manager")?.mem?.windows) {
         throw new Error("Window Manager did not start")
+    }
+    if (bootLocalClone) {
+        await bootLocalPlexos()
+        return
     }
     await showUsers()
 }

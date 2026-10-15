@@ -184,14 +184,25 @@ export default class Task {
         const stack = this.persistentWindows || []
         return stack.length ? stack[stack.length - 1] : null
     }
+    // Parent chrome first, then each dialog, so the top one stays in front of the main window.
+    raiseUnderPersistent() {
+        const stack = this.persistentWindows || []
+        const top = stack.at(-1)
+        if (!top) return
+        if (this.window && this.window !== top) this.window.statNode()
+        for (const win of stack) {
+            if (win !== top) win.statNode()
+        }
+        top.statNode()
+    }
     // Blink the top dialog instead of raising the parent.
     attentionPersistent() {
         const top = this.topPersistentWindow()
         if (!top) return
+        this.raiseUnderPersistent()
         const owner = Task.id(top.task)
         if (owner && owner !== this) owner.focus()
         else {
-            top.statNode()
             top.focus()
         }
         let n = 0
@@ -217,6 +228,7 @@ export default class Task {
             const owner = Task.id(top.task)
             this.window?.blur() // parent stays unfocused until the stack is empty
             if (owner && owner !== this) {
+                this.raiseUnderPersistent()
                 owner.focus()
                 return
             }
@@ -239,6 +251,7 @@ export default class Task {
         if (this.onfocus) this.onfocus()
         if (this.node) this.node.focus()
         if (this.node?.onfocus) this.node.onfocus()
+        if (top && Task.id(top.task) === this) this.raiseUnderPersistent()
     }
     blur() {
         if (this.window) {
@@ -284,6 +297,7 @@ export default class Task {
             if (onClose) onClose()
             if (this.persistentWindows.length) {
                 const next = this.topPersistentWindow()
+                next?.unlockModal?.()
                 const owner = next ? Task.id(next.task) : null
                 if (owner) owner.focus()
             } else {
@@ -320,8 +334,11 @@ export default class Task {
                 ...appParams,
             }
         })
+        const beneath = this.topPersistentWindow()
         this.persistentWindows.push(win)
         this.window?.lockModal?.()
+        beneath?.lockModal?.()
+        beneath?.blur?.()
         childTask.mem.arg = Object.assign({ taskid: this.id }, args || {}) // never clobber this.mem.arg
         if (url) {
             await displayComponent({

@@ -1,6 +1,6 @@
 import {getTask} from "/plexos/lib/functions/dll.js"
 import {control, bindField} from "/plexos/lib/functions/controls.js"
-import Icon from "/plexos/lib/classes/interface/icon.js"
+import Icon, { iconStickerSlots } from "/plexos/lib/classes/interface/icon.js"
 
 let task = getTask(/TASKID/)
 let mem  = task.mem
@@ -101,3 +101,74 @@ if (mem.arg.cfg.class==="MetaFile") {
 } else {
     sheet.removeTab("metadata")
 }
+
+//ICON
+mem.tab.icon = {}
+const iconBody = sheet.keyNodes.tabs.icon.body
+iconBody.classList.add("icon-custom")
+
+const stage = document.createElement("div")
+stage.className = "icon-stage"
+const square = document.createElement("div")
+square.className = "iconSquare"
+const art = document.createElement("div")
+art.className = "iconArt"
+const image = document.createElement("img")
+image.className = "iconImage"
+image.alt = ""
+const layers = document.createElement("div")
+layers.className = "iconLayers"
+const front = document.createElement("img")
+front.className = "iconFront"
+front.alt = ""
+front.draggable = false
+const stickers = document.createElement("div")
+stickers.className = "iconStickers"
+art.append(image, layers, front, stickers)
+square.append(art)
+stage.append(square)
+iconBody.append(stage)
+
+const imageHead = control("heading", { text: "Image" })
+iconBody.append(imageHead.node)
+
+const linkField = control("field", {
+    type: "text",
+    id: task.id + "_iconLink",
+    label: "Link:",
+})
+iconBody.append(linkField.node)
+
+const renderField = control("field", {
+    type: "select",
+    id: task.id + "_iconRender",
+    label: "Rendering:",
+    options: [
+        { value: "auto", label: "Auto" },
+        { value: "pixelated", label: "Pixelated" },
+        { value: "smooth", label: "Smooth" },
+    ],
+})
+iconBody.append(renderField.node)
+
+const layerHead = control("heading", { text: "Layers" })
+const layerBlock = document.createElement("div")
+layerBlock.className = "icon-layer-block"
+const layerScroll = document.createElement("div")
+layerScroll.className = "icon-layer-scroll"
+const layerList = document.createElement("div")
+layerList.className = "icon-layer-list"
+const layerAdd = document.createElement("div")
+layerAdd.className = "icon-layer-add-slot"
+layerScroll.append(layerList)
+layerBlock.append(layerScroll, layerAdd)
+iconBody.append(layerHead.node, layerBlock)
+
+const stickerButton = document.createElement("button")
+stickerButton.type = "button"
+stickerButton.className = "sys-button"
+stickerButton.textContent = "Stickers"
+iconBody.append(stickerButton)
+
+mem.ui.iconEditor = { stage, square, art, image, layers, front, stickers, linkField: linkField.keyNodes.input, renderField: renderField.keyNodes.input, layerList, layerAdd, stickerButton }
+mem.iconSlots = iconStickerSlots

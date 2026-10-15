@@ -1,6 +1,7 @@
 import plexos from "../../../../boot/plexos.js"
 import File from "../filesystem/file.js"
 import Task from "./task.js"
+import { commandWrites, coreReadOnly } from "../../functions/readOnly.js"
 
 export default class Command {
     constructor(cmd) {
@@ -158,6 +159,12 @@ export default class Command {
         try {
             const command = commandMap[cmd.command]
             if (!command) throw new Error(`Unknown command: ${cmd.command}`)
+
+            if (coreReadOnly() && commandWrites(cmd.command)) {
+                cmd.status = "failure"
+                cmd.message = "This desktop is read-only"
+                return null
+            }
 
             const registry = plexos.Core.registry
             let permissions = []

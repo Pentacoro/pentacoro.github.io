@@ -272,13 +272,11 @@ export async function runLauncher(url, args = {}, focus = null, name = ""){
             )
         } catch (e) {
             console.error(e)
-            /*evalErrorPopup
-            (
+            evalErrorPopup(
                 data,
                 "The application launcher at: <i>'" + url + "'</i> failed evaluation.",
                 e
-            ) 
-            */
+            )
         }
     } catch (e) {
         evalErrorPopup

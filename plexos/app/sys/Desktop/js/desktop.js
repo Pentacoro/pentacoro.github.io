@@ -130,6 +130,7 @@ mem.filterIconListJson = function () {
 		node  : undefined,
         exte  : undefined,
 		drop  : undefined,
+		keyNodes : undefined,
 	}
 
 	let coorFilter = {

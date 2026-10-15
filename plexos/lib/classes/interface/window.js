@@ -76,16 +76,19 @@ export default class Window {
 	}
 
 	// Task that owns a modal stack blocking this window (parent chrome, or a lower dialog).
+	// parentTaskId is also how a window centers on its caller, so a window that only
+	// names that task is not part of the stack.
 	static hostOfPersistent(window) {
 		const own = Task.id(window.task)
 		if (own?.window === window && own.topPersistentWindow?.()) return own
 		const parentId = window.appParams?.parentTaskId
-		if (parentId) {
-			const parent = Task.id(parentId)
-			const top = parent?.topPersistentWindow?.()
-			if (top && top !== window) return parent
-			if (parent?.window === window && top) return parent
-		}
+		if (!parentId) return null
+		const parent = Task.id(parentId)
+		if (!parent) return null
+		const top = parent.topPersistentWindow?.()
+		if (!top || top === window) return null
+		const inStack = (parent.persistentWindows || []).includes(window)
+		if (parent.window === window || inStack) return parent
 		return null
 	}
 
@@ -723,8 +726,19 @@ export default class Window {
 	lockModal() {
 		if (!this.node) return
 		this.node.classList.add("modal-locked")
+		const inner = this.keyNodes.innerDrawing
+		if (!inner) return
+		const active = document.activeElement
+		if (active && inner.contains(active)) {
+			if (active.tagName === "IFRAME") {
+				try { active.contentWindow?.blur() } catch (e) {}
+			}
+			active.blur()
+		}
+		inner.setAttribute("inert", "")
 	}
 	unlockModal() {
 		this.node?.classList.remove("modal-locked")
+		this.keyNodes.innerDrawing?.removeAttribute("inert")
 	}
 }

@@ -1,0 +1,42 @@
+.disclosure-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 7px 14px;
+    background: var(--color-inset);
+    border: 0;
+    border-top: 1px solid var(--color-border);
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+
+.disclosure-button.sys-inset {
+    background-color: var(--color-inset);
+    border: 0;
+    border-top: 1px solid var(--color-border);
+}
+
+.disclosure-button:hover {
+    background: var(--color-toolbar-hover);
+}
+
+.disclosure-chevron {
+    width: 14px;
+    height: 14px;
+    box-sizing: border-box;
+    border: 1px solid var(--color-border);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    font-size: 9px;
+    line-height: 1;
+}
+
+.disclosure-button.open .disclosure-chevron {
+    transform: rotate(180deg);
+}

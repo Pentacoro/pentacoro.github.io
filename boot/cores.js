@@ -3,6 +3,7 @@ import ContextMenu from "../plexos/lib/classes/interface/contextmenu.js"
 import DirectoryFile from "../plexos/lib/classes/filesystem/directory.js"
 import initialize, { openDesktop } from "../plexos/ini/init.js"
 import { applyThemeFace } from "../plexos/lib/functions/theme.js"
+import { installReadOnly } from "../plexos/lib/functions/readOnly.js"
 import { el, landing, uniqueName } from "./state.js"
 import { closePopup, fitCoreMenu, resetLogonPlace } from "./stage.js"
 import { bindManagerAppIDs, closeLanding, releaseWindowLayer } from "./window.js"
@@ -35,7 +36,42 @@ function nodeAt(tree, parts) {
     return node
 }
 
-async function fetchTree(url) {
+export async function bootLocalPlexos() {
+    const users = await plexos.db.listUsers()
+    const preferred = plexos.Config?.lastUserLog || plexos.Config?.defaultUser
+    let user = users.find(item => item.name === preferred) || users[0] || null
+    if (!user) {
+        user = {
+            name: "User",
+            created: Date.now(),
+            localCores: [],
+            remoteCores: { Plexos: "/core.json" },
+            config: { lastOpenedCore: null, profileImage: null, password: null },
+        }
+        await plexos.db.saveUser(user)
+        plexos.Config.lastUserLog = user.name
+        if (!plexos.Config.defaultUser) plexos.Config.defaultUser = user.name
+        await plexos.db.setConfig(plexos.Config)
+    }
+    user.localCores = user.localCores || []
+    user.config = user.config || { lastOpenedCore: null, profileImage: null, password: null }
+    plexos.System.user = user
+    plexos.User = user.name
+
+    let tree = user.localCores.find(core => core.name === user.config.bootCore)
+    if (!tree) {
+        const name = uniqueName("Plexos", user.localCores.map(core => core.name))
+        tree = await fetchTree("/core.json")
+        tree.name = name
+        user.localCores = [...user.localCores, tree]
+        user.config.bootCore = name
+        user.config.lastOpenedCore = name
+        await plexos.db.saveUser(user)
+    }
+    await mountTree(tree, { readOnly: false, name: tree.name })
+}
+
+export async function fetchTree(url) {
     const response = await fetch(url)
     if (!response.ok) throw new Error(`Could not read ${url}`)
     return response.json()
@@ -60,12 +96,13 @@ async function bareTree() {
     return tree
 }
 
-async function mountTree(tree, { readOnly, name }) {
+export async function mountTree(tree, { readOnly, name }) {
     if (landing.mounting) return
     landing.mounting = true
     try {
         plexos.Core.mem.readOnly = !!readOnly
         const newCore = DirectoryFile.coreTemplate()
+        newCore.name = name || tree.name || newCore.name
         plexos.Core.file = newCore
         await plexos.Core.ini.recreateFiles(tree, newCore)
         if (!readOnly && plexos.System.user) {
@@ -80,6 +117,7 @@ async function mountTree(tree, { readOnly, name }) {
         document.body.classList.remove("booting")
         plexos.Core.mem.booting = false
         await openDesktop("/user/desks/desktop")
+        if (readOnly) installReadOnly()
     } catch (error) {
         landing.mounting = false
         console.error(error)

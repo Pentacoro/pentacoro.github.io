@@ -104,6 +104,9 @@ core.ini.recreateFiles = async function (dir, newDir) {
     }
 }
 
-core.mem.saveCore = async function () {
-    await plexos.db.saveCore(core.file)
+let saveTail = Promise.resolve()
+core.mem.saveCore = function () {
+    const run = saveTail.then(() => plexos.db.saveCore(core.file))
+    saveTail = run.then(() => {}, () => {})
+    return run
 }

@@ -13,7 +13,7 @@ export function fileDialog({ mode = "open", path, fileName = "", types = [], tit
                 name,
                 app: "Explorer",
                 url: "/plexos/app/sys/Explorer/explorer.html",
-                icon: `${themeRoot()}/icons/files/defaultDIR.svg`,
+                icon: `${themeRoot()}/icons/files/images/folder.svg`,
                 args: { address: start, mode, fileName, types, onResult: resolve },
                 appParams: {
                     sizeDrawMethod: "window",

@@ -85,7 +85,7 @@
 	pointer-events: all;
 
 	display: grid;
-	grid-template-rows: auto 2.60em;
+	grid-template-rows: minmax(0, auto) 2.4em;
 }
 
 /*-STATES-----------*/
@@ -119,6 +119,10 @@
 	padding: 2px;
 	pointer-events: none;
 	overflow: hidden;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	box-sizing: border-box;
 }
 .iconImage{
 	width: 100%;
@@ -131,17 +135,19 @@
 .icon>h3 {
 	height: 100%;
 	width: 100%;
+	margin: 0;
 	color: var(--color-white);
 	text-align: center;
 	text-shadow: 0px 0px 4px var(--color-shadow-hard);
-	/*font-size: 1em;*/
 	font-weight: 1;
+	line-height: 1.2;
 	user-select: none;
 
-	hyphens: auto;
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 2;
 	overflow: hidden;
-	text-overflow: ellipsis;
-	word-wrap: break-word;
+	overflow-wrap: break-word;
 
 	pointer-events: none;
 }
@@ -203,7 +209,7 @@
 /*5---------*/ /*small*/
 .icon.style5{
 	display: grid;
-	grid-template-rows: auto 2.30em;
+	grid-template-rows: minmax(0, auto) 2.4em;
 	row-gap: 2px;
 	font-size: 12px;
 }
@@ -216,7 +222,7 @@
 
 /*6---------*/ /*medium*/
 .icon.style6{
-	grid-template-rows: auto 2.60em;
+	grid-template-rows: minmax(0, auto) calc(2.4em * 1.17);
 	font-size: 16px;
 }
 .icon.style6>.iconFrame{
@@ -228,7 +234,7 @@
 
 /*7---------*/ /*big*/
 .icon.style7{
-	grid-template-rows: auto 3.90em;
+	grid-template-rows: minmax(0, auto) calc(2.4em * 1.40);
 	font-size: 16px;
 }
 .icon.style7>.iconFrame{
