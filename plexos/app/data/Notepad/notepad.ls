@@ -40,7 +40,7 @@ export default {
             {
                 name : (file ? file.name : "Untitled") + " - Notepad",
                 task : task.id, 
-                icon : file ? file.cfg.icon.getImage() : "/THEME/icons/files/defaultTXT.svg",
+                icon : file ? file.cfg.icon.getImage() : "/THEME/icons/files/images/text.svg",
             }
         )
 

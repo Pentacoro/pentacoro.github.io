@@ -7,6 +7,7 @@ const writeCommands = new Set([
     "file.delete",
     "file.move",
     "file.rename",
+    "file.restore",
 ])
 
 const writeLabels = new Set([
@@ -46,8 +47,9 @@ export function menuItemWrites(item) {
     return writeLabels.has(item.name)
 }
 
+// Inputs that change no files: tab switches, and anything marked data-readonly-safe, like an address bar.
 function isTabSwitch(node) {
-    return node.classList?.contains("tabRadio_input")
+    return node.classList?.contains("tabRadio_input") || node.dataset?.readonlySafe !== undefined
 }
 
 export function lockReadOnlySurface(root = document) {

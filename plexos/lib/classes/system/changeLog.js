@@ -4,19 +4,31 @@ import File from "../filesystem/file.js"
 export default class CoreChangeLog {
     constructor() {
         this.operations = []
-        this.explorerCursor = -1 // Explorer undo/redo share one cursor over explorer-authored ops
+        this.cursor = -1 // the user's undo/redo position among their own steps
     }
 
-    explorerAppID() {
-        return plexos.Core.registry?.tryGetAppID("Explorer")
+    // A user step: a change the user made to files from Explorer or the Desktop (Command.authorFor sets author.user),
+    // not an undo or redo replaying one (those are logged as undoable: false so they still get saved)
+    isUserStep(op) {
+        return !!op.author?.user && !op.fromHistory && op.undoable !== false
     }
 
-    explorerOps() {
-        const appID = this.explorerAppID()
-        if (!appID) return []
+    userOps() {
         return this.operations
             .map((op, index) => ({ op, index }))
-            .filter(({ op }) => op.author?.appID === appID && !op.fromHistory)
+            .filter(({ op }) => this.isUserStep(op))
+    }
+
+    // The user's steps, oldest first. Changes sharing a group (one decision: deleting several files, one transfer)
+    // are a single step; a change without one is a step of its own
+    userSteps() {
+        const steps = []
+        for (const entry of this.userOps()) {
+            const last = steps[steps.length - 1]
+            if (last && entry.op.group && last[0].op.group === entry.op.group) last.push(entry)
+            else steps.push([entry])
+        }
+        return steps
     }
 
     append(entry) {
@@ -31,24 +43,25 @@ export default class CoreChangeLog {
             author: entry.author || {},
             committed: false,
             fromHistory: !!entry.fromHistory,
+            undoable: entry.undoable !== false, // replays and permanent deletes from the bin are saved, never undone
+            group: entry.group || null,
+            wrapper: entry.wrapper || null, // a move into the bin: its wrapper (when, where from, desktop place)
         }
 
-        if (record.author.appID && record.author.appID === this.explorerAppID() && !record.fromHistory) {
-            const ops = this.explorerOps()
-            if (this.explorerCursor >= 0 && this.explorerCursor < ops.length - 1) {
-                const lastKeepIndex = ops[this.explorerCursor].index
-                this.operations = this.operations.filter((op, i) => {
-                    if (op.author?.appID !== record.author.appID || op.fromHistory) return true
-                    return i <= lastKeepIndex
-                })
+        // A new step after some undos drops the steps that could have been redone. A change joining the step
+        // being built (same group, at the end) isn't a new step
+        if (this.isUserStep(record)) {
+            const steps = this.userSteps()
+            const joins = record.group && steps.length && this.cursor === steps.length - 1 && steps[steps.length - 1][0].op.group === record.group
+            if (!joins && this.cursor < steps.length - 1) {
+                const dropped = new Set(steps.slice(this.cursor + 1).flat().map(({ index }) => index))
+                this.operations = this.operations.filter((op, i) => !dropped.has(i))
             }
         }
 
         this.operations.push(record)
 
-        if (record.author.appID === this.explorerAppID() && !record.fromHistory) {
-            this.explorerCursor = this.explorerOps().length - 1
-        }
+        if (this.isUserStep(record)) this.cursor = this.userSteps().length - 1
         if (!record.fromHistory) {
             queueMicrotask(() => {
                 if (plexos.Core?.mem?.booting || plexos.Core?.mem?.readOnly) return
@@ -165,65 +178,94 @@ export default class CoreChangeLog {
         }
     }
 
-    async undoExplorer() { // fromHistory so Command.run does not log the inverse again
-        const ops = this.explorerOps()
-        if (this.explorerCursor < 0 || !ops[this.explorerCursor]) return false
-        const { op } = ops[this.explorerCursor]
-        await this.applyInverse(op)
-        this.explorerCursor -= 1
+    // Undo and redo replay a step as System commands marked replay: logged and saved like any change, but not
+    // steps themselves, so they never stack. Every Explorer window and the Desktop share this one history.
+    async undo() {
+        const steps = this.userSteps()
+        if (this.cursor < 0 || !steps[this.cursor]) return false
+        const step = steps[this.cursor].map(({ op }) => op)
+        this.cursor -= 1
+        // later changes first. What went to the bin comes back as one transfer per folder it left
+        const restores = new Map()
+        for (const op of [...step].reverse()) {
+            if (op.type === "move" && File.inBin(op.path)) {
+                const folder = File.dirname(op.oldPath)
+                if (!restores.has(folder)) restores.set(folder, [])
+                restores.get(folder).push(op.path)
+            } else {
+                await this.applyInverse(op)
+            }
+        }
+        if (restores.size) {
+            const { moveFiles } = await import("/plexos/app/sys/System/File Management/move.js")
+            await Promise.all([...restores].map(([folder, paths]) => moveFiles(paths.reverse(), folder)))
+        }
+        File.refreshViews()
         return true
     }
 
-    async redoExplorer() {
-        const ops = this.explorerOps()
-        const next = this.explorerCursor + 1
-        if (!ops[next]) return false
-        await this.applyForward(ops[next].op)
-        this.explorerCursor = next
+    async redo() {
+        const steps = this.userSteps()
+        const next = this.cursor + 1
+        if (!steps[next]) return false
+        this.cursor = next
+        for (const { op } of steps[next]) await this.applyForward(op)
+        File.refreshViews()
         return true
+    }
+
+    replay(command, args) {
+        return plexos.System.cmd(command, { ...args, replay: true })
     }
 
     async applyInverse(op) {
         switch (op.type) {
             case "create":
-                if (op.path) File.delete({ path: op.path, fromHistory: true })
+                if (op.path) await this.replay("file.delete", { path: op.path })
                 break
             case "delete":
-                if (op.before) await File.restoreSerialized(op.before, op.path)
+                if (op.before) await this.replay("file.restore", { serialized: op.before, path: op.path })
                 break
             case "rename":
-                File.rename({ path: op.path, rename: File.basename(op.oldPath), fromHistory: true })
+                await this.replay("file.rename", { path: op.path, rename: File.basename(op.oldPath) })
                 break
             case "move":
-                File.move({ path: op.path, to: File.dirname(op.oldPath), fromHistory: true })
+                // Out of the bin is a restore: a transfer, so a name taken meanwhile gets the conflict dialog
+                if (File.inBin(op.path)) {
+                    const { moveFiles } = await import("/plexos/app/sys/System/File Management/move.js")
+                    await moveFiles([op.path], File.dirname(op.oldPath))
+                    break
+                }
+                await this.replay("file.move", { path: op.path, to: File.dirname(op.oldPath) })
                 break
             case "write":
             case "modify":
-                if (op.before) File.writeSerialized(op.path, op.before)
+                if (op.before) await this.replay("file.write", { path: op.path, data: op.before[File.payloadKey(op.before.cfg?.class || "StringFile")] })
                 break
         }
-        File.refreshViews()
     }
 
     async applyForward(op) {
         switch (op.type) {
             case "create":
-                if (op.after) await File.restoreSerialized(op.after, op.path)
+                if (op.after) await this.replay("file.restore", { serialized: op.after, path: op.path })
                 break
             case "delete":
-                if (op.path) File.delete({ path: op.path, fromHistory: true })
+                if (op.path) await this.replay("file.delete", { path: op.path })
                 break
             case "rename":
-                File.rename({ path: op.oldPath, rename: File.basename(op.path), fromHistory: true })
+                await this.replay("file.rename", { path: op.oldPath, rename: File.basename(op.path) })
                 break
-            case "move":
-                File.move({ path: op.oldPath, to: File.dirname(op.path), fromHistory: true })
+            case "move": {
+                const moved = await this.replay("file.move", { path: op.oldPath, to: File.dirname(op.path), place: op.wrapper?.place })
+                // back into the bin it gets a new id, which a later undo needs to find it
+                if (moved && File.inBin(op.path)) op.path = moved.cfg.path
                 break
+            }
             case "write":
             case "modify":
-                if (op.after) File.writeSerialized(op.path, op.after)
+                if (op.after) await this.replay("file.write", { path: op.path, data: op.after[File.payloadKey(op.after.cfg?.class || "StringFile")] })
                 break
         }
-        File.refreshViews()
     }
 }

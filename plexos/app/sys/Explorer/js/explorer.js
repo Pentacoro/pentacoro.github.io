@@ -1,5 +1,6 @@
 import {getTask, runLauncher} from "/plexos/lib/functions/dll.js"
 import File from "/plexos/lib/classes/filesystem/file.js"
+import Task from "/plexos/lib/classes/system/task.js"
 import Icon from "/plexos/lib/classes/interface/icon.js"
 
 let task = getTask(/TASKID/)
@@ -22,7 +23,7 @@ mem.createExplorerIcons = async function(array) {
     }
 }
 mem.refresh = function () {
-    mem.explorerInit(mem.dirObject.cfg.path, task.id, "refresh")
+    return mem.explorerInit(mem.dirObject.cfg.path, task.id, "refresh")
 }
 mem.passesFilter = function (file) {
     if (!mem.typeFilter) return true
@@ -33,10 +34,40 @@ mem.getIcon = function(path){
     let find = mem.iconArray.filter(icon => icon.file === path)
     return ((find.length>0) ? find[0] : null)
 }
-mem.explorerInit = function (dir, id, act = null) {    
-    try {       
+const home = "@/home"
+
+// The folder on view, or the one asked for, is gone. Say so, then show the user folder
+mem.folderLost = function () {
+    task.popup(null, [["OK"]], {
+        name: "Error",
+        type: false,
+        title: "Directory not found",
+        description: "This directory seems to no longer exist. It might have been deleted, moved, or a parent directory been renamed",
+        icon: "",
+    })
+    const fallback = File.at(home) ? home : File.root
+    return mem.navigate(fallback)
+}
+// Whether the folder on view is path or sits somewhere inside it
+mem.showsPath = function (path) {
+    return mem.address === path || String(mem.address).startsWith(path + "/")
+}
+// After a transfer into this folder, select what arrived. The moves already drew it at the end of the list,
+// where it stays until a refresh sorts it
+mem.selectArrivals = function (to, moved) {
+    if (mem.address !== to) return
+    for (const icon of [...task.pocket]) {
+        task.pocket = task.pocket.remove(icon)
+        icon.statNode(0)
+    }
+    for (const path of moved) mem.getIcon(path)?.statNode(1)
+}
+mem.explorerInit = function (dir, id, act = null) {
+    if (File.at(dir)?.cfg?.class !== "DirectoryFile") return mem.folderLost()
+    mem.loadFolderView(dir)
+    try {
         let activeObj = File.at(dir)
-        let dirList   = Object.entries(activeObj.dir)
+        let dirList   = File.children(activeObj).map(file => [file.name, file]) // the bin holds wrappers, not a name map
 
         let dirFolder = []
         let dirFile   = []
@@ -72,35 +103,33 @@ mem.explorerInit = function (dir, id, act = null) {
         dirFile.sort  ((a, b) => a.name.localeCompare(b.name))
         dirPlex.sort  ((a, b) => a.name.localeCompare(b.name))
 
-        mem.ui.nav.keyNodes.address.textContent = dir
+        mem.ui.nav.keyNodes.address.value = dir
+        mem.markSidePanel?.()
 
         if (!mem.arg.mode) {
             task.window.setTitle(activeObj.name)
             task.window.setImage(activeObj.cfg.icon.getImage())
         }
 
-        mem.createExplorerIcons(dirPlex).then( e => mem.createExplorerIcons(dirFolder).then(e => mem.createExplorerIcons(dirFile)))
+        return mem.createExplorerIcons(dirPlex)
+            .then(e => mem.createExplorerIcons(dirFolder))
+            .then(e => mem.createExplorerIcons(dirFile))
+            .then(e => mem.applySort())
         
     } catch (e) {
-        task.popup(e,[["OK"]],{
-            name:"Error",
-            type:false,
-            title:"Directory not found",
-            description:"This directory seems to no longer exist. It might have been deleted, moved, or a parent directory been renamed",
-            taskid:task.id,
-            icon:""
-        })
-        if (act === "refresh") mem.explorerInit("", task.id)
+        console.error(e)
+        mem.folderLost()
     }
 }
+//Delete sends the selection to the bin. What's already in the bin goes for good, after asking (bin.js)
 mem.deleteSelectedNodes = function(){
-	for(let icon of task.pocket){
-		icon.deleteNode()
-		//delete from filesystem
-		if(File.at(icon.file)!=undefined) task.cmd("file.delete", {path: icon.file})
-	}
+	const icons = Task.unlockedIcons(task.pocket, task)
+	const recycled = icons.filter(icon => File.inBin(icon.file))
+	Task.recycleIcons(icons.filter(icon => !File.inBin(icon.file)), task)
+	if (recycled.length) mem.deleteForGood(recycled.map(icon => icon.file))
 }
 mem.new = async function(e, _this, Type, name){
+    if (File.isBin(mem.dirObject)) return // nothing is made in the bin
     let editFrom = mem.dirObject
     let classDefaults = File.classDefaults(Type)
 

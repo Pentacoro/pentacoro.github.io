@@ -13,47 +13,77 @@
 .nav {
     position: sticky;
     top: 0px;
+    box-sizing: border-box;
     width: 100%;
+    height: 32px;
+    gap: 0;
+    padding: 0 6px 0 0;
+    align-items: stretch;
 
-    border-top: 2px solid var(--color-toolbar-edge-light);
-    border-bottom: 2px solid var(--color-toolbar-edge-dark);
-
+    background-color: var(--color-toolbar-flat);
     justify-content: center;
     z-index: 100;
 }
 .nav>button{
-    width: 34px;
-    font-size: 1.4em;
+    width: 32px;
+    height: auto;
+    padding: 0;
     flex-shrink: 0;
-}
-.nav>.parent{
-    background-color: var(--color-toolbar-flat);
-}
-.nav>.refresh{
-    background-color: var(--color-toolbar-flat);
-}
-.nav>.addressBox{
-    background-color: var(--color-field);
-    border: 1px solid var(--color-toolbar-field-border);
-    cursor: text;
+    background-color: transparent;
 
     display: flex;
     align-items: center;
-    justify-content: left;
-    padding-left: .5em;
-
-    width: 100%;
-    height: 22px;
-
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    overflow: hidden;
+    justify-content: center;
+    font-size: 1em;
+    line-height: 1;
+}
+.nav>button.refresh{
+    font-size: 1.25em;
+}
+.nav>button:hover{
+    background-color: var(--color-toolbar-edge-dark);
+}
+.nav>button:active{
+    background-color: var(--color-toolbar-active);
+    color: var(--color-white);
+}
+.nav>button:disabled,
+.nav>button:disabled:hover{
+    background-color: transparent;
+    color: var(--color-toolbar-text);
+    opacity: .35;
+    cursor: default;
+}
+.nav>.addressBox{
+    display: flex;
+    align-items: center;
+    align-self: center;
+    flex: 1;
+    min-width: 0;
+    height: 24px;
+    margin-left: 6px;
 }
 .addressBox>.address{
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+    padding: 0 8px;
+
     background-color: var(--color-field);
-    color: var(--color-toolbar-placeholder);
-    cursor: text;
-    font-size: 1.1em;
+    border: 1px solid var(--color-toolbar-flat);
+    outline: none;
+
+    color: var(--color-toolbar-text);
+    font: inherit;
+    font-size: 1.05em;
+    text-overflow: ellipsis;
+}
+.addressBox>.address:hover{
+    border-color: var(--color-toolbar-field-border);
+}
+.addressBox>.address:focus{
+    border-color: var(--color-accent);
+    color: var(--color-menu-text);
 }
 /*---------------------------------------*/
 .dialogBar{
@@ -102,9 +132,113 @@
     transform: rotate(225deg);
 }
 /*---------------------------------------*/
+.component_menubar,
+.component_statusbar {
+    flex-shrink: 0;
+}
+.component_statusbar .statusbar_container {
+    justify-content: flex-start;
+    box-sizing: border-box;
+}
+.component_statusbar .status-msg:not(:empty)::before {
+    content: "|";
+    margin-right: 8px;
+    color: var(--color-toolbar-flat);
+}
+.component_statusbar .status-msg {
+    white-space: pre;
+}
+
+.explorerBody {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+}
+.sidePanel {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    flex: none;
+    width: 170px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    box-sizing: border-box;
+    padding: 6px 0;
+    user-select: none;
+}
+.sidePanel-resizer {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 5px;
+    cursor: col-resize;
+    z-index: 5;
+}
+.sidePanel-resizer:hover,
+.explorerBody.resizingSidePanel .sidePanel-resizer {
+    background-color: var(--color-toolbar-flat);
+}
+.explorerBody.resizingSidePanel {
+    cursor: col-resize;
+    user-select: none;
+}
+.explorerBody.noSidePanel > .sidePanel {
+    display: none;
+}
+.sidePanel-list {
+    flex: 1;
+}
+.sidePanel-bottom {
+    flex: none;
+    margin-top: 6px;
+    padding-top: 6px;
+    border-top: 1px solid var(--color-border);
+}
+.sidePanel-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    height: 24px;
+    padding: 0 10px;
+    border: 1px solid transparent;
+    color: var(--color-explorer-text);
+    cursor: pointer;
+}
+.sidePanel-item:hover {
+    background-color: var(--color-explorer-hover);
+}
+.sidePanel-item.current {
+    background-color: var(--color-explorer-select-ghost);
+    border-color: var(--color-explorer-border);
+}
+.sidePanel-item.missing {
+    opacity: .45;
+}
+.sidePanel-icon {
+    width: 16px;
+    height: 16px;
+    flex: none;
+    object-fit: contain;
+    filter: drop-shadow(0 1px 1px var(--color-shadow-soft));
+}
+.sidePanel-name {
+    min-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.selectBox {
+    position: absolute;
+    z-index: 15;
+    pointer-events: none;
+}
+
 .background {
     position: relative;
-    width: 100%;
+    flex: 1;
+    min-width: 0;
     height: 100%;
     overflow: auto;
 }
@@ -206,3 +340,176 @@
     overflow-wrap: break-word;
 }
 /*---------------------------------------*/
+
+/* Views. .background carries view-icons, view-list, view-details or view-tiles. The icons view is the layout above */
+.background {
+    /* each column's width can be set on its own (Explorer's columns.js sets them as they're dragged) */
+    --details-columns: 20px var(--column-name, minmax(180px, 1fr)) var(--column-date, 150px) var(--column-type, 130px) var(--column-size, 80px);
+}
+.detailsHeader {
+    display: none;
+}
+.explorerIcon > .iconDetail {
+    display: none;
+    min-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    color: var(--color-muted);
+}
+.background:not(.view-icons) .explorerIcon > .explorerIconText {
+    display: block;
+    height: auto;
+    text-align: left;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+.background:not(.view-icons) .list > .explorerIcon {
+    border-width: 1px;
+}
+
+/* List: small icons, filling columns top to bottom, scrolling sideways */
+.background.view-list > .list {
+    box-sizing: border-box;
+    display: grid;
+    grid-auto-flow: column;
+    grid-template-rows: repeat(auto-fill, 22px);
+    grid-auto-columns: 220px;
+    gap: 0 12px;
+    width: max-content;
+    min-width: 100%;
+}
+.background.view-list .list > .explorerIcon {
+    width: 100%;
+    height: 22px;
+    flex-direction: row;
+    gap: 4px;
+}
+.background.view-list .explorerIcon > .iconFrame {
+    flex: none;
+    width: 18px;
+    height: 18px;
+}
+
+/* Details: a table under a sticky header. Name, date modified, type, size */
+.background.view-details > .detailsHeader {
+    display: grid;
+    grid-template-columns: var(--details-columns);
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    box-sizing: border-box;
+    min-width: max-content;
+    height: 24px;
+    padding: 0 6px;
+    align-items: stretch;
+    background-color: var(--color-field);
+    border-bottom: 1px solid var(--color-border);
+    color: var(--color-toolbar-text);
+}
+.detailsColumn {
+    position: relative;
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    padding: 0 6px;
+    overflow: hidden;
+    white-space: nowrap;
+    border-right: 1px solid var(--color-border);
+}
+.detailsLabel {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.columnResizer {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 6px;
+    height: 100%;
+    cursor: col-resize;
+}
+.background.resizingColumn,
+.background.resizingColumn * {
+    cursor: col-resize !important;
+    user-select: none;
+}
+.detailsColumn.name {
+    grid-column: span 2;
+}
+.detailsColumn[data-sort] {
+    cursor: pointer;
+    user-select: none;
+}
+.detailsColumn[data-sort]:hover {
+    background-color: color-mix(in srgb, var(--color-toolbar-hover) 35%, transparent);
+}
+.detailsColumn.sorted::after {
+    content: "▲";
+    margin-left: 6px;
+    font-size: .7em;
+    color: var(--color-toolbar-text);
+}
+.detailsColumn.sorted.descending::after {
+    content: "▼";
+}
+.background.view-details > .list {
+    box-sizing: border-box;
+    display: block;
+    height: auto;
+    min-width: max-content;
+    padding: 2px 5px;
+}
+.background.view-details .list > .explorerIcon {
+    display: grid;
+    grid-template-columns: var(--details-columns);
+    align-items: center;
+    width: auto;
+    height: 22px;
+}
+.background.view-details .explorerIcon > .iconFrame {
+    width: 18px;
+    height: 18px;
+}
+.background.view-details .explorerIcon > .explorerIconText,
+.background.view-details .explorerIcon > .iconDetail {
+    display: block;
+    padding: 0 6px;
+}
+
+/* Tiles: medium icons with name, type and size beside them */
+.background.view-tiles > .list {
+    box-sizing: border-box;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 240px);
+    grid-auto-rows: 62px;
+    gap: 4px;
+    align-content: start;
+}
+.background.view-tiles .list > .explorerIcon {
+    display: grid;
+    grid-template-columns: 52px minmax(0, 1fr);
+    grid-template-rows: repeat(3, auto);
+    align-content: center;
+    column-gap: 6px;
+    width: auto;
+    height: 100%;
+    box-sizing: border-box;
+    padding: 0 6px 0 2px;
+}
+.background.view-tiles .explorerIcon > .iconFrame {
+    grid-row: 1 / span 3;
+    width: 52px;
+    height: 52px;
+}
+.background.view-tiles .explorerIcon > .explorerIconText,
+.background.view-tiles .explorerIcon > .iconType,
+.background.view-tiles .explorerIcon > .iconSize {
+    display: block;
+    grid-column: 2;
+}
+/* a folder has no size, but its line is kept so the name and type sit where they do for files */
+.background.view-tiles .explorerIcon > .iconSize {
+    min-height: 1lh;
+}

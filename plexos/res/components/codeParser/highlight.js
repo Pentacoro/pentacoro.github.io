@@ -308,7 +308,7 @@ RegexHighlighter.prototype.insertSyntaxHighlightingByClass = function(regexObjec
     // Loop through the codeblocks and wrap the matches
     for (var i = 0; i < codeBlocks.length; i++) {
         var codeBlock = codeBlocks[i];
-        var code = codeBlock.innerHTML;
+        var code = codeBlock.textContent;
         result = this.insertSyntaxHighlighting(regexObject, code);
         if (result) {
             codeBlock.innerHTML = result;
@@ -348,7 +348,7 @@ RegexHighlighter.prototype.loadSyntaxHighlightingByClass = function(className, l
             // Load the file from highlight folder and insert async
             this.ajaxGET(languagesFolderPath + language + ".json", function (response, passedElement) {
                 var syntax = JSON.parse(response);
-                var result = this.insertSyntaxHighlighting(syntax, passedElement.innerHTML);
+                var result = this.insertSyntaxHighlighting(syntax, passedElement.textContent);
                 if (result) {
                     passedElement.innerHTML = result;
                 }
@@ -369,19 +369,26 @@ RegexHighlighter.prototype.loadSyntaxHighlightingByClass = function(className, l
 *       match array
 *   @param {Match[]} array - The array which contains all the match information
 */
-RegexHighlighter.prototype.assembleNewStringFromMatchArray = function(string, array) {
-    var offset = 0;
-    for (var i = 0; i < array.length; i++) {
-        var match = array[i];
-        var index = match.index + offset;
-        var classes = match.classes;
-        var length = match.length;
-        string = this.wrapTextWithSpan(string, classes, index, index + length);
+// Matches are found in the raw text, and every piece is escaped as it's written out. Escaping first and
+// matching afterwards let a rule split an entity like &gt; in two, which showed up as stray "&gt" text.
+// A match that overlaps one already written is skipped.
+RegexHighlighter.escapeHTML = function(text) {
+    return String(text).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+};
 
-        // Update the offset
-        offset += ("<span class=''></span>" + classes).length;
+RegexHighlighter.prototype.assembleNewStringFromMatchArray = function(string, array) {
+    var escape = RegexHighlighter.escapeHTML;
+    var sorted = array.slice().sort(function(a, b) { return a.index - b.index; });
+    var out = "";
+    var cursor = 0;
+    for (var i = 0; i < sorted.length; i++) {
+        var match = sorted[i];
+        if (match.index < cursor) continue;
+        out += escape(string.slice(cursor, match.index));
+        out += "<span class='" + match.classes + "'>" + escape(string.slice(match.index, match.index + match.length)) + "</span>";
+        cursor = match.index + match.length;
     }
-    return string;
+    return out + escape(string.slice(cursor));
 };
 
 /**

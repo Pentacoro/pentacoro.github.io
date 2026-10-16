@@ -63,12 +63,16 @@ function layout(urls) {
         return urls.map(url => ({ url, x: 8, y: 12, w: 76, h: 76, skewX: -8, skewY: 0 }))
     }
     return [
-        { url: urls[0], x: 20, y: 18, w: 70, h: 70, skewX: -8, skewY: 0 },
+        { url: urls[0], x: 20, y: 18, w: 70, h: 70, skewX: -10, skewY: 0 },
         { url: urls[1], x: 6, y: 12, w: 66, h: 66, skewX: 0, skewY: 0 },
     ]
 }
 
-function build(icon) {
+// Below this size the layers would be unreadable, so a folder is just its plain picture
+const layeredFrom = 32
+
+function build(icon, px) {
+    if (px != null && px < layeredFrom) return { image: plain(icon), front: "", layers: [], cover: null, small: true }
     const saved = Array.isArray(icon?.layers) ? icon.layers : null
     const layers = saved || layout(childIcons(icon))
     const picture = plain(icon)
@@ -81,7 +85,7 @@ function build(icon) {
     }
 }
 
-export default function folderIcon(icon, mode) {
+export default function folderIcon(icon, mode, px = null) {
     if (mode === "plain") return plain(icon)
-    return build(icon)
+    return build(icon, px)
 }

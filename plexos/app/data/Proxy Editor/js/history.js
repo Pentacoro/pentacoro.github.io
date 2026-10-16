@@ -46,34 +46,13 @@ mem.applyLogEntry = function () {
     else mem.renderTree()
     mem.historyQuiet = false
 }
-mem.flushJsonHistory = function () {
-    if (mem.jsonHistoryTimer) {
-        clearTimeout(mem.jsonHistoryTimer)
-        mem.jsonHistoryTimer = null
-    }
-    if (mem.mode !== "json") return true
-    if (!mem.applySource()) return false
-    mem.recordChange()
-    return true
-}
-mem.queueJsonHistory = function () {
-    if (mem.jsonHistoryTimer) clearTimeout(mem.jsonHistoryTimer)
-    mem.jsonHistoryTimer = setTimeout(() => {
-        mem.jsonHistoryTimer = null
-        if (mem.mode !== "json" || mem.historyQuiet) return
-        if (!mem.applySource()) return
-        mem.recordChange()
-    }, 300)
-}
 mem.undo = function () {
-    if (mem.mode === "json" && !mem.flushJsonHistory()) return
     if (mem.logCursor <= 0) return
     mem.logCursor--
     mem.applyLogEntry()
     mem.setStatus("Undo")
 }
 mem.redo = function () {
-    if (mem.mode === "json" && !mem.flushJsonHistory()) return
     if (mem.logCursor >= mem.log.length - 1) return
     mem.logCursor++
     mem.applyLogEntry()

@@ -2,16 +2,79 @@
     display: flex;
     flex-direction: column;
     width: 440px;
-    color: var(--color-toolbar-text, #333);
+    color: var(--color-menu-text, #2C2C2C);
 }
 
 .transfer.sys-inset {
     border: 0;
 }
 
+.transfer-link {
+    color: var(--color-link);
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.transfer-link:hover,
+.transfer-link:focus-visible {
+    text-decoration-thickness: 2px;
+    outline: none;
+}
+
 .transfer-stage {
     height: 84px;
     flex: none;
+    display: flex;
+    align-items: center;
+    padding: 0 36px;
+}
+
+.transfer-folder {
+    width: 48px;
+    height: 48px;
+    flex: none;
+    object-fit: contain;
+    pointer-events: none;
+    position: relative;
+    z-index: 1;
+    filter: drop-shadow(0 2px 3px var(--color-shadow-soft));
+}
+
+.transfer-lane {
+    position: relative;
+    flex: 1;
+    align-self: stretch;
+    margin: 0 -24px;
+    pointer-events: none;
+}
+
+/* Runs center to center, so the folders cover its ends. */
+.transfer-lane::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 2px;
+    margin-top: -1px;
+    background: var(--color-border);
+}
+
+.transfer-traveler {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 44px;
+    height: 44px;
+    object-fit: contain;
+    transform: translate(-50%, -50%) scale(0.3);
+    transition: left 80ms linear, transform 80ms linear;
+    z-index: 2;
+    filter: drop-shadow(0 2px 3px var(--color-shadow-soft));
+}
+
+.transfer-traveler.jump {
+    transition: none;
 }
 
 .transfer-copy {

@@ -1,6 +1,6 @@
 import plexos from "/boot/plexos.js"
 import {getTask, iframeAntiHover, selectText, clearSelection, nullifyOnEvents} from "/plexos/lib/functions/dll.js"
-import { themeConstruct } from "/plexos/lib/functions/theme.js"
+import { themeConstruct, themeConstructOptional } from "/plexos/lib/functions/theme.js"
 import { fitIconSize } from "/plexos/lib/classes/interface/icon.js"
 import { coreReadOnly } from "/plexos/lib/functions/readOnly.js"
 import File from "/plexos/lib/classes/filesystem/file.js"
@@ -235,7 +235,9 @@ mem.class.IconDesk = class IconDesk {
         let armed = false
         let originX = 0
         let originY = 0
-	
+        let dragVisual = null
+        let origins = null // where each icon sat when the drag started
+
         dragMouseDown(e)
         function dragMouseDown(e) {
             e = e || window.event
@@ -294,6 +296,7 @@ mem.class.IconDesk = class IconDesk {
             if (!armed) {
                 if (Math.hypot(e.clientX - originX, e.clientY - originY) < 3) return
                 armed = true
+                origins = new Map(task.pocket.map(icon => [icon, { ...icon.coords }]))
                 for (let icon of task.pocket) icon.node.style.pointerEvents = "none"
             }
             
@@ -304,48 +307,66 @@ mem.class.IconDesk = class IconDesk {
             pos4 = e.clientY
     
             System.mem.var.dragging = true
-            
-            
-            //managing selected icons
+
+            //the real icons stay put. Where they would land is tracked in coords, and the theme draws the drag
             for (let icon of task.pocket){
-                //dragLayer layer
-                document.getElementById("dragLayer").appendChild(icon.node)
-                //set position for selected icons:------------|
                 icon.coords.tx = (icon.coords.tx - pos1)
                 icon.coords.ty = (icon.coords.ty - pos2)
                 mem.grid.gridArr[icon.coords.ax][icon.coords.ay].used = false
                 mem.grid.gridArr[icon.coords.ax][icon.coords.ay].icon = null
-                //--------------------------------------------|
-                
-                icon.statNode(2)
+                icon.state = 2
+            }
+            if (!dragVisual) {
+                dragVisual = themeConstructOptional("desktopDrag", [...task.pocket], {
+                    layer: document.getElementById("dragLayer"),
+                }) || {}
+            }
+            dragVisual.move?.()
+        }
+
+        function endDragVisual() {
+            dragVisual?.end?.()
+            dragVisual = null
+        }
+
+        //icons go back to the cells they left
+        function restoreIcons(icons) {
+            for (const icon of icons) {
+                const origin = origins?.get(icon)
+                if (!origin || !icon.node) continue
+                icon.coords = { ...origin }
+                const cell = mem.grid.gridArr[origin.ax]?.[origin.ay]
+                if (cell) {
+                    cell.used = true
+                    cell.icon = icon
+                }
                 icon.poseNode()
+                icon.statNode(1)
+                icon.highlight(false)
             }
         }
-    
-        function closeDragIcon(e) {	
+
+        //only a drop on empty desktop places icons where they were let go
+        function onBareDesktop(e) {
+            const el = document.elementFromPoint(e.clientX, e.clientY)
+            return !!el && !el.closest(".window, .icon, #overlayLayer") && !!el.closest("#desktopLayer")
+        }
+
+        function closeDragIcon(e) {
             //stop moving when mouse button is released:
             document.onmouseup = null
             document.onmousemove = null
             iframeAntiHover(false)
             const paths = task.pocket.map(icon => icon.file)
-            const dest = System.mem.var.dragging ? destinationAt(e.clientX, e.clientY, paths) : null
+            const dragged = System.mem.var.dragging
+            const dest = dragged ? destinationAt(e.clientX, e.clientY, paths) : null
+            endDragVisual()
             for (let icon of task.pocket) if (icon.node) icon.node.style.pointerEvents = ""
-            if (dest) {
-                for (let icon of task.pocket) {
-                    document.getElementById("iconLayer").appendChild(icon.node)
-                    icon.statNode(1)
-                    icon.highlight(false)
-                }
+            //a move, a refused drop, or a drop on a window: icons stay where they were and leave only as their files move
+            if (dragged && (dest || !onBareDesktop(e))) {
+                restoreIcons(task.pocket)
                 System.mem.var.dragging = false
-                moveFiles(paths, dest, { x: e.clientX, y: e.clientY }).finally(() => {
-                    const left = task.pocket.filter(icon => paths.includes(icon.file) && icon.node)
-                    if (left.length) mem.repositionIcons(left, true)
-                    for (const icon of left) {
-                        icon.poseNode()
-                        icon.statNode(1)
-                    }
-                    mem.writeIconConfig()
-                })
+                if (dest) moveFiles(paths, dest, { x: e.clientX, y: e.clientY }, task).finally(() => mem.writeIconConfig())
                 return
             }
             
@@ -376,7 +397,6 @@ mem.class.IconDesk = class IconDesk {
             } else {
                 for (let icon of task.pocket){
                     icon.highlight(false)
-                    document.getElementById("iconLayer").appendChild(icon.node)
                 }
                 _this.statNode(1)
             }
@@ -473,8 +493,9 @@ mem.class.IconDesk = class IconDesk {
     
                 //insert into fyleSystem
                 if (iconText.textContent != editFile.name) { //if the name changed
-                    //editFile.rename(iconText.textContent)
+                    //a held file keeps its name
                     task.cmd("file.rename", {path: editFile.cfg.path, rename: iconText.textContent})
+                        .then(renamed => { if (!renamed) iconText.textContent = editFile.name })
                 }
     
                 thisIcon.statNode(1)
@@ -694,5 +715,6 @@ mem.writeIconConfig = function(){
     task.cmd("file.write", {
         path: cfg.path+"/icon.json",
         data: JSON.stringify(cfg.icon, null, "\t"),
+        undoable: false, // the desktop's own layout, not a change to the user's files
     })
 }

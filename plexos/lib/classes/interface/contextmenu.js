@@ -6,7 +6,7 @@ import Task from "../system/task.js" //file explorer deletion
 import File from "../filesystem/file.js"
 
 export default class ContextMenu {
-    static configAddr = "/plexos/cfg/context"
+    static configAddr = "@/plexos/cfg/context"
     static contextVar = null
     static subMenus   = 0
     static target     = null
@@ -30,9 +30,6 @@ export default class ContextMenu {
         let newMenu = ui.createRoot()
         ContextMenu.node = newMenu
 
-        newMenu.style.top  = e.clientY + "px"
-        newMenu.style.left = e.clientX + "px"
-
         //handle hover context transfer
         if (contextVar) {
             if (contextVar.continuousContext!=undefined) contextVar.continuousContext = true
@@ -42,6 +39,26 @@ export default class ContextMenu {
 
         let contextArray = ContextMenu.applyTemplates(e, target, menu)
         ContextMenu.draw(newMenu, contextArray)
+        ContextMenu.levels[0].leftward = ContextMenu.place(newMenu, {
+            right: e.clientX, left: e.clientX, down: e.clientY, up: e.clientY,
+        })
+    }
+    // Puts a drawn menu where it fits. It opens rightward from `right` and downward from `down`, and flips to end at
+    // `left` or `up` when it would run past the screen edge. preferLeft keeps a submenu going the way its parent went.
+    // Returns whether it opened leftward.
+    static place(node, { right, left, down, up, preferLeft = false }) {
+        const width  = node.offsetWidth
+        const height = node.offsetHeight
+        const fitsRight = right + width <= window.innerWidth
+        const fitsLeft  = left - width >= 0
+        const leftward  = preferLeft ? (fitsLeft || !fitsRight) : (!fitsRight && fitsLeft)
+        let x = leftward ? left - width : right
+        let y = (down + height <= window.innerHeight) ? down : up - height
+        x = Math.max(0, Math.min(x, window.innerWidth - width))
+        y = Math.max(0, Math.min(y, window.innerHeight - height))
+        node.style.left = x + "px"
+        node.style.top  = y + "px"
+        return leftward
     }
     //close all context menus
     static close = function() {
@@ -59,6 +76,8 @@ export default class ContextMenu {
         ContextMenu.levels   = []
     }
     static applyTemplates = function (e, target, menu=null) {
+        // a menu marked exclusive is shown as given, without the shared template's sections
+        if (menu?.exclusive) return menu
         // No core yet: the template file lives in the mounted filesystem.
         let templatesFile = null
         try {
@@ -144,11 +163,16 @@ export default class ContextMenu {
             ContextMenu.subMenus = depth + 1
             let newSub = ui.createSubmenu(depth + 1)
 
-            newSub.style.left  = rect1.left + parent.offsetWidth - 1 + "px"
-            newSub.style.top   = rect2.top - 1 + "px"
             newSub.style.minWidth = root.offsetWidth - root.offsetWidth / 3 + "px"
 
             ContextMenu.draw(newSub, item.func, depth + 1)
+            ContextMenu.levels[depth + 1].leftward = ContextMenu.place(newSub, {
+                right: rect1.right - 1,
+                left: rect1.left + 1,
+                down: rect2.top - 1,
+                up: rect2.bottom + 1,
+                preferLeft: ContextMenu.levels[depth].leftward,
+            })
         }
 
         function closeSubmenus(depth) {
@@ -162,6 +186,67 @@ export default class ContextMenu {
         }
     }
 }
+
+// Keyboard, on whatever menu is open: Up/Down move through the deepest menu, Enter picks, Right opens a submenu,
+// Left closes one, Escape closes everything. Returns whether it used the key, so a menubar can take Left/Right
+// at the top level to move to the next menu.
+ContextMenu.focused = function (depth) {
+    return ContextMenu.levels[depth]?.options.find(option => option.classList.contains("keyFocus")) || null
+}
+ContextMenu.focusOption = function (depth, option) {
+    for (const each of ContextMenu.levels[depth]?.options || []) each.classList.toggle("keyFocus", each === option)
+}
+ContextMenu.focusFirst = function (depth = 0) {
+    const first = ContextMenu.levels[depth]?.options.find(option => !option.classList.contains("disabled"))
+    if (first) ContextMenu.focusOption(depth, first)
+}
+ContextMenu.handleKey = function (e) {
+    const depth = ContextMenu.levels.length - 1
+    if (depth < 0) return false
+    const level = ContextMenu.levels[depth]
+    const options = level.options.filter(option => !option.classList.contains("disabled"))
+    const current = ContextMenu.focused(depth)
+    switch (e.key) {
+        case "ArrowDown":
+        case "ArrowUp": {
+            if (!options.length) return true
+            const step = e.key === "ArrowDown" ? 1 : -1
+            const at = options.indexOf(current)
+            const next = at < 0 ? (step > 0 ? 0 : options.length - 1) : (at + step + options.length) % options.length
+            ContextMenu.focusOption(depth, options[next])
+            return true
+        }
+        case "ArrowRight":
+            if (!current?.querySelector(".last")) return false
+            current.onmouseover?.()
+            ContextMenu.focusFirst(depth + 1)
+            return true
+        case "ArrowLeft":
+            if (depth === 0) return false
+            for (const removed of ContextMenu.levels.splice(depth)) removed.node.remove()
+            for (const option of ContextMenu.levels[depth - 1].options) option.classList.remove("hover")
+            ContextMenu.subMenus = depth - 1
+            return true
+        case "Enter":
+        case " ":
+            if (!current) return true
+            if (current.querySelector(".last")) {
+                current.onmouseover?.()
+                ContextMenu.focusFirst(depth + 1)
+            } else {
+                current.click()
+            }
+            return true
+        case "Escape":
+            ContextMenu.close()
+            return true
+    }
+    return false
+}
+window.addEventListener("keydown", (e) => {
+    if (e.defaultPrevented || !ContextMenu.levels.length) return
+    if (ContextMenu.handleKey(e)) e.preventDefault()
+})
 
 // A click that is not the menu closes it and drops any text selection.
 window.addEventListener("mousedown", (e) => {

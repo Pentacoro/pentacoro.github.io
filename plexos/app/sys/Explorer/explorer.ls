@@ -41,7 +41,7 @@ export default {
             {
                 name : args.name,
                 task : task.id, 
-                icon : (File.at(args.path)) ? File.at(args.path).cfg.icon.getImage() : "/THEME/icons/files/defaultDIR.svg",            }
+                icon : (File.at(args.path)) ? File.at(args.path).cfg.icon.getImage() : "/THEME/icons/files/images/folder.svg",            }
         )
 
         ini()

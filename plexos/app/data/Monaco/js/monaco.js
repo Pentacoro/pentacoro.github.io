@@ -1,5 +1,7 @@
 import {getTask} from "/plexos/lib/functions/dll.js"
 import { coreReadOnly } from "/plexos/lib/functions/readOnly.js"
+import { fileDialog } from "/plexos/lib/functions/dialogs.js"
+import File from "/plexos/lib/classes/filesystem/file.js"
 
 let task = getTask(/TASKID/)
 let mem  = task.mem
@@ -54,6 +56,42 @@ require(["vs/editor/editor.main"], function () {
 		task.node.getElementsByClassName("editor")[0]?.getElementsByClassName("view-overlays focused")[0]?.classList.remove("focused")
 	}
 })
+// The file isn't held, so it may have been moved, renamed or deleted since it was opened. Then Save asks where.
+mem.save = async function () {
+	if (coreReadOnly() || !mem.editor) return false
+	const data = mem.editor.getValue()
+	if (File.at(mem.arg.fileAddr)) {
+		return !!await task.cmd("file.write", { path: mem.arg.fileAddr, data })
+	}
+	const folder = File.dirname(mem.arg.fileAddr)
+	let path = await fileDialog({
+		mode: "save",
+		path: File.at(folder) ? folder : undefined,
+		fileName: File.basename(mem.arg.fileAddr),
+		parentTaskId: task.id,
+	})
+	if (!path) return false
+	const existing = File.at(path)
+	if (existing && existing.cfg.class !== "StringFile") return false
+	if (!existing) {
+		const created = await task.cmd("file.create", {
+			path: File.dirname(path),
+			Type: "StringFile",
+			name: File.basename(path),
+			content: "",
+		})
+		if (!created) return false
+		path = created.cfg.path
+		File.refreshViews()
+	}
+	const file = File.at(path)
+	mem.arg.fileAddr = path
+	mem.arg.file = file
+	task.window.setTitle(file.name + " - Monaco")
+	task.window.setImage(file.cfg.icon.getImage())
+	return !!await task.cmd("file.write", { path, data })
+}
+
 task.onEnd = e => {
 	mem.editor.dispose()
 }

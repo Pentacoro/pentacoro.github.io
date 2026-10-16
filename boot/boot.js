@@ -13,8 +13,8 @@ import { runLauncher } from "../plexos/lib/functions/dll.js"
 import { showUsers } from "./users.js"
 import { bootLocalPlexos } from "./cores.js"
 
-// Temporary. Skip the landing and open the local Plexos clone.
-const bootLocalClone = true
+// For development: true skips the landing and opens the local Plexos clone.
+const bootLocalClone = false
 
 async function loadConfig() {
     // Landing theme and the last user live in IndexedDB, before any core is mounted.

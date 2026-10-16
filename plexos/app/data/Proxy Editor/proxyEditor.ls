@@ -31,7 +31,7 @@ export default {
             {
                 name : File.at(args.path).name+" - Proxy Editor",
                 task : task.id,
-                icon : (File.at(args.path)) ? File.at(args.path).cfg.icon.getImage() : "/THEME/icons/files/proxy.svg",
+                icon : (File.at(args.path)) ? File.at(args.path).cfg.icon.getImage() : "/THEME/icons/files/images/proxy.svg",
                 appParams: {
                     filePath: args.path,
                     sizeDrawMethod: "window",

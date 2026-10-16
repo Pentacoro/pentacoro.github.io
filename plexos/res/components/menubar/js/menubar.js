@@ -44,6 +44,7 @@ mem.menubarRender = function () {
         }
         button.addEventListener("closemenu", e=>{buttonMenuClose(e)})
         button.contextMenu = true
+        button.openMenu = () => buttonMenuOpen({ preventDefault() {} }) // for keyboard.js
     }
 }
 mem.menubarRender()

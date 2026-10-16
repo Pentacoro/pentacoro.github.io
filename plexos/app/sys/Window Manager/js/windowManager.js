@@ -63,45 +63,45 @@ function cloneDraw(value) {
     return JSON.parse(JSON.stringify(value))
 }
 
-function isLegacyDrawParams(value) {
-    if (!value || typeof value !== "object" || Array.isArray(value)) return false
-    return ("posX" in value) || ("posY" in value) || ("width" in value) || ("height" in value) || ("maximized" in value)
+const drawKeys = ["posX", "posY", "width", "height", "maximized"]
+
+// Just a window's size and place, leaving out anything stored beside them (like a windows bag)
+function pickDraw(value) {
+    const bag = value ? ProxyFile.unwrapProxy(value) : null
+    if (!bag || typeof bag !== "object" || !drawKeys.some(key => key in bag)) return null
+    return cloneDraw(Object.fromEntries(drawKeys.filter(key => key in bag).map(key => [key, bag[key]])))
 }
 
-function readUserDrawParams(current) {
-    const bag = current ? ProxyFile.unwrapProxy(current) : null
-    if (!bag || typeof bag !== "object") return null
-    if (isLegacyDrawParams(bag)) return cloneDraw(bag)
-    return cloneDraw(bag[currentUserName()])
+// Saved draw parameters are per user, one key above them: <entry>[<user>].windowDrawParameters.
+// Older cores kept them in <entry>.windowDrawParameters, either flat or under .current[<user>]. Those still
+// read as a fallback until this user saves their own.
+function legacyDraw(bag) {
+    const old = bag ? ProxyFile.unwrapProxy(bag) : null
+    if (!old || typeof old !== "object") return null
+    return pickDraw(old) || pickDraw(old.current) || pickDraw(old.current?.[currentUserName()])
 }
 
-// windowDrawParameters.current is keyed by username; a leftover flat posX bag is treated as legacy.
-function writeUserDrawParams(parent, params) {
-    const user = currentUserName()
-    const snapshot = JSON.parse(JSON.stringify(params))
-    const existing = parent.current ? ProxyFile.unwrapProxy(parent.current) : null
-    if (!existing || isLegacyDrawParams(existing)) parent.current = {}
-    parent.current[user] = snapshot
+function assignDraw(bag, params) {
+    for (const key of drawKeys) if (key in params) bag[key] = params[key]
 }
 
 windowManager.getInitialDrawParams = function(window) {
     const appname      = Task.id(window.task).name
     const filePath     = window.appParams.filePath
+    const user         = currentUserName()
 
     let getRegistryAppParams = function (window) {
         const taskRef = Task.id(window.task)
         if (!taskRef?.appID || !plexos.Core?.registry) return null
-        let registryAppEntry = plexos.Core.registry.getAppParams(taskRef.appID)
-        return readUserDrawParams(registryAppEntry?.windowDrawParameters?.current)
+        const registryAppEntry = plexos.Core.registry.getAppParams(taskRef.appID)
+        return pickDraw(registryAppEntry?.[user]?.windowDrawParameters) || legacyDraw(registryAppEntry?.windowDrawParameters)
     }
 
     let getRegistryFileParams = function (window) {
         if (!filePath) return null
-        const data = ProxyFile.unwrapProxy(File.at(`/plexos/reg/files.proxy`).data) || {}
-        const stored = data[filePath]?.applications?.[appname]?.windowDrawParameters
-        if (!stored || typeof stored !== "object") return null
-        if (isLegacyDrawParams(stored)) return cloneDraw(stored)
-        return readUserDrawParams(stored.current)
+        const data = ProxyFile.unwrapProxy(File.at(`@/plexos/reg/files.proxy`).data) || {}
+        const app = data[filePath]?.applications?.[appname]
+        return pickDraw(app?.[user]?.windowDrawParameters) || legacyDraw(app?.windowDrawParameters)
     }
     switch (window.appParams.saveDrawParameters) {
         case "default":
@@ -111,8 +111,9 @@ windowManager.getInitialDrawParams = function(window) {
             const taskRef = Task.id(window.task)
             const key = window.appParams.windowKey
             if (!taskRef?.appID || !plexos.Core?.registry || !key) return null
-            let registryAppEntry = plexos.Core.registry.getAppParams(taskRef.appID)
-            const saved = readUserDrawParams(registryAppEntry?.windowDrawParameters?.windows?.[key]?.current)
+            const registryAppEntry = plexos.Core.registry.getAppParams(taskRef.appID)
+            const saved = pickDraw(registryAppEntry?.[user]?.windowDrawParameters?.windows?.[key])
+                || legacyDraw(registryAppEntry?.windowDrawParameters?.windows?.[key])
             if (!saved) return null
             if (window.appParams.sizeDrawMethod !== "fit-content" && saved.width > 0 && saved.height > 0) {
                 return { posX: saved.posX, posY: saved.posY, width: saved.width, height: saved.height, maximized: !!saved.maximized }
@@ -131,27 +132,22 @@ windowManager.setInitialDrawParams = function(window) {
     const appname      = Task.id(window.task).name
     const filePath     = window.appParams.filePath
     const taskRef      = Task.id(window.task)
+    const user         = currentUserName()
+    const appEntry = () => {
+        const pointer = plexos.Core.registry.resolveIndex(taskRef.appID)
+        return File.at(`@/plexos/reg/applications.proxy`).data[pointer.bucket][pointer.name]
+    }
 
+    // The proxy creates each missing level as it's read, so these paths can be written straight away
     switch (window.appParams.saveDrawParameters) {
         case "default":
         case "app" :
             if (!taskRef?.appID || !plexos.Core?.registry) return
-            {
-                const pointer = plexos.Core.registry.resolveIndex(taskRef.appID)
-                const registryAppEntry = File.at(`/plexos/reg/applications.proxy`).data[pointer.bucket][pointer.name]
-                if (!registryAppEntry.windowDrawParameters) registryAppEntry.windowDrawParameters = {}
-                writeUserDrawParams(registryAppEntry.windowDrawParameters, window.drawParams)
-            }
+            assignDraw(appEntry()[user].windowDrawParameters, window.drawParams)
             return
         case "window": {
             if (!taskRef?.appID || !plexos.Core?.registry || !window.appParams.windowKey) return
-            const pointer = plexos.Core.registry.resolveIndex(taskRef.appID)
-            const registryAppEntry = File.at(`/plexos/reg/applications.proxy`).data[pointer.bucket][pointer.name]
-            if (!registryAppEntry.windowDrawParameters) registryAppEntry.windowDrawParameters = {}
-            if (!registryAppEntry.windowDrawParameters.windows) registryAppEntry.windowDrawParameters.windows = {}
-            const key = window.appParams.windowKey
-            if (!registryAppEntry.windowDrawParameters.windows[key]) registryAppEntry.windowDrawParameters.windows[key] = {}
-            writeUserDrawParams(registryAppEntry.windowDrawParameters.windows[key],
+            assignDraw(appEntry()[user].windowDrawParameters.windows[window.appParams.windowKey],
                 (window.appParams.sizeDrawMethod === "fit-content")
                     ? { posX: window.drawParams.posX, posY: window.drawParams.posY }
                     : window.drawParams
@@ -160,14 +156,7 @@ windowManager.setInitialDrawParams = function(window) {
         }
         case "file":
             if (!filePath) return
-            {
-                const fileAppEntry = File.at(`/plexos/reg/files.proxy`).data[filePath].applications[appname]
-                const stored = fileAppEntry.windowDrawParameters
-                    ? ProxyFile.unwrapProxy(fileAppEntry.windowDrawParameters)
-                    : null
-                if (!stored || isLegacyDrawParams(stored)) fileAppEntry.windowDrawParameters = {}
-                writeUserDrawParams(fileAppEntry.windowDrawParameters, window.drawParams)
-            }
+            assignDraw(File.at(`@/plexos/reg/files.proxy`).data[filePath].applications[appname][user].windowDrawParameters, window.drawParams)
             return
     }
 }

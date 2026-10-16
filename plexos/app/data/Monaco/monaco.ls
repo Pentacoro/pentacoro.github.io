@@ -11,6 +11,7 @@ export default {
         //on app init
         function ini() {
             let mem = Task.id(taskid).mem
+            mem.arg.fileAddr      = args.path
             mem.arg.file          = File.at(args.path)
             mem.arg.fileData      = File.at(args.path).data
             mem.arg.fileExtension = File.at(args.path).cfg.exte
@@ -38,7 +39,7 @@ export default {
             {
                 name : File.at(args.path).name+" - Monaco",
                 task : task.id, 
-                icon : (File.at(args.path)) ? File.at(args.path).cfg.icon.getImage() : "/THEME/icons/files/defaultFile.svg",
+                icon : (File.at(args.path)) ? File.at(args.path).cfg.icon.getImage() : "/THEME/icons/files/images/file.svg",
                 appParams: {
                     minimizeable: true,
                     maximizeable: true,

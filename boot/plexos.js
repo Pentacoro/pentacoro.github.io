@@ -120,22 +120,43 @@ plexos.db.deleteUser = async (name) => {
     await plexos.db.txnDone(transaction)
 }
 
+// The bin (a folder whose dir is an array) holds wrappers found by id, not files found by name
+function takeFrom(parent, name) {
+    if (Array.isArray(parent.dir)) {
+        const at = parent.dir.findIndex(entry => entry.id === name)
+        return at < 0 ? undefined : parent.dir.splice(at, 1)[0].file
+    }
+    const node = parent.dir[name]
+    delete parent.dir[name]
+    return node
+}
+function putInto(parent, name, node, wrapper = {}) {
+    if (!Array.isArray(parent.dir)) {
+        parent.dir[name] = node
+        return
+    }
+    const existing = parent.dir.find(entry => entry.id === name)
+    if (existing) existing.file = node
+    else parent.dir.push({ id: name, recycled: wrapper.recycled, from: wrapper.from, place: wrapper.place, file: node })
+}
+
 plexos.db.applyCorePlan = (stored, plan, File) => {
     for (const op of plan) {
         const type = op.type
         if (type === "create" || type === "write" || type === "modify") {
-            const parent = File.jsonAt(stored, File.dirname(op.path))
-            if (parent?.dir && op.after) parent.dir[File.basename(op.path)] = op.after
+            const parent = File.walk(stored, File.dirname(op.path))
+            if (parent?.dir && op.after) putInto(parent, File.basename(op.path), op.after)
         } else if (type === "delete") {
-            const parent = File.jsonAt(stored, File.dirname(op.path))
-            if (parent?.dir) delete parent.dir[File.basename(op.path)]
+            const parent = File.walk(stored, File.dirname(op.path))
+            if (parent?.dir) takeFrom(parent, File.basename(op.path))
         } else if (type === "repath") {
-            const fromParent = File.jsonAt(stored, File.dirname(op.oldPath))
-            const toParent = File.jsonAt(stored, File.dirname(op.path))
+            const fromParent = File.walk(stored, File.dirname(op.oldPath))
+            const toParent = File.walk(stored, File.dirname(op.path))
             if (!fromParent?.dir) continue
-            const node = fromParent.dir[File.basename(op.oldPath)]
-            delete fromParent.dir[File.basename(op.oldPath)]
-            if (toParent?.dir) toParent.dir[File.basename(op.path)] = op.after || node
+            const node = takeFrom(fromParent, File.basename(op.oldPath))
+            // a move into the bin carries its wrapper (when, where from, desktop place); older logs only the basics
+            const wrapper = op.wrapper || { recycled: op.timestamp, from: File.dirname(op.oldPath) }
+            if (toParent?.dir) putInto(toParent, File.basename(op.path), op.after || node, wrapper)
         }
     }
 }

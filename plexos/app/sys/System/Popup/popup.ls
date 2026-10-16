@@ -18,9 +18,13 @@ export default {
             arg.description = args.description
             arg.image       = args.image
             arg.taskid      = args.taskid || Task.System().id
+            arg.details     = args.details || null
+            arg.buttons     = args.buttons || null // { label, action } each. Without them the caller's errorB is used
+            arg.detailsHeight = args.detailsHeight || null
         }
         //on app end
         function end() {
+            if (typeof args.onClose === "function") args.onClose()
 
         }
         //task creation

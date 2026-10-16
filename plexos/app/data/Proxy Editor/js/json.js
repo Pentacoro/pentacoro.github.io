@@ -1,5 +1,4 @@
 import {getTask} from "/plexos/lib/functions/dll.js"
-import { coreReadOnly } from "/plexos/lib/functions/readOnly.js"
 
 let task = getTask(/TASKID/)
 let mem  = task.mem
@@ -21,21 +20,51 @@ mem.foldJson = async function (all) {
         await run("editor.foldLevel" + level)
     }
 }
+// The JSON view only shows the draft. Edits happen in the tree.
 mem.showJson = function () {
     mem.jsonLoadingEl.classList.remove("hidden")
     mem.treeEl.classList.add("hidden")
     mem.editorEl.classList.remove("behind")
     const text = JSON.stringify(mem.draft, null, 4)
     if (!mem.editor) return
-    mem.ignoreJsonChange = true
     if (mem.editor.getValue() !== text) mem.editor.setValue(text)
     mem.editor.getModel()?.updateOptions({ tabSize: 4, indentSize: 4, insertSpaces: true })
     mem.layoutEditor()
     Promise.resolve(mem.foldJson(true)).finally(() => {
         mem.jsonLoadingEl.classList.add("hidden")
-        mem.ignoreJsonChange = false
         mem.editor?.focus()
     })
+}
+// Patches only the lines between the unchanged top and bottom. Replacing all the text would drop every fold.
+mem.refreshJson = function () {
+    const model = mem.editor?.getModel()
+    if (!model) return
+    const next = JSON.stringify(mem.draft, null, 4).split("\n")
+    const prev = model.getLinesContent()
+    let top = 0
+    while (top < prev.length && top < next.length && prev[top] === next[top]) top++
+    if (top === prev.length && top === next.length) return
+    let bottom = 0
+    while (
+        bottom < prev.length - top && bottom < next.length - top &&
+        prev[prev.length - 1 - bottom] === next[next.length - 1 - bottom]
+    ) bottom++
+    const count = prev.length
+    const lastOld = count - bottom
+    const middle = next.slice(top, next.length - bottom)
+    let range, text
+    if (lastOld < count) {
+        // A kept line follows, so whole lines are swapped, line breaks included
+        range = new monaco.Range(top + 1, 1, lastOld + 1, 1)
+        text = middle.map(line => line + "\n").join("")
+    } else if (top < count) {
+        range = new monaco.Range(top + 1, 1, count, model.getLineMaxColumn(count))
+        text = middle.join("\n")
+    } else {
+        range = new monaco.Range(count, model.getLineMaxColumn(count), count, model.getLineMaxColumn(count))
+        text = "\n" + middle.join("\n")
+    }
+    model.applyEdits([{ range, text }])
 }
 mem.initJsonEditor = function () {
     const monacoBase = "https://cdn.jsdelivr.net/npm/monaco-editor@0.52.2/min"
@@ -55,8 +84,8 @@ mem.initJsonEditor = function () {
             fontSize: "12px",
             theme: "vs-dark",
             automaticLayout: true,
-            readOnly: coreReadOnly(),
-            domReadOnly: coreReadOnly(),
+            readOnly: true,
+            domReadOnly: true,
             minimap: { enabled: false },
             tabSize: 4,
             indentSize: 4,
@@ -65,11 +94,6 @@ mem.initJsonEditor = function () {
             folding: true,
             foldingStrategy: "indentation",
             showFoldingControls: "always",
-        })
-        mem.editor.onDidChangeModelContent(() => {
-            if (mem.mode !== "json" || mem.ignoreJsonChange) return
-            mem.markDirty(true)
-            mem.queueJsonHistory()
         })
         new ResizeObserver(() => mem.layoutEditor()).observe(mem.editorEl.parentElement)
         if (mem.mode === "json") mem.showJson()

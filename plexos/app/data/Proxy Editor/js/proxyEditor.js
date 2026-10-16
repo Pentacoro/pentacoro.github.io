@@ -13,10 +13,20 @@ mem.render = function () {
 }
 mem.setMode = function (mode) {
     if (mode === mem.mode) return
-    if (mem.mode === "json" && !mem.flushJsonHistory()) return
     mem.mode = mode
     mem.render()
 }
+// Redraw the open view without losing the reader's place: scroll in the tree, scroll and folds in JSON.
+mem.refreshView = function () {
+    if (mem.mode === "json") {
+        mem.refreshJson()
+        return
+    }
+    const scroll = mem.treeEl.scrollTop
+    mem.renderTree()
+    mem.treeEl.scrollTop = scroll
+}
+
 mem.setCollapsed = function (all) {
     mem.collapsed = new Set()
     if (all) mem.walkCollapse(mem.draft, [])

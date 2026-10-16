@@ -1,6 +1,7 @@
 import plexos from "../../../../boot/plexos.js"
 import File from "../filesystem/file.js"
 import Task from "./task.js"
+import FileLock from "./fileLock.js"
 import { commandWrites, coreReadOnly } from "../../functions/readOnly.js"
 
 export default class Command {
@@ -26,6 +27,34 @@ export default class Command {
         return file ? File.serializeNode(file) : null
     }
 
+    // Paths a command would touch. deep: the change carries everything inside the path along.
+    static lockTargets(command, args = {}) {
+        switch (command) {
+            case "file.write":
+            case "file.modify":
+            case "file.create":
+                return [{ path: args.path, deep: false }]
+            case "file.restore":
+                return [{ path: File.dirname(args.path), deep: false }]
+            case "file.delete":
+            case "file.rename":
+                return [{ path: args.path, deep: true }]
+            case "file.move":
+                return [{ path: args.path, deep: true }, { path: args.to || args.newPath, deep: false }]
+            default:
+                return []
+        }
+    }
+
+    // A path in the bin a command would change. Things in the bin have to be restored first
+    static binTarget(command, args = {}) {
+        if (args.replay) return null
+        if (["file.write", "file.modify", "file.rename", "file.create"].includes(command) && File.inBin(args.path)) return args.path
+        return null
+    }
+
+    static userApps = ["Explorer", "Desktop"]
+
     static authorFor(cmd) {
         const registry = plexos.Core.registry
         let appName = cmd.author
@@ -34,10 +63,12 @@ export default class Command {
         } catch {
             appName = cmd.author
         }
-        const explorerID = registry?.tryGetAppID("Explorer")
-        const isExplorer = cmd.appID && explorerID && cmd.appID === explorerID // Explorer edits count as the user
+        // Changes made from Explorer or the Desktop are the user's, and so are transfers they started (args.by)
+        const userApps = Command.userApps.map(name => registry?.tryGetAppID(name)).filter(Boolean)
+        const actingApp = cmd.arguments?.by?.appID || cmd.appID
+        const isUser = !!actingApp && userApps.includes(actingApp)
         return {
-            user: isExplorer ? (plexos.System.user?.name || null) : null,
+            user: isUser ? (plexos.System.user?.name || "User") : null,
             appID: cmd.appID || null,
             app: appName || null,
             taskId: cmd.taskId || null,
@@ -59,6 +90,16 @@ export default class Command {
                 msg: (args) => `File created at ${args.path || 'unknown'}`,
                 ask: (app) => `${app} is requesting permission to create files.`,
                 snapshotPath: (args, result) => result?.cfg?.path || (args.path + "/" + args.name),
+            },
+            'file.restore': {
+                // a whole file or folder back from a snapshot, for undo and redo. Logged as a create
+                fn: async (args) => {
+                    const restored = await File.restoreSerialized(args.serialized, args.path)
+                    restored?.render?.()
+                    return restored
+                },
+                msg: (args) => `Restored ${args.path || 'file'}`,
+                ask: (app) => `${app} is requesting permission to create files.`,
             },
             'file.read': {
                 fn: (args) => File.read({ path: args.path }),
@@ -85,7 +126,7 @@ export default class Command {
                 ask: (app) => `${app} is requesting permission to delete files.`,
             },
             'file.move': {
-                fn: (args) => File.move({ path: args.path, to: args.to || args.newPath }),
+                fn: (args) => File.move({ path: args.path, to: args.to || args.newPath, place: args.place }),
                 msg: () => 'File moved successfully',
                 ask: (app) => `${app} is requesting permission to move files.`,
             },
@@ -166,6 +207,30 @@ export default class Command {
                 return null
             }
 
+            const binPath = Command.binTarget(cmd.command, cmd.arguments)
+            if (binPath) {
+                const { askRestore } = await import("/plexos/app/sys/System/File Management/restore.js")
+                const back = await askRestore(binPath, Task.id(cmd.taskId))
+                if (!back) {
+                    cmd.status = "failure"
+                    cmd.message = `${binPath} is in the bin`
+                    return null
+                }
+                // restored: what was asked goes ahead, where the file is now
+                cmd.arguments = { ...cmd.arguments, path: back }
+            }
+
+            // A task passes its own locks. A transfer job, which runs as System, passes its job token.
+            const lockToken = cmd.arguments?.lockToken ?? cmd.taskId ?? null
+            for (const { path, deep } of Command.lockTargets(cmd.command, cmd.arguments)) {
+                const lock = FileLock.blocking(path, lockToken, { deep })
+                if (!lock) continue
+                cmd.status = "failure"
+                cmd.message = `${path} is in use by ${lock.app}`
+                FileLock.deny(lock, path, Task.id(cmd.taskId))
+                return null
+            }
+
             const registry = plexos.Core.registry
             let permissions = []
             let prohibitions = []
@@ -204,7 +269,7 @@ export default class Command {
             const isFileCmd = cmd.command.startsWith("file.") && cmd.command !== "file.read"
             const skipLog = cmd.arguments?.fromHistory // undo/redo must not append another changelog entry
             let before = null
-            if (isFileCmd && !skipLog && cmd.command !== "file.create") {
+            if (isFileCmd && !skipLog && cmd.command !== "file.create" && cmd.command !== "file.restore") {
                 before = Command.snapshot(cmd.arguments.path)
             }
 
@@ -213,12 +278,15 @@ export default class Command {
             cmd.message = command.msg(cmd.arguments)
 
             if (isFileCmd && !skipLog && plexos.Core.changeLog) {
-                const type = cmd.command.slice("file.".length)
+                const type = (cmd.command === "file.restore") ? "create" : cmd.command.slice("file.".length)
                 const resultPath = result?.cfg?.path
                     || (type === "rename" ? (File.dirname(cmd.arguments.path) + "/" + (cmd.arguments.rename || cmd.arguments.newName)) : null)
                     || (type === "move" ? ((cmd.arguments.to || cmd.arguments.newPath) + "/" + File.basename(cmd.arguments.path)) : null)
                     || cmd.arguments.path
+                if (type === "rename" || type === "move") FileLock.rekey(cmd.arguments.path, resultPath)
+                if (type === "delete") FileLock.dropUnder(cmd.arguments.path)
                 const after = (type === "delete") ? null : Command.snapshot(resultPath)
+                const binEntry = (type === "move" && File.inBin(resultPath)) ? File.binEntry(resultPath) : null
                 plexos.Core.changeLog.append({
                     type,
                     path: resultPath,
@@ -227,6 +295,10 @@ export default class Command {
                     after,
                     timestamp: cmd.timestamp,
                     author: Command.authorFor(cmd),
+                    group: cmd.arguments?.group || null, // every change from one user decision undoes as one step
+                    wrapper: binEntry ? { recycled: binEntry.recycled, from: binEntry.from, place: binEntry.place } : null,
+                    // not steps: undo/redo replays, permanent deletes from the bin, and writes a caller opts out of
+                    undoable: !cmd.arguments?.replay && cmd.arguments?.undoable !== false && !(type === "delete" && File.inBin(cmd.arguments.path)),
                 })
             }
 

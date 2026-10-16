@@ -1,6 +1,7 @@
 import plexos from "/boot/plexos.js"
 import Task from "/plexos/lib/classes/system/task.js"
 import File from "/plexos/lib/classes/filesystem/file.js"
+import FileLock from "/plexos/lib/classes/system/fileLock.js"
 import Window from "/plexos/lib/classes/interface/window.js"
 import {displayComponent} from "/plexos/lib/functions/dll.js"
 let System = plexos.System
@@ -38,6 +39,7 @@ export default {
             }
         )
         if (!task.id) return
+        if (!FileLock.claim(args.path, task)) return task.end()
 
         //window generation
         if (args.window) {

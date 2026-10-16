@@ -20,6 +20,12 @@ export function themeConstruct(kind, ...args) {
     throw new Error(`Theme constructor '${kind}' is not loaded`)
 }
 
+// For optional kinds. Null when the theme leaves this one out.
+export function themeConstructOptional(kind, ...args) {
+    if (!plexos.Theme?.constructors?.[kind]) return null
+    return themeConstruct(kind, ...args)
+}
+
 export function applyThemeFavicon() {
     const link = document.querySelector("link[rel='icon']")
     if (link) link.href = `${themeRoot()}/icons/plexos/Plexos 4.png`
@@ -32,6 +38,12 @@ export async function loadThemeConstructors() {
     const constructors = {}
     for (const kind of kinds) {
         constructors[kind] = (await import(`${root}/constructors/${kind}.js`)).default
+    }
+    // A theme may skip these. Callers fall back to plain behavior.
+    for (const kind of ["desktopDrag"]) {
+        try {
+            constructors[kind] = (await import(`${root}/constructors/${kind}.js`)).default
+        } catch { /* this theme has no ${kind} */ }
     }
     plexos.Theme = {
         name: themeName(),

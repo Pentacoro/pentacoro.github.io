@@ -472,6 +472,7 @@ mem.grid.evaluateIconGrid = function (
         task.cmd("file.write", {
             path: cfg.path + "/grid.json",
             data: JSON.stringify(cfg.grid, null, "\t"),
+            undoable: false, // the desktop's own layout, not a change to the user's files
         })
     }
 }

@@ -45,3 +45,12 @@
     opacity: 1;
 }
 /*>>>>>>>-----------------------------------------<<<<<<<*/
+
+/* Alt lights a menubar button for the keyboard. Apps that hide their menubar with Alt drop the whole strip */
+.menubar_container>button.keyFocus{
+    background-color: var(--color-toolbar-hover);
+    box-shadow: inset 0 -2px 0 var(--color-accent);
+}
+.component_menubar.menubarHidden{
+    display: none;
+}

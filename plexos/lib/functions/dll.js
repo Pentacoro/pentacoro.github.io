@@ -133,14 +133,7 @@ export async function loadFront({url, taskid, data, container, focus = null, com
                 css = repDir(css,url)
                 css = repTheme(css)
 
-                if (task.window){
-                    let regex = /([^\r\n,{}]+)(,(?=[^}]*{)|\s*{)/g
-                    let selectors = [...css.matchAll(regex)].map(match => match[0])
-                    let classList = ".window."+taskid+""
-                    for (let selector of selectors) {
-                        css = css.replace(selector, `${classList} ${selector}`)
-                    }
-                }
+                if (task.window) css = scopeCss(css, ".window." + taskid)
     
                 cont.getElementsByTagName("style")[0].innerHTML = cont.getElementsByTagName("style")[0].innerText + css
             }
@@ -156,7 +149,8 @@ export async function loadFront({url, taskid, data, container, focus = null, com
                     let js = null
                     let src = null
                     let module = script.getAttribute("type") === "module"
-                    let imported = script.hasAttribute("imported")
+                    // class="imported" marks a third-party script: run it as published, without ./ or /TASKID/ rewriting
+                    let imported = script.classList.contains("imported") || script.hasAttribute("imported")
                     if (script.innerText) { //script written on html
                         js = script.innerText
                     } else if (script.getAttribute("src")) { //script
@@ -232,6 +226,89 @@ export async function loadFront({url, taskid, data, container, focus = null, com
     container.style.opacity = 1
     if (focus) focus.loader(false)
 }
+// Puts scope in front of every selector, each rule in its own place, so a repeated selector or a comment can't
+// send the prefix somewhere else. Rules inside @media, @supports, @container and @layer are scoped too.
+// @keyframes, @font-face and other at-rules are copied as they are.
+export function scopeCss(css, scope) {
+    const grouping = /^@(media|supports|container|layer)\b/i
+    // Index of the quote that closes the string opening at start
+    function stringEnd(text, start) {
+        for (let j = start + 1; j < text.length; j++) {
+            if (text[j] === "\\") j++
+            else if (text[j] === text[start]) return j
+        }
+        return text.length
+    }
+    // First of chars at or after from, outside strings and comments
+    function next(text, from, chars) {
+        for (let j = from; j < text.length; j++) {
+            const c = text[j]
+            if (c === '"' || c === "'") j = stringEnd(text, j)
+            else if (c === "/" && text[j + 1] === "*") {
+                const close = text.indexOf("*/", j + 2)
+                j = (close < 0) ? text.length : close + 1
+            }
+            else if (chars.includes(c)) return j
+        }
+        return -1
+    }
+    function blockEnd(text, open) {
+        let depth = 0
+        for (let j = open; j < text.length; j = j + 1) {
+            j = next(text, j, "{}")
+            if (j < 0) return text.length
+            if (text[j] === "{") depth++
+            else if (--depth === 0) return j
+        }
+        return text.length
+    }
+    // A selector list split at its own commas, not the ones inside :is(), [attr="a,b"] and the like
+    function selectors(list) {
+        const parts = []
+        let depth = 0, start = 0
+        for (let j = 0; j < list.length; j++) {
+            const c = list[j]
+            if (c === '"' || c === "'") j = stringEnd(list, j)
+            else if (c === "(" || c === "[") depth++
+            else if (c === ")" || c === "]") depth--
+            else if (c === "," && depth === 0) {
+                parts.push(list.slice(start, j))
+                start = j + 1
+            }
+        }
+        parts.push(list.slice(start))
+        return parts.map(part => part.trim()).filter(Boolean)
+    }
+    function rules(text) {
+        let out = ""
+        let i = 0
+        while (i < text.length) {
+            const at = next(text, i, "{;")
+            if (at < 0) {
+                out += text.slice(i)
+                break
+            }
+            const prelude = text.slice(i, at)
+            if (text[at] === ";") { // @import, @charset
+                out += prelude + ";"
+                i = at + 1
+                continue
+            }
+            const end = blockEnd(text, at)
+            const body = text.slice(at + 1, end)
+            const head = prelude.replace(/\/\*[\s\S]*?\*\//g, "").trim()
+            const lead = prelude.slice(0, prelude.length - prelude.trimStart().length)
+            if (head.startsWith("@")) {
+                out += prelude + "{" + (grouping.test(head) ? rules(body) : body) + "}"
+            } else {
+                out += lead + selectors(head).map(selector => `${scope} ${selector}`).join(", ") + " {" + body + "}"
+            }
+            i = end + 1
+        }
+        return out
+    }
+    return rules(css)
+}
 export async function blobModule(data) {
     data = data.replace(/import\s+([^'"]+)\s+from\s+['"]([^'"]+)['"]/g, (match, what, path) => {
         const absolutePath = new URL(path, plexos.Boot.basePath).href
@@ -293,14 +370,15 @@ export function evalErrorPopup(code, desc, error) {
     //add it to typeError stack
     error.script = code
     Task.System().mem.var.error = error
-    runLauncher("./plexos/app/sys/Popup/popup.ls",
+    runLauncher("./plexos/app/sys/System/Popup/popup.ls",
         {
             name:"Error",
             type:true,
             title:"Evaluation Failed", 
             description:desc,
             taskid:Task.System().id,
-            icon:""
+            icon:"",
+            detailsHeight:"300px"
         }
     )
 }

@@ -18,6 +18,8 @@ task.node.getElementById(task.id + "_root").appendChild(popup.node)
 
 mem.ui = { message, details }
 mem.var.details = details.keyNodes.panel
+// The caller sizes the expanded details to what it shows. Without it the theme's height applies.
+if (arg.detailsHeight) mem.var.details.style.height = arg.detailsHeight
 mem.error   = getTask(arg.taskid).mem.var.error
 
 mem.drawCode = async function () {
@@ -53,7 +55,18 @@ if (!arg.image) {
     message.keyNodes.image.style.display = "none"
     message.keyNodes.message.style.margin = "0px"
 }
-if (arg.taskid) {
+// [label, value] pairs from the caller, shown instead of an evaluation error.
+if (arg.details) {
+    const p = document.createElement("p")
+    p.classList.add("errorDetails")
+    for (const [label, value] of arg.details) {
+        const b = document.createElement("b")
+        b.textContent = label + ": "
+        p.append(b, String(value), document.createElement("br"))
+    }
+    p.lastChild?.remove()
+    mem.var.details.replaceChildren(p)
+} else if (arg.taskid) {
     let i = 0
     mem.var.details.innerHTML  = ""
 
@@ -85,7 +98,7 @@ if (arg.taskid) {
         mem.drawCode()
     }
 }
-if (mem.error.stack) mem.var.details.getElementsByClassName("error")[0].onclick = e => {
+if (!arg.details && mem.error?.stack) mem.var.details.getElementsByClassName("error")[0].onclick = e => {
     console.error(mem.error)
     mem.var.details.getElementsByClassName("error")[0].onclick = null
 }

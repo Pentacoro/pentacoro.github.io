@@ -175,3 +175,10 @@
 	height: 55%;
 	object-fit: contain;
 }
+
+/* The selection box, wherever icons are box-selected (desktop, Explorer). Each app positions its own */
+.selectBox{
+    box-sizing: border-box; /* the border sits inside the size, so the apps can bound the box to their edges exactly */
+    background-color: var(--color-select-fill);
+    border: 1px solid var(--color-select-border);
+}

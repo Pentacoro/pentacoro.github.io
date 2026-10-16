@@ -27,7 +27,7 @@ if (mem.ui.dialog) {
         if (!value) return
         const target = File.at(mem.dirObject.cfg.path + "/" + value)
         if (target?.cfg.class === "DirectoryFile") {
-            mem.explorerInit(target.cfg.path, task.id)
+            mem.navigate(target.cfg.path)
             name.value = (arg.mode === "save") ? (arg.fileName || "") : ""
             return
         }

@@ -3,6 +3,7 @@ import {genRanHex, runLauncher} from "/plexos/lib/functions/dll.js"
 import File from "../filesystem/file.js"
 import Component from "../interface/component.js"
 import EventBus from "./eventbus.js"
+import FileLock from "./fileLock.js"
 let System = plexos.System
 
 export default class Task {
@@ -35,15 +36,31 @@ export default class Task {
     static end(id) {
         Task.id(id).end()
     }
+    // Icons whose files another task holds stay. The first one held gets the File in use popup.
+    static unlockedIcons(pocket, actor) {
+        let denied = false
+        return pocket.filter(icon => {
+            const lock = FileLock.blocking(icon.file, actor?.id ?? null, { deep: true })
+            if (!lock) return true
+            if (!denied) FileLock.deny(lock, icon.file, actor)
+            denied = true
+            return false
+        })
+    }
+    // Delete sends to the bin: a move, so the icon leaves its view as the file goes, and undo brings it back.
+    // One Delete is one undo step (a shared group), and whatever sat on the desktop remembers its place there
+    static recycleIcons(icons, actor) {
+        const group = genRanHex(12)
+        const desktop = Task.get("Desktop")
+        for (const icon of icons) {
+            if (!File.at(icon.file)) continue
+            const place = desktop?.mem?.placeOf?.(icon.file) || null
+            ;(actor?.cmd ? actor : plexos.System).cmd("file.move", { path: icon.file, to: File.trashPath, group, place })
+        }
+    }
     static deleteSelectedNodes(pocket){
         const actor = plexos.System.mem.focused
-        for(let icon of pocket){
-            icon.deleteNode()
-            if(File.at(icon.file)!=undefined) {
-                if (actor?.cmd) actor.cmd("file.delete", {path: icon.file})
-                else File.delete({path: icon.file})
-            }
-        }
+        Task.recycleIcons(Task.unlockedIcons(pocket, actor), actor)
     }
     static System() {
         return Task.get("System")
@@ -77,6 +94,7 @@ export default class Task {
         }
         this.listeners = []
         this.globalListeners = []   // <-- track global listeners
+        this.cleanups = []          // run once the task really ends (see addCleanup)
         this.id = (p.id !== undefined) ? p.id : genRanHex(16)
         Task.checkUniqueID(this)
         this.onEnd = p.onEnd || null
@@ -112,6 +130,8 @@ export default class Task {
         this.cleanupListeners()
         this.cleanupGlobalListeners()
         this.cleanupBlobUrls()
+        for (const cleanup of this.cleanups.splice(0)) cleanup()
+        FileLock.releaseAll(this.id)
         plexos.Tasks = plexos.Tasks.remove(Task.id(this.id))
     }
 
@@ -156,6 +176,11 @@ export default class Task {
         return await Command.run(cmdObj)
     }
 
+    // Anything a task hooks onto the page (document listeners and the like) undoes itself here, after the
+    // task's own onEnd has agreed to close
+    addCleanup(cleanup) {
+        this.cleanups.push(cleanup)
+    }
     cleanupListeners() {
         this.listeners.forEach(({eventName, callback, id}) => {
             this.eventBus.off(eventName, callback, id)
@@ -286,7 +311,7 @@ export default class Task {
         const Window = (await import("../interface/window.js")).default
         const { displayComponent, genRanHex } = await import("/plexos/lib/functions/dll.js")
         const appID = plexos.Core.registry?.tryGetAppID?.(app)
-            || plexos.Core.registry?.tryGetAppID?.("Popup")
+            || plexos.Core.registry?.tryGetAppID?.("System") // Popup and dialogs without an app of their own are System's
         const taskID = genRanHex(16)
         Task.checkUniqueID({ id: taskID })
         let closed = false
@@ -368,7 +393,7 @@ export default class Task {
     popup(e, buttons, args) {
         this.mem.var.error = e
         this.mem.var.errorB = buttons
-        runLauncher("/plexos/app/sys/Popup/popup.ls",
+        runLauncher("/plexos/app/sys/System/Popup/popup.ls",
             {
                 name:args.name,
                 type:args.type,
@@ -418,7 +443,7 @@ export default class Task {
 
             this.persistentWindow({
                 name: "Permission",
-                url: "/plexos/app/sys/Popup/popupB.html",
+                url: "/plexos/app/sys/System/Popup/popupB.html",
                 args: {
                     title: "Permission required",
                     description: prompt || `${appName} is requesting permission to ${allowance}.`,

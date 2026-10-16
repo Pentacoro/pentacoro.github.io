@@ -1,6 +1,7 @@
 import plexos from "/boot/plexos.js"
 import {getTask, imposeValues, runLauncher} from "/plexos/lib/functions/dll.js"
 import File from "/plexos/lib/classes/filesystem/file.js"
+import Task from "/plexos/lib/classes/system/task.js"
 import Icon from "/plexos/lib/classes/interface/icon.js"
 import ContextMenu from "/plexos/lib/classes/interface/contextmenu.js"
 
@@ -144,12 +145,20 @@ mem.filterIconListJson = function () {
 	return filteredIconList
 }
 
+// Where an icon of this desktop sits, for the bin to remember: its cell with the grid on, its pixels with it off.
+// Restoring with the grid on goes back to that cell, or the next free one. Gridless placement isn't built yet;
+// when it is, the pixels come back too, clamped to the border when sticky is on, else the desktop scrolls
+mem.placeOf = function (path) {
+	const icon = mem.getIcon(path)
+	if (!icon?.coords) return null
+	return cfg.grid.enabled
+		? { grid: true, ax: icon.coords.ax, ay: icon.coords.ay }
+		: { grid: false, px: icon.coords.px, py: icon.coords.py }
+}
+
+//Delete sends the selection to the bin
 mem.deleteSelectedNodes = function(){
-	for(let icon of task.pocket){
-		icon.deleteNode()
-		//delete from filesystem
-		if(File.at(icon.file)!=undefined) task.cmd("file.delete", {path: icon.file})
-	}
+	Task.recycleIcons(Task.unlockedIcons(task.pocket, task), task)
 }
 
 mem.refresh = function() {
@@ -166,6 +175,17 @@ mem.refresh = function() {
 	mem.createDesktopIcons(itemList)
 
 	task.cmd("event.emit", { eventName: "desktop-refresh" })
+}
+
+//after a transfer into the desktop, select what arrived. It never refreshes for one: each move already took
+//the icon off the source and placed it here
+mem.selectArrivals = function (to, moved) {
+	if (mem.dirObject?.cfg?.path !== to) return
+	for (const icon of [...task.pocket]) {
+		task.pocket = task.pocket.remove(icon)
+		icon.statNode(0)
+	}
+	for (const path of moved) mem.getIcon(path)?.statNode(1)
 }
 
 mem.new = async function(Type, name){

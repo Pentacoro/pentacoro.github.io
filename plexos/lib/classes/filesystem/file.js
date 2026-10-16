@@ -1,93 +1,209 @@
 import plexos from "../../../../boot/plexos.js"
 import typeClass from "./filetypes.js"
 import Configuration from "./configuration.js"
-import {renameKey, runLauncher, calculateStringSize} from  "../../functions/dll.js"
+import {renameKey, runLauncher, calculateStringSize, genRanHex} from  "../../functions/dll.js"
 import {themeRoot} from "../../functions/theme.js"
+import FileLock from "../system/fileLock.js"
 
 export default class File {
-    static at(path = "", get = "file", from = `plexos.Core["file"]`) {
-        //string: where we'll devour path one dir at a time as we build expression
-        let string = path
-        //steps: where we'll store each of the dirs extracted from string (useless for now)
-        let steps = [from]
-        //expression: where we'll build the object reference from the core to later be eval()
-        let expression = from
-        
-        //find first "/"
-        let to = string.indexOf("/")
+    // Virtual paths start at "@", the root of the core: "@/home/desks/desktop". A path starting with "/"
+    // is an HTTP request for a real file of the site, never a lookup here.
+    static root = "@"
 
-        iterate(to)
+    // The bin holds what it's given in an array of wrappers, so two things with one name can sit in it:
+    // { id, recycled: <timestamp>, from: <folder it came from>, place?, file }. A recycled file's path is "@/trash/<id>".
+    // place is where it sat on the desktop, when it came from there (see Desktop's mem.placeOf)
+    static trashPath = "@/trash"
 
-        function iterate(to){
-            if (to > 0) { //if "/" is not the first char
-                let nextDir = string.splice(0, to)[1] //get clean dir name
-
-                string = string.splice(0, to - 1)[0] //repeat splice for return
-                string = string.splice(0,1)[0] //razor out "/"
-
-                steps.push(nextDir)
-
-                expression += ".dir[\""+nextDir+"\"]"
-
-                if (string.length > 0) {
-                    to = string.indexOf("/")
-                    iterate(to)
-                } else { 
-                    return expression 
-                }
-
-            } else if (to == 0) { //if "/" is the first char
-                string = string.splice(0,1)[0] //razor out "/"
-                if (string.length > 0) {
-                    to = string.indexOf("/")
-                    iterate(to)
-                } else { 
-                    return expression 
-                }
-
-            } else if (to < 0){ //if there's no "/" char
-                if (string.length > 0) {
-                    expression += ".dir[\""+string+"\"]"
-                    steps.push(string)
-                    return expression
-                } else if (string === ""){ 
-                    return expression 
-                }
-
-            }
-        }
-        //return requested output, otherwise return null
-        switch (get) {
-            case "file":
-                return ((eval(expression)!=undefined) ? eval(expression) : null)
-                break
-            case "parent":
-                let parent = (expression===from && eval(from)===plexos.Core) ? plexos.Core : expression.slice(0,-(`.dir[\"${steps[steps.length - 1]}\"]`.length))
-                return ((eval(parent)!=undefined) ? eval(parent) : null)
-                break
-        }
+    static isBin(node) {
+        return Array.isArray(node?.dir)
     }
 
+    static inBin(path) {
+        return typeof path === "string" && path.startsWith(File.trashPath + "/")
+    }
+
+    // The wrapper of something recycled, from its own path or the path of anything inside it
+    static binEntry(path) {
+        if (!File.inBin(path)) return null
+        const id = path.slice(File.trashPath.length + 1).split("/")[0]
+        const bin = File.at(File.trashPath)
+        return File.isBin(bin) ? bin.dir.find(entry => entry.id === id) || null : null
+    }
+
+    // A folder's files, whichever way it holds them
+    static children(node) {
+        if (!node?.dir) return []
+        return Array.isArray(node.dir) ? node.dir.map(entry => entry.file) : Object.values(node.dir)
+    }
+
+    // The bin's own icon shows empty or full
+    static binChanged() {
+        File.at(File.trashPath)?.render?.()
+    }
+
+    static isVirtual(path) {
+        return path === File.root || (typeof path === "string" && path.startsWith(File.root + "/"))
+    }
+
+    // For typed addresses and old stored data: "", "/user/x" and "user/x" all become "@" paths.
+    static toVirtual(path = "") {
+        if (File.isVirtual(path)) return path
+        const parts = String(path).split("/").filter(Boolean)
+        if (parts[0] === File.root) parts.shift()
+        return parts.length ? File.root + "/" + parts.join("/") : File.root
+    }
+
+    // Brings a stored core from "/user/..." paths to "@" paths, in place. Returns how many values changed, so 0
+    // means it was already current. Touches only what holds virtual paths: every node's cfg.path and icon.file,
+    // the keys of files.proxy, and the file entries of each desktop's icon.json. HTTP paths in data stay as they are.
+    static migrateTree(tree) {
+        let changed = 0
+        const convert = (value) => {
+            if (typeof value !== "string" || File.isVirtual(value)) return value
+            changed++
+            return File.toVirtual(value)
+        }
+        const visit = (node) => {
+            if (!node?.cfg) return
+            node.cfg.path = convert(node.cfg.path)
+            if (node.cfg.icon) node.cfg.icon.file = convert(node.cfg.icon.file)
+            const path = node.cfg.path
+            if (path === "@/plexos/reg/files.proxy" && node.data && typeof node.data === "object") {
+                for (const key of Object.keys(node.data)) {
+                    const next = convert(key)
+                    if (next === key) continue
+                    node.data[next] = node.data[key]
+                    delete node.data[key]
+                }
+            }
+            if (/^@\/plexos\/cfg\/desks\/[^/]+\/icon\.json$/.test(path) && typeof node.data === "string") {
+                try {
+                    const config = JSON.parse(node.data)
+                    const before = changed
+                    for (const icon of config.icons || []) icon.file = convert(icon.file)
+                    if (changed !== before) node.data = JSON.stringify(config, null, "\t")
+                } catch { /* not JSON, nothing to convert */ }
+            }
+            for (const child of File.children(node)) visit(child)
+        }
+        visit(tree)
+        changed += File.renameTopFolder(tree, "user", "home")
+        changed += File.upgradeBin(tree)
+        return changed
+    }
+
+    // Older cores keep the bin as a plain folder. It becomes the array of wrappers, and whatever was in it
+    // gets an id of its own. Where it came from wasn't kept, so it would restore to home
+    static upgradeBin(tree) {
+        const bin = tree?.dir?.trash
+        if (!bin?.cfg) return 0
+        let changed = 0
+        if (bin.cfg.exte !== "can") {
+            bin.cfg.exte = "can"
+            if (bin.cfg.icon) bin.cfg.icon.exte = "can"
+            changed++
+        }
+        if (Array.isArray(bin.dir)) return changed
+        const repath = (node, oldRoot, newRoot) => {
+            if (!node?.cfg) return
+            for (const key of ["path"]) if (typeof node.cfg[key] === "string") node.cfg[key] = newRoot + node.cfg[key].slice(oldRoot.length)
+            if (node.cfg.icon?.file) node.cfg.icon.file = newRoot + node.cfg.icon.file.slice(oldRoot.length)
+            for (const child of File.children(node)) repath(child, oldRoot, newRoot)
+        }
+        bin.dir = Object.values(bin.dir || {}).map(file => {
+            const id = genRanHex(12)
+            repath(file, file.cfg.path, File.trashPath + "/" + id)
+            return { id, recycled: Date.now(), from: File.root + "/home", file }
+        })
+        return changed + 1
+    }
+
+    // Older cores call the user's folder "user". It's "home" now: the folder and every path through it move,
+    // including files.proxy keys and desktop icon.json entries. Returns how many values changed.
+    static renameTopFolder(tree, from, to) {
+        const folder = tree?.dir?.[from]
+        if (!folder || tree.dir[to]) return 0
+        const oldRoot = File.root + "/" + from
+        const newRoot = File.root + "/" + to
+        let changed = 0
+        const move = (value) => {
+            if (typeof value !== "string" || (value !== oldRoot && !value.startsWith(oldRoot + "/"))) return value
+            changed++
+            return newRoot + value.slice(oldRoot.length)
+        }
+        const visit = (node) => {
+            if (!node?.cfg) return
+            node.cfg.path = move(node.cfg.path)
+            if (node.cfg.icon) node.cfg.icon.file = move(node.cfg.icon.file)
+            if (node.cfg.path === "@/plexos/reg/files.proxy" && node.data && typeof node.data === "object") {
+                for (const key of Object.keys(node.data)) {
+                    const next = move(key)
+                    if (next === key) continue
+                    node.data[next] = node.data[key]
+                    delete node.data[key]
+                }
+            }
+            if (/^@\/plexos\/cfg\/desks\/[^/]+\/icon\.json$/.test(node.cfg.path) && typeof node.data === "string") {
+                try {
+                    const config = JSON.parse(node.data)
+                    const before = changed
+                    for (const icon of config.icons || []) icon.file = move(icon.file)
+                    if (changed !== before) node.data = JSON.stringify(config, null, "\t")
+                } catch { /* not JSON, nothing to move */ }
+            }
+            for (const child of File.children(node)) visit(child)
+        }
+        delete tree.dir[from]
+        tree.dir[to] = folder
+        folder.name = to
+        if (folder.cfg?.icon) folder.cfg.icon.name = to
+        visit(tree)
+        return changed + 1
+    }
+
+    // The live file at path, or null when it or any folder on the way is missing.
+    // "parent" gives the folder holding it (null for the root). Only "@" paths resolve.
+    static at(path = File.root, get = "file") {
+        if (path === null || path === undefined) return null
+        if (!File.isVirtual(path)) {
+            console.warn(`File.at takes a virtual "@" path, got ${JSON.stringify(path)}`)
+            return null
+        }
+        return File.walk(plexos.Core.file, path, get)
+    }
+
+    // Last segment. The root has none.
     static basename(path = "") {
         const parts = String(path).split("/").filter(Boolean)
+        if (parts[0] === File.root) parts.shift()
         return parts[parts.length - 1] || ""
     }
 
+    // The folder above path: "@/a/b" → "@/a", "@/a" → "@". The root has none, so "".
     static dirname(path = "") {
         const parts = String(path).split("/").filter(Boolean)
+        if (parts[0] !== File.root || parts.length === 1) return ""
         parts.pop()
-        return parts.length ? "/" + parts.join("/") : ""
+        return parts.join("/")
     }
 
-    static jsonAt(root, path = "", get = "file") {
-        const parts = String(path).split("/").filter(Boolean)
+    // Follows an "@" path through .dir from root. Works on the live core and on a stored JSON copy alike.
+    static walk(root, path = File.root, get = "file") {
+        if (!File.isVirtual(path)) return null
+        const parts = String(path).split("/").filter(Boolean).slice(1)
         if (get === "parent") {
             if (parts.length === 0) return null
             parts.pop()
         }
         let node = root
         for (const part of parts) {
-            if (!node?.dir || node.dir[part] === undefined) return null
+            if (Array.isArray(node?.dir)) {
+                node = node.dir.find(entry => entry?.id === part)?.file
+                if (!node) return null
+                continue
+            }
+            if (!node?.dir || !Object.hasOwn(node.dir, part)) return null
             node = node.dir[part]
         }
         return node
@@ -101,7 +217,9 @@ export default class File {
             name: file.name,
             cfg: file.cfg,
         }
-        if (file.cfg.class === "DirectoryFile") {
+        if (file.cfg.class === "DirectoryFile" && Array.isArray(file.dir)) {
+            node.dir = file.dir.map(entry => ({ id: entry.id, recycled: entry.recycled, from: entry.from, place: entry.place, file: File.serializeNode(entry.file) }))
+        } else if (file.cfg.class === "DirectoryFile") {
             node.dir = {}
             for (const [name, child] of Object.entries(file.dir || {})) {
                 node.dir[name] = File.serializeNode(child)
@@ -154,6 +272,19 @@ export default class File {
         const sKey = File.classDefaults(file.cfg.class).skeyName
         if (file.cfg.class === "DirectoryFile") return
         File.write({ path, data: serialized[sKey] })
+    }
+
+    static pendingWrites = new Set()
+
+    // "file-written" on the system bus, once per path per tick, whoever changed the contents and however.
+    // Listeners compare the contents themselves, so a write that changed nothing costs them nothing.
+    static notifyWritten(path) {
+        if (!path || plexos.Core?.mem?.booting || File.pendingWrites.has(path)) return
+        File.pendingWrites.add(path)
+        queueMicrotask(() => {
+            File.pendingWrites.delete(path)
+            plexos.System?.bus?.emit("file-written", { path })
+        })
     }
 
     static refreshViews() {
@@ -261,6 +392,7 @@ export default class File {
         const path = opts.path
         const parent = File.at(path)
         if (!parent) throw new Error(`Cannot create file: missing directory ${path}`)
+        if (File.isBin(parent)) throw new Error("Nothing can be created in the bin")
         const typeName = opts.Type || opts.type
         const defaults = File.classDefaults(typeName)
         const confType = defaults.confType
@@ -306,7 +438,14 @@ export default class File {
         const file = File.at(path)
         const parent = File.at(path, "parent")
         if (!file || !parent) return
-        delete parent.dir[file.name]
+        if (File.isBin(parent)) {
+            parent.dir.splice(parent.dir.findIndex(entry => entry.file === file), 1)
+            File.binChanged()
+        } else {
+            delete parent.dir[file.name]
+        }
+        for (const fileView of File.viewsOpened(parent.cfg.path)) fileView.mem.getIcon(path)?.deleteNode?.()
+        plexos.System?.bus?.emit("file-deleted", { path })
     }
     static remove({ path }) {
         const file = File.at(path)
@@ -316,7 +455,7 @@ export default class File {
             date: Date.now(),
             path: file.parent().cfg.path
         }
-        const trash = File.at("/trash")
+        const trash = File.at("@/trash")
         if (Array.isArray(trash.dir)) trash.dir.push(fileWrap)
         else trash.dir[file.name] = file
         File.delete({ path })
@@ -324,14 +463,16 @@ export default class File {
     static restore({ path, timestamp }) {
         return File.restoreSerialized(File.at(path), path)
     }
-    static move({ path, to }) {
+    static move({ path, to, place = null }) {
         const file = File.at(path)
         const dest = File.at(to)
         const parent = file?.parent()
         if (!file || !dest || !parent) return
         const oldAddress = file.cfg.path
-        const newAddress = dest.cfg.path + "/" + file.name
-        if (dest.dir[file.name] && dest !== parent) {
+        // Into the bin a file is wrapped (id, when, where from); out of it, unwrapped
+        const intoBin = File.isBin(dest)
+        const fromBin = File.isBin(parent)
+        if (!intoBin && dest.dir[file.name] && dest !== parent) {
             file.name = File.returnAvailableName(file.name, file.cfg.icon, dest)
             const extension = file.cfg.class === "DirectoryFile"
                 ? "dir"
@@ -342,9 +483,12 @@ export default class File {
                 file.cfg.icon.exte = extension
             }
         }
-        const finalAddress = dest.cfg.path + "/" + file.name
-        delete parent.dir[File.basename(oldAddress)]
-        dest.dir[file.name] = file
+        const id = intoBin ? genRanHex(12) : null
+        const finalAddress = dest.cfg.path + "/" + (intoBin ? id : file.name)
+        if (fromBin) parent.dir.splice(parent.dir.findIndex(entry => entry.file === file), 1)
+        else delete parent.dir[File.basename(oldAddress)]
+        if (intoBin) dest.dir.push({ id, recycled: Date.now(), from: parent.cfg.path, ...(place ? { place } : {}), file })
+        else dest.dir[file.name] = file
         file.cfg.path = finalAddress
         if (file.cfg.icon) file.cfg.icon.file = finalAddress
         if (file.dir) File.rerouteChildren(file, oldAddress, finalAddress)
@@ -353,6 +497,8 @@ export default class File {
             fileView.mem.getIcon(oldAddress)?.deleteNode?.()
         }
         file.render()
+        if (intoBin || fromBin) File.binChanged()
+        plexos.System?.bus?.emit("file-moved", { oldPath: oldAddress, newPath: finalAddress })
         return file
     }
     static read({ path }) {
@@ -370,6 +516,7 @@ export default class File {
         } else {
             file[sKey] = payload
         }
+        File.notifyWritten(file.cfg.path)
         return file
     }
     static modify({ path, data, content, sys, cfg }) {
@@ -398,6 +545,7 @@ export default class File {
             } else {
                 file[sKey] = patch
             }
+            File.notifyWritten(file.cfg.path)
         }
         return file
     }
@@ -412,7 +560,7 @@ export default class File {
     static rename({ path, rename }) {
         const file = File.at(path)
         const parent = File.at(path, "parent")
-        if (!file || !parent) return
+        if (!file || !parent || File.isBin(parent)) return // in the bin a file is known by its id
 
         rename = File.returnAvailableName(rename, null, file.parent())
 
@@ -440,12 +588,26 @@ export default class File {
         for (let fileView of File.viewsOpened(parent.cfg.path)) {
             fileView.mem.getIcon(oldAddress)?.rename(newAddress)
         }
+        plexos.System?.bus?.emit("file-moved", { oldPath: oldAddress, newPath: newAddress })
         return renamedFile
     }
 
     static open(path) {
         const file = File.at(path)
-        runLauncher(plexos.Settings.apps[file.cfg.exte], {name:file.name, path:file.cfg.path}, plexos.System.mem.focused)
+        if (!file) return
+        if (File.inBin(path)) { // recycled things are restored, not opened
+            import("/plexos/app/sys/System/File Management/restore.js")
+                .then(module => module.askRestore(path, plexos.System.mem.focused))
+                .then(back => back && File.open(back))
+            return
+        }
+        if (file.cfg.class !== "DirectoryFile") {
+            const lock = FileLock.blocking(path)
+            if (lock) return FileLock.deny(lock, path, plexos.System.mem.focused)
+        }
+        // any folder opens in Explorer, the bin included
+        const launcher = plexos.Settings.apps[file.cfg.exte] || (file.cfg.class === "DirectoryFile" ? plexos.Settings.apps.dir : null)
+        runLauncher(launcher, {name:file.name, path:file.cfg.path}, plexos.System.mem.focused)
     }
 
     render() {

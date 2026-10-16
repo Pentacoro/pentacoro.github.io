@@ -3,7 +3,7 @@ import {runLauncher} from "./dll.js"
 import {themeRoot} from "./theme.js"
 
 export function fileDialog({ mode = "open", path, fileName = "", types = [], title, parentTaskId } = {}) {
-    const start = path ?? Task.get("Desktop")?.mem?.dirObject?.cfg?.path ?? ""
+    const start = path ?? Task.get("Desktop")?.mem?.dirObject?.cfg?.path ?? "@"
     const name = title || ((mode === "save") ? "Save As" : "Open")
     const parent = parentTaskId ? Task.id(parentTaskId) : null
 

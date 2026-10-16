@@ -1,4 +1,5 @@
 import plexos from "/boot/plexos.js"
+import { shortcut } from "/plexos/lib/functions/shortcuts.js"
 import { coreReadOnly } from "/plexos/lib/functions/readOnly.js"
 import {runLauncher, iframeAntiHover, areRectanglesOverlap} from "/plexos/lib/functions/dll.js"
 import Task from "/plexos/lib/classes/system/task.js"
@@ -29,16 +30,15 @@ desktop.onpaste = async function (e) {
     }
 }
 
-//undo | ctrl + z
-window.addEventListener("keydown", async e => {
-	if (coreReadOnly()) return
-	if (e.key === "z" && e.ctrlKey) {  
-		e.preventDefault()
+//undo and redo the user's changes to files: one history shared with every Explorer window
+const undo = () => { if (!coreReadOnly()) plexos.Core.changeLog.undo() }
+const redo = () => { if (!coreReadOnly()) plexos.Core.changeLog.redo() }
+shortcut(task, "Ctrl+Z", undo)
+shortcut(task, "Ctrl+Y", redo)
+shortcut(task, "Ctrl+Shift+Z", redo)
 
-		plexos.Core.undo()
-		desktop.mem.refresh()
-	} 
-})
+//Delete key: the selection goes to the bin (in the bin itself, deleteSelectedNodes asks to delete for good)
+shortcut(task, "Delete", () => { if (!coreReadOnly()) mem.deleteSelectedNodes() })
 
 //when desktop click
 desktop.node.addEventListener("mousedown", e => {
@@ -86,10 +86,11 @@ desktop.node.oncontextmenu = e => {
 //selectBox behavior----------------------------------------------------|
 desktop.mem.selectBox = function(e={ctrlKey:false}) {
 	if (document.getElementById("selectBox")) return
-	let pos1 = 0, pos2 = 0, posxIn = 0, posyIn = 0
+	let pos1 = 0, pos2 = 0, posxIn = 0, posyIn = 0, limitX = 0, limitY = 0
 
 	let selectBox = document.createElement("div")
 	selectBox.setAttribute("id", "selectBox")
+	selectBox.classList.add("selectBox") // its look is the theme's shared .selectBox
 	desktop.node.appendChild(selectBox)
 
 	let wasCtrl = (e.ctrlKey == true)
@@ -103,6 +104,9 @@ desktop.mem.selectBox = function(e={ctrlKey:false}) {
 		//get click position:
 		posxIn = e.clientX + desktop.node.scrollLeft
 		posyIn = e.clientY + desktop.node.scrollTop
+		// the box stays inside the desktop as it was when the drag began, so it can't grow it and bring up scrollbars
+		limitX = desktop.node.scrollWidth
+		limitY = desktop.node.scrollHeight
 
 		selectBox.style.top = posyIn + "px"
 		selectBox.style.left = posxIn + "px"
@@ -117,26 +121,16 @@ desktop.mem.selectBox = function(e={ctrlKey:false}) {
 		if (e.preventDefault) e.preventDefault()
 		
 		//get cursor position:
-		pos1 = e.clientX + desktop.node.scrollLeft
-		pos2 = e.clientY + desktop.node.scrollTop
+		pos1 = Math.min(Math.max(e.clientX + desktop.node.scrollLeft, 0), limitX)
+		pos2 = Math.min(Math.max(e.clientY + desktop.node.scrollTop, 0), limitY)
 		
 		//show selectBox:
 		selectBox.style.opacity = '1'
 
-		if ((pos2 - posyIn) > 0) { //if cursor below ↓ from initial position
-			selectBox.style.height = (pos2 - posyIn) + 1 + "px"
-			selectBox.style.top = posyIn + "px"
-		} else { //cursor is above ↑ from initial position
-			selectBox.style.height = (pos2 - posyIn) * -1 + "px"
-			selectBox.style.top = (posyIn - selectBox.offsetHeight) + "px"
-		}
-		if ((pos1 - posxIn) > 0) { //if cursor right → from initial position
-			selectBox.style.width = (pos1 - posxIn) + 1 + "px"
-			selectBox.style.left = posxIn + "px"
-		} else { //cursor is left  ← from initial position
-			selectBox.style.width = (pos1 - posxIn) * -1 + "px"
-			selectBox.style.left = (posxIn - selectBox.offsetWidth) + "px"
-		}
+		selectBox.style.top = Math.min(pos2, posyIn) + "px"
+		selectBox.style.left = Math.min(pos1, posxIn) + "px"
+		selectBox.style.height = Math.abs(pos2 - posyIn) + "px"
+		selectBox.style.width = Math.abs(pos1 - posxIn) + "px"
 		
 		//iconReaction--------------------------------------------------|
 		for (let icon of desktop.mem.iconArr){

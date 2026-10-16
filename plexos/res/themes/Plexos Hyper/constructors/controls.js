@@ -203,20 +203,49 @@ export default {
         const node = el("div", "nav sys-toolbar")
         const back = el("button", "back", "◀")
         const forward = el("button", "forth", "▶")
-        const up = el("button", "parent", "▲")
-        const addressBox = el("div", "addressBox")
-        const address = el("span", "address")
-        addressBox.appendChild(address)
         const refresh = el("button", "refresh", "⭮")
-        node.append(back, forward, up, addressBox, refresh)
+        const up = el("button", "parent", "▲")
+        back.title = "Back"
+        forward.title = "Forward"
+        refresh.title = "Refresh"
+        up.title = "Up one folder"
+        for (const button of [back, forward, refresh, up]) button.type = "button"
+        const addressBox = el("div", "addressBox")
+        const address = el("input", "address")
+        address.type = "text"
+        address.spellcheck = false
+        address.dataset.readonlySafe = "" // navigating, not writing. A read-only core keeps it usable
+        addressBox.appendChild(address)
+        node.append(back, forward, refresh, up, addressBox)
         return { node, keyNodes: { back, forward, up, address, refresh } }
+    },
+
+    sidePanel() {
+        const node = el("div", "sidePanel sys-inset")
+        const list = el("div", "sidePanel-list")
+        const bottom = el("div", "sidePanel-bottom") // the bin, anchored below the pins
+        const resizer = el("div", "sidePanel-resizer") // drag to change the panel's width
+        node.append(list, bottom, resizer)
+        return { node, keyNodes: { list, bottom, resizer } }
+    },
+
+    sidePanelItem({ name, image }) {
+        const node = el("div", "sidePanel-item")
+        const icon = el("img", "sidePanel-icon")
+        icon.src = image || ""
+        icon.draggable = false
+        const label = el("span", "sidePanel-name", name)
+        node.append(icon, label)
+        node.title = name
+        return { node, keyNodes: { icon, label } }
     },
 
     fileView() {
         const node = el("div", "background")
+        const header = el("div", "detailsHeader") // column titles for the details view
         const list = el("div", "list")
-        node.appendChild(list)
-        return { node, keyNodes: { list } }
+        node.append(header, list)
+        return { node, keyNodes: { header, list } }
     },
 
     fileDialogBar({ id, label = "File name:", value = "", typeLabel = "Type:", types = [], buttons = [] } = {}) {

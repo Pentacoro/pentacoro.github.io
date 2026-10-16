@@ -7,6 +7,7 @@ import Task from "/plexos/lib/classes/system/task.js"
 import File from "/plexos/lib/classes/filesystem/file.js"
 import ContextMenu from "/plexos/lib/classes/interface/contextmenu.js"
 import { destinationAt, moveFiles } from "/plexos/app/sys/System/File Management/move.js"
+import { askRestore } from "/plexos/app/sys/System/File Management/restore.js"
 
 let System = plexos.System
 let task = getTask(/TASKID/)
@@ -37,17 +38,15 @@ mem.class.IconDir = class IconDir {
         this.statNode()
         this.clic()
         this.paintIcon()
+        mem.fillDetails(this)
     }
     deleteNode(){
         this.node.parentNode.removeChild(this.node)
     
         Task.id(this.task).pocket = Task.id(this.task).pocket.remove(this)
         Task.id(this.task).mem.iconArray = Task.id(this.task).mem.iconArray.remove(this)
-        
-        if (Task.get("Desktop") && File.at(this.file, "parent") === Task.get("Desktop").mem.dirObject) { //delete desktop icon
-            let icon = Task.get("Desktop").mem.getIcon(File.at(this.file).cfg.icon.file)
-            icon.deleteNode()
-        }
+        mem.statusChanged?.()
+        // Other views of the same folder (the desktop's too) lose the icon from File.move or File.delete themselves
     }
     statNode(num){
         //0 => unselected | 1 => selected | 2 => moving
@@ -69,6 +68,7 @@ mem.class.IconDir = class IconDir {
                 break
             default: 
         }
+        mem.statusChanged?.()
     }
     drag(e){
         dragMouseDown(e, this.node, this)
@@ -87,36 +87,14 @@ mem.class.IconDir = class IconDir {
                 ship.node.style.top = (event.clientY - halfH) + "px"
             }
             
-            //when mousedown on selected icon
-            if (_this.state === 1) {
-                //managing selected icons
-                for (let icon of Task.id(_this.task).pocket) {
-                    //light up all hover border onmousedown:-|
-                    icon.highlight(true)
-                    //---------------------------------------|
-                }
-            } else {
-                if (System.mem.var.shSelect == true && !System.mem.var.dragging) {
-                    //light up 1 hover border onmousedown:
-                    _this.highlight(true)
-                    
-                    //when mousedown on unselected icon
-                    if(!e.ctrlKey) {
-                        for (let icon of Task.id(_this.task).pocket){
-                            Task.id(_this.task).pocket = Task.id(_this.task).pocket.remove(icon)
-                            icon.statNode(0)
-                            icon.highlight(false)
-                        }
-                        Task.id(_this.task).pocket.push(_this)
-                        _this.statNode(1)
-                        _this.highlight(true)
-                    } else if(e.ctrlKey) {
-                        Task.id(_this.task).pocket.push(_this)
-                        _this.statNode(1)
-                        _this.highlight(true)
-                    }
-                }
+            //selecting happens on mousedown, so a drag carries the right icons (selection.js has the rules)
+            const wasSelected = _this.state === 1
+            if (System.mem.var.shSelect == true && !System.mem.var.dragging) {
+                if (e.shiftKey) mem.selectRange(_this, e.ctrlKey)
+                else if (!wasSelected && e.ctrlKey) mem.toggleSelected(_this)
+                else if (!wasSelected) mem.selectOnly(_this)
             }
+            for (let icon of Task.id(_this.task).pocket) icon.highlight(true)
     
             document.onmousemove = e => dragMouseMove(e, node)
             document.onmouseup   = e => dragMouseEnd(e, node)
@@ -156,22 +134,18 @@ mem.class.IconDir = class IconDir {
                 const paths = Task.id(_this.task).pocket.map(icon => icon.file)
                 const dest = System.mem.var.dragging ? destinationAt(e.clientX, e.clientY, paths) : null
     
-                //unselect other folders on mouseup W/O drag UNLESS ctrl
-                if(e.ctrlKey == false && System.mem.var.dragging == false && e.button == 0) {
-                    for (let icon of Task.id(_this.task).pocket){
-                        Task.id(_this.task).pocket = Task.id(_this.task).pocket.remove(icon)
-                        icon.statNode(0)
-                        icon.highlight(false)
-                    }
-                    _this.statNode(1)
+                //a click without a drag settles the selection: plain keeps just this icon, Ctrl on an icon
+                //that was already selected takes it out. Shift was settled on mousedown
+                const clicked = !System.mem.var.dragging && e.button == 0
+                for (let icon of Task.id(_this.task).pocket) icon.highlight(false)
+                if (clicked && !e.shiftKey) {
+                    if (e.ctrlKey && wasSelected) mem.toggleSelected(_this)
+                    else if (!e.ctrlKey) mem.selectOnly(_this)
                 } else {
-                    for (let icon of Task.id(_this.task).pocket){
-                        icon.statNode(1)
-                        icon.highlight(false)
-                    }
+                    for (let icon of Task.id(_this.task).pocket) icon.statNode(1)
                 }
                 System.mem.var.dragging = false
-                if (dest) moveFiles(paths, dest, { x: e.clientX, y: e.clientY })
+                if (dest) moveFiles(paths, dest, { x: e.clientX, y: e.clientY }, Task.id(_this.task))
             }
         }
     }
@@ -184,8 +158,17 @@ mem.class.IconDir = class IconDir {
         }
     }
     open(){
-        if (this.exte == "dir") {
-            Task.id(this.task).mem.explorerInit(this.file, this.task)
+        if (File.inBin(this.file)) { // restored, never opened. Once it's back, it opens from there
+            const explorer = Task.id(this.task)
+            askRestore(this.file, explorer).then(back => {
+                if (!back) return
+                if (File.at(back)?.cfg.class === "DirectoryFile") explorer.mem.navigate(back)
+                else File.open(back)
+            })
+            return
+        }
+        if (this.exte == "dir" || this.exte == "can") {
+            Task.id(this.task).mem.navigate(this.file)
         } else if (mem.dialog) {
             mem.dialog.pick(this)
         } else {
@@ -203,6 +186,7 @@ mem.class.IconDir = class IconDir {
 
         this.paintIcon()
         this.keyNodes.text.textContent = this.name
+        mem.fillDetails(this)
     }
     paintIcon() {
         const frame = this.keyNodes?.frame
@@ -304,7 +288,9 @@ mem.class.IconDir = class IconDir {
     
                 //insert into fylesystem
                 if (iconText.textContent != editFile.name) { //if the name changed
+                    //a held file keeps its name
                     task.cmd("file.rename", {path: editFile.cfg.path, rename: iconText.textContent})
+                        .then(renamed => { if (!renamed) iconText.textContent = editFile.name })
                 }
     
                 thisIcon.statNode(1)

@@ -88,6 +88,7 @@ export default class Icon {
         this.drop = []
     }
     isFolder() {
+        if (this.exte === "can") return false // the bin has its own empty and full pictures, never layered art
         return this.class === "DirectoryFile" || this.exte === "dir"
     }
     isLayered() {
@@ -105,7 +106,8 @@ export default class Icon {
             return null
         }
     }
-    folderArt() {
+    // px is the size being drawn, so the theme can draw a small folder plainly
+    folderArt(px = null) {
         if (!this.isFolder() || !this.isLayered()) return null
         if (this.image && !isIconFile(this.image)) return null
         if (isIconFile(this.image)) {
@@ -114,7 +116,7 @@ export default class Icon {
             if (doc?.image && doc.layered !== true) return null
         }
         try {
-            const built = themeConstruct("folderIcon", this)
+            const built = themeConstruct("folderIcon", this, null, px)
             if (!built || typeof built !== "object") return null
             return built
         } catch {
@@ -138,7 +140,7 @@ export default class Icon {
                     const plain = themeConstruct("folderIcon", this, "plain")
                     if (typeof plain === "string" && plain) return plain
                 } catch { /* the theme is not loaded yet */ }
-                if (Object.keys(File.at(this.file).dir).length > 0) return `${themeRoot()}/icons/files/images/folder-filled.svg`
+                if (Object.keys(File.at(this.file)?.dir || {}).length > 0) return `${themeRoot()}/icons/files/images/folder-filled.svg`
                 else return `${themeRoot()}/icons/files/images/folder.svg`
             case "can":
                 if (File.at(this.file)?.dir?.length > 0) return `${themeRoot()}/icons/files/images/trash-full.svg`
@@ -150,9 +152,9 @@ export default class Icon {
             case "meta":
                 return `${themeRoot()}/icons/files/images/meta.svg`
             case "web":
-                return File.at(this.file).meta.icon
+                return File.at(this.file)?.meta?.icon || `${themeRoot()}/icons/files/images/file.svg`
             case "img":
-                return File.at(this.file).meta.url
+                return File.at(this.file)?.meta?.url || `${themeRoot()}/icons/files/images/file.svg`
             default:
                 return `${themeRoot()}/icons/files/images/file.svg`
         }
@@ -175,13 +177,13 @@ export default class Icon {
         const frames = Object.entries(this.sizes)
             .map(([size, url]) => [Number(size), url])
             .sort((a, b) => a[0] - b[0])
-        if (!frames.length) return { url: this.baseUrl(), native: null }
+        if (!frames.length) return { url: this.baseUrl(px), native: null }
         const cover = frames.find(([size]) => size >= px)
         const chosen = cover || frames[frames.length - 1]
         return { url: chosen[1], native: chosen[0] }
     }
-    baseUrl() {
-        const art = this.folderArt()
+    baseUrl(px = null) {
+        const art = this.folderArt(px)
         if (art?.image) return art.image
         return this.getImage()
     }
@@ -248,8 +250,8 @@ export default class Icon {
             nodes.layers.replaceChildren()
             nodes.layers.style.inset = "0"
             nodes.layers.style.display = "block"
-            const art = this.folderArt()
-            const items = this.layerItems()
+            const art = this.folderArt(containerPx)
+            const items = art?.small ? [] : this.layerItems()
             const placeLayer = (item, index) => {
                 const box = document.createElement("span")
                 const sizeW = item.w > 0 ? item.w : 32

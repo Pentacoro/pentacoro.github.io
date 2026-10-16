@@ -36,7 +36,7 @@ export default {
             {
                 name : args.name + " - Properties",
                 task : task.id, 
-                icon : (File.at(args.cfg.path)) ? File.at(args.cfg.path).cfg.icon.getImage() : "/THEME/icons/files/defaultMSF.svg",
+                icon : (File.at(args.cfg.path)) ? File.at(args.cfg.path).cfg.icon.getImage() : "/THEME/icons/files/images/meta.svg",
                 appParams: {
                     maximizeable: false,
                     resizeable: false,

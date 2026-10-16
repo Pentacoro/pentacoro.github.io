@@ -7,13 +7,15 @@ let mem  = task.mem
 const language = comp.args?.language || "javascript"
 const host = (comp.container || task.node).getElementsByClassName("parsed-code")[0]
 let syntaxCache = null
+let lines = [] // the raw text of each line. Highlighting works on these, never on escaped HTML
 
 function escapeLine(line) {
-    return String(line).replaceAll("<", "&lt;").replaceAll(">", "&gt;")
+    return String(line).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;")
 }
 
 function buildHTML(code) {
     const script = String(code ?? "").split("\n")
+    lines = script
     const digits = String(script.length).length
     let parsed = "\n"
     for (let y = 0; y < script.length; y++) {
@@ -26,8 +28,8 @@ function applySyntax(syntax) {
     const highlighter = new mem.codeParser.RegexHighlighter()
     const els = host.getElementsByClassName(`ID_${comp.id}`)
     for (let i = 0; i < els.length; i++) {
-        const result = highlighter.insertSyntaxHighlighting(syntax, els[i].innerHTML)
-        if (result) els[i].innerHTML = result
+        const result = highlighter.insertSyntaxHighlighting(syntax, lines[i] ?? "")
+        if (result !== undefined) els[i].innerHTML = result + "\n"
     }
 }
 

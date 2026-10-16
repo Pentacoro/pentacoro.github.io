@@ -11,8 +11,9 @@ export default class DirectoryFile extends File {
             name : "core",
             cfg : new Configuration (
             {
+                path : File.root,
                 class : "DirectoryFile",
-                icon : new Icon ({class: "DirectoryFile", name:"core", type:"Directory", state:0}),
+                icon : new Icon ({class: "DirectoryFile", name:"core", type:"Directory", state:0, file: File.root}),
                 move : false,
                 edit : false,
             })

@@ -16,7 +16,7 @@ mem.menubar.contextOptions = function (button, name) {
                         {name:"New",icon:"url('')",func: () => {return}},
                         {name:"New Window",icon:"url('')",func: () => {return}},
                         {name:"Open...",icon:"url('')",func: () => {return} },
-                        {name:"Save",icon:"url('')",shortcut:"Ctrl+S",func: () => mem.arg.file.data = mem.editor.getValue() },
+                        {name:"Save",icon:"url('')",shortcut:"Ctrl+S",func: () => mem.save() },
                         {name:"Save As...",icon:"url('')",func: () => {return} },
                     ]},
                     {name: "exit", list: [

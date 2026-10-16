@@ -30,6 +30,7 @@ export default class ProxyFile extends File {
                 }
                 const ok = Reflect.set(target, prop, value, receiver)
                 ProxyFile.queueModifyLog(file)
+                File.notifyWritten(file?.cfg?.path)
                 return ok
             }
         })

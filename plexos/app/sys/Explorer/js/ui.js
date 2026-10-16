@@ -7,11 +7,26 @@ let arg  = mem.arg
 
 const root = task.node.getElementById(task.id + "_root")
 const nav  = control("navigationBar")
+const side = control("sidePanel")
 const view = control("fileView")
-root.append(nav.node, view.node)
-mem.ui = { nav, view }
 
-if (arg.mode === "open" || arg.mode === "save") {
+// Side panel and file view sit side by side in the body
+const body = document.createElement("div")
+body.className = "explorerBody"
+body.append(side.node, view.node)
+mem.ui = { nav, side, view, body }
+
+// Open and Save dialogs are just the browsing part. A full window also has a menubar and a status bar
+const dialogMode = arg.mode === "open" || arg.mode === "save"
+if (!dialogMode) {
+    const menubar = document.createElement("div")
+    menubar.className = "component_menubar"
+    root.append(menubar)
+    mem.ui.menubarMount = menubar
+}
+root.append(nav.node, body)
+
+if (dialogMode) {
     mem.folderLabels = { hide: "Hide Folders", browse: "Browse Folders" }
     mem.fileTypes = [...(arg.types || []), { label: "All Files (*.*)", exte: null }]
     mem.typeFilter = mem.fileTypes[0].exte
@@ -30,6 +45,11 @@ if (arg.mode === "open" || arg.mode === "save") {
     dialog.keyNodes.buttons.folders.classList.add("foldersToggle", "open")
     root.appendChild(dialog.node)
     mem.ui.dialog = dialog
+} else {
+    const statusbar = document.createElement("div")
+    statusbar.className = "component_statusbar"
+    root.append(statusbar)
+    mem.ui.statusbarMount = statusbar
 }
 
 function lockFoldersWidth() {

@@ -4,9 +4,9 @@ import File from "/plexos/lib/classes/filesystem/file.js"
 import ProxyFile from "/plexos/lib/classes/filesystem/proxy.js"
 import Task from "/plexos/lib/classes/system/task.js"
 import {runLauncher} from "/plexos/lib/functions/dll.js"
-import { ensureSystemApp } from "/plexos/app/sys/System/system.js"
+import { ensureSystemApp, ensureSystemEntry } from "/plexos/app/sys/System/system.js"
 
-const settingsPath = "/plexos/cfg/settings.json"
+const settingsPath = "@/plexos/cfg/settings.json"
 
 async function ensureSettingsFile() {
     const file = File.at(settingsPath)
@@ -48,19 +48,36 @@ export async function openDesktop(address) {
         desktop.mem.grid.evaluateIconGrid()
         desktop.mem.renderIcons()
     }
-    // Temporary. Test's launcher has a typo so the evaluation window opens.
-    await runLauncher("/plexos/app/sys/Test/test.ls")
+}
+
+const monacoEntry = {
+    windowDrawParameters: { default: { minimizeable: true, maximizeable: true, resizeable: true, sizeDrawMethod: "window", saveDrawParameters: "app" } },
+    installationDirectory: "@/plexos/app/data/Monaco",
+    launcherScriptFilePath: "/plexos/app/data/Monaco/monaco.ls",
+    instantiable: true,
+    systemPermissions: ["file", "task", "event"],
+    systemProhibitions: [],
+}
+
+// A saved core keeps the app catalog it was made with. This brings an older one up to date before the session
+// ids are issued. Each step leaves a core that already has it untouched.
+function upgradeRegistry(registry) {
+    const data = registry.appFile()?.data
+    if (!data) return
+    ensureSystemEntry(data)
+    if (!("Monaco" in data.STANDALONE)) data.STANDALONE.Monaco = monacoEntry
 }
 
 export default async function initialize() {
     plexos.Core.mem.booting = true
     await ensureSettingsFile()
-    plexos.Core.registry = new Registry("/plexos/reg/files.proxy", "/plexos/reg/applications.proxy")
+    plexos.Core.registry = new Registry("@/plexos/reg/files.proxy", "@/plexos/reg/applications.proxy")
+    upgradeRegistry(plexos.Core.registry)
     plexos.Core.registry.issueSessionAppIDs()
     plexos.Core.mem.booting = false
     ensureSystemApp()
 
     console.log(plexos)
     console.log(plexos.Core.file)
-    console.log(ProxyFile.unwrapProxy(File.at("plexos/reg/applications.proxy")))
+    console.log(ProxyFile.unwrapProxy(File.at("@/plexos/reg/applications.proxy")))
 }

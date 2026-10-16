@@ -1,6 +1,7 @@
 import plexos from "./plexos.js"
 import ContextMenu from "../plexos/lib/classes/interface/contextmenu.js"
 import DirectoryFile from "../plexos/lib/classes/filesystem/directory.js"
+import File from "../plexos/lib/classes/filesystem/file.js"
 import initialize, { openDesktop } from "../plexos/ini/init.js"
 import { applyThemeFace } from "../plexos/lib/functions/theme.js"
 import { installReadOnly } from "../plexos/lib/functions/readOnly.js"
@@ -79,7 +80,7 @@ export async function fetchTree(url) {
 
 async function bareTree() {
     const tree = await fetchTree("/core.json")
-    const desktop = nodeAt(tree, ["user", "desks", "desktop"])
+    const desktop = nodeAt(tree, ["home", "desks", "desktop"])
     if (desktop?.dir) {
         for (const key of Object.keys(desktop.dir)) {
             if (!keptDesktopFiles.has(key)) delete desktop.dir[key]
@@ -101,13 +102,19 @@ export async function mountTree(tree, { readOnly, name }) {
     landing.mounting = true
     try {
         plexos.Core.mem.readOnly = !!readOnly
+        // A core saved before "@" paths is converted here, once
+        const migrated = File.migrateTree(tree)
         const newCore = DirectoryFile.coreTemplate()
         newCore.name = name || tree.name || newCore.name
         plexos.Core.file = newCore
         await plexos.Core.ini.recreateFiles(tree, newCore)
         if (!readOnly && plexos.System.user) {
-            plexos.System.user.config.lastOpenedCore = name || tree.name
-            await plexos.db.saveUser(plexos.System.user)
+            const user = plexos.System.user
+            user.config.lastOpenedCore = name || tree.name
+            // Store the converted copy, so later saves never patch "@" changes into an old-format tree
+            const local = user.localCores.findIndex(core => core.name === (name || tree.name))
+            if (migrated && local >= 0) user.localCores[local] = tree
+            await plexos.db.saveUser(user)
         }
         await initialize()
         bindManagerAppIDs()
@@ -116,7 +123,7 @@ export async function mountTree(tree, { readOnly, name }) {
         releaseWindowLayer()
         document.body.classList.remove("booting")
         plexos.Core.mem.booting = false
-        await openDesktop("/user/desks/desktop")
+        await openDesktop("@/home/desks/desktop")
         if (readOnly) installReadOnly()
     } catch (error) {
         landing.mounting = false

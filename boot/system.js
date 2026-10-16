@@ -56,7 +56,22 @@ core.mem.classCompilers = {
     }
 }
 core.ini = {}
+// The bin holds an array of wrappers. Each wrapped file is rebuilt under its id while the live bin is still a
+// plain folder, then the bin becomes the array again with names and wrapper details put back
+core.ini.recreateBin = async function (bin, newBin) {
+    newBin.dir = {}
+    for (const entry of bin.dir) {
+        await core.ini.recreateFiles({ dir: { [entry.id]: { ...entry.file, name: entry.id } } }, newBin)
+    }
+    const built = newBin.dir
+    newBin.dir = bin.dir.map(entry => {
+        const file = built[entry.id]
+        file.name = entry.file.name
+        return { id: entry.id, recycled: entry.recycled, from: entry.from, place: entry.place, file }
+    })
+}
 core.ini.recreateFiles = async function (dir, newDir) {
+    if (Array.isArray(dir.dir)) return core.ini.recreateBin(dir, newDir)
     for (let file of Object.values(dir.dir)) {
         let Type = null 
         let Skey = "data"

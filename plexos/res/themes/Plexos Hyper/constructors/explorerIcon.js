@@ -29,8 +29,17 @@ export default function constructExplorerIcon(icon, { taskId, list }) {
     text.appendChild(document.createTextNode(icon.name))
     node.appendChild(text)
 
+    // Filled by the app; each view's CSS decides which of them show
+    const date = document.createElement("span")
+    date.setAttribute("class", "iconDetail iconDate")
+    const type = document.createElement("span")
+    type.setAttribute("class", "iconDetail iconType")
+    const size = document.createElement("span")
+    size.setAttribute("class", "iconDetail iconSize")
+    node.append(date, type, size)
+
     list.appendChild(node)
     icon.node = node
-    icon.keyNodes = { frame, square, art, image, layers, front, stickers, text }
+    icon.keyNodes = { frame, square, art, image, layers, front, stickers, text, date, type, size }
     return node
 }

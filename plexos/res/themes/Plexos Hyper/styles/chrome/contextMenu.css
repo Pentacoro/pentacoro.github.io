@@ -26,11 +26,11 @@
 }
 .contextSection>div{
     display: grid;
-    grid-template-columns: 18px minmax(0, 1fr) auto;
+    grid-template-columns: 15px minmax(0, 1fr) auto;
     grid-template-rows: auto;
     align-items: center;
     column-gap: 8px;
-    padding: 5px;
+    padding: 3px 5px;
 
     user-select: none;
 }
@@ -43,8 +43,8 @@
     cursor: default;
 }
 .contextSection>div>div{
-    width: 18px;
-    height: 18px;
+    width: 15px;
+    height: 15px;
     background-size: contain;
     background-position: center;
     background-repeat: no-repeat;
@@ -64,7 +64,7 @@
     white-space: nowrap;
     overflow: visible;
 }
-.contextSection>div:hover , .contextSection>div.hover{
+.contextSection>div:hover , .contextSection>div.hover, .contextSection>div.keyFocus{
     background-color: var(--color-menu-hover);
 }
 .contextSection>div.disabled{

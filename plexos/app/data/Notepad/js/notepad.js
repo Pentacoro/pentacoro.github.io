@@ -79,8 +79,9 @@ mem.redo = function () {
     mem.applyLogEntry()
     mem.statusbar?.setMessage?.("Redo")
 }
+// The file isn't held, so it may have been moved, renamed or deleted since it was opened. Then Save asks where.
 mem.save = async function () {
-    if (!mem.arg.fileAddr) return mem.saveAs()
+    if (!mem.currentFile()) return mem.saveAs()
     if (mem.historyTimer) {
         clearTimeout(mem.historyTimer)
         mem.historyTimer = null
@@ -102,8 +103,12 @@ mem.reload = function () {
     mem.statusbar?.setMessage?.("")
 }
 mem.fileTypes = [{ label: "Text Document (*.txt)", exte: ["txt"] }]
+// A missing file still points the dialog at its old folder, when that folder is left.
 mem.folder = function () {
-    return mem.currentFile()?.parent()?.cfg.path
+    const folder = mem.currentFile()?.parent()?.cfg.path
+    if (folder !== undefined) return folder
+    const last = mem.arg.fileAddr ? File.dirname(mem.arg.fileAddr) : null
+    return last !== null && File.at(last) ? last : undefined
 }
 mem.setFile = function (path) {
     const file = File.at(path)
@@ -131,7 +136,7 @@ mem.confirmUnsaved = async function () {
     const choice = await new Promise((resolve) => {
         task.persistentWindow({
             name: "Notepad",
-            url: "/plexos/app/sys/Popup/popupB.html",
+            url: "/plexos/app/sys/System/Popup/popupB.html",
             args: {
                 image: `${themeRoot()}/icons/interface/forms/info.png`,
                 title: "Save changes?",
@@ -166,7 +171,7 @@ mem.saveAs = async function () {
     let path = await fileDialog({
         mode: "save",
         path: mem.folder(),
-        fileName: mem.currentFile()?.name ?? "Untitled.txt",
+        fileName: mem.currentFile()?.name ?? (mem.arg.fileAddr ? File.basename(mem.arg.fileAddr) : "Untitled.txt"),
         types: mem.fileTypes,
         parentTaskId: task.id,
     })
